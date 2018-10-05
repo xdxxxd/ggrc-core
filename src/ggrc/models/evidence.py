@@ -3,10 +3,7 @@
 
 """Module containing Evidence model."""
 
-from sqlalchemy import and_
 from sqlalchemy import orm
-from sqlalchemy import or_
-from sqlalchemy.ext.declarative import declared_attr
 
 from ggrc import db
 from ggrc import login
@@ -22,7 +19,7 @@ from ggrc.models.mixins import before_flush_handleable as bfh
 from ggrc.models.mixins import base
 from ggrc.models.mixins.statusable import Statusable
 from ggrc.models.mixins.with_auto_deprecation import WithAutoDeprecation
-from ggrc.models.relationship import Relatable, Relationship
+from ggrc.models.relationship import Relatable
 from ggrc.utils import referenced_objects
 
 from ggrc.services import signals
@@ -31,8 +28,8 @@ from ggrc.services import signals
 class Evidence(Roleable, Relatable, mixins.Titled,
                bfh.BeforeFlushHandleable, Statusable,
                mixins.WithLastDeprecatedDate, comment.Commentable,
-               WithAutoDeprecation, base.ContextRBAC,
-               mixins.Slugged, mixin.Indexed, db.Model):
+               WithAutoDeprecation, mixin.Indexed, base.ContextRBAC,
+               mixins.Slugged, db.Model):
   """Evidence (Audit-scope URLs, FILE's) model."""
   __tablename__ = "evidence"
 
@@ -73,8 +70,8 @@ class Evidence(Roleable, Relatable, mixins.Titled,
       "status",
       reflection.Attribute("kind", update=False),
       reflection.Attribute("parent_obj", read=False, update=False),
-      reflection.Attribute("archived", create=False, update=False),
-      reflection.Attribute("is_uploaded", read=False, update=False),
+      reflection.Attribute('archived', create=False, update=False),
+      reflection.Attribute('is_uploaded', read=False, update=False),
   )
 
   _fulltext_attrs = [
@@ -106,8 +103,8 @@ class Evidence(Roleable, Relatable, mixins.Titled,
       },
   }
 
-  _allowed_parents = {"Assessment", "Audit"}
-  FILE_NAME_SEPARATOR = "_ggrc"
+  _allowed_parents = {'Assessment', 'Audit'}
+  FILE_NAME_SEPARATOR = '_ggrc'
 
   @orm.validates("kind")
   def validate_kind(self, key, kind):
@@ -127,36 +124,25 @@ class Evidence(Roleable, Relatable, mixins.Titled,
     return kind
 
   @classmethod
-  def _populate_query(cls, query):
-    return query.options(
-        orm.subqueryload(cls._related_assessment),
-        orm.subqueryload(cls._related_audit).load_only("archived"),
+  def indexed_query(cls):
+    return super(Evidence, cls).indexed_query().options(
         orm.Load(cls).undefer_group(
             "Evidence_complete",
         ),
     )
 
-  @classmethod
-  def indexed_query(cls):
-    return cls._populate_query(super(Evidence, cls).indexed_query())
-
-  @classmethod
-  def eager_query(cls):
-    return cls._populate_query(super(Evidence, cls).eager_query())
-
   @simple_property
   def archived(self):
-    """Evidence archived if related Assessment/Audit is archived"""
-    # pylint: disable=unsubscriptable-object
-    if self._related_assessment:
-      return self._related_assessment.audit.archived
-    elif self._related_audit:
-      return self._related_audit.archived
+    """Returns a boolean whether parent is archived or not."""
+    parent_candidates = self.related_objects(_types=Evidence._allowed_parents)
+    if parent_candidates:
+      parent = parent_candidates.pop()
+      return parent.archived
     return False
 
   def log_json(self):
     tmp = super(Evidence, self).log_json()
-    tmp["type"] = "Evidence"
+    tmp['type'] = 'Evidence'
     return tmp
 
   @simple_property
@@ -165,7 +151,7 @@ class Evidence(Roleable, Relatable, mixins.Titled,
 
     In that case we need just rename file, not copy.
     """
-    return self._is_uploaded if hasattr(self, "_is_uploaded") else False
+    return self._is_uploaded if hasattr(self, '_is_uploaded') else False
 
   @is_uploaded.setter
   def is_uploaded(self, value):
@@ -183,22 +169,22 @@ class Evidence(Roleable, Relatable, mixins.Titled,
 
   def _get_parent_obj(self):
     """Get parent object specified"""
-    if "id" not in self._parent_obj:
-      raise exceptions.ValidationError("'id' is mandatory for parent_obj")
-    if "type" not in self._parent_obj:
+    if 'id' not in self._parent_obj:
+      raise exceptions.ValidationError('"id" is mandatory for parent_obj')
+    if 'type' not in self._parent_obj:
       raise exceptions.ValidationError(
-          "'type' is mandatory for parent_obj")
-    if self._parent_obj["type"] not in self._allowed_parents:
+          '"type" is mandatory for parent_obj')
+    if self._parent_obj['type'] not in self._allowed_parents:
       raise exceptions.ValidationError(
-          "Allowed types are: {}.".format(", ".join(self._allowed_parents)))
+          'Allowed types are: {}.'.format(', '.join(self._allowed_parents)))
 
-    parent_type = self._parent_obj["type"]
-    parent_id = self._parent_obj["id"]
+    parent_type = self._parent_obj['type']
+    parent_id = self._parent_obj['id']
     obj = referenced_objects.get(parent_type, parent_id)
 
     if not obj:
       raise ValueError(
-          "Parent object not found: {type} {id}".format(type=parent_type,
+          'Parent object not found: {type} {id}'.format(type=parent_type,
                                                         id=parent_id))
     return obj
 
@@ -207,14 +193,14 @@ class Evidence(Roleable, Relatable, mixins.Titled,
     """Build postfix for given parent object"""
     postfix_parts = [Evidence.FILE_NAME_SEPARATOR, parent_obj.slug]
 
-    related_snapshots = parent_obj.related_objects(_types=["Snapshot"])
+    related_snapshots = parent_obj.related_objects(_types=['Snapshot'])
     related_snapshots = sorted(related_snapshots, key=lambda it: it.id)
 
-    slugs = (sn.revision.content["slug"] for sn in related_snapshots if
+    slugs = (sn.revision.content['slug'] for sn in related_snapshots if
              sn.child_type == parent_obj.assessment_type)
 
     postfix_parts.extend(slugs)
-    postfix_sting = "_".join(postfix_parts).lower()
+    postfix_sting = '_'.join(postfix_parts).lower()
 
     return postfix_sting
 
@@ -230,14 +216,14 @@ class Evidence(Roleable, Relatable, mixins.Titled,
 
   def _update_fields(self, response):
     """Update fields of evidence with values of the copied file"""
-    self.gdrive_id = response["id"]
-    self.link = response["webViewLink"]
-    self.title = response["name"]
+    self.gdrive_id = response['id']
+    self.link = response['webViewLink']
+    self.title = response['name']
     self.kind = Evidence.FILE
 
   @staticmethod
   def _get_folder(parent):
-    return parent.folder if hasattr(parent, "folder") else ""
+    return parent.folder if hasattr(parent, 'folder') else ''
 
   def _map_parent(self):
     """Maps evidence to parent object
@@ -267,7 +253,7 @@ class Evidence(Roleable, Relatable, mixins.Titled,
     self._update_fields(response)
 
   def is_with_parent_obj(self):
-    return bool(hasattr(self, "_parent_obj") and self._parent_obj)
+    return bool(hasattr(self, '_parent_obj') and self._parent_obj)
 
   def add_admin_role(self):
     """Add current user as Evidence admin"""
@@ -282,81 +268,3 @@ class Evidence(Roleable, Relatable, mixins.Titled,
   def handle_before_flush(self):
     """Handler that called  before SQLAlchemy flush event"""
     self._map_parent()
-
-  @declared_attr
-  def _related_audit(cls):  # pylint: disable=no-self-argument
-    """Audits mapped to Evidence"""
-    def primary_join_function():
-      return or_(
-          and_(
-              Relationship.source_id == cls.id,
-              Relationship.source_type == cls.__name__,
-              Relationship.destination_type == "Audit"
-          ),
-          and_(
-              Relationship.destination_id == cls.id,
-              Relationship.destination_type == cls.__name__,
-              Relationship.source_type == "Audit"
-          )
-      )
-
-    def secondary_join_function():
-      from ggrc.models import all_models
-      return or_(
-          and_(
-              all_models.Audit.id == Relationship.destination_id,
-              Relationship.destination_type == "Audit",
-          ),
-          and_(
-              all_models.Audit.id == Relationship.source_id,
-              Relationship.source_type == "Audit",
-          )
-      )
-
-    return db.relationship(
-        "Audit",
-        primaryjoin=primary_join_function,
-        secondary=Relationship.__table__,
-        secondaryjoin=secondary_join_function,
-        viewonly=True,
-        uselist=False
-    )
-
-  @declared_attr
-  def _related_assessment(cls):  # pylint: disable=no-self-argument
-    """Assessments mapped to Evidence"""
-    def primary_join_function():
-      return or_(
-          and_(
-              Relationship.source_id == cls.id,
-              Relationship.source_type == cls.__name__,
-              Relationship.destination_type == "Assessment"
-          ),
-          and_(
-              Relationship.destination_id == cls.id,
-              Relationship.destination_type == cls.__name__,
-              Relationship.source_type == "Assessment"
-          )
-      )
-
-    def secondary_join_function():
-      from ggrc.models import all_models
-      return or_(
-          and_(
-              all_models.Assessment.id == Relationship.destination_id,
-              Relationship.destination_type == "Assessment",
-          ),
-          and_(
-              all_models.Assessment.id == Relationship.source_id,
-              Relationship.source_type == "Assessment",
-          )
-      )
-
-    return db.relationship(
-        "Assessment",
-        primaryjoin=primary_join_function,
-        secondary=Relationship.__table__,
-        secondaryjoin=secondary_join_function,
-        viewonly=True,
-        uselist=False
-    )
