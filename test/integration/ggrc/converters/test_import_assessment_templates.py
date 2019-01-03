@@ -8,7 +8,9 @@
 from collections import OrderedDict
 from ggrc import models
 from ggrc.converters import errors
+from ggrc.utils import errors as common_errors
 from integration.ggrc import TestCase
+from integration.ggrc.models import factories
 
 
 class TestAssessmentTemplatesImport(TestCase):
@@ -101,8 +103,89 @@ class TestAssessmentTemplatesImport(TestCase):
                 ),
             },
             "row_errors": {
-                errors.DUPLICATE_CAD_NAME.format(
-                    line=15
+                errors.ERROR_TEMPLATE.format(
+                    line=15,
+                    message=common_errors.DUPLICATE_LCAD_NAME.format(
+                        attr_name="ASSESSMENT PROCEDURE"
+                    ),
+                )
+            },
+        }
+    }
+    self._check_csv_response(response, expected_messages)
+
+  def test_duplicated_gcad_import(self):
+    """Test import of LCAD with same name as GCAD."""
+    cad_title = "Test GCA"
+    with factories.single_commit():
+      factories.CustomAttributeDefinitionFactory(
+          definition_type="assessment",
+          title=cad_title,
+      )
+      audit = factories.AuditFactory()
+
+    response = self.import_data(OrderedDict([
+        ("object_type", "Assessment_Template"),
+        ("Code*", ""),
+        ("Audit*", audit.slug),
+        ("Default Assignees", "user@example.com"),
+        ("Default Verifiers", "user@example.com"),
+        ("Title", "Title"),
+        ("Object Under Assessment", "Control"),
+        ("Custom Attributes", "Text, {}".format(cad_title)),
+    ]))
+
+    expected_messages = {
+        "Assessment Template": {
+            "rows": 1,
+            "updated": 0,
+            "created": 0,
+            "row_warnings": set(),
+            "row_errors": {
+                errors.ERROR_TEMPLATE.format(
+                    line=3,
+                    message=common_errors.DUPLICATE_GCAD_NAME.format(
+                        attr_name=cad_title
+                    ),
+                )
+            },
+        }
+    }
+    self._check_csv_response(response, expected_messages)
+
+  def test_duplicated_acr_import(self):
+    """Test import of LCAD with same name as GCAD."""
+    acr_name = "Test ACR"
+    with factories.single_commit():
+      factories.AccessControlRoleFactory(
+          object_type="Assessment",
+          name=acr_name,
+      )
+      audit = factories.AuditFactory()
+
+    response = self.import_data(OrderedDict([
+        ("object_type", "Assessment_Template"),
+        ("Code*", ""),
+        ("Audit*", audit.slug),
+        ("Default Assignees", "user@example.com"),
+        ("Default Verifiers", "user@example.com"),
+        ("Title", "Title"),
+        ("Object Under Assessment", "Control"),
+        ("Custom Attributes", "Text, {}".format(acr_name)),
+    ]))
+
+    expected_messages = {
+        "Assessment Template": {
+            "rows": 1,
+            "updated": 0,
+            "created": 0,
+            "row_warnings": set(),
+            "row_errors": {
+                errors.ERROR_TEMPLATE.format(
+                    line=3,
+                    message=common_errors.DUPLICATE_CUSTOM_ROLE.format(
+                        role_name=acr_name
+                    ),
                 )
             },
         }
