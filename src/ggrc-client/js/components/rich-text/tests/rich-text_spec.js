@@ -3,7 +3,7 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import Component from '../rich_text';
+import Component from '../rich-text';
 import {getComponentVM} from '../../../../js_specs/spec_helpers';
 
 describe('rich-text component', () => {

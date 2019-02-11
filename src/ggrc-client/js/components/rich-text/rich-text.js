@@ -3,7 +3,7 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-import template from './rich_text.stache';
+import template from './rich-text.stache';
 
 const URL_CLIPBOARD_REGEX = /https?:\/\/[^\s]+/g;
 const URL_TYPE_REGEX = /https?:\/\/[^\s]+$/;
