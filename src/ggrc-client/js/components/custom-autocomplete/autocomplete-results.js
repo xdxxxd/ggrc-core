@@ -20,7 +20,7 @@ export default can.Map.extend({
     },
   },
   items: [],
-  currentValue: '',
+  currentValue: null,
   showResults: false,
   showNewValue: false,
   // event must be provided by parent component
@@ -40,7 +40,7 @@ export default can.Map.extend({
     this.hide();
   },
   hide: function () {
-    this.attr('currentValue', '');
+    this.attr('currentValue', null);
     this.attr('showResults', false);
   },
 });

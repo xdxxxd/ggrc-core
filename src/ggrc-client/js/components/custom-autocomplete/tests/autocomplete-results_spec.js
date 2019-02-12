@@ -93,14 +93,14 @@ describe('autocomplete-results viewModel', () => {
   });
 
   describe('hide() method', () => {
-    it('should clear "currentValue"', () => {
+    it('should assign null to "currentValue"', () => {
       viewModel.attr('currentValue', 'asd');
 
       viewModel.hide();
 
       const currentValue = viewModel.attr('currentValue');
 
-      expect(currentValue).toEqual('');
+      expect(currentValue).toBeNull();
     });
 
     it('should set "showResults" to false', () => {
