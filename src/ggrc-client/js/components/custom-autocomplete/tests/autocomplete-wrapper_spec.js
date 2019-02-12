@@ -5,9 +5,6 @@
 
 import baseAutocompleteWrapper from '../autocomplete-wrapper';
 import * as QueryAPI from '../../../plugins/utils/query-api-utils';
-import RefreshQueue from '../../../models/refresh_queue';
-import {getInstance} from '../../../plugins/utils/models-utils';
-import Label from '../../../models/service-models/label';
 
 describe('autocomplete-wrapper viewModel', () => {
   let viewModel;
@@ -17,32 +14,24 @@ describe('autocomplete-wrapper viewModel', () => {
   });
 
   describe('getResult() method', () => {
-    let response;
     let deferred;
-    let stubs;
-    let filterResult;
-    let fullObjects;
-    let currentValueUnique;
-    const event = {
-      type: 'inputChanged',
-      value: 'e',
-    };
+    let event;
+    let data;
 
     beforeEach(() => {
-      response = {};
       deferred = new $.Deferred();
-      stubs = [];
-      filterResult = [];
-      fullObjects = [];
-      currentValueUnique = true;
-
+      event = {
+        type: 'inputChanged',
+        value: 'e',
+      };
+      viewModel.attr('modelName', 'mockModel');
+      data = {
+        mockModel: {values: [1, 2, 3]},
+      };
       spyOn(viewModel, 'requestItems')
-        .and.returnValue(deferred.resolve(response));
-      spyOn(viewModel, 'getStubs').and.returnValue(stubs);
-      spyOn(viewModel, 'filterResult').and.returnValue(filterResult);
-      spyOn(viewModel, 'getFullObjects').and.returnValue(fullObjects);
-      spyOn(viewModel, 'isCurrentValueUnique')
-        .and.returnValue(currentValueUnique);
+        .and.returnValue(deferred);
+      spyOn(viewModel, 'filterResult');
+      spyOn(viewModel, 'isCurrentValueUnique');
     });
 
     it('should call "requestItems" method', () => {
@@ -50,43 +39,40 @@ describe('autocomplete-wrapper viewModel', () => {
       expect(viewModel.requestItems).toHaveBeenCalledWith(event.value);
     });
 
-    it('should call "getStubs" method', () => {
-      viewModel.getResult(event);
-      expect(viewModel.getStubs).toHaveBeenCalledWith(response);
-    });
-
-    it('should call "filterResult" method', () => {
-      viewModel.getResult(event);
-      expect(viewModel.filterResult).toHaveBeenCalledWith(stubs);
-    });
-
-    it('should call "getFullObjects" method', () => {
-      viewModel.getResult(event);
-      expect(viewModel.getFullObjects).toHaveBeenCalledWith(filterResult);
-    });
-
     it('should assign event value to "currentValue', () => {
+      deferred.resolve(data);
       viewModel.getResult(event);
 
       expect(viewModel.attr('currentValue')).toEqual(event.value);
     });
 
-    it('should set "result" attribute', () => {
+    it('should assign filtered items to "result" attribute', () => {
+      deferred.resolve(data);
+      const filtered = [1, 2];
+      viewModel.filterResult.and.returnValue(filtered);
       viewModel.getResult(event);
 
-      expect(viewModel.attr('result'))
-        .toEqual(jasmine.arrayContaining(fullObjects));
+      expect(viewModel.filterResult).toHaveBeenCalledTimes(1);
+      expect(viewModel.filterResult).toHaveBeenCalledWith(
+        data[viewModel.attr('modelName')].values);
+      expect(viewModel.attr('result').serialize())
+        .toEqual(filtered);
     });
 
-    it('should set "showNewValue" attribute to true', () => {
+    it('should assign value returned from isCurrentValueUnique function ' +
+    'to "showNewValue" attribute', () => {
+      deferred.resolve(data);
       viewModel.attr('showNewValue', false);
+      const expected = new can.Map({});
+      viewModel.isCurrentValueUnique.and.returnValue(expected);
 
       viewModel.getResult(event);
 
-      expect(viewModel.attr('showNewValue')).toBe(true);
+      expect(viewModel.attr('showNewValue')).toBe(expected);
     });
 
-    it('should set "showResults" attribute to true', () => {
+    it('should assign true to "showResults" attribute', () => {
+      deferred.resolve(data);
       viewModel.attr('showResults', false);
 
       viewModel.getResult(event);
@@ -96,7 +82,7 @@ describe('autocomplete-wrapper viewModel', () => {
   });
 
   describe('requestItems() method', () => {
-    it('should call "buildRelevantIdsQuery" method', () => {
+    it('calls batchRequests with built params', () => {
       const objName = 'model';
       const queryField = 'query';
       const value = 'word';
@@ -107,121 +93,40 @@ describe('autocomplete-wrapper viewModel', () => {
           right: value,
         },
       };
+      const paging = {
+        current: 1,
+        pageSize: 10,
+      };
 
       viewModel.attr('modelName', objName);
       viewModel.attr('queryField', queryField);
 
-      spyOn(QueryAPI, 'buildRelevantIdsQuery');
+      spyOn(QueryAPI, 'buildParam').and.returnValue('buildedParams');
       spyOn(QueryAPI, 'batchRequests');
 
       viewModel.requestItems(value);
 
-      expect(QueryAPI.buildRelevantIdsQuery)
-        .toHaveBeenCalledWith(objName, {}, null, filter);
+      expect(QueryAPI.buildParam).toHaveBeenCalledTimes(1);
+      expect(QueryAPI.buildParam).toHaveBeenCalledWith(
+        objName,
+        paging,
+        null,
+        null,
+        filter
+      );
+      expect(QueryAPI.batchRequests)
+        .toHaveBeenCalledWith('buildedParams');
     });
 
     it('should return request result', () => {
       const fakeResponseArr = [];
 
-      spyOn(QueryAPI, 'buildRelevantIdsQuery');
+      spyOn(QueryAPI, 'buildParam');
       spyOn(QueryAPI, 'batchRequests').and.returnValue(fakeResponseArr);
 
       const responseArr = viewModel.requestItems('word');
 
       expect(responseArr).toEqual(fakeResponseArr);
-    });
-  });
-
-  describe('getStubs() method', () => {
-    let name;
-    let ids;
-
-    beforeEach(() => {
-      name = 'Label';
-      ids = [7, 9];
-    });
-
-    it('should return stubs from ids', (done) => {
-      const responseArr = {
-        Label: {
-          count: 2,
-          ids: ids,
-          object_name: name,
-          total: 2,
-        },
-      };
-
-      const fakeRes = [
-        getInstance(name, ids[0]),
-        getInstance(name, ids[1]),
-      ];
-
-      viewModel.attr('modelName', name);
-      viewModel.attr('modelConstructor', Label);
-
-      viewModel.getStubs(responseArr).done((res) => {
-        expect(res).toEqual(fakeRes);
-        done();
-      });
-    });
-
-    it('should return empty array when items list is empty', (done) => {
-      const responseArr = {
-        Label: {
-          count: 0,
-          ids: [],
-          object_name: name,
-          total: 0,
-        },
-      };
-      const fakeRes = [];
-
-      viewModel.attr('modelName', name);
-      viewModel.getStubs(responseArr).done((res) => {
-        expect(res).toEqual(fakeRes);
-        done();
-      });
-    });
-  });
-
-  describe('getFullObjects() method', () => {
-    let result;
-
-    beforeEach(() => {
-      result = [{}, {k: 1}];
-      spyOn(RefreshQueue.prototype, 'enqueue');
-    });
-
-    it('should call "enqueue" method from RefreshQueue object', () => {
-      viewModel.getFullObjects(result);
-      spyOn(RefreshQueue.prototype, 'trigger');
-
-      expect(RefreshQueue.prototype.enqueue)
-        .toHaveBeenCalledTimes(result.length);
-
-      result.forEach((item) => {
-        expect(RefreshQueue.prototype.enqueue).toHaveBeenCalledWith(item);
-      });
-    });
-
-    it('should call "trigger" method from RefreshQueue object', () => {
-      spyOn(RefreshQueue.prototype, 'trigger')
-        .and.returnValue(new $.Deferred());
-
-      viewModel.getFullObjects(result);
-
-      expect(RefreshQueue.prototype.trigger).toHaveBeenCalled();
-    });
-
-    it('should resolve returned deferred after "trigger" is done', (done) => {
-      const data = [{a: 1}, {b: 2}];
-      spyOn(RefreshQueue.prototype, 'trigger')
-        .and.returnValue(new $.Deferred().resolve(data));
-
-      viewModel.getFullObjects(result).done((objs) => {
-        expect(objs).toEqual(data);
-        done();
-      });
     });
   });
 
@@ -254,9 +159,9 @@ describe('autocomplete-wrapper viewModel', () => {
         viewModel.attr('objectsToExclude', []);
         viewModel.attr('currentValue', 'R');
 
-        const isCurentValue = viewModel.isCurrentValueUnique(result);
+        const isCurrentValue = viewModel.isCurrentValueUnique(result);
 
-        expect(isCurentValue).toBe(true);
+        expect(isCurrentValue).toBe(true);
       });
 
     it('should return false when collection contains currentValue', () => {
@@ -264,9 +169,9 @@ describe('autocomplete-wrapper viewModel', () => {
       viewModel.attr('objectsToExclude', []);
       viewModel.attr('currentValue', 'R');
 
-      const isCurentValue = viewModel.isCurrentValueUnique(result);
+      const isCurrentValue = viewModel.isCurrentValueUnique(result);
 
-      expect(isCurentValue).toBe(false);
+      expect(isCurrentValue).toBe(false);
     });
 
     it('should return false when "objectsToExclude" contains currentValue',
@@ -277,9 +182,9 @@ describe('autocomplete-wrapper viewModel', () => {
         viewModel.attr('objectsToExclude', objectsToExclude);
         viewModel.attr('currentValue', 'R');
 
-        const isCurentValue = viewModel.isCurrentValueUnique(result);
+        const isCurrentValue = viewModel.isCurrentValueUnique(result);
 
-        expect(isCurentValue).toBe(false);
+        expect(isCurrentValue).toBe(false);
       });
   });
 });

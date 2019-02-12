@@ -8,11 +8,9 @@
 // Must contain 'autocomplete-results' and 'autocomplete-input' components.
 
 import {
-  buildRelevantIdsQuery,
+  buildParam,
   batchRequests,
 } from '../../plugins/utils/query-api-utils';
-import RefreshQueue from '../../models/refresh_queue';
-import {getInstance} from '../../plugins/utils/models-utils';
 
 export default can.Map.extend({
   currentValue: '',
@@ -24,56 +22,40 @@ export default can.Map.extend({
   showNewValue: false,
   queryField: 'title',
   getResult: function (event) {
-    let that = this;
     this.requestItems(event.value)
-      .then(that.getStubs.bind(that))
-      .then(that.filterResult.bind(that))
-      .then(that.getFullObjects.bind(that))
-      .then((result) => {
-        that.attr('currentValue',
+      .then((data) => {
+        const modelName = this.attr('modelName');
+        const result = this.filterResult(data[modelName].values);
+        this.attr('currentValue',
           event.value);
-        that.attr('result', result);
-        that.attr('showNewValue', that.isCurrentValueUnique(result));
-        that.attr('showResults', true);
+        this.attr('result', result);
+        this.attr('showNewValue', this.isCurrentValueUnique(result));
+        this.attr('showResults', true);
       });
   },
-  // Gets ids of items using QueryAPI
+  // Gets 10 items using QueryAPI
   requestItems: function (value) {
     let queryField = this.attr('queryField');
     let objName = this.attr('modelName');
-    let filter = {expression: {
-      left: queryField,
-      op: {name: '~'},
-      right: value,
-    }};
-    let query = buildRelevantIdsQuery(objName, {}, null, filter);
+    let filter = {
+      expression: {
+        left: queryField,
+        op: {name: '~'},
+        right: value,
+      },
+    };
+    let query = buildParam(
+      objName,
+      {
+        current: 1,
+        pageSize: 10,
+      },
+      null,
+      null,
+      filter
+    );
 
     return batchRequests(query);
-  },
-  getStubs: function (responseArr) {
-    let objName = this.attr('modelName');
-    let ids = responseArr[objName].ids;
-    let modelConstructor = this.attr('modelConstructor');
-
-    let res = can.map(ids, function (id) {
-      return getInstance(modelConstructor.model_singular, id);
-    });
-
-    return new $.Deferred().resolve(res);
-  },
-  getFullObjects: function (result) {
-    let defer = new $.Deferred();
-    let queue = new RefreshQueue();
-
-    _.forEach(result, (object) => {
-      queue.enqueue(object);
-    });
-
-    queue.trigger().then((objs) => {
-      defer.resolve(objs);
-    });
-
-    return defer;
   },
   filterResult: function (result) {
     let objects = this.attr('objectsToExclude');
