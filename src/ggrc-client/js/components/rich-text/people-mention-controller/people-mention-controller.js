@@ -56,13 +56,15 @@ export default can.Component.extend({
       const link = `mailto:${item.email}`;
       const retainLength = this.attr('mentionIndex');
       const retain = retainLength ? [{retain: retainLength}] : [];
+      const mention = `+${item.email}`;
       const ops = [
         ...retain,
         {'delete': mentionValueLength},
-        {insert: `+${item.email}`, attributes: {link}},
+        {insert: mention, attributes: {link}},
       ];
 
       editor.updateContents({ops});
+      editor.setSelection(retainLength + mention.length);
       this.attr('mentionValue', null);
       this.attr('mentionIndex', null);
     },
