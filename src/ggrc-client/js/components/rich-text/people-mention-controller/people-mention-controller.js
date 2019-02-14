@@ -69,4 +69,10 @@ export default can.Component.extend({
       this.attr('mentionIndex', null);
     },
   },
+  events: {
+    '{window} click'() {
+      this.viewModel.attr('mentionValue', null);
+      this.viewModel.attr('mentionIndex', null);
+    },
+  },
 });
