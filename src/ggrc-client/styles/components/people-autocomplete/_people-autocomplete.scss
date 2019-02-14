@@ -35,7 +35,7 @@ people-mention-controller {
         border-bottom: none;
       }
 
-      &:hover {
+      &.active {
         color: $white;
         background-color: #0086d4;
       }

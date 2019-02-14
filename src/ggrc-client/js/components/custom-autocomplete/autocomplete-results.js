@@ -10,10 +10,14 @@ export default can.Map.extend({
   define: {
     _items: {
       get: function () {
-        return this.attr('items').map((item, index) => ({
+        const _items = this.attr('items').map((item, index) => ({
           ...item.serialize(),
           _index: index,
         }));
+        if (_items.length) {
+          _items[0].extraCls = 'active';
+        }
+        return _items;
       },
     },
   },

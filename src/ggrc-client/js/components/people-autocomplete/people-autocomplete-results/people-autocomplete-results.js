@@ -15,4 +15,15 @@ export default can.Component.extend({
     showResults: false,
     showNewValue: false,
   }),
+  events: {
+    removeActive() {
+      const activeItems = 
+        $(this.element).find('.autocomplete-item.active');
+      activeItems.removeClass('active');
+    },
+    '.autocomplete-item mouseenter'(element, event) {
+      this.removeActive();
+      $(element).addClass('active');
+    }
+  },
 });

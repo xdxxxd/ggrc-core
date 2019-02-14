@@ -8,7 +8,7 @@
   <div class="autocomplete-result">
     <ul>
       {{#each _items}}
-        <li class="autocomplete-item" ($click)="selectItem({{_index}})">
+        <li class="autocomplete-item {{extraCls}}" ($click)="selectItem({{_index}})">
           {{email}}
         </li>
       {{/each}}
