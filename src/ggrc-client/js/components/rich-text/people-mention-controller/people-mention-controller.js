@@ -22,6 +22,9 @@ export default can.Component.extend({
           if (editor) {
             editor.on('text-change', this.onChange.bind(this));
 
+            editor.keyboard.addBinding({key: KEY_MAP.ESCAPE},
+              this.onEscapeKey.bind(this));
+
             // This is hacky way to add key binding.
             // We need to do this because there is default handlers
             // which prevents event propagation in new handlers.
@@ -41,6 +44,14 @@ export default can.Component.extend({
       if (this.attr('mentionValue') !== null) {
         this.attr('actionKey', keyCode);
         // prevent default behavior
+        return false;
+      }
+      return true;
+    },
+    onEscapeKey() {
+      if (this.attr('mentionValue') !== null) {
+        this.attr('mentionValue', null);
+        this.attr('mentionIndex', null);
         return false;
       }
       return true;
