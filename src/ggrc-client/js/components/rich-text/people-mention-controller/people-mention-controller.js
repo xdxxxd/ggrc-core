@@ -97,10 +97,11 @@ export default can.Component.extend({
         ...retain,
         {'delete': mentionValueLength},
         {insert: mention, attributes: {link}},
+        {insert: ' '},
       ];
 
       editor.updateContents({ops});
-      editor.setSelection(retainLength + mention.length);
+      editor.setSelection(retainLength + mention.length + 1);
       this.attr('mentionValue', null);
       this.attr('mentionIndex', null);
     },
