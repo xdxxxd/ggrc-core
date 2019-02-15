@@ -47,5 +47,21 @@ export default can.Component.extend({
         }
       }
     },
+    '{viewModel} highlightPrevious'() {
+      const items = $(this.element).find('.autocomplete-item');
+
+      const activeIndex = _.findIndex(items,
+        (item) => $(item).hasClass('active'));
+
+      if (activeIndex && activeIndex > 0) {
+        this.removeActive();
+        $(items[activeIndex - 1]).addClass('active');
+      } else {
+        if (activeIndex === 0 && items.length > 1) {
+          this.removeActive();
+          $(items[items.length - 1]).addClass('active');
+        }
+      }
+    },
   },
 });

@@ -35,6 +35,11 @@ export default can.Map.extend({
               type: 'highlightNext',
             });
             break;
+          case KEY_MAP.ARROW_UP:
+            this.dispatch({
+              type: 'highlightPrevious',
+            });
+            break;
           default:
             break;
         }

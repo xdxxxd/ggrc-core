@@ -26,6 +26,8 @@ export default can.Component.extend({
               this.onEscapeKey.bind(this));
             editor.keyboard.addBinding({key: KEY_MAP.ARROW_DOWN},
               this.onActionKey.bind(this, KEY_MAP.ARROW_DOWN));
+            editor.keyboard.addBinding({key: KEY_MAP.ARROW_UP},
+              this.onActionKey.bind(this, KEY_MAP.ARROW_UP));
 
             // This is hacky way to add key binding.
             // We need to do this because there is default handlers
