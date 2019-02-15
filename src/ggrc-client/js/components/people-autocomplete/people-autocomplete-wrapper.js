@@ -32,14 +32,28 @@ let viewModel = baseAutocompleteWrapper.extend({
     },
   },
   getResult(value) {
-    this.requestItems(value)
-      .then((data) => {
-        const modelName = this.attr('modelName');
-        const result = _.map(data[modelName].values,
-          (object) => new PersonModel(object));
-        this.attr('result', result);
-        this.attr('showResults', this.attr('currentValue') !== null);
-      });
+    const type = this.attr('modelName');
+    const externalServiceUrl = GGRC.config.external_services[type];
+
+    if (externalServiceUrl) {
+      $.get({
+        url: externalServiceUrl,
+        data: {
+          prefix: value,
+          limit: 10,
+        },
+      }).then(this.processItems.bind(this));
+    } else {
+      return this.requestItems(value)
+        .then(this.processItems.bind(this));
+    }
+  },
+  processItems(data) {
+    const modelName = this.attr('modelName');
+    const result = GGRC.config.external_services[modelName] ?
+      data : data[modelName].values;
+    this.attr('result', result);
+    this.attr('showResults', this.attr('currentValue') !== null);
   },
 });
 
