@@ -4,6 +4,7 @@
 */
 
 import template from './people-mention-controller.stache';
+import {KEY_MAP} from '../../custom-autocomplete/autocomplete-input';
 
 const MENTION_REGEX = /(^.*[\s]|^)[@+]([\S]*)$/s;
 
@@ -20,6 +21,14 @@ export default can.Component.extend({
         set(editor) {
           if (editor) {
             editor.on('text-change', this.onChange.bind(this));
+
+            // This is hacky way to add key binding.
+            // We need to do this because there is default handlers
+            // which prevents event propagation in new handlers.
+            editor.keyboard.bindings[KEY_MAP.ENTER].unshift({
+              key: KEY_MAP.ENTER,
+              handler: this.onActionKey.bind(this, KEY_MAP.ENTER),
+            });
           }
           return editor;
         },
@@ -27,6 +36,15 @@ export default can.Component.extend({
     },
     mentionValue: null,
     mentionIndex: null,
+    actionKey: null,
+    onActionKey(keyCode) {
+      if (this.attr('mentionValue') !== null) {
+        this.attr('actionKey', keyCode);
+        // prevent default behavior
+        return false;
+      }
+      return true;
+    },
     onChange() {
       const editor = this.attr('editor');
       const selection = editor.getSelection();

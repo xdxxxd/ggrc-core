@@ -17,13 +17,19 @@ export default can.Component.extend({
   }),
   events: {
     removeActive() {
-      const activeItems = 
+      const activeItems =
         $(this.element).find('.autocomplete-item.active');
       activeItems.removeClass('active');
     },
-    '.autocomplete-item mouseenter'(element, event) {
+    '.autocomplete-item mouseenter'(element) {
       this.removeActive();
       $(element).addClass('active');
-    }
+    },
+    '{viewModel} selectActive'() {
+      const items = $(this.element).find('.autocomplete-item');
+      const activeIndex = _.findIndex(items,
+        (item) => $(item).hasClass('active'));
+      this.viewModel.selectItem(activeIndex);
+    },
   },
 });

@@ -6,6 +6,8 @@
 // Base viewModel for 'autocomplete-result' component which is part of 'custom-autocomplete'.
 // It displays available items and handles selected items.
 
+import {KEY_MAP} from './autocomplete-input';
+
 export default can.Map.extend({
   define: {
     _items: {
@@ -18,6 +20,19 @@ export default can.Map.extend({
           _items[0].extraCls = 'active';
         }
         return _items;
+      },
+    },
+    actionKey: {
+      set(key) {
+        switch (key) {
+          case KEY_MAP.ENTER:
+            this.dispatch({
+              type: 'selectActive',
+            });
+            break;
+          default:
+            break;
+        }
       },
     },
   },

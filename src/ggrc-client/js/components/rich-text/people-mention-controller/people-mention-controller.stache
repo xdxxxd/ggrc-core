@@ -3,3 +3,21 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 }}
 
+<people-autocomplete-wrapper
+    {current-value}="mentionValue"
+    {model-name}="'Person'"
+    {query-field}="'email'"
+    {model-constructor}="loadedModel"
+    {action-key}="actionKey"
+    >
+
+  <people-autocomplete-results
+      {(current-value)}="currentValue"
+      {items}="result"
+      {(show-results)}="showResults"
+      {show-new-value}="showNewValue"
+      (add-new-item)="createLabel(%event)"
+      (select-item)="personSelected(%event)"
+      {action-key}="actionKey"
+    ></people-autocomplete-results>
+</people-autocomplete-wrapper>
