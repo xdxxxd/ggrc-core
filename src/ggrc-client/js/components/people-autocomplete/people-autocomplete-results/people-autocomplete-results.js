@@ -31,5 +31,21 @@ export default can.Component.extend({
         (item) => $(item).hasClass('active'));
       this.viewModel.selectItem(activeIndex);
     },
+    '{viewModel} highlightNext'() {
+      const nextItem = $(this.element)
+        .find('.autocomplete-item.active + .autocomplete-item')[0];
+
+      if (nextItem) {
+        this.removeActive();
+        $(nextItem).addClass('active');
+      } else {
+        const firstItem = $(this.element).find('.autocomplete-item')[0];
+
+        if (firstItem) {
+          this.removeActive();
+          $(firstItem).addClass('active');
+        }
+      }
+    },
   },
 });

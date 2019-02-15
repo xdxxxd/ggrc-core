@@ -30,9 +30,15 @@ export default can.Map.extend({
               type: 'selectActive',
             });
             break;
+          case KEY_MAP.ARROW_DOWN:
+            this.dispatch({
+              type: 'highlightNext',
+            });
+            break;
           default:
             break;
         }
+        return key;
       },
     },
   },

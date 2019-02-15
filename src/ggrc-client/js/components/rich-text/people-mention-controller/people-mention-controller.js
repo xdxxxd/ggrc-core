@@ -24,6 +24,8 @@ export default can.Component.extend({
 
             editor.keyboard.addBinding({key: KEY_MAP.ESCAPE},
               this.onEscapeKey.bind(this));
+            editor.keyboard.addBinding({key: KEY_MAP.ARROW_DOWN},
+              this.onActionKey.bind(this, KEY_MAP.ARROW_DOWN));
 
             // This is hacky way to add key binding.
             // We need to do this because there is default handlers
@@ -42,7 +44,10 @@ export default can.Component.extend({
     actionKey: null,
     onActionKey(keyCode) {
       if (this.attr('mentionValue') !== null) {
+        // trigger setter of 'actionKey'
         this.attr('actionKey', keyCode);
+        // reset 'actionKey'
+        this.attr('actionKey', null);
         // prevent default behavior
         return false;
       }
