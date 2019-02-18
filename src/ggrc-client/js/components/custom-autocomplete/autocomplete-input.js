@@ -8,7 +8,7 @@
 
 import template from './templates/autocomplete-input.stache';
 
-export const keyMap = {
+export const KEY_MAP = {
   ENTER: 13,
   ESCAPE: 27,
   ARROW_LEFT: 37,
@@ -36,10 +36,10 @@ export default can.Component.extend({
     value: '',
     // flag for input latency
     isPending: false,
-    excludedKeys: Object.values(keyMap),
+    excludedKeys: Object.values(KEY_MAP),
     makeServiceAction: function (keyCode) {
       switch (keyCode) {
-        case keyMap.ESCAPE:
+        case KEY_MAP.ESCAPE:
           this.escape();
           break;
         default:

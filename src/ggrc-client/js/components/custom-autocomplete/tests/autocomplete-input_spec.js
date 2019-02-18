@@ -4,7 +4,7 @@
  */
 
 import {getComponentVM} from '../../../../js_specs/spec_helpers';
-import Component, {keyMap} from '../autocomplete-input';
+import Component, {KEY_MAP} from '../autocomplete-input';
 
 describe('autocomplete-input component', () => {
   let viewModel;
@@ -37,14 +37,14 @@ describe('autocomplete-input component', () => {
   describe('makeServiceAction() method', () => {
     it('should call "escape" method if keyCode matches to ESCAPE key', () => {
       spyOn(viewModel, 'escape');
-      viewModel.makeServiceAction(keyMap.ESCAPE);
+      viewModel.makeServiceAction(KEY_MAP.ESCAPE);
 
       expect(viewModel.escape).toHaveBeenCalled();
     });
 
     it('should not call "escape" method when keyCode is not ESCAPE key', () => {
       spyOn(viewModel, 'escape');
-      viewModel.makeServiceAction(keyMap.ENTER);
+      viewModel.makeServiceAction(KEY_MAP.ENTER);
 
       expect(viewModel.escape).not.toHaveBeenCalled();
     });
@@ -161,12 +161,12 @@ describe('autocomplete-input component', () => {
       expect(viewModel.inputLatency).toHaveBeenCalled();
     });
 
-    it('should make service action when key code in "keyMap"' +
+    it('should make service action when key code in "KEY_MAP"' +
     ' and isPending is FALSE', () => {
       viewModel.attr('isPending', false);
       spyOn(viewModel, 'makeServiceAction');
 
-      _.forEach(keyMap, (value) => {
+      _.forEach(KEY_MAP, (value) => {
         event.keyCode = value;
         handler(element, event);
         expect(viewModel.makeServiceAction)
@@ -174,12 +174,12 @@ describe('autocomplete-input component', () => {
       });
     });
 
-    it('should not call "inputLatency" method when key code in "keyMap"' +
+    it('should not call "inputLatency" method when key code in "KEY_MAP"' +
     ' and isPending is FALSE', () => {
       viewModel.attr('isPending', false);
       spyOn(viewModel, 'inputLatency');
 
-      _.forEach(keyMap, (value) => {
+      _.forEach(KEY_MAP, (value) => {
         event.keyCode = value;
         handler(element, event);
         expect(viewModel.inputLatency).not.toHaveBeenCalled();
