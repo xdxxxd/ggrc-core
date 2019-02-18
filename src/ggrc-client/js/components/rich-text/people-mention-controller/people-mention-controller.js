@@ -50,5 +50,21 @@ export default can.Component.extend({
         this.attr('mentionIndex', null);
       }
     },
+    personSelected({item}) {
+      const editor = this.attr('editor');
+      const mentionValueLength = this.attr('mentionValue').length + 1;
+      const link = `mailto:${item.email}`;
+      const retainLength = this.attr('mentionIndex');
+      const retain = retainLength ? [{retain: retainLength}] : [];
+      const ops = [
+        ...retain,
+        {'delete': mentionValueLength},
+        {insert: `+${item.email}`, attributes: {link}},
+      ];
+
+      editor.updateContents({ops});
+      this.attr('mentionValue', null);
+      this.attr('mentionIndex', null);
+    },
   },
 });
