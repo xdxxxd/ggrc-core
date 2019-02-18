@@ -3,6 +3,8 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
+import './people-mention-controller/people-mention-controller';
+
 import template from './rich-text.stache';
 
 const URL_CLIPBOARD_REGEX = /https?:\/\/[^\s]+/g;
