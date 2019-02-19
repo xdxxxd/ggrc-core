@@ -44,6 +44,10 @@ export default can.Component.extend({
     mentionValue: null,
     mentionIndex: null,
     actionKey: null,
+    clearMention() {
+      this.attr('mentionValue', null);
+      this.attr('mentionIndex', null);
+    },
     onActionKey(keyCode) {
       if (this.attr('mentionValue') !== null) {
         // trigger setter of 'actionKey'
@@ -57,8 +61,7 @@ export default can.Component.extend({
     },
     onEscapeKey() {
       if (this.attr('mentionValue') !== null) {
-        this.attr('mentionValue', null);
-        this.attr('mentionIndex', null);
+        this.clearMention();
         return false;
       }
       return true;
@@ -82,8 +85,7 @@ export default can.Component.extend({
         this.attr('mentionValue', mentionValue);
         this.attr('mentionIndex', textBeforeMention.length);
       } else {
-        this.attr('mentionValue', null);
-        this.attr('mentionIndex', null);
+        this.clearMention();
       }
     },
     personSelected({item}) {
@@ -102,14 +104,12 @@ export default can.Component.extend({
 
       editor.updateContents({ops});
       editor.setSelection(retainLength + mention.length + 1);
-      this.attr('mentionValue', null);
-      this.attr('mentionIndex', null);
+      this.clearMention();
     },
   },
   events: {
     '{window} click'() {
-      this.viewModel.attr('mentionValue', null);
-      this.viewModel.attr('mentionIndex', null);
+      this.viewModel.clearMention();
     },
   },
 });
