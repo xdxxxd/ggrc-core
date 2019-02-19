@@ -7,5 +7,6 @@
     {disabled}="disabled"
     {placeholder}="placeholder"
     {max-length}="2000"
-    {(content)}="value">
+    {(content)}="value"
+    {with-mentions}="true">
 </rich-text>

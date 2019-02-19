@@ -25,6 +25,8 @@
   </div>
 </div>
 
-<people-mention-controller
-  {editor}="editor">
-</people-mention-controller>
+{{#if withMentions}}
+  <people-mention-controller
+    {editor}="editor">
+  </people-mention-controller>
+{{/if}}

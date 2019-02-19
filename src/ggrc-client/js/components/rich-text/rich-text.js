@@ -50,6 +50,7 @@ export default can.Component.extend('richText', {
     maxLength: null,
     showAlert: false,
     length: 0,
+    withMentions: false,
     initEditor(container, toolbarContainer, countContainer) {
       import(/* webpackChunkName: "quill" */'quill')
         .then(({'default': Quill}) => {
