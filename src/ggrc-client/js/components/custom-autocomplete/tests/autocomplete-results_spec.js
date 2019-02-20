@@ -16,11 +16,11 @@ describe('autocomplete-results viewModel', () => {
     it('should assign an array to "_items" field which should contain ' +
     'all elements from "items" collection + appropriate ' +
     '"_index" attr for each element', () => {
-      const fakeData = [
+      const fakeData = new can.List([
         {name: 'zxc'},
         {name: 'asd'},
         {name: 'qwert'},
-      ];
+      ]);
       const results = [
         {name: 'zxc', _index: 0},
         {name: 'asd', _index: 1},

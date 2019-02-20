@@ -14,22 +14,38 @@ export default can.Component.extend({
     currentValue: null,
     showResults: false,
     showNewValue: false,
+    element: null,
+    preventHighlighting: false,
   }),
   events: {
+    inserted() {
+      this.viewModel.attr('element', this.element);
+    },
     removeActive() {
       const activeItems =
         $(this.element).find('.autocomplete-item.active');
       activeItems.removeClass('active');
     },
     '.autocomplete-item mouseenter'(element) {
-      this.removeActive();
-      $(element).addClass('active');
+      /**
+       * We need prevent highlighting of element
+       * when 'mouseenter' event fired without 'mousemove' event.
+       * This case happens when new list of items was rendered under cursor.
+      */
+      if (!this.viewModel.attr('preventHighlighting')) {
+        this.removeActive();
+        $(element).addClass('active');
+      }
     },
     '{viewModel} selectActive'() {
       const items = $(this.element).find('.autocomplete-item');
       const activeIndex = _.findIndex(items,
         (item) => $(item).hasClass('active'));
       this.viewModel.selectItem(activeIndex);
+    },
+    '{viewModel} highlightElement'(viewModel, {element}) {
+      this.removeActive();
+      $(element).closest('.autocomplete-item').addClass('active');
     },
     '{viewModel} highlightNext'() {
       const nextItem = $(this.element)
@@ -61,6 +77,23 @@ export default can.Component.extend({
           this.removeActive();
           $(items[items.length - 1]).addClass('active');
         }
+      }
+    },
+    '{viewModel} _items'() {
+      const viewModel = this.viewModel;
+
+      viewModel.attr('preventHighlighting', true);
+
+      if (viewModel.attr('element')) {
+        viewModel.attr('element')
+          .off('mousemove')
+          .one('mousemove', (event) => {
+            viewModel.attr('preventHighlighting', false);
+            viewModel.dispatch({
+              type: 'highlightElement',
+              element: event.target,
+            });
+          });
       }
     },
   },
