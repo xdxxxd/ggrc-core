@@ -10,16 +10,18 @@ import {KEY_MAP} from './autocomplete-input';
 
 export default can.Map.extend({
   define: {
-    _items: {
-      get: function () {
-        const _items = this.attr('items').map((item, index) => ({
+    items: {
+      set(items) {
+        const _items = items.map((item, index) => ({
           ...item.serialize(),
           _index: index,
         }));
         if (_items.length) {
           _items[0].extraCls = 'active';
         }
-        return _items;
+        this.attr('_items', _items);
+
+        return items;
       },
     },
     actionKey: {

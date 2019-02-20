@@ -12,8 +12,10 @@ describe('autocomplete-results viewModel', () => {
     viewModel = baseAutocompleteResults();
   });
 
-  describe('_items get() method', () => {
-    it('should return array objects for "items" attribute', () => {
+  describe('items set() method', () => {
+    it('should assign an array to "_items" field which should contain ' +
+    'all elements from "items" collection + appropriate ' +
+    '"_index" attr for each element', () => {
       const fakeData = [
         {name: 'zxc'},
         {name: 'asd'},
@@ -32,6 +34,13 @@ describe('autocomplete-results viewModel', () => {
       values.forEach((item, index) => {
         expect(item).toEqual(jasmine.objectContaining(results[index]));
       });
+    });
+
+    it('should return passed items', () => {
+      const items = new can.List([1, 2, 3]);
+      viewModel.attr('items', items);
+
+      expect(viewModel.attr('items')).toBe(items);
     });
   });
 
