@@ -22,10 +22,12 @@ from werkzeug.exceptions import Forbidden
 from google.appengine.api import mail
 
 from ggrc import db, extensions, settings, utils
+from ggrc.app import app
 from ggrc.gcalendar import calendar_event_builder
 from ggrc.gcalendar import calendar_event_sync
 from ggrc.models import Person
 from ggrc.models import Notification, NotificationHistory
+from ggrc.models import background_task
 from ggrc.notifications.unsubscribe import unsubscribe_url
 from ggrc.rbac import permissions
 from ggrc.utils import DATE_FORMAT_US, merge_dict, benchmark
@@ -421,7 +423,7 @@ def send_calendar_events():
       builder.build_cycle_tasks()
       sync = calendar_event_sync.CalendarEventsSync()
       sync.sync_cycle_tasks_events()
-  except Exception as exp:
+  except Exception as exp:  # pylint: disable=broad-except
     logger.error(exp.message)
     error_msg = exp.message
   return utils.make_simple_response(error_msg)
@@ -495,3 +497,24 @@ def modify_data(data):
   data["DATE_FORMAT"] = DATE_FORMAT_US
 
   return data
+
+
+@app.route("/_background_tasks/send_mentions_bg", methods=["POST"])
+@background_task.queued_task
+def send_mentions_bg(task):
+  """Run sending email mentions for specified comments list in bg."""
+  from ggrc.notifications import people_mentions
+
+  error_msg = None
+  try:
+    with utils.benchmark("Send people mentions"):
+      people_mentions.send_mentions(
+          comments_data=task.parameters.get("comments_data"),
+          object_name=task.parameters.get("object_name"),
+          href=task.parameters.get("href"),
+      )
+  except Exception as exp:  # pylint: disable=broad-except
+    error_msg = ("Sending of people mentions has failed "
+                 "with the following error {}".format(exp.message))
+    logger.exception(error_msg)
+  return utils.make_simple_response(error_msg)

@@ -354,3 +354,23 @@ def init_hook():  # noqa
     """Handle assessment test plan"""
     # pylint: disable=unused-argument
     copy_snapshot_test_plan(objects)
+
+  @signals.Restful.collection_posted.connect_via(all_models.Relationship)
+  def handle_comment_mapping(sender, objects=None, **kwargs):
+    """Update Commentable.updated_at when Comment mapped."""
+    # pylint: disable=unused-argument
+
+    from ggrc.notifications import people_mentions
+
+    for obj in objects:
+      if obj.source_type not in ("Comment", "ExternalComment") and \
+        obj.destination_type not in ("Comment", "ExternalComment"):
+        continue
+
+      comment, other = obj.source, obj.destination
+      if comment.type not in ("Comment", "ExternalComment"):
+        comment, other = other, comment
+
+      if isinstance(other, (Commentable, ExternalCommentable, ChangeTracked)):
+        other.updated_at = datetime.utcnow()
+        people_mentions.handle_comment_mapped(obj=other, comments=[comment])

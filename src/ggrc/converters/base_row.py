@@ -46,6 +46,7 @@ class RowConverter(object):
     self.objects = collections.OrderedDict()
     self.old_values = {}
     self.issue_tracker = {}
+    self.comments = []
 
 
 class ImportRowConverter(RowConverter):
@@ -355,6 +356,7 @@ class ImportRowConverter(RowConverter):
       self.block_converter.add_errors(errors.UNKNOWN_ERROR,
                                       line=self.offset + 2)
     else:
+      self.send_comment_notifications()
       self.send_post_commit_signals(event=import_event)
 
   def _setup_object(self):
@@ -370,6 +372,14 @@ class ImportRowConverter(RowConverter):
     for item_handler in self.attrs.values():
       if not item_handler.view_only:
         item_handler.set_obj_attr()
+
+  def send_comment_notifications(self):
+    """Send comment people mentions notifications."""
+    from ggrc.notifications import people_mentions
+
+    if self.comments:
+      people_mentions.handle_comment_mapped(obj=self.obj,
+                                            comments=self.comments)
 
   def send_post_commit_signals(self, event=None):
     """Send after commit signals for all objects

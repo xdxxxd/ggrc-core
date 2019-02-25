@@ -53,3 +53,4 @@ class CommentColumnHandler(ColumnHandler):
       mapping = all_models.Relationship(source=current_obj,
                                         destination=comment)
       db.session.add(mapping)
+      self.row_converter.comments.append(comment)
