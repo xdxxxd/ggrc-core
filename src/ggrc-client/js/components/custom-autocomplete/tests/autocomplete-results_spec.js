@@ -4,6 +4,7 @@
  */
 
 import baseAutocompleteResults from '../autocomplete-results';
+import {KEY_MAP} from '../autocomplete-input';
 
 describe('autocomplete-results viewModel', () => {
   let viewModel;
@@ -37,10 +38,45 @@ describe('autocomplete-results viewModel', () => {
     });
 
     it('should return passed items', () => {
-      const items = new can.List([1, 2, 3]);
+      const items = new can.List([
+        {name: 'zxc'},
+        {name: 'asd'},
+        {name: 'qwert'},
+      ]);
       viewModel.attr('items', items);
 
       expect(viewModel.attr('items')).toBe(items);
+    });
+  });
+
+  describe('actionKey set method', () => {
+    beforeEach(() => {
+      spyOn(viewModel, 'dispatch');
+    });
+
+    it('dispatches selectActive type event if key is ENTER', () => {
+      viewModel.attr('actionKey', KEY_MAP.ENTER);
+
+      expect(viewModel.dispatch).toHaveBeenCalledWith({type: 'selectActive'});
+    });
+
+    it('dispatches highlightNext type event if key is ARROW_DOWN', () => {
+      viewModel.attr('actionKey', KEY_MAP.ARROW_DOWN);
+
+      expect(viewModel.dispatch).toHaveBeenCalledWith({type: 'highlightNext'});
+    });
+
+    it('dispatches highlightPrevious type event if key is ARROW_UP', () => {
+      viewModel.attr('actionKey', KEY_MAP.ARROW_UP);
+
+      expect(viewModel.dispatch)
+        .toHaveBeenCalledWith({type: 'highlightPrevious'});
+    });
+
+    it('does not dispatches any events by default', () => {
+      viewModel.attr('actionKey', 'someKey');
+
+      expect(viewModel.dispatch).not.toHaveBeenCalled();
     });
   });
 
@@ -74,7 +110,11 @@ describe('autocomplete-results viewModel', () => {
 
   describe('selectItem() method', () => {
     it('should dispatch "selectItem" event', () => {
-      const items = ['1', '2', '3'];
+      const items = new can.List([
+        {name: 'zxc'},
+        {name: 'asd'},
+        {name: 'qwert'},
+      ]);;
       const index = 0;
 
       spyOn(viewModel, 'dispatch');
@@ -89,7 +129,11 @@ describe('autocomplete-results viewModel', () => {
     });
 
     it('should call "hide" method', () => {
-      const items = ['1', '2', '3'];
+      const items = new can.List([
+        {name: 'zxc'},
+        {name: 'asd'},
+        {name: 'qwert'},
+      ]);;
       const index = 0;
 
       spyOn(viewModel, 'hide');
