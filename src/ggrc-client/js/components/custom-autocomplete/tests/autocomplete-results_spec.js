@@ -114,7 +114,7 @@ describe('autocomplete-results viewModel', () => {
         {name: 'zxc'},
         {name: 'asd'},
         {name: 'qwert'},
-      ]);;
+      ]);
       const index = 0;
 
       spyOn(viewModel, 'dispatch');
@@ -133,7 +133,7 @@ describe('autocomplete-results viewModel', () => {
         {name: 'zxc'},
         {name: 'asd'},
         {name: 'qwert'},
-      ]);;
+      ]);
       const index = 0;
 
       spyOn(viewModel, 'hide');
