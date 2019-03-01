@@ -1395,11 +1395,12 @@ class TestAssignableNotificationUsingAPI(TestAssignableNotification):
     response = self.api_helper.post(all_models.Comment, request_data)
     self.assert200(response)
     comment = all_models.Comment.query.first()
-    response = self.api_helper.put(asmt, {
-        "actions": {
-            "add_related": [{"id": comment.id, "type": "Comment"}]
-        }
-    })
+    with patch("ggrc.notifications.people_mentions.handle_comment_mapped"):
+      response = self.api_helper.put(asmt, {
+          "actions": {
+              "add_related": [{"id": comment.id, "type": "Comment"}]
+          }
+      })
     self.assert500(response)
     self.assertEqual(response.json["message"], errors.MISSING_REVISION)
     url = "/api/assessments/{}/related_objects".format(asmt.id)

@@ -5,6 +5,8 @@
 
 import copy
 
+from mock import patch
+
 from ggrc import db
 from ggrc.models import all_models
 
@@ -838,38 +840,39 @@ class TestMultiplyActions(TestCase, WithQueryApi):
         attributable=assessment,
         attribute_value="no"
     )
-    response = self.api.put(assessment, {
-        "custom_attribute_values": [
-            {
-                "id": ca_val.id,
-                "custom_attribute_id": ca_def.id,
-                "attribute_value": "yes",
-                "type": "CustomAttributeValue",
-            }],
-        "actions": {"add_related": [
-            {
-                "id": None,
-                "type": "Evidence",
-                "kind": "FILE",
-                "title": "evidence1",
-                "link": "google3.com",
-                "source_gdrive_id": "source_gdrive_id",
-            },
-            {
-                "id": evid_map.id,
-                "type": "Evidence",
-            },
-            {
-                "id": None,
-                "type": "Comment",
-                "description": "comment1",
-                "custom_attribute_definition_id": ca_def.id,
-            }
-        ], "remove_related": [
-            {
-                "id": evid_del.id,
-                "type": "Evidence",
-            }]}})
+    with patch("ggrc.notifications.people_mentions.handle_comment_mapped"):
+      response = self.api.put(assessment, {
+          "custom_attribute_values": [
+              {
+                  "id": ca_val.id,
+                  "custom_attribute_id": ca_def.id,
+                  "attribute_value": "yes",
+                  "type": "CustomAttributeValue",
+              }],
+          "actions": {"add_related": [
+              {
+                  "id": None,
+                  "type": "Evidence",
+                  "kind": "FILE",
+                  "title": "evidence1",
+                  "link": "google3.com",
+                  "source_gdrive_id": "source_gdrive_id",
+              },
+              {
+                  "id": evid_map.id,
+                  "type": "Evidence",
+              },
+              {
+                  "id": None,
+                  "type": "Comment",
+                  "description": "comment1",
+                  "custom_attribute_definition_id": ca_def.id,
+              }
+          ], "remove_related": [
+              {
+                  "id": evid_del.id,
+                  "type": "Evidence",
+              }]}})
 
     self.assert200(response)
 
