@@ -33,6 +33,7 @@ export default Cacheable.extend({
   ],
   is_custom_attributable: true,
   isRoleable: true,
+  excludeOriginalRoles: ['Control Owners'],
   attributes: {
     context: Stub,
     modified_by: Stub,

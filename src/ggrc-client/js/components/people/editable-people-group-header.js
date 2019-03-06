@@ -23,6 +23,7 @@ export default can.Component.extend({
     canEdit: true,
     required: false,
     people: [],
+    instance: null,
     openEditMode: function () {
       this.dispatch('editPeopleGroup');
     },

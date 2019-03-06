@@ -15,6 +15,7 @@
         {{#case "attribute"}}
         <div class="filter-group__attribute">
           <advanced-search-filter-attribute
+            {modelName}="modelName"
             {(attribute)}="value"
             (remove)="removeItem(../, true)"
             {available-attributes}="availableAttributes">

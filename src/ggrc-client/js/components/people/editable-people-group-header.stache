@@ -9,7 +9,7 @@
       {{#unless editableMode}}
         <spinner class="people-group__title-spinner" {toggle}="isLoading"></spinner>
       {{/unless}}
-      {{title}}
+      {{getMappedAttrName instance.constructor.model_singular title}}
     </div>
     <div class="people-group__count">
       ({{peopleCount}})

@@ -242,6 +242,11 @@ export default can.Component.extend({
       roleAssignments = _.groupBy(instance
         .attr('access_control_list'), 'ac_role_id');
 
+      if (instance.constructor.excludeOriginalRoles) {
+        this.attr('excludeRoles')
+          .push(...instance.constructor.excludeOriginalRoles);
+      }
+
       roles = this.getFilteredRoles();
 
       groups = _.map(roles, function (role) {

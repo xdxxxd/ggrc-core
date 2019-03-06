@@ -47,7 +47,7 @@
                   {instance}="instance"
                   {people}="people">
                   <label class="people-group__title-content form-label form-label__extended">
-                    <span class="people-group__title people-group__title--deletable">{{title}}</span>
+                    <span class="people-group__title people-group__title--deletable">{{getMappedAttrName instance.constructor.model_singular title}}</span>
                     {{#if required}}
                       <i class="fa fa-asterisk"></i>
                     {{/if}}

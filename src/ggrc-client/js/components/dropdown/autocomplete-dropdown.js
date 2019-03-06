@@ -4,6 +4,7 @@
 */
 
 import template from './autocomplete-dropdown.stache';
+import {getMappedAttrName} from '../../plugins/ggrc_utils';
 
 export default can.Component.extend({
   tag: 'autocomplete-dropdown',
@@ -14,11 +15,19 @@ export default can.Component.extend({
     filteredOptions: [],
     isOpen: false,
     canOpen: false,
+    title: '',
+    modelName: '',
     define: {
       isEmpty: {
         type: 'boolean',
         get() {
           return !this.attr('filteredOptions').length;
+        },
+      },
+      value: {
+        set(value) {
+          this.attr('title', getMappedAttrName(this.attr('modelName'), value));
+          return value;
         },
       },
     },
@@ -29,7 +38,8 @@ export default can.Component.extend({
       let value = el.val().toLowerCase();
       let filteredOptions = this.attr('options').filter((item) => {
         return item.value.toLowerCase().includes(value);
-      });
+      }).map((item) => ({...item, title: item.title || item.value}));
+
       this.attr('filteredOptions', filteredOptions);
     },
     openDropdown() {

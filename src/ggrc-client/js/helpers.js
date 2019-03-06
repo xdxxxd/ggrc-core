@@ -8,6 +8,7 @@ import {
   isAuditScopeModel,
   isSnapshotParent,
 } from './plugins/utils/snapshot-utils';
+import {getMappedAttrName} from './plugins/ggrc_utils';
 import {
   isAdmin,
   getPageInstance,
@@ -1003,3 +1004,7 @@ Mustache.registerHelper('if_recurring_workflow', function (object, options) {
   }
   return options.inverse(this);
 });
+
+Mustache.registerHelper('getMappedAttrName', (type, attrName, options) => (
+  getMappedAttrName(Mustache.resolve(type), Mustache.resolve(attrName))
+));

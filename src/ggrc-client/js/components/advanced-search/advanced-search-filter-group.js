@@ -13,6 +13,7 @@ import template from './advanced-search-filter-group.stache';
  * @constructor
  */
 let viewModel = AdvancedSearchContainer.extend({
+  modelName: '',
   /**
    * Contains available attributes for specific model.
    * @type {can.List}

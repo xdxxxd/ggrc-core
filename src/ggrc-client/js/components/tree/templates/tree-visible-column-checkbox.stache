@@ -4,7 +4,7 @@
 }}
 
 {{#column}}
-  <label class="checkbox-inline" title="{{title}}">
+  <label class="checkbox-inline" title="{{getMappedAttrName modelName title}}">
     {{#if selected}}
       <input type="checkbox"
         checked="checked"
@@ -20,6 +20,6 @@
         class="attr-checkbox {{#mandatory}}mandatory{{/mandatory}}">
     {{/if}}
 
-    {{title}}
+    {{getMappedAttrName modelName title}}
   </label>
 {{/column}}
