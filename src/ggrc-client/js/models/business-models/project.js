@@ -36,6 +36,7 @@ export default Cacheable.extend({
     modified_by: Stub,
   },
   title_singular: 'Account Balance',
+  title_plural: 'Account Balances',
   tree_view_options: {
     attr_list: Cacheable.attr_list.concat([
       {attr_title: 'Reference URL', attr_name: 'reference_url'},
