@@ -7,11 +7,11 @@
   {{#each columns}}
     {{#if disable_sorting}}
       <div class="title">
-        {{attr_title}}
+        {{getMappedAttrName modelType attr_title}}
       </div>
     {{else}}
       <div class="title title_sortable" can-click="applySort">
-        {{attr_title}}
+        {{getMappedAttrName modelType attr_title}}
         {{#isSorted}}
           <i class="fa
             {{#isSortedAsc}}fa-caret-up{{/isSortedAsc}}

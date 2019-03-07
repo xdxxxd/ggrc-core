@@ -47,6 +47,7 @@
                     {people}="people"
                     {updatable-group-id}="updatableGroupId">
                       <editable-people-group-header
+                        {instance}="instance"
                         {editable-mode}="editableMode"
                         {is-loading}="isLoading"
                         {can-edit}="canEdit"

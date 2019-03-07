@@ -42,7 +42,9 @@ export default can.Component.extend({
       const selectedColumns = this.attr('selectedColumns');
       const availableColumns = this.attr('availableColumns');
       const columns = TreeViewUtils
-        .getVisibleColumnsConfig(availableColumns, selectedColumns);
+        .getVisibleColumnsConfig(availableColumns, selectedColumns,
+          this.getModel()
+        );
 
       this.attr('columns', columns);
     },

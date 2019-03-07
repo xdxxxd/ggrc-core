@@ -25,6 +25,7 @@
         {{#case "attribute"}}
         <div class="filter-container__attribute">
           <advanced-search-filter-attribute
+            {model-name}="modelName"
             {(attribute)}="value"
             (remove)="removeItem(../)"
             {available-attributes}="availableAttributes"
@@ -36,6 +37,7 @@
         {{#case "group"}}
         <div class="filter-container__group">
           <advanced-search-filter-group
+            {model-name}="modelName"
             {(items)}="value"
             (remove)="removeItem(../)"
             {available-attributes}="availableAttributes">

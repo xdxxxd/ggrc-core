@@ -6,7 +6,8 @@
 <div class="filter-attribute flex-box flex-box-multi">
   <div class="filter-attribute__name">
     <autocomplete-dropdown {(value)}="attribute.field"
-                           {options}="attributeTitles">
+                           {options}="attributeTitles"
+                           {model-name}="modelName">
     </autocomplete-dropdown>
   </div>
   <div class="filter-attribute__operator">

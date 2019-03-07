@@ -168,6 +168,62 @@ function getTruncatedList(items) {
   return mainContent + lastLine;
 }
 
+const ATTR_MAPPER = {
+  Program: {
+    'Program Managers': 'Alphabet / Google SOX PMO',
+    'Program Editors': 'RCS',
+  },
+  Process: {
+    Admin: 'RCS',
+    Assignee: 'Secondary RCS',
+    'System Owners': 'Process Owners',
+    Verifier: 'Alphabet / Google SOX PMO',
+    'Reference URL': 'Flowchart Link',
+  },
+  Control: {
+    Admin: 'Control Owners',
+  },
+  System: {
+    Admin: 'Eng Compliance',
+    Verifier: 'Alphabet / Google SOX PMO',
+  },
+  Assessment: {
+    Creators: 'Alphabet / Google SOX PMO',
+    Assignees: 'Assessment Submitters',
+  },
+  KeyReport: {
+    Admin: 'Alphabet / Google SOX PMO',
+    'System Owners': 'Key Report Owners',
+    Assignee: 'Secondary RCS',
+  },
+  Risk: {
+    Admin: 'Alphabet / Google SOX PMO',
+  },
+  Audit: {
+    'Audit Captains': 'Alphabet / Google SOX PMO',
+  },
+  Issue: {
+    Admin: 'Alphabet / Google SOX PMO',
+  },
+  // Account Balance
+  Project: {
+    Admin: 'RCS',
+    Assignee: 'Secondary RCS',
+    'System Owners': 'Process Owners',
+    Verifier: 'Alphabet / Google SOX PMO',
+  },
+};
+
+function getMappedAttrName(type, attrName) {
+  const mapper = ATTR_MAPPER[type];
+
+  if (!mapper) {
+    return attrName;
+  }
+
+  return mapper[attrName] || attrName;
+}
+
 export {
   applyTypeFilter,
   isInnerClick,
@@ -178,4 +234,5 @@ export {
   getPlainText,
   getAssigneeType,
   getTruncatedList,
+  getMappedAttrName,
 };

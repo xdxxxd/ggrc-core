@@ -293,12 +293,13 @@ function setColumnsForModel(modelType, columnNames, modelName) {
  * Each config contains 'name', 'title', 'mandatory', 'selected' properties
  * @param {Array} available - Full list of available columns.
  * @param {Array} selected - List of selected columns.
+ * @param {can.Model.Cacheable} model
  * @return {Array} Array of columns configs.
  */
-function getVisibleColumnsConfig(available, selected) {
+function getVisibleColumnsConfig(available, selected, model) {
   const selectedColumns = can.makeArray(selected);
   const availableColumns = can.makeArray(available);
-  const columns = [];
+  let columns = [];
 
   availableColumns.forEach(function (attr) {
     const isSelected = selectedColumns
@@ -310,6 +311,12 @@ function getVisibleColumnsConfig(available, selected) {
       selected: isSelected,
     }));
   });
+
+  if (model.excludeOriginalRoles) {
+    columns = columns.filter(({title}) =>
+      !model.excludeOriginalRoles.includes(title)
+    );
+  }
 
   return columns;
 }

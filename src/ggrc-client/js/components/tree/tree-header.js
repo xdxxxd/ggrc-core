@@ -82,7 +82,9 @@ export default can.Component.extend({
       let columns;
 
       if (selectedColumns.length && availableColumns.length) {
-        columns = getVisibleColumnsConfig(availableColumns, selectedColumns);
+        columns = getVisibleColumnsConfig(availableColumns, selectedColumns,
+          this.attr('model')
+        );
 
         this.attr('columns', columns);
       }

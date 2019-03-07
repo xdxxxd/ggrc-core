@@ -4,11 +4,11 @@
 }}
 
 <div class="autocomplete-dropdown flex-box flex-col">
-  <div class="autocomplete-dropdown__input-container" 
+  <div class="autocomplete-dropdown__input-container"
        ($click)="openDropdown()">
-    <input type="text" 
+    <input type="text"
            readonly="readonly"
-           value="{{value}}">
+           value="{{title}}">
       <span class="autocomplete-dropdown__icon">
         <i class="fa fa-caret-down"></i>
       </span>
@@ -25,9 +25,9 @@
           {{^if isEmpty}}
             {{#filteredOptions}}
               <li class="autocomplete-dropdown__element">
-                <div ($click)="onChange(.)" 
+                <div ($click)="onChange(.)"
                       value="{{value}}">
-                  {{value}}
+                  {{title}}
                 </div>
               </li>
             {{/filteredOptions}}

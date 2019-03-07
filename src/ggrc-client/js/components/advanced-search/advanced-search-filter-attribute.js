@@ -5,6 +5,8 @@
 
 import '../dropdown/autocomplete-dropdown';
 import template from './advanced-search-filter-attribute.stache';
+import {getMappedAttrName} from '../../plugins/ggrc_utils';
+import * as businessModels from '../../models/business-models';
 
 /**
  * Filter Attribute view model.
@@ -38,6 +40,7 @@ let viewModel = can.Map.extend({
       },
     },
   },
+  modelName: null,
   /**
    * Contains criterion's fields: field, operator, value.
    * @type {object}
@@ -48,9 +51,19 @@ let viewModel = can.Map.extend({
    * @return {list}
    */
   attributeTitles: function () {
-    return this.attr('availableAttributes').map((item) => {
-      return {value: item.attr_title};
-    });
+    const modelName = this.attr('modelName');
+
+    const model = businessModels[modelName];
+    return this.attr('availableAttributes')
+      .filter(({attr_title: attrTitle}) => model.excludeOriginalRoles
+        ? !model.excludeOriginalRoles.includes(attrTitle)
+        : true
+      )
+      .map((item) => {
+        return {
+          title: getMappedAttrName(modelName, item.attr_title),
+          value: item.attr_title};
+      });
   },
   /**
    * Indicates Filter Attribute can be transformed to Filter Group.

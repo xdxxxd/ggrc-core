@@ -18,6 +18,7 @@
     <div class="flex-box flex-box-multi">
       <div class="flex-box flex-box-multi">
         <advanced-search-filter-attribute
+                {model-name}="modelName"
                 {(attribute)}="criteria.filter.value"
                 {available-attributes}="availableAttributes"
                 {show-actions}="false">
