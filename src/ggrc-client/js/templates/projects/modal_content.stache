@@ -14,7 +14,7 @@
       <label class="form-label">
         Title
         <i class="fa fa-asterisk"></i>
-        <i class="fa fa-question-circle" rel="tooltip" title="Give new {{model.model_plural}} a name that's easy to search for and indicates the main goals of this {{model.model_singular}}."></i>
+        <i class="fa fa-question-circle" rel="tooltip" title="Give new {{model.title_singular}} a name that's easy to search for and indicates the main goals of this {{model.title_singular}}."></i>
       </label>
       <input data-id="title_txtbx" tabindex="1" class="input-block-level" placeholder="Enter Title" name="title" type="text" value="{{title}}" autofocus>
       {{#instance.computed_errors.title}}<label class="help-inline warning">{{this}}</label>{{/instance.computed_errors.title}}
@@ -26,7 +26,7 @@
     <div data-id="description_hidden" class="span6 hidable">
       <label>
         Description
-        <i class="fa fa-question-circle" rel="tooltip" title="Provide more details on the purpose of this {{model.model_singular}} and provide context for how and when this {{model.model_singular}} might be used."></i>
+        <i class="fa fa-question-circle" rel="tooltip" title="Provide more details on the purpose of this {{model.title_singular}} and provide context for how and when this {{model.title_singular}} might be used."></i>
         <a data-id="hide_description_lk" href="javascript://" class="field-hide" tabindex="-1">hide</a>
       </label>
       <div class="rich-text">

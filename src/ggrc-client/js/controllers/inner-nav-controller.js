@@ -156,6 +156,10 @@ export default can.Control.extend({
 
   widget_by_selector: function (selector) {
     return this.options.widget_list.filter((widget) => {
+      if (selector === '#account_balance' && widget.selector === '#project') {
+        return true;
+      }
+
       return widget.selector === selector;
     })[0] || undefined;
   },
@@ -192,7 +196,7 @@ export default can.Control.extend({
     widget.attr({
       internav_icon: widgetOptions.widget_icon,
       widgetType: isObjectVersion(widgetId) ? 'version' : '',
-      internav_display: title,
+      internav_display: title === 'Projects' ? 'Account Balances' : title,
       internav_id: widgetId,
       internav_href: buildUrl({widget: widgetId}),
       forceRefetch: widgetOptions && widgetOptions.forceRefetch,

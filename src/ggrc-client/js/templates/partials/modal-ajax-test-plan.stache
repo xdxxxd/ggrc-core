@@ -7,7 +7,7 @@
   <div data-id="test_plan_hidden" class="span6 hidable">
     <label>
       Assessment Procedure
-      <i class="fa fa-question-circle" rel="tooltip" title="Provide an assessment procedure for this {{model.model_singular}}."></i>
+      <i class="fa fa-question-circle" rel="tooltip" title="Provide an assessment procedure for this {{model.title_singular}}."></i>
       <a data-id="hide_description_lk" href="javascript://" class="field-hide" tabindex="-1">hide</a>
     </label>
     <div class="rich-text">

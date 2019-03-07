@@ -17,6 +17,11 @@ class RouterConfig {
 
 const buildUrl = (data) => {
   let url = can.route.url(data);
+
+  if (url === '#!project') {
+    return '#!account_balance';
+  }
+
   return url;
 };
 

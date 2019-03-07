@@ -21,7 +21,7 @@
                  id="{{inputId}}"
                  {($checked)}="display"
                  value="{{name}}">
-          <label for="{{inputId}}">{{widgetName}}</label>
+          <label for="{{inputId}}">{{#if_equals widgetName 'Project'}}Account Balance{{else}}{{widgetName}}{{/if}}</label>
       </div>
     {{/uniqueModelsList}}
   </div>
