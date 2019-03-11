@@ -15,7 +15,9 @@
     {{#if isCurrentUserVerifier}}
       <button type="button"
               class="btn btn-small btn-green object-state-toolbar__item"
-              {{#if disabled}}disabled{{/if}}
+              {{#if_helpers '\n #if' disabled '\n or #if' isVerifyBtnDisabled}}
+                disabled
+              {{/if_helpers}}
               ($click)="changeState('Verified')">Verify</button>
       <button type="button"
               class="btn btn-small btn-red object-state-toolbar__item"

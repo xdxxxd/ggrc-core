@@ -39,6 +39,7 @@ export default can.Component.extend({
     instanceState: '',
     disabled: false,
     isUndoButtonVisible: false,
+    isVerifyBtnDisabled: false,
     verifiers: [],
     instance: {},
     isActiveState: function () {

@@ -198,14 +198,13 @@ Copyright (C) 2019 Google Inc.
             {{/is_info_pin}}
 
             {{#unless isEditDenied}}
-                    <object-state-toolbar
-
-                                        {verifiers}="verifiers"
-                                        {instance}="instance"
-                                        {disabled}="isVerifyBtnDisabled"
-                                        {instance-state}="currentState"
-                                        {is-undo-button-visible}="false"
-                                        (on-state-change)="onStateChange(%event)">
+                    <object-state-toolbar {verifiers}="verifiers"
+                                          {instance}="instance"
+                                          {disabled}="isInfoPaneSaving"
+                                          {is-verify-btn-disabled}="isVerifyBtnDisabled"
+                                          {instance-state}="currentState"
+                                          {is-undo-button-visible}="false"
+                                          (on-state-change)="onStateChange(%event)">
                     </object-state-toolbar>
             {{/unless}}
             <div class="form-status">

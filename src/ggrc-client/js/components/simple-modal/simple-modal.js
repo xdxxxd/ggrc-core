@@ -38,7 +38,7 @@ export default can.Component.extend({
     save() {
       this.dispatch({
         type: 'updateReviewGroups',
-        reviewGroups: this.attr('instance'),
+        reviewGroups: this.attr('instance').attr(),
       });
       this.hide();
     },

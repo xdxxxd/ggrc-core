@@ -90,7 +90,7 @@
         <div class="ggrc-form-item__row">
         <assessment-people {instance}="instance"
                            {info-pane-mode}=false
-                           {review-groups}="reviewGroups"
+                           {(review-groups)}="reviewGroups"
                            (saved-in-local-storage)="updateInstance">
         </assessment-people>
         </div>

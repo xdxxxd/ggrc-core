@@ -7,7 +7,7 @@
   {state}="modalState"
   {replace-content}="true"
   {extra-css-class}="'request-review-modal'"
-  {instance}="reviewGroups"
+  {(instance)}="reviewGroups"
   (update-review-groups)="save(%event)"
 >
   <div class="request-review-modal__header">

@@ -230,18 +230,15 @@ export default can.Component.extend({
             this.attr('isUpdatingComments') ||
             this.attr('isAssessmentSaving');
         },
-        isVerifyBtnDisabled: {
-          get: function () {
-            const currentLevelOfReview = this.attr('currentLevelOfReview');
+      },
+      isVerifyBtnDisabled: {
+        get() {
+          const currentLevelOfReview = this.attr('currentLevelOfReview');
+          if (currentLevelOfReview === 3 || currentLevelOfReview === 4) {
             const groups = this.attr('reviewGroups');
-            const reviewers = (groups && !!groups.length &&
-              currentLevelOfReview < groups.length) ?
-              groups[currentLevelOfReview].people : [];
-            if (currentLevelOfReview > 2 && reviewers && !reviewers.length) {
-              return true;
-            }
-            return this.attr('isInfoPaneSaving');
-          },
+            return !groups[currentLevelOfReview].people.length;
+          }
+          return false;
         },
       },
     },
@@ -589,7 +586,7 @@ export default can.Component.extend({
         newStatus === 'Verified'&&
         notFullyReviewed
       ) {
-        if (this.attr('currentLevelOfReview') === 2) {
+        if (currentLevelOfReview === 2) {
           [3, 4].forEach((ind) => {
             reviewGroups[ind].attr('disabled', false);
           });
@@ -598,7 +595,7 @@ export default can.Component.extend({
 
         this.attr('reviewGroups', reviewGroups.attr());
 
-        if (this.attr('currentLevelOfReview') !== reviewGroups.length) {
+        if (currentLevelOfReview !== reviewGroups.length) {
           this.attr('isUpdatingState', false);
           return;
         }
@@ -709,6 +706,7 @@ export default can.Component.extend({
     updateInstance() {
       let status = this.attr('instance.status');
       let saveDfd = this.attr('instance').save();
+
       saveDfd.then((resp) => {
         resp.attr('status', status);
       });

@@ -41,7 +41,7 @@ export default can.Component.extend({
       this.attr('reviewGroups', groups);
       if (this.attr('instance.id')) {
         localStorage.setReviewStateByAssessmentId(
-          this.attr('instance.id'), groups.attr()
+          this.attr('instance.id'), groups
         );
       }
       this.dispatch('savedInLocalStorage');
