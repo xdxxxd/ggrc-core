@@ -65,6 +65,7 @@ import {relatedAssessmentsTypes} from '../../../plugins/utils/models-utils';
 import {notifier, notifierXHR} from '../../../plugins/utils/notifiers-utils';
 import Evidence from '../../../models/business-models/evidence';
 import * as businessModels from '../../../models/business-models';
+import * as LocalStorageUtils from '../../../plugins/utils/local-storage-utils'
 
 const editableStatuses = ['Not Started', 'In Progress', 'Rework Needed'];
 
@@ -77,6 +78,28 @@ export default can.Component.extend({
   leakScope: true,
   viewModel: {
     define: {
+      reviewGroups: {
+        value: [],
+        set(value) {
+          if (this.attr('instance.id')) {
+            LocalStorageUtils.setReviewStateByAssessmentId(
+              this.attr('instance.id'), value.attr()
+            );
+          }
+          return value;
+        },
+      },
+      currentLevelOfReview: {
+        get() {
+          return this.attr('reviewGroups')
+            .filter((group) => group.reviewed).length;
+        },
+      },
+      isReviewInProgress: {
+        get() {
+          return this.attr('instance.status') === 'In Review';
+        },
+      },
       verifiers: {
         get: function () {
           let acl = this.attr('instance.access_control_list');
@@ -531,6 +554,33 @@ export default can.Component.extend({
       this.attr('onStateChangeDfd', $.Deferred());
       this.attr('isUpdatingState', true);
 
+      const currentLevelOfReview = this.attr('currentLevelOfReview');
+      const reviewGroups = this.attr('reviewGroups');
+      const notFullyReviewed = currentLevelOfReview < reviewGroups.length;
+
+      if (
+        (status === 'Not Started' && newStatus === 'In Review') ||
+        (status === 'Rework Needed' && newStatus === 'In Review')
+      ) {
+        this.attr('reviewGroups').forEach((group) => {
+          group.attr('reviewed', false);
+        });
+        this.attr('reviewGroups', reviewGroups.attr());
+      } else if (
+        status === 'In Review' &&
+        newStatus === 'Verified'&&
+        notFullyReviewed
+      ) {
+        reviewGroups[currentLevelOfReview].attr('reviewed', true);
+
+        this.attr('reviewGroups', reviewGroups.attr());
+
+        if (this.attr('currentLevelOfReview') !== reviewGroups.length) {
+          this.attr('isUpdatingState', false);
+          return;
+        }
+      }
+
       return this.attr('deferredSave').execute(
         this.beforeStatusSave.bind(this, newStatus, isUndo)
       ).then((resp) => {
@@ -620,6 +670,16 @@ export default can.Component.extend({
       this.attr('previousStatus', undefined);
       this.attr('isUndoButtonVisible', false);
     },
+    initReviewState() {
+      const id = this.attr('instance.id');
+      let reviewState = LocalStorageUtils.getReviewStateByAssessmentId(id);
+
+      if (!reviewState) {
+        reviewState = LocalStorageUtils.defaultReviewState;
+      }
+
+      this.attr('reviewGroups', reviewState);
+    },
   },
   init: function () {
     this.viewModel.initializeFormFields();
@@ -627,6 +687,7 @@ export default can.Component.extend({
     this.viewModel.updateRelatedItems();
     this.viewModel.initializeDeferredSave();
     this.viewModel.setVerifierRoleId();
+    this.viewModel.initReviewState();
   },
   events: {
     inserted() {

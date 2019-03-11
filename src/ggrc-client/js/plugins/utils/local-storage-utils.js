@@ -102,10 +102,84 @@ function clear(key) {
   window.localStorage.removeItem(`${key}:ids`);
 }
 
+const defaultReviewState = [
+  {
+    title: 'Internal 1st Rewiever',
+    groupId: 72,
+    people: [
+      {
+        id: 2,
+        email: 'user@example.com',
+        name: 'user@example.com',
+        type: 'Person',
+      },
+      {
+        id: 3,
+        email: 'example@example.com',
+        name: 'asdasdas',
+        type: 'Person',
+      },
+    ],
+    reviewed: true,
+    disabled: false,
+  },
+  {
+    title: 'Internat 2nd Rewiever',
+    groupId: 76,
+    people: [
+      {
+        id: 2,
+        email: 'user@example.com',
+        name: 'user@example.com',
+        type: 'Person',
+      },
+    ],
+    reviewed: false,
+    disabled: false,
+  },
+  {
+    title: 'Internat 3rd Rewiever',
+    groupId: 3,
+    people: [],
+    reviewed: false,
+    disabled: false,
+  },
+  {
+    title: 'EY Reviewer #1',
+    groupId: 4,
+    people: [],
+    reviewed: false,
+    disabled: true,
+  },
+  {
+    title: 'EY Reviewer #2',
+    groupId: 73,
+    people: [
+    ],
+    reviewed: false,
+    disabled: true,
+  },
+];
+
+const REVIEW_KEY = 'demo';
+function setReviewStateByAssessmentId(assessmentId, data) { // eslint-disable-line
+  window.localStorage.setItem(`${REVIEW_KEY}:${assessmentId}`,
+    JSON.stringify(data));
+}
+
+function getReviewStateByAssessmentId(assessmentId) { // eslint-disable-line
+  return JSON.parse(
+    window.localStorage.getItem(`${REVIEW_KEY}:${assessmentId}`)
+  );
+}
+
 export {
   get,
   create,
   update,
   remove,
   clear,
+  setReviewStateByAssessmentId,
+  getReviewStateByAssessmentId,
+  defaultReviewState,
 };

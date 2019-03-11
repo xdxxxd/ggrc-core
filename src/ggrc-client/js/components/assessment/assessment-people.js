@@ -21,6 +21,7 @@ export default can.Component.extend({
         value: '',
       },
     },
+    reviewGroups: [],
     rolesConflict: false,
     infoPaneMode: true,
     instance: {},

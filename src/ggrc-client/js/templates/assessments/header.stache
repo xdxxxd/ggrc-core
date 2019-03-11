@@ -34,8 +34,13 @@ Copyright (C) 2019 Google Inc.
                                     (set-edit-mode-inline)="confirmEdit()">
                                         <h3 class="pane-header__title-name">{{instance.title}}</h3>
                                         <div class="state-value {{addclass 'state' currentState}} {{#if instance.verified}}verified{{/if}}">
-                                            {{currentState}}
+                                          {{currentState}}
                                         </div>
+                                        {{#if isReviewInProgress}}
+                                          <div class="review-counter">
+                                            {{currentLevelOfReview}} OF {{reviewGroups.length}} Reviewed
+                                          </div>
+                                        {{/if}}
                                         {{#if instance.archived}}
                                             <span class="state-value state-archived">Archived</span>
                                         {{/if}}
@@ -194,11 +199,12 @@ Copyright (C) 2019 Google Inc.
 
             {{#unless isEditDenied}}
                     <object-state-toolbar
+
                                         {verifiers}="verifiers"
                                         {instance}="instance"
                                         {disabled}="isInfoPaneSaving"
                                         {instance-state}="currentState"
-                                        {is-undo-button-visible}="isUndoButtonVisible"
+                                        {is-undo-button-visible}="false"
                                         (on-state-change)="onStateChange(%event)">
                     </object-state-toolbar>
             {{/unless}}

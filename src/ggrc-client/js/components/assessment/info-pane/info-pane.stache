@@ -222,7 +222,7 @@
                           {verifiers}="verifiers"
                           {form-state}="formState"
                           {is-info-pane-saving}="isInfoPaneSaving"
-                          {is-undo-button-visible}="isUndoButtonVisible"
+                          {is-undo-button-visible}="true"
                           (on-state-change)="onStateChange(%event)"
                       ></assessment-controls-toolbar>
                     {{/unless}}
