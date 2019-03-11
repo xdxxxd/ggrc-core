@@ -43,7 +43,6 @@ export default can.Component.extend({
           this.attr('instance.id'), groups.attr()
         );
       }
-      this.dispatch('updated');
     },
   },
   events: {
