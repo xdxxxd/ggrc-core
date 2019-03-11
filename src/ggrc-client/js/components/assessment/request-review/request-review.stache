@@ -1,0 +1,59 @@
+{{!
+  Copyright (C) 2019 Google Inc.
+  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+}}
+
+<simple-modal
+  {state}="modalState"
+  {replace-content}="true"
+  {extra-css-class}="'request-review-modal'"
+  {instance}="reviewGroups"
+  (update-review-groups)="save(%event)"
+>
+  <div class="request-review-modal__header">
+    <div class="simple-modal__header">
+      <div class="simple-modal__header-text">Request Review</div>
+      <button type="button" class="btn btn-small btn-icon" {{#if loading}}disabled{{/if}} ($click)="hide">
+        <i class="fa fa-times black"></i>
+      </button>
+    </div>
+    <div class="request-review-modal__email-note">An email notification will be sent to each reviewer.</div>
+  </div>
+  <div class="request-review-modal__content">
+    <div class="simple-modal__body">
+      <div class="simple-modal__section">
+        <request-review-roles {review}="review">
+        </request-review-roles>
+      </div>
+    </div>
+  </div>
+
+  <div class="request-review-modal__content">
+    <div class="simple-modal__body">
+      <div class="simple-modal__section">
+        <button class="btn btn-white btn-small" 
+                type="button" disabled>
+          Add next level of Reviewers
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="simple-modal__footer">
+    <div class="simple-modal__toolbar">
+      <button
+        type="button"
+        {{#if disabled}}disabled{{/if}}
+        class="btn btn-green btn-small"
+        ($click)="save()">
+          Proceed
+      </button>
+      {{#if_equals review.status 'Reviewed'}}
+        <div class="request-review-modal__status-note">
+          <i class="fa fa-exclamation-triangle"></i>
+          By clicking 'Request' the object status will be reverted to an 'Unreviewed'
+        </div>
+      {{/if_equals}}
+    </div>
+  </div>
+</simple-modal>

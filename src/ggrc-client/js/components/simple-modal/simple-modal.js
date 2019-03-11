@@ -35,6 +35,13 @@ export default can.Component.extend({
     show: function () {
       this.attr('state.open', true);
     },
+    save() {
+      this.dispatch({
+        type: 'updateReviewGroups',
+        reviewGroups: this.attr('instance'),
+      });
+      this.hide();
+    },
     showHideModal(showModal) {
       const $modalWrapper = this.attr('modalWrapper');
       if (showModal) {

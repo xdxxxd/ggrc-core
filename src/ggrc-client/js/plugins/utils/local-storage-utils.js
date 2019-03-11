@@ -102,60 +102,43 @@ function clear(key) {
   window.localStorage.removeItem(`${key}:ids`);
 }
 
+const verifier = GGRC.access_control_roles.find((role) => {
+  return role.name === 'Verifiers';
+});
+
 const defaultReviewState = [
   {
     title: 'Internal 1st Rewiever',
-    groupId: 72,
-    people: [
-      {
-        id: 2,
-        email: 'user@example.com',
-        name: 'user@example.com',
-        type: 'Person',
-      },
-      {
-        id: 3,
-        email: 'example@example.com',
-        name: 'asdasdas',
-        type: 'Person',
-      },
-    ],
-    reviewed: true,
-    disabled: false,
-  },
-  {
-    title: 'Internat 2nd Rewiever',
-    groupId: 76,
-    people: [
-      {
-        id: 2,
-        email: 'user@example.com',
-        name: 'user@example.com',
-        type: 'Person',
-      },
-    ],
+    groupId: verifier.id,
+    people: [],
     reviewed: false,
     disabled: false,
   },
   {
-    title: 'Internat 3rd Rewiever',
-    groupId: 3,
+    title: 'Internal 2nd Rewiever',
+    groupId: verifier.id,
+    people: [],
+    reviewed: false,
+    disabled: false,
+  },
+  {
+    title: 'Internal 3rd Rewiever',
+    groupId: verifier.id,
     people: [],
     reviewed: false,
     disabled: false,
   },
   {
     title: 'EY Reviewer #1',
-    groupId: 4,
+    groupId: verifier.id,
     people: [],
     reviewed: false,
     disabled: true,
   },
   {
     title: 'EY Reviewer #2',
-    groupId: 73,
-    people: [
-    ],
+    groupId: verifier.id,
+    people: [],
     reviewed: false,
     disabled: true,
   },

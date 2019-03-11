@@ -1,0 +1,66 @@
+{{!
+  Copyright (C) 2019 Google Inc.
+  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+}}
+
+<div class="flex-box">
+  <related-people-access-control
+    class="width-100"
+    {instance}="review"
+    {(groups)}="instance">
+    {{#groups}}
+      <related-people-access-control-group
+        class="people-group"
+        auto-update="true"
+        (update-roles)="updateRoles(%event)"
+        {is-new-instance}="isNewInstance"
+        {required}="required"
+        {group-id}="groupId"
+        {title}="title"
+        {people}="people"
+        {instance}="instance"
+        {is-proposal}="isProposal"
+        {updatable-group-id}="updatableGroupId"
+        {read-only}="{{disabled}}"
+        data-original-title="{{groupTooltip}}"
+        {single-user-role}="singleUserRole"
+        {{#showGroupTooltip}}
+          rel="tooltip"
+          data-placement="bottom"
+        {{/showGroupTooltip}}>
+        <div class="{{#if disabled}}disabled-group{{/if}}">
+          <deletable-people-group
+            {show-empty-message}="false"
+            {required}="required"
+            (unmap)="removePerson(%event)"
+            {can-unmap}="canEdit"
+            {is-loading}="isLoading"
+            {group-id}="groupId"
+            {instance}="instance"
+            {people}="people">
+            <label class="people-group__title-content form-label form-label__extended">
+              <span class="people-group__title people-group__title--deletable">{{title}}</span>
+              {{#if reviewed}}
+                <span class="state-value state-reviewed">Reviewed</span>
+                <span class="date-value">03/13/2019 14:30:00 PM PST</span>
+              {{else}}
+                <span class="state-value state-notstarted">Not Started</span>
+              {{/if}}
+            </label>
+          </deletable-people-group>
+          <div>
+            {{#if isUpdating}}
+              <spinner {toggle}="isUpdating"></spinner>
+            {{else}}
+              <autocomplete {search-items-type}="'Person'"
+                            (item-selected)="addPerson(%event.selectedItem, @groupId)"
+                            {placeholder}="placeholder"
+                            {disable}="{{disabled}}">
+              </autocomplete> 
+            {{/if}}
+          </div>
+        </div>
+      </related-people-access-control-group>
+    {{/groups}}
+  </related-people-access-control>
+</div>

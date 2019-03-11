@@ -65,7 +65,7 @@ import {relatedAssessmentsTypes} from '../../../plugins/utils/models-utils';
 import {notifier, notifierXHR} from '../../../plugins/utils/notifiers-utils';
 import Evidence from '../../../models/business-models/evidence';
 import * as businessModels from '../../../models/business-models';
-import * as LocalStorageUtils from '../../../plugins/utils/local-storage-utils'
+import * as LocalStorageUtils from '../../../plugins/utils/local-storage-utils';
 
 const editableStatuses = ['Not Started', 'In Progress', 'Rework Needed'];
 
@@ -85,6 +85,7 @@ export default can.Component.extend({
             LocalStorageUtils.setReviewStateByAssessmentId(
               this.attr('instance.id'), value.attr()
             );
+            this.reinitFormFields();
           }
           return value;
         },
@@ -571,6 +572,11 @@ export default can.Component.extend({
         newStatus === 'Verified'&&
         notFullyReviewed
       ) {
+        if (this.attr('currentLevelOfReview') === 2) {
+          [3, 4].forEach((ind) => {
+            reviewGroups[ind].attr('disabled', false);
+          });
+        }
         reviewGroups[currentLevelOfReview].attr('reviewed', true);
 
         this.attr('reviewGroups', reviewGroups.attr());

@@ -10,6 +10,6 @@
     {{#if disable}}disabled{{/if}}
     can-value="value"
     data-no-automap="{{automappingOff}}"
-    class="{{^if context.isEdit}}autocomplete_wide{{/if}} autocomplete--input"
-    placeholder="{{placeholder}}">
+    class="autocomplete--input"
+    placeholder="{{placeholder}}"/>
 </div>

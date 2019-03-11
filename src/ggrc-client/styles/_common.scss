@@ -331,6 +331,20 @@ select.input-block-level {
 
 .form-label__extended {
   line-height: 28px;
+
+  .people-group__title {
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+
+  .state-value {
+    line-height: 20px;
+    margin: 0 8px;
+  }
+
+  .date-value {
+    font-style: italic;
+  }
 }
 
 .fa-asterisk {

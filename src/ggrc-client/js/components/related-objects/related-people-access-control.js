@@ -273,8 +273,11 @@ export default can.Component.extend({
   },
   events: {
     refreshGroups: function () {
-      this.viewModel.attr('groups',
-        this.viewModel.getRoleList());
+      let groups = this.viewModel.attr('groups');
+      if (groups && groups.length) {
+        return;
+      }
+      this.viewModel.attr('groups', this.viewModel.getRoleList());
     },
     setupGroups() {
       this.refreshGroups();

@@ -35,6 +35,7 @@
                   <editable-people-group
                     {required}="required"
                     (unmap)="removePerson(%event)"
+                    (request-review)="requestReview(%event)"
                     (change-editable-mode)="changeEditableGroup(%event)"
                     (save-changes)="saveChanges()"
                     (person-selected)="personSelected(%event)"

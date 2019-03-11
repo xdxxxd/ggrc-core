@@ -228,7 +228,8 @@
                     {{/unless}}
                 </div>
                 <div class="info-pane__section">
-                    <assessment-people {instance}="instance">
+                    <assessment-people {instance}="instance"
+                                       {(review-groups)}="reviewGroups">
                     </assessment-people>
                 </div>
             </div>

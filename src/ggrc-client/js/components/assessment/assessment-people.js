@@ -3,10 +3,12 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
+import './request-review/request-review';
 import {ROLES_CONFLICT} from '../../events/eventTypes';
 import '../custom-roles/custom-roles';
 import '../custom-roles/custom-roles-modal';
 import template from './templates/assessment-people.stache';
+import * as localStorage from '../../plugins/utils/local-storage-utils';
 
 const tag = 'assessment-people';
 
@@ -27,6 +29,22 @@ export default can.Component.extend({
     instance: {},
     conflictRoles: ['Assignees', 'Verifiers'],
     orderOfRoles: ['Creators', 'Assignees', 'Verifiers'],
+    modalState: {
+      open: false,
+    },
+    requestReview(ev) {
+      this.attr('modalState.open', ev.modalState.open);
+    },
+    save(ev) {
+      let groups = ev.reviewGroups;
+      this.attr('reviewGroups', groups);
+      if (this.attr('instance.id')) {
+        localStorage.setReviewStateByAssessmentId(
+          this.attr('instance.id'), groups.attr()
+        );
+      }
+      this.dispatch('updated');
+    },
   },
   events: {
     [`{instance} ${ROLES_CONFLICT.type}`]: function (ev, args) {
