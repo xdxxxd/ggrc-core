@@ -888,10 +888,9 @@ def init_extra_views(app_):
 def init_all_views(app_):
   """Inits all views defined in the core module and submodules"""
   for entry in all_object_views():
-    entryUrl = "account_balances" if entry.url == "projects" else entry.url
     entry.service_class.add_to(
         app_,
-        '/{0}'.format(entryUrl),
+        '/{0}'.format(entry.url),
         entry.model_class,
         decorators=(login.login_required,)
     )
