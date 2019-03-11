@@ -6,11 +6,45 @@
  .request-review-modal {
   
   .form-label__extended {
+    font-size: 12px;
     line-height: 20px;
+    margin-top: 4px;
+    margin-bottom: 5px;
+  }
+
+  .people-group__title {
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+
+  .state-value {
+    line-height: 20px;
+    margin: 0 8px;
+  }
+
+  .date-value {
+    font-style: italic;
   }
 
   .autocomplete--wrapper {
-    margin-bottom: 26px;
+    margin-bottom: 20px;
+
+    input {
+      width: 290px;
+    }
+  }
+
+  .object-list__item {
+    .action-toolbar {
+      height: 30px;
+      font-style: italic;
+      font-size: 13px;
+      line-height: 20px;
+    }
+  }
+
+  .btn-next {
+    margin-top: -10px;
   }
  }
 

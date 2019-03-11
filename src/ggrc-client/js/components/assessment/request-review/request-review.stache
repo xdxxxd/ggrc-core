@@ -24,17 +24,13 @@
       <div class="simple-modal__section">
         <request-review-roles {review}="review">
         </request-review-roles>
-      </div>
-    </div>
-  </div>
 
-  <div class="request-review-modal__content">
-    <div class="simple-modal__body">
-      <div class="simple-modal__section">
-        <button class="btn btn-white btn-small" 
-                type="button" disabled>
-          Add next level of Reviewers
-        </button>
+        <div>
+          <button class="btn btn-white btn-small btn-next" 
+                  type="button" disabled>
+            Add next level of Reviewers
+          </button>
+        </div>
       </div>
     </div>
   </div>
