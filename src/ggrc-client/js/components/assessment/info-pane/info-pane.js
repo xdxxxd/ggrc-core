@@ -561,7 +561,8 @@ export default can.Component.extend({
 
       if (
         (status === 'Not Started' && newStatus === 'In Review') ||
-        (status === 'Rework Needed' && newStatus === 'In Review')
+        (status === 'Rework Needed' && newStatus === 'In Review') ||
+        (status === 'In Progress' && newStatus === 'In Review')
       ) {
         this.attr('reviewGroups').forEach((group) => {
           group.attr('reviewed', false);
