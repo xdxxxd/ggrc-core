@@ -16,6 +16,7 @@ export default can.Component.extend({
     groups: [],
     updatableGroupId: null,
     isNewInstance: false,
+    isRequestReview: false,
     excludeRoles: [],
     conflictRoles: [],
     orderOfRoles: [],
@@ -63,6 +64,7 @@ export default can.Component.extend({
 
       instance.attr('access_control_list')
         .replace(listWithoutRole);
+      // this.attr('groups', this.getRoleList());
     },
 
     checkConflicts: function (groupTitle) {
@@ -273,8 +275,7 @@ export default can.Component.extend({
   },
   events: {
     refreshGroups: function () {
-      let groups = this.viewModel.attr('groups');
-      if (groups && groups.length) {
+      if (this.viewModel.attr('isRequestReview')) {
         return;
       }
       this.viewModel.attr('groups', this.viewModel.getRoleList());

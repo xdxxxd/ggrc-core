@@ -535,7 +535,6 @@ export default can.Component.extend({
       } else {
         this.attr('isReviewInProgress', false);
       }
-
     },
     onStateChange: function (event) {
       const isUndo = event.undo;
@@ -568,6 +567,9 @@ export default can.Component.extend({
       ) {
         this.attr('reviewGroups').forEach((group) => {
           group.attr('reviewed', false);
+          if (group.title.includes('EY Reviewer')) {
+            group.attr('disabled', true);
+          }
         });
         this.attr('reviewGroups', reviewGroups.attr());
       } else if (
