@@ -85,7 +85,6 @@ export default can.Component.extend({
             LocalStorageUtils.setReviewStateByAssessmentId(
               this.attr('instance.id'), value.attr()
             );
-            this.reinitFormFields();
           }
           return value;
         },
@@ -230,6 +229,19 @@ export default can.Component.extend({
             this.attr('isUpdatingUrls') ||
             this.attr('isUpdatingComments') ||
             this.attr('isAssessmentSaving');
+        },
+        isVerifyBtnDisabled: {
+          get: function () {
+            const currentLevelOfReview = this.attr('currentLevelOfReview');
+            const groups = this.attr('reviewGroups');
+            const reviewers = (groups && !!groups.length &&
+              currentLevelOfReview < groups.length) ?
+              groups[currentLevelOfReview].people : [];
+            if (currentLevelOfReview > 2 && reviewers && !reviewers.length) {
+              return true;
+            }
+            return this.attr('isInfoPaneSaving');
+          },
         },
       },
     },
