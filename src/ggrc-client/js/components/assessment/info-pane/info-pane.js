@@ -695,7 +695,11 @@ export default can.Component.extend({
       );
     },
     updateInstance() {
-      this.attr('instance').save();
+      let status = this.attr('instance.status');
+      let saveDfd = this.attr('instance').save();
+      saveDfd.then((resp) => {
+        resp.attr('status', status);
+      });
     },
   },
   init: function () {
