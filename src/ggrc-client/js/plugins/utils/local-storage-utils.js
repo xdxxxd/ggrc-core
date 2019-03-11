@@ -102,10 +102,67 @@ function clear(key) {
   window.localStorage.removeItem(`${key}:ids`);
 }
 
+const verifier = GGRC.access_control_roles.find((role) => {
+  return role.name === 'Verifiers';
+});
+
+const defaultReviewState = [
+  {
+    title: 'Internal 1st Rewiever',
+    groupId: verifier.id,
+    people: [],
+    reviewed: false,
+    disabled: false,
+  },
+  {
+    title: 'Internal 2nd Rewiever',
+    groupId: verifier.id,
+    people: [],
+    reviewed: false,
+    disabled: false,
+  },
+  {
+    title: 'Internal 3rd Rewiever',
+    groupId: verifier.id,
+    people: [],
+    reviewed: false,
+    disabled: false,
+  },
+  {
+    title: 'EY Reviewer #1',
+    groupId: verifier.id,
+    people: [],
+    reviewed: false,
+    disabled: true,
+  },
+  {
+    title: 'EY Reviewer #2',
+    groupId: verifier.id,
+    people: [],
+    reviewed: false,
+    disabled: true,
+  },
+];
+
+const REVIEW_KEY = 'demo';
+function setReviewStateByAssessmentId(assessmentId, data) { // eslint-disable-line
+  window.localStorage.setItem(`${REVIEW_KEY}:${assessmentId}`,
+    JSON.stringify(data));
+}
+
+function getReviewStateByAssessmentId(assessmentId) { // eslint-disable-line
+  return JSON.parse(
+    window.localStorage.getItem(`${REVIEW_KEY}:${assessmentId}`)
+  );
+}
+
 export {
   get,
   create,
   update,
   remove,
   clear,
+  setReviewStateByAssessmentId,
+  getReviewStateByAssessmentId,
+  defaultReviewState,
 };

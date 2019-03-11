@@ -156,10 +156,6 @@ export default can.Control.extend({
 
   widget_by_selector: function (selector) {
     return this.options.widget_list.filter((widget) => {
-      if (selector === '#account_balance' && widget.selector === '#project') {
-        return true;
-      }
-
       return widget.selector === selector;
     })[0] || undefined;
   },

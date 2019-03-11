@@ -41,6 +41,10 @@ let viewModel = peopleGroupVM.extend({
     },
     showSeeMoreLink: {
       get: function () {
+        if (this.attr('instance.type') === 'Assessment' &&
+          this.attr('title') === 'Verifiers' && !!this.attr('people').length) {
+          return true;
+        }
         return !this.attr('editableMode') &&
           !this.attr('isLoading') &&
           !this.attr('isReadonly') &&
@@ -88,6 +92,16 @@ let viewModel = peopleGroupVM.extend({
     this.changeEditableMode(false);
   },
   changeEditableMode: function (editableMode) {
+    if (this.attr('instance.type') === 'Assessment' &&
+      this.attr('title') === 'Verifiers') {
+      this.dispatch({
+        type: 'requestReview',
+        modalState: {
+          open: true,
+        },
+      });
+      return;
+    }
     this.attr('editableMode', editableMode);
     this.dispatch({
       type: 'changeEditableMode',

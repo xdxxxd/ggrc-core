@@ -103,6 +103,10 @@ simple-modal {
     &:last-child {
       margin: 0;
     }
+
+    .disabled-group {
+      opacity: 0.2;
+    }
   }
 
   &__section-title {
