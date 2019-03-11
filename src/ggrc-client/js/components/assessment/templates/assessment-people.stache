@@ -29,6 +29,7 @@
         {instance}="instance"
         {order-of-roles}="orderOfRoles"
         {conflict-roles}="conflictRoles"
+        {exclude-roles}="excludeRolesFromModal"
         {is-new-instance}="new_object_form">
       </custom-roles-modal>
     {{/if}}

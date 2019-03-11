@@ -29,6 +29,7 @@ export default can.Component.extend({
     instance: {},
     conflictRoles: ['Assignees', 'Verifiers'],
     orderOfRoles: ['Creators', 'Assignees', 'Verifiers'],
+    excludeRolesFromModal: ['Verifiers'],
     modalState: {
       open: false,
     },
@@ -43,7 +44,6 @@ export default can.Component.extend({
           this.attr('instance.id'), groups.attr()
         );
       }
-
       this.dispatch('savedInLocalStorage');
     },
   },
