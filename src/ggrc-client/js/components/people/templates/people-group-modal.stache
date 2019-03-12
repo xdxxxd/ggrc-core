@@ -14,7 +14,7 @@
     <div class="simple-modal__header-text flex-size-1">
       <div class="simple-modal__title">
         <div class="simple-modal__title__name">
-          {{title}}
+          {{getMappedAttrName instance.constructor.model_singular title}}
         </div>
       </div>
     </div>
@@ -83,6 +83,7 @@
       </button>
       <div class="people-group-modal__selected-count">
         {{selectedCount}}
+        {{getMappedAttrName instance.constructor.model_singular title}} Selected
       </div>
     </div>
   </div>
