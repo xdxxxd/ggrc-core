@@ -38,7 +38,7 @@ export default can.Component.extend({
       let value = el.val().toLowerCase();
       let filteredOptions = this.attr('options').filter((item) => {
         return item.value.toLowerCase().includes(value);
-      }).map((item) => ({...item, title: item.title || item.value}));
+      }).map((item) => ({title: item.title || item.value}));
 
       this.attr('filteredOptions', filteredOptions);
     },
