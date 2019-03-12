@@ -19,6 +19,7 @@ let viewModel = peopleGroupVM.extend({
   canEdit: {},
   showPeopleGroupModal: false,
   updatableGroupId: null,
+  currentVerifiers: [],
   define: {
     editableMode: {
       set: function (newValue, setValue) {
@@ -59,6 +60,12 @@ let viewModel = peopleGroupVM.extend({
       get: function () {
         if (this.attr('isModalLimitExceeded') && !this.attr('isReadonly')) {
           return this.attr('people').attr().slice(0, SHOW_MODAL_LIMIT);
+        }
+
+        const instance = this.attr('instance');
+        if (instance.attr('type') === 'Assessment' &&
+        this.attr('title') === 'Verifiers') {
+          return this.attr('currentVerifiers');
         }
 
         return this.attr('people').attr();

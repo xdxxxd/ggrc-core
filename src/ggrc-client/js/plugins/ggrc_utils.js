@@ -190,6 +190,7 @@ const ATTR_MAPPER = {
   Assessment: {
     Creators: 'Alphabet / Google SOX PMO',
     Assignees: 'Assessment Submitters',
+    Verifiers: 'Current Verifiers', // for multilevel review!
   },
   KeyReport: {
     Admin: 'Alphabet / Google SOX PMO',

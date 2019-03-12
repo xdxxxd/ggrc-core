@@ -27,6 +27,7 @@ export default can.Component.extend({
       },
     },
     instance: null,
+    currentVerifiers: [],
     deferredSave: null,
     updatableGroupId: null,
     includeRoles: [],

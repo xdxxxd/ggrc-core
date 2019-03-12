@@ -223,14 +223,17 @@
                           {form-state}="formState"
                           {is-info-pane-saving}="isInfoPaneSaving"
                           {is-undo-button-visible}="false"
+                          {verifiers-modal-state}="verifiersModalState"
                           (on-state-change)="onStateChange(%event)"
                       ></assessment-controls-toolbar>
                     {{/unless}}
                 </div>
                 <div class="info-pane__section">
                     <assessment-people {instance}="instance"
+                                       {modal-state}="verifiersModalState"
                                        {(review-groups)}="reviewGroups"
-                                       (saved-in-local-storage)="updateInstance">
+                                       (saved-in-local-storage)="updateInstance"
+                                       {current-verifiers}="currentVerifiers">
                     </assessment-people>
                 </div>
             </div>

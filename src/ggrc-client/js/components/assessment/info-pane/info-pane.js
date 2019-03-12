@@ -95,6 +95,18 @@ export default can.Component.extend({
             .filter((group) => group.reviewed).length;
         },
       },
+      currentVerifiers: {
+        get() {
+          const reviewGroups = this.attr('reviewGroups');
+          const currentLevelOfReview = this.attr('currentLevelOfReview');
+
+          if (currentLevelOfReview < reviewGroups.length) {
+            return reviewGroups[this.attr('currentLevelOfReview')].people;
+          }
+
+          return reviewGroups[reviewGroups.length - 1].people;
+        },
+      },
       verifiers: {
         get: function () {
           let acl = this.attr('instance.access_control_list');
@@ -246,6 +258,9 @@ export default can.Component.extend({
       state: {
         open: false,
       },
+    },
+    verifiersModalState: {
+      open: false,
     },
     pubsub,
     _verifierRoleId: undefined,
@@ -586,7 +601,7 @@ export default can.Component.extend({
         newStatus === 'Verified'&&
         notFullyReviewed
       ) {
-        if (currentLevelOfReview === 2) {
+        if (this.attr('currentLevelOfReview') === 2) {
           [3, 4].forEach((ind) => {
             reviewGroups[ind].attr('disabled', false);
           });
@@ -595,7 +610,7 @@ export default can.Component.extend({
 
         this.attr('reviewGroups', reviewGroups.attr());
 
-        if (currentLevelOfReview !== reviewGroups.length) {
+        if (this.attr('currentLevelOfReview') !== reviewGroups.length) {
           this.attr('isUpdatingState', false);
           return;
         }

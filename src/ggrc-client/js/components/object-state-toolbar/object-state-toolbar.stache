@@ -12,7 +12,7 @@
     </button>
   {{/if}}
   {{#if isInReview}}
-    {{#if isCurrentUserVerifier}}
+    {{#if showVerifyButtons}}
       <button type="button"
               class="btn btn-small btn-green object-state-toolbar__item"
               {{#if_helpers '\n #if' disabled '\n or #if' isVerifyBtnDisabled}}

@@ -13,10 +13,15 @@ export default can.Component.extend({
     define: {
       peopleCount: {
         get: function () {
+          if (this.attr('currentVerifiers')) {
+            return this.attr('currentVerifiers.length');
+          }
+
           return this.attr('people.length');
         },
       },
     },
+    currentVerifiers: [],
     singleUserRole: false,
     editableMode: false,
     isLoading: false,
