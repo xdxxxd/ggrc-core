@@ -46,6 +46,7 @@
                     {instance}="instance"
                     {title}="title"
                     {people}="people"
+                    {current-verifiers}="currentVerifiers"
                     {updatable-group-id}="updatableGroupId">
                       <editable-people-group-header
                         {instance}="instance"
@@ -54,6 +55,7 @@
                         {can-edit}="canEdit"
                         {required}="required"
                         {people}="people"
+                        {current-verifiers}="currentVerifiers"
                         {single-user-role}="singleUserRole"
                         (edit-people-group)="changeEditableMode(true)">
                       </editable-people-group-header>

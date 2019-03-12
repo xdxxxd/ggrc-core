@@ -14,5 +14,6 @@
                       {disabled}="isInfoPaneSaving"
                       {is-verify-btn-disabled}="isVerifyBtnDisabled"
                       {is-undo-button-visible}="isUndoButtonVisible"
+                      {freeze-changes}="verifiersModalState.open"
                       (on-state-change)="onStateChange(%event)">
 </object-state-toolbar>

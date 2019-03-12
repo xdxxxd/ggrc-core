@@ -17,6 +17,9 @@ export default can.Component.extend({
     isInfoPaneSaving: false,
     isUndoButtonVisible: false,
     currentState: '',
+    verifiersModalState: {
+      open: false,
+    },
     onStateChange: function (event) {
       this.dispatch({
         type: 'onStateChange',

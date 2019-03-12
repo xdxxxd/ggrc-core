@@ -22,6 +22,7 @@
         {deferred-save}="deferredSave"
         {order-of-roles}="orderOfRoles"
         {include-roles}="assessmentMainRoles"
+        {current-verifiers}="currentVerifiers",
         {conflict-roles}="conflictRoles">
       </custom-roles>
     {{else}}

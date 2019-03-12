@@ -23,6 +23,15 @@ export default can.Component.extend({
           return this.attr('hasVerifiers') ? 'In Review' : 'Completed';
         },
       },
+      showVerifyButtons: {
+        get() {
+          if (this.attr('freezeChanges')) {
+            return this.attr('lastFreezedData.isCurrentUserVerifier');
+          }
+
+          return this.attr('isCurrentUserVerifier');
+        },
+      },
       isCurrentUserVerifier: {
         get: function () {
           let verifiers = this.attr('verifiers');
@@ -35,6 +44,10 @@ export default can.Component.extend({
           return this.attr('verifiers').length;
         },
       },
+    },
+    freezeChanges: false,
+    lastFreezedData: {
+      isCurrentUserVerifier: null,
     },
     instanceState: '',
     disabled: false,
@@ -64,6 +77,17 @@ export default can.Component.extend({
         state: newState,
         undo: isUndo,
       });
+    },
+  },
+  events: {
+    '{viewModel} freezeChanges'() {
+      const vm = this.viewModel;
+
+      if (vm.attr('freezeChanges')) {
+        vm.attr('lastFreezedData.isCurrentUserVerifier',
+          vm.attr('isCurrentUserVerifier')
+        );
+      }
     },
   },
 });

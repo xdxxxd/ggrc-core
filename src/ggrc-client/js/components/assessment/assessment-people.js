@@ -27,6 +27,7 @@ export default can.Component.extend({
     rolesConflict: false,
     infoPaneMode: true,
     instance: {},
+    currentVerifiers: [],
     conflictRoles: ['Assignees', 'Verifiers'],
     orderOfRoles: ['Creators', 'Assignees', 'Verifiers'],
     excludeRolesFromModal: ['Verifiers'],
