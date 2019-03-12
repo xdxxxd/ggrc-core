@@ -13,7 +13,10 @@ export default can.Component.extend({
     define: {
       peopleCount: {
         get: function () {
-          if (this.attr('currentVerifiers')) {
+          if (
+            this.attr('instance').constructor.model_singular === 'Assessment' &&
+            this.attr('title') === 'Verifiers'
+          ) {
             return this.attr('currentVerifiers.length');
           }
 

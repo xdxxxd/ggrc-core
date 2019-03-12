@@ -50,6 +50,7 @@
                     {updatable-group-id}="updatableGroupId">
                       <editable-people-group-header
                         {instance}="instance"
+                        {title}="title"
                         {editable-mode}="editableMode"
                         {is-loading}="isLoading"
                         {can-edit}="canEdit"
