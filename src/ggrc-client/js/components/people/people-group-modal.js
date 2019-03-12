@@ -14,8 +14,7 @@ export default can.Component.extend({
     define: {
       selectedCount: {
         get: function () {
-          return `${this
-            .attr('people.length')} ${this.attr('title')} Selected`;
+          return `${this.attr('people.length')}`;
         },
       },
     },
