@@ -601,7 +601,7 @@ export default can.Component.extend({
         newStatus === 'Verified'&&
         notFullyReviewed
       ) {
-        if (currentLevelOfReview === 2) {
+        if (this.attr('currentLevelOfReview') === 2) {
           [3, 4].forEach((ind) => {
             reviewGroups[ind].attr('disabled', false);
           });
@@ -610,7 +610,7 @@ export default can.Component.extend({
 
         this.attr('reviewGroups', reviewGroups.attr());
 
-        if (currentLevelOfReview !== reviewGroups.length) {
+        if (this.attr('currentLevelOfReview') !== reviewGroups.length) {
           this.attr('isUpdatingState', false);
           return;
         }
