@@ -35,7 +35,7 @@ export default can.Component.extend({
     show: function () {
       this.attr('state.open', true);
     },
-    save() {
+    saveUpdatedReviewGroups() {
       this.dispatch({
         type: 'updateReviewGroups',
         reviewGroups: this.attr('instance').attr(),
