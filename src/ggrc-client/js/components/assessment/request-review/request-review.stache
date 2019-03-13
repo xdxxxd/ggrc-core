@@ -26,7 +26,7 @@
         </request-review-roles>
 
         <div>
-          <button class="btn btn-white btn-small btn-next" 
+          <button class="btn btn-white btn-small btn-next"
                   type="button" disabled>
             Add next level of Reviewers
           </button>
@@ -41,7 +41,7 @@
         type="button"
         {{#if disabled}}disabled{{/if}}
         class="btn btn-green btn-small"
-        ($click)="save()">
+        ($click)="saveUpdatedReviewGroups()">
           Proceed
       </button>
       {{#if_equals review.status 'Reviewed'}}
