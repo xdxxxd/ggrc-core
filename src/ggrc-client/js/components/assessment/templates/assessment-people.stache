@@ -5,14 +5,25 @@
 
 <div class="flex-box flex-box-multi">
   <div class="flex-box width-100">
-    {{#if rolesConflict}}
+    {{#if isVerifyBtnDisabled}}
       <div class="width-100">
         <div class="alert alert-verifier">
           <p>
-              Please be informed that Assignee and Verifier are the same person.
+            Internal review is completed. In order to proceed with
+            External review please specify External reviewers.
           </p>
         </div>
       </div>
+    {{else}}
+      {{#if rolesConflict}}
+        <div class="width-100">
+          <div class="alert alert-verifier">
+            <p>
+                Please be informed that Assignee and Verifier are the same person.
+            </p>
+          </div>
+        </div>
+      {{/if}}
     {{/if}}
   </div>
 
