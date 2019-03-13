@@ -18,15 +18,15 @@ Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 </head>
 
 <body {{ style.body_style() }}>
-  <div {{ style.import_export_container() }} >
-    <div {{ style.import_export_block() }}>
-    <p {{ style.import_export_title() }}>{{ import_export.title }}</p>
-    <p {{ style.import_export_body() }}>
+  <div {{ style.notification_container() }} >
+    <div {{ style.notification_block() }}>
+    <p {{ style.notification_title() }}>{{ import_export.title }}</p>
+    <p {{ style.notification_body() }}>
       {{ import_export.body }}
     </p>
-    <a href="{{ import_export.url }}" {{ style.import_export_btn() }}>Open</a>
+    <a href="{{ import_export.url }}" {{ style.notification_btn() }}>Open</a>
     </div>
-    <div {{ style.import_export_footer() }}>Google GRC</div>
+    <div {{ style.notification_footer() }}>Google GRC</div>
   </div>
 </body>
 </html>

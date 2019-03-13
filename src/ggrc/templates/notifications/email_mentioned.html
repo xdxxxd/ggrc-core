@@ -18,14 +18,14 @@ Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 </head>
 
 <body {{ style.body_style() }}>
-  <div {{ style.import_export_container() }} >
-    <div {{ style.import_export_block() }}>
-      <p {{ style.import_export_body() }}>
+  <div {{ style.notification_container() }} >
+    <div {{ style.notification_block() }}>
+      <p {{ style.notification_body() }}>
         {{ person_mention.email_text }}
       </p>
-      <a href="{{ person_mention.url }}" {{ style.import_export_btn() }}>Open</a>
+      <a href="{{ person_mention.url }}" {{ style.notification_btn() }}>Open</a>
     </div>
-    <div {{ style.import_export_footer() }}>Google GRC</div>
+    <div {{ style.notification_footer() }}>Google GRC</div>
   </div>
 </body>
 </html>
