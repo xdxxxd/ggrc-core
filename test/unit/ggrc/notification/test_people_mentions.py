@@ -45,7 +45,7 @@ class TestSendMentions(unittest.TestCase):
         u"at 2017-01-10 07:31:42:\n" + comment_text + "\n"
     )
     self.assertEquals(title, expected_title)
-    self.assertEquals(body, expected_body)
+    self.assertEquals(body, [expected_body])
 
   def test_find_mentions_one_per_user(self):
     """Test finding of people mentions."""
@@ -73,6 +73,31 @@ class TestSendMentions(unittest.TestCase):
 
     second_email_elem = next(iter(email_mentions[u"user2@example.com"]))
     self.assertEquals(second_email_elem, comment)
+
+  def test_find_mentions_in_comments(self):
+    """Test find people mentions in several comments."""
+    comment_text = (
+        u"<a href=\"mailto:user@example.com\">one</a>"
+        u"<a href=\"mailto:user@example.com\">two</a>"
+        u"<a href=\"mailto:user2@example.com\">three</a>"
+    )
+    first_comment = people_mentions.CommentData(
+        author="author@example.com",
+        created_at=datetime.datetime(2017, 1, 10, 7, 31, 42),
+        comment_text=comment_text,
+    )
+    second_comment = people_mentions.CommentData(
+        author="author@example.com",
+        created_at=datetime.datetime(2017, 1, 10, 7, 31, 42),
+        comment_text=comment_text,
+    )
+    with mock.patch("ggrc.utils.user_generator.find_user", return_value=True):
+      # pylint: disable=protected-access
+      email_mentions = people_mentions._find_email_mentions([first_comment,
+                                                             second_comment])
+    self.assertEquals(len(email_mentions), 2)
+    self.assertEquals(len(email_mentions[u"user@example.com"]), 2)
+    self.assertEquals(len(email_mentions[u"user2@example.com"]), 2)
 
   def test_find_email_mentions_regex(self):
     """Test email regex in find mention function."""
@@ -144,14 +169,14 @@ class TestSendMentions(unittest.TestCase):
     expected_title = (u"author@example.com mentioned you "
                       u"on a comment within Object")
     body = settings.EMAIL_MENTIONED_PERSON.render(person_mention={
-        "email_text": (
-            u"author@example.com mentioned you on a comment within Object "
-            u"at 2018-01-10 07:31:42:\n"
-            u"One <a href=\"mailto:user@example.com\"></a>\n\n"
-            u"author@example.com mentioned you on a comment within Object "
-            u"at 2018-01-10 07:31:50:\n"
-            u"Two <a href=\"mailto:user@example.com\"></a>\n"
-        ),
+        "comments": [
+            (u"author@example.com mentioned you on a comment within Object "
+             u"at 2018-01-10 07:31:42:\n"
+             u"One <a href=\"mailto:user@example.com\"></a>\n"),
+            (u"author@example.com mentioned you on a comment within Object "
+             u"at 2018-01-10 07:31:50:\n"
+             u"Two <a href=\"mailto:user@example.com\"></a>\n"),
+        ],
         "url": "api/objects/1",
     })
     send_email_mock.assert_called_once_with(u"user@example.com",

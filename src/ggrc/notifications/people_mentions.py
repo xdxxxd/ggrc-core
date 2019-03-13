@@ -101,11 +101,11 @@ def send_mentions(object_name, href, comments_data):
   email_mentions = _find_email_mentions(comments_data)
 
   for email, related_comments_data in email_mentions.iteritems():
-    title, email_text = _generate_mention_email(
+    title, email_comments = _generate_mention_email(
         object_name, related_comments_data
     )
     body = settings.EMAIL_MENTIONED_PERSON.render(person_mention={
-        "email_text": email_text,
+        "comments": email_comments,
         "url": href,
     })
     send_email(email, title, body)
@@ -139,14 +139,17 @@ def _find_email_mentions(comments_data):
   """
   link_pattern = re.compile(EMAIL_LINK_REGEXP)
 
-  email_mentions = defaultdict(set)
+  email_mentions = defaultdict(list)
   for comment in comments_data:
+    comment_email_mentions = dict()
     for match in link_pattern.finditer(comment.comment_text):
       email = _extract_email(match)
       person = user_generator.find_user(email)
       if not person:
         continue
-      email_mentions[email].add(comment)
+      comment_email_mentions[email] = comment
+    for email, matched_comment in comment_email_mentions.iteritems():
+      email_mentions[email].append(matched_comment)
   return email_mentions
 
 
@@ -185,5 +188,4 @@ def _generate_mention_email(object_name, comments_data):
         created_at=comment.created_at,
         comment_text=comment.comment_text,
     ))
-  body = u"\n".join(body)
   return title, body

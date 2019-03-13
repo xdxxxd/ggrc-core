@@ -46,7 +46,7 @@ class TestPeopleMentions(TestCase):
         u"One <a href=\"mailto:user@example.com\"></a>\n"
     )
     body = settings.EMAIL_MENTIONED_PERSON.render(person_mention={
-        "email_text": expected_body,
+        "comments": [expected_body],
         "url": url,
     })
     send_email_mock.assert_called_once_with(u"user@example.com",
@@ -108,7 +108,7 @@ class TestPeopleMentions(TestCase):
         u"One <a href=\"mailto:some_user@example.com\"></a>\n"
     )
     body = settings.EMAIL_MENTIONED_PERSON.render(person_mention={
-        "email_text": expected_body,
+        "comments": [expected_body],
         "url": url,
     })
     send_email_mock.assert_called_once_with(u"some_user@example.com",
@@ -138,14 +138,13 @@ class TestPeopleMentions(TestCase):
     self._check_csv_response(response, {})
     expected_title = (u"user@example.com mentioned you on "
                       u"a comment within Product4")
-    expected_body = (
-        u"user@example.com mentioned you on a comment within Product4 "
-        u"at 2018-01-10 08:31:42:\n" + first_comment + u"\n\n"
-        u"user@example.com mentioned you on a comment within Product4 "
-        u"at 2018-01-10 08:31:42:\n" + second_comment + u"\n"
-    )
     body = settings.EMAIL_MENTIONED_PERSON.render(person_mention={
-        "email_text": expected_body,
+        "comments": [
+            (u"user@example.com mentioned you on a comment within Product4 "
+             u"at 2018-01-10 08:31:42:\n" + first_comment + u"\n"),
+            (u"user@example.com mentioned you on a comment within Product4 "
+             u"at 2018-01-10 08:31:42:\n" + second_comment + u"\n"),
+        ],
         "url": url,
     })
     send_email_mock.assert_called_once_with(u"some_user@example.com",
@@ -183,20 +182,20 @@ class TestPeopleMentions(TestCase):
                       u"a comment within Product5")
 
     first_body = settings.EMAIL_MENTIONED_PERSON.render(person_mention={
-        "email_text": (
-            u"user@example.com mentioned you on a comment within Product5 "
-            u"at 2018-01-10 08:31:42:\n" + first_comment + u"\n\n"
-            u"user@example.com mentioned you on a comment within Product5 "
-            u"at 2018-01-10 08:31:42:\n" + second_comment + u"\n"
-        ),
+        "comments": [
+            (u"user@example.com mentioned you on a comment within Product5 "
+             u"at 2018-01-10 08:31:42:\n" + first_comment + u"\n"),
+            (u"user@example.com mentioned you on a comment within Product5 "
+             u"at 2018-01-10 08:31:42:\n" + second_comment + u"\n"),
+        ],
         "url": url,
     })
     first_call = mock.call(u"first@example.com", expected_title, first_body)
     second_body = settings.EMAIL_MENTIONED_PERSON.render(person_mention={
-        "email_text": (
+        "comments": [(
             u"user@example.com mentioned you on a comment within Product5 "
             u"at 2018-01-10 08:31:42:\n" + second_comment + u"\n"
-        ),
+        )],
         "url": url,
     })
     second_call = mock.call(u"second@example.com", expected_title,

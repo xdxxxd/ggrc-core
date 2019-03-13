@@ -20,9 +20,11 @@ Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 <body {{ style.body_style() }}>
   <div {{ style.notification_container() }} >
     <div {{ style.notification_block() }}>
+      {% for comment in person_mention.comments %}
       <p {{ style.notification_body() }}>
-        {{ person_mention.email_text }}
+        {{ comment }}
       </p>
+      {% endfor %}
       <a href="{{ person_mention.url }}" {{ style.notification_btn() }}>Open</a>
     </div>
     <div {{ style.notification_footer() }}>Google GRC</div>
