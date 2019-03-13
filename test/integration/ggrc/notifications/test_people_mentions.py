@@ -13,6 +13,7 @@ from freezegun import freeze_time
 from integration.ggrc import TestCase, api_helper
 from integration.ggrc.models import factories
 
+from ggrc import settings
 from ggrc import utils
 from ggrc.models import all_models
 from ggrc.notifications import people_mentions
@@ -30,7 +31,7 @@ class TestPeopleMentions(TestCase):
       person = factories.PersonFactory(email="author@example.com")
       obj = factories.ProductFactory(title="Product1")
       comment = factories.CommentFactory(
-          description=u"One <a href=\"mailto:{user@example.com}\"></a>",
+          description=u"One <a href=\"mailto:user@example.com\"></a>",
       )
       comment.modified_by_id = person.id
       comment.created_at = datetime.datetime(2018, 1, 10, 7, 31, 42)
@@ -42,12 +43,14 @@ class TestPeopleMentions(TestCase):
     expected_body = (
         u"author@example.com mentioned you on a comment within Product1 "
         u"at 2018-01-10 07:31:42:\n"
-        u"One <a href=\"mailto:{user@example.com}\"></a>\n"
-        u"<a href=\"" + url + u"\">Open</a>\n"
+        u"One <a href=\"mailto:user@example.com\"></a>\n"
     )
-    send_email_mock.assert_called_once_with(
-        u"user@example.com", expected_title, expected_body,
-    )
+    body = settings.EMAIL_MENTIONED_PERSON.render(person_mention={
+        "email_text": expected_body,
+        "url": url,
+    })
+    send_email_mock.assert_called_once_with(u"user@example.com",
+                                            expected_title, body)
 
   @mock.patch("ggrc.notifications.common.send_email")
   # pylint: disable=no-self-use
@@ -71,7 +74,7 @@ class TestPeopleMentions(TestCase):
       obj = factories.ProductFactory(title="Product3")
       obj_id = obj.id
       comment = factories.CommentFactory(
-          description=u"One <a href=\"mailto:{some_user@example.com}\"></a>",
+          description=u"One <a href=\"mailto:some_user@example.com\"></a>",
       )
       comment_id = comment.id
       comment.created_at = datetime.datetime(2018, 1, 10, 8, 31, 42)
@@ -102,12 +105,14 @@ class TestPeopleMentions(TestCase):
     expected_body = (
         u"author@example.com mentioned you on a comment within Product3 "
         u"at 2018-01-10 08:31:42:\n"
-        u"One <a href=\"mailto:{some_user@example.com}\"></a>\n"
-        u"<a href=\"" + url + u"\">Open</a>\n"
+        u"One <a href=\"mailto:some_user@example.com\"></a>\n"
     )
-    send_email_mock.assert_called_once_with(
-        u"some_user@example.com", expected_title, expected_body,
-    )
+    body = settings.EMAIL_MENTIONED_PERSON.render(person_mention={
+        "email_text": expected_body,
+        "url": url,
+    })
+    send_email_mock.assert_called_once_with(u"some_user@example.com",
+                                            expected_title, body)
 
   @mock.patch("ggrc.notifications.common.send_email")
   def test_comment_imported(self, send_email_mock):
@@ -118,8 +123,8 @@ class TestPeopleMentions(TestCase):
       obj_slug = obj.slug
       url = urljoin(get_url_root(), utils.view_url_for(obj))
 
-    first_comment = u"One <a href=\"mailto:{some_user@example.com}\"></a>"
-    second_comment = u"Two <a href=\"mailto:{some_user@example.com}\"></a>"
+    first_comment = u"One <a href=\"mailto:some_user@example.com\"></a>"
+    second_comment = u"Two <a href=\"mailto:some_user@example.com\"></a>"
 
     import_data = OrderedDict(
         [
@@ -138,11 +143,13 @@ class TestPeopleMentions(TestCase):
         u"at 2018-01-10 08:31:42:\n" + first_comment + u"\n\n"
         u"user@example.com mentioned you on a comment within Product4 "
         u"at 2018-01-10 08:31:42:\n" + second_comment + u"\n"
-        u"<a href=\"" + url + u"\">Open</a>\n"
     )
-    send_email_mock.assert_called_once_with(
-        u"some_user@example.com", expected_title, expected_body,
-    )
+    body = settings.EMAIL_MENTIONED_PERSON.render(person_mention={
+        "email_text": expected_body,
+        "url": url,
+    })
+    send_email_mock.assert_called_once_with(u"some_user@example.com",
+                                            expected_title, body)
 
   @mock.patch("ggrc.notifications.common.send_email")
   def test_several_mentions_imported(self, send_email_mock):
@@ -154,9 +161,9 @@ class TestPeopleMentions(TestCase):
       obj = factories.ProductFactory(title="Product5")
       obj_slug = obj.slug
 
-    first_comment = u"One <a href=\"mailto:{first@example.com}\"></a>"
-    second_comment = u"Two <a href=\"mailto:{second@example.com}\"></a>" \
-                     u"<a href=\"mailto:{first@example.com}\"></a>"
+    first_comment = u"One <a href=\"mailto:first@example.com\"></a>"
+    second_comment = u"Two <a href=\"mailto:second@example.com\"></a>" \
+                     u"<a href=\"mailto:first@example.com\"></a>"
 
     import_data = OrderedDict(
         [
@@ -175,22 +182,25 @@ class TestPeopleMentions(TestCase):
     expected_title = (u"user@example.com mentioned you on "
                       u"a comment within Product5")
 
-    first_call = mock.call(
-        u"first@example.com",
-        expected_title,
-        u"user@example.com mentioned you on a comment within Product5 "
-        u"at 2018-01-10 08:31:42:\n" + first_comment + u"\n\n"
-        u"user@example.com mentioned you on a comment within Product5 "
-        u"at 2018-01-10 08:31:42:\n" + second_comment + u"\n"
-        u"<a href=\"" + url + u"\">Open</a>\n"
-    )
-    second_call = mock.call(
-        u"second@example.com",
-        expected_title,
-        u"user@example.com mentioned you on a comment within Product5 "
-        u"at 2018-01-10 08:31:42:\n" + second_comment + u"\n"
-        u"<a href=\"" + url + u"\">Open</a>\n"
-    )
+    first_body = settings.EMAIL_MENTIONED_PERSON.render(person_mention={
+        "email_text": (
+            u"user@example.com mentioned you on a comment within Product5 "
+            u"at 2018-01-10 08:31:42:\n" + first_comment + u"\n\n"
+            u"user@example.com mentioned you on a comment within Product5 "
+            u"at 2018-01-10 08:31:42:\n" + second_comment + u"\n"
+        ),
+        "url": url,
+    })
+    first_call = mock.call(u"first@example.com", expected_title, first_body)
+    second_body = settings.EMAIL_MENTIONED_PERSON.render(person_mention={
+        "email_text": (
+            u"user@example.com mentioned you on a comment within Product5 "
+            u"at 2018-01-10 08:31:42:\n" + second_comment + u"\n"
+        ),
+        "url": url,
+    })
+    second_call = mock.call(u"second@example.com", expected_title,
+                            second_body)
     send_email_mock.assert_has_calls([second_call, first_call])
 
   @mock.patch('ggrc.settings.INTEGRATION_SERVICE_URL', new='mock')
@@ -201,7 +211,7 @@ class TestPeopleMentions(TestCase):
     with factories.single_commit():
       obj = factories.ProductFactory(title="Product6")
       comment = factories.CommentFactory(
-          description=u"One <a href=\"mailto:{some_new_user@example.com}"
+          description=u"One <a href=\"mailto:some_new_user@example.com"
                       u"\"></a>",
       )
       comment.created_at = datetime.datetime(2018, 1, 10, 7, 31, 42)

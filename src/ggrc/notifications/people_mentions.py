@@ -14,6 +14,7 @@ import flask
 from sqlalchemy.orm import load_only
 
 from ggrc import models
+from ggrc import settings
 from ggrc import utils
 from ggrc.app import db
 from ggrc.notifications.common import send_mentions_bg
@@ -23,7 +24,7 @@ from ggrc.utils import user_generator, get_url_root
 logger = getLogger(__name__)
 
 EMAIL_REGEXP = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
-EMAIL_LINK_REGEXP = r"mailto:{" + EMAIL_REGEXP + r"}"
+EMAIL_LINK_REGEXP = r"mailto:" + EMAIL_REGEXP
 
 CommentData = namedtuple("CommentData",
                          ["comment_text", "author", "created_at"])
@@ -100,8 +101,13 @@ def send_mentions(object_name, href, comments_data):
   email_mentions = _find_email_mentions(comments_data)
 
   for email, related_comments_data in email_mentions.iteritems():
-    title, body = _generate_mention_email(object_name, href,
-                                          related_comments_data)
+    title, email_text = _generate_mention_email(
+        object_name, related_comments_data
+    )
+    body = settings.EMAIL_MENTIONED_PERSON.render(person_mention={
+        "email_text": email_text,
+        "url": href,
+    })
     send_email(email, title, body)
   db.session.commit()
 
@@ -116,7 +122,7 @@ def _extract_email(email_match):
       Email address from the match.
   """
   email_parsed = parseaddr(email_match.group())[1]
-  return email_parsed[1:-1]
+  return email_parsed
 
 
 def _find_email_mentions(comments_data):
@@ -144,12 +150,11 @@ def _find_email_mentions(comments_data):
   return email_mentions
 
 
-def _generate_mention_email(object_name, href, comments_data):
+def _generate_mention_email(object_name, comments_data):
   """Generate title and body of the email.
 
    Params:
       object_name: name of the object in which person was mentioned,
-      href: link to the object,
       comments_data: a set of CommentData named tuples.
 
    Returns:
@@ -180,6 +185,5 @@ def _generate_mention_email(object_name, href, comments_data):
         created_at=comment.created_at,
         comment_text=comment.comment_text,
     ))
-
-  body = u"\n".join(body) + u"<a href=\"{href}\">Open</a>\n".format(href=href)
+  body = u"\n".join(body)
   return title, body

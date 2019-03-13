@@ -363,8 +363,8 @@ def init_hook():  # noqa
     from ggrc.notifications import people_mentions
 
     for obj in objects:
-      if obj.source_type not in ("Comment", "ExternalComment") and \
-        obj.destination_type not in ("Comment", "ExternalComment"):
+      if (obj.source_type not in ("Comment", "ExternalComment") and
+         obj.destination_type not in ("Comment", "ExternalComment")):
         continue
 
       comment, other = obj.source, obj.destination

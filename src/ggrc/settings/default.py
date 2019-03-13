@@ -126,6 +126,9 @@ EMAIL_BULK_SYNC_FAILED = JINJA2.get_template(
 EMAIL_BULK_SYNC_EXCEPTION = JINJA2.get_template(
     "notifications/bulk_sync_exception.html"
 )
+EMAIL_MENTIONED_PERSON = JINJA2.get_template(
+    "notifications/email_mentioned.html"
+)
 
 USE_APP_ENGINE_ASSETS_SUBDOMAIN = False
 
