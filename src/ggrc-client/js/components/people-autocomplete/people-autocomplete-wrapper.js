@@ -20,14 +20,14 @@ let viewModel = baseAutocompleteWrapper.extend({
   actionKey: null,
   define: {
     currentValue: {
-      set(newValue) {
+      set(newValue, setValue) {
+        setValue(newValue);
+
         if (newValue !== null) {
           this.getResult(newValue);
         } else {
           this.attr('showResults', false);
         }
-
-        return newValue;
       },
     },
   },
@@ -42,18 +42,18 @@ let viewModel = baseAutocompleteWrapper.extend({
           prefix: value,
           limit: 10,
         },
-      }).then(this.processItems.bind(this));
+      }).then(this.processItems.bind(this, value));
     } else {
       return this.requestItems(value)
-        .then(this.processItems.bind(this));
+        .then((data) => data[type].values)
+        .then(this.processItems.bind(this, value));
     }
   },
-  processItems(data) {
-    const modelName = this.attr('modelName');
-    const result = GGRC.config.external_services[modelName] ?
-      data : data[modelName].values;
-    this.attr('result', result);
-    this.attr('showResults', this.attr('currentValue') !== null);
+  processItems(value, data) {
+    if (value === this.attr('currentValue')) {
+      this.attr('result', data);
+      this.attr('showResults', this.attr('currentValue') !== null);
+    }
   },
 });
 

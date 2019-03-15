@@ -13,18 +13,6 @@
         </li>
       {{/each}}
     </ul>
-
-    {{#if showNewValue}}
-      <div class="add-new-item" ($click)="addNewItem()">
-        {{currentValue}} (New Label)
-      </div>
-    {{else}}
-      {{^if items.length}}
-        <div class="header">
-          <i>No Matches</i>
-        </div>
-      {{/if}}
-    {{/if}}
   </div>
   <div>
 {{/if}}
