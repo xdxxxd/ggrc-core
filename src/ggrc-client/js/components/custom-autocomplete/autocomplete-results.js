@@ -50,6 +50,7 @@ export default can.Map.extend({
     },
   },
   items: [],
+  _items: [],
   currentValue: null,
   showResults: false,
   showNewValue: false,
