@@ -54,8 +54,12 @@ export default can.Component.extend({
     },
     processItems(value, data) {
       if (value === this.attr('currentValue')) {
-        this.attr('result', data);
-        this.attr('showResults', this.attr('currentValue') !== null);
+        if (data.length) {
+          this.attr('result', data);
+          this.attr('showResults', true);
+        } else {
+          this.attr('showResults', false);
+        }
       }
     },
   }),
