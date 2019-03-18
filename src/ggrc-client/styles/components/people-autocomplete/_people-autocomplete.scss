@@ -42,3 +42,9 @@ people-mention {
     }
   }
 }
+
+.simple-modal__section:last-child {
+  people-autocomplete-wrapper.shown {
+    height: 100px;
+  }
+}

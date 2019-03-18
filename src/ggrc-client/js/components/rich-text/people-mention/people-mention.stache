@@ -3,7 +3,7 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 }}
 
-<people-autocomplete-wrapper
+<people-autocomplete-wrapper {{#if showResults}}class="shown"{{/if}}
     {current-value}="mentionValue"
     {(show-results)}="showResults"
     {model-name}="'Person'"
