@@ -43,6 +43,9 @@ export default can.Component.extend({
         },
       },
     },
+    // two way bound attribute to child components
+    // to define if "results" is shown.
+    showResults: false,
     mentionValue: null,
     mentionIndex: null,
     actionKey: null,
@@ -51,7 +54,7 @@ export default can.Component.extend({
       this.attr('mentionIndex', null);
     },
     onActionKey(keyCode) {
-      if (this.attr('mentionValue') !== null) {
+      if (this.attr('showResults')) {
         // trigger setter of 'actionKey'
         this.attr('actionKey', keyCode);
         // reset 'actionKey'
@@ -62,7 +65,7 @@ export default can.Component.extend({
       return true;
     },
     onEscapeKey() {
-      if (this.attr('mentionValue') !== null) {
+      if (this.attr('showResults')) {
         this.clearMention();
         return false;
       }

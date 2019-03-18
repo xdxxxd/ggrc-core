@@ -5,6 +5,7 @@
 
 <people-autocomplete-wrapper
     {current-value}="mentionValue"
+    {(show-results)}="showResults"
     {model-name}="'Person'"
     {query-field}="'email'"
     {model-constructor}="loadedModel"

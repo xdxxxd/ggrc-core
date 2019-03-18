@@ -138,15 +138,15 @@ describe('people-mention component', () => {
       })();
     });
 
-    it('returns true if mentionValue equals to null', () => {
-      extendedVm.attr('mentionValue', null);
+    it('returns true if showResults is false', () => {
+      extendedVm.attr('showResults', false);
 
       expect(extendedVm.onActionKey(123)).toBe(true);
     });
 
-    describe('if mentionValue is not null', () => {
+    describe('if showResults is true', () => {
       beforeEach(() => {
-        extendedVm.attr('mentionValue', '@ara');
+        extendedVm.attr('showResults', true);
       });
 
       it('calls setter of actionKey attribute with passed keyCode', () => {
@@ -173,23 +173,23 @@ describe('people-mention component', () => {
       spyOn(vm, 'clearMention');
     });
 
-    it('returns true if mentionValue attribute is null', () => {
-      vm.attr('mentionValue', null);
+    it('returns true if showResults is false', () => {
+      vm.attr('showResults', false);
 
       expect(vm.onEscapeKey()).toBe(true);
     });
 
     it('calls clearMention method ' +
-    'if mentionValue attribute is not null', () => {
-      vm.attr('mentionValue', '');
+    'if showResults attribute is true', () => {
+      vm.attr('showResults', true);
 
       vm.onEscapeKey();
 
       expect(vm.clearMention).toHaveBeenCalled();
     });
 
-    it('returns false if mentionValue attribute is not null', () => {
-      vm.attr('mentionValue', '');
+    it('returns false if showResults attribute is true', () => {
+      vm.attr('showResults', true);
 
       expect(vm.onEscapeKey()).toBe(false);
     });
