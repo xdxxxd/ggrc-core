@@ -3,7 +3,7 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-import './people-mention-controller/people-mention-controller';
+import './people-mention/people-mention';
 
 import template from './rich-text.stache';
 

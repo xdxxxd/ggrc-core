@@ -3,11 +3,11 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import component from './people-mention-controller';
+import component from './people-mention';
 import {getComponentVM} from '../../../../js_specs/spec_helpers';
 import {KEY_MAP} from '../../custom-autocomplete/autocomplete-input';
 
-describe('people-mention-controller component', () => {
+describe('people-mention component', () => {
   let vm;
   let editor;
 

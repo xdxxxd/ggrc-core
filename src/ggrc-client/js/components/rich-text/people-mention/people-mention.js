@@ -5,7 +5,7 @@
 
 import '../../people-autocomplete/people-autocomplete-wrapper/people-autocomplete-wrapper';
 
-import template from './people-mention-controller.stache';
+import template from './people-mention.stache';
 import {KEY_MAP} from '../../custom-autocomplete/autocomplete-input';
 
 const MENTION_REGEX = /(^.*[\s]|^)[@+]([\S]*)$/s;
@@ -14,7 +14,7 @@ const MENTION_REGEX = /(^.*[\s]|^)[@+]([\S]*)$/s;
  * Supporting component for rich-text to handle mentions of people
  */
 export default can.Component.extend({
-  tag: 'people-mention-controller',
+  tag: 'people-mention',
   template,
   leakScope: false,
   viewModel: {
