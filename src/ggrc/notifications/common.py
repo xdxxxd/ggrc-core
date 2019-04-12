@@ -443,6 +443,21 @@ def get_app_engine_email():
   return email if mail.is_email_valid(email) else None
 
 
+def prefix_subject(subject):
+  """Add non prod env subject prefix.
+
+  This function ads app engine instance prefix to email subject on all non
+  production instances.
+  """
+  if not settings.NOTIFICATION_PREFIX:
+    return subject
+
+  return "[{prefix}] {subject}".format(
+      prefix=settings.NOTIFICATION_PREFIX,
+      subject=subject,
+  )
+
+
 def send_email(user_email, subject, body):
   """Helper function for sending emails.
 
@@ -460,6 +475,7 @@ def send_email(user_email, subject, body):
     logger.error("APPENGINE_EMAIL setting is invalid.")
     return
 
+  subject = prefix_subject(subject)
   message = mail.EmailMessage(sender=sender, subject=subject)
 
   message.to = user_email

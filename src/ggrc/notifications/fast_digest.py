@@ -11,6 +11,7 @@ from google.appengine.api import mail
 from ggrc import db
 from ggrc import rbac
 from ggrc import settings
+from ggrc.notifications import common
 
 from ggrc.notifications import data_handlers
 from ggrc.notifications import proposal_helpers
@@ -26,7 +27,7 @@ def build_subject():
   user_datetime = data_handlers.as_user_time(
       datetime.utcnow(),
   )
-  return DIGEST_TITLE_TMPL.format(user_datetime)
+  return common.prefix_subject(DIGEST_TITLE_TMPL.format(user_datetime))
 
 
 def build_address_body(proposals, review_notifications):
