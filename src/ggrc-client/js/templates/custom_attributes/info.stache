@@ -8,8 +8,8 @@
   {is-attributes-disabled}="isAttributesDisabled"
   class="ggrc-form ggrc-form-multiple-columns">
     {{#each items}}
-      <div class="ggrc-form-item {{#is attributeType 'input'}}ggrc-form-item__row{{else}}ggrc-form-item__multiple-row{{/if}}">
-        <div class="{{#is attributeType 'input'}}ggrc-form-item__row{{else}}ggrc-form-item__multiple-row{{/if}}">
+      <div class="ggrc-form-item">
+        <div class="{{#if_in attributeType 'input,text'}}ggrc-form-item__row{{else}}ggrc-form-item__multiple-row{{/if}}">
           <inline-edit-control class="inline-edit-control"
             (inline-save)="saveCustomAttributes(%event, %context)"
             {instance}="instance"
