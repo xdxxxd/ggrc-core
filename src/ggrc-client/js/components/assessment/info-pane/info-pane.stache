@@ -310,9 +310,7 @@
           </tab-panel>
           <tab-panel {(panels)}="panels"
                      title-text="Other Attributes"
-                     class="assessment-attributes-panel"
                      (update-active-tab)="initGlobalAttributes">
-              <div class="assessment-attributes-panel">
                 <custom-roles {exclude-roles}="assessmentMainRoles"
                     {instance}="instance"
                     {deferred-save}="deferredSave">
@@ -489,7 +487,6 @@
                     </div>
                   </div>
                 {{/if}}
-            </div>
             </div>
           </tab-panel>
 
