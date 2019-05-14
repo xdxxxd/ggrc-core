@@ -28,7 +28,6 @@
   &.ggrc-form-multiple-columns {
     display: flex;
     flex-wrap: wrap;
-    max-width: 720px;
 
     .ggrc-form-item {
       .ggrc-form-item__multiple-row {
@@ -179,3 +178,24 @@
     margin-bottom: 0;
   }
 }
+
+.ggrc-form {
+  &.ggrc-form-multiple-columns {
+    .ggrc-form-item {
+      &--column {
+        flex-basis: 200px;
+        width: 200px;
+        margin-right: 40px;        
+      }
+
+      &--row {
+        width: 100%;
+      }
+
+      .inline-edit-control {
+        width: 100%;
+      }
+    }
+  }
+}
+
