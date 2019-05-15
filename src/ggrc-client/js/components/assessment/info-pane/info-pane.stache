@@ -321,25 +321,23 @@
                                             class="ggrc-form ggrc-form-multiple-columns">
                 </assessment-custom-attributes>
                 <div class="info-pane__section ggrc-form">
-                    <div class="ggrc-form-item">
-                        <div class="ggrc-form-item__multiple-row">
-                            <assessment-object-type-dropdown
-                                {instance}="instance"
-                                {(assessment-type)}="instance.assessment_type">
-                                <assessment-inline-item
-                                    type="dropdown"
-                                    prop-name="assessment_type"
-                                    is-grouped-dropdown="true"
-                                    {set-in-progress}="@setInProgressState"
-                                    {on-state-change-dfd}="onStateChangeDfd"
-                                    {dropdown-options-groups}="objectTypes"
-                                    {is-edit-icon-denied}="isEditDenied"
-                                    {value}="instance.assessment_type"
-                                    {instance}="instance">
-                                        <div class="ggrc-form__title">Assessment Type</div>
-                                </assessment-inline-item>
-                            </assessment-object-type-dropdown>
-                        </div>
+                    <div class="ggrc-form-item ggrc-form-item--column">
+                        <assessment-object-type-dropdown
+                            {instance}="instance"
+                            {(assessment-type)}="instance.assessment_type">
+                            <assessment-inline-item
+                                type="dropdown"
+                                prop-name="assessment_type"
+                                is-grouped-dropdown="true"
+                                {set-in-progress}="@setInProgressState"
+                                {on-state-change-dfd}="onStateChangeDfd"
+                                {dropdown-options-groups}="objectTypes"
+                                {is-edit-icon-denied}="isEditDenied"
+                                {value}="instance.assessment_type"
+                                {instance}="instance">
+                                    <div class="ggrc-form__title">Assessment Type</div>
+                            </assessment-inline-item>
+                        </assessment-object-type-dropdown>
                     </div>
                 </div>
                 <div class="info-pane__section action-toolbar-container">
@@ -378,48 +376,40 @@
                     </assessment-mapped-controls>
                 </div>
                 <div class="ggrc-form ggrc-form-multiple-columns">
-                <div class="ggrc-form-item">
-                    <div class="ggrc-form-item__row">
-                        <assessment-inline-item
-                            type="text"
-                            prop-name="description"
-                            with-read-more="true"
-                            {set-in-progress}="@setInProgressState"
-                            {on-state-change-dfd}="onStateChangeDfd"
-                            {is-edit-icon-denied}="isEditDenied"
-                            {value}="instance.description"
-                            {instance}="instance">
-                                <div class="ggrc-form__title">Description</div>
-                        </assessment-inline-item>
-                    </div>
+                <div class="ggrc-form-item ggrc-form-item--row">
+                    <assessment-inline-item
+                        type="text"
+                        prop-name="description"
+                        with-read-more="true"
+                        {set-in-progress}="@setInProgressState"
+                        {on-state-change-dfd}="onStateChangeDfd"
+                        {is-edit-icon-denied}="isEditDenied"
+                        {value}="instance.description"
+                        {instance}="instance">
+                            <div class="ggrc-form__title">Description</div>
+                    </assessment-inline-item>
                 </div>
                 <div class="ggrc-form-item">
                     {{> /static/templates/assessments/dates_list.stache}}
                 </div>
-                <div class="ggrc-form-item">
-                    <div class="ggrc-form-item__row">
-                        <assessment-inline-item
-                            type="text"
-                            prop-name="notes"
-                            with-read-more="true"
-                            {set-in-progress}="@setInProgressState"
-                            {on-state-change-dfd}="onStateChangeDfd"
-                            {is-edit-icon-denied}="isEditDenied"
-                            {value}="instance.notes"
-                            {instance}="instance">
-                                <div class="ggrc-form__title">Notes</div>
-                        </assessment-inline-item>
-                    </div>
+                <div class="ggrc-form-item ggrc-form-item--row">
+                    <assessment-inline-item
+                        type="text"
+                        prop-name="notes"
+                        with-read-more="true"
+                        {set-in-progress}="@setInProgressState"
+                        {on-state-change-dfd}="onStateChangeDfd"
+                        {is-edit-icon-denied}="isEditDenied"
+                        {value}="instance.notes"
+                        {instance}="instance">
+                            <div class="ggrc-form__title">Notes</div>
+                    </assessment-inline-item>
                 </div>
-                <div class="ggrc-form-item">
-                    <div class="ggrc-form-item__multiple-row">
-                      <div class="info-pane__section-title">Code</div>
-                      <span>{{instance.slug}}</span>
-                    </div>
-                    <!-- TODO: Assessment object type -->
+                <div class="ggrc-form-item ggrc-form-item--column">
+                    <div class="info-pane__section-title">Code</div>
+                    <span>{{instance.slug}}</span>
                 </div>
-                <div class="ggrc-form-item">
-                    <div class="ggrc-form-item__multiple-row">
+                    <div class="ggrc-form-item ggrc-form-item--column">
                         <assessment-inline-item
                             type="dropdown"
                             prop-name="design"
@@ -439,7 +429,7 @@
                                 </div>
                         </assessment-inline-item>
                     </div>
-                    <div class="ggrc-form-item__multiple-row">
+                    <div class="ggrc-form-item ggrc-form-item--column">
                         <assessment-inline-item
                             type="dropdown"
                             prop-name="operationally"
@@ -459,10 +449,8 @@
                                 </div>
                         </assessment-inline-item>
                     </div>
-                </div>
                 {{#if instance.can_use_issue_tracker}}
-                  <div class="ggrc-form-item">
-                    <div class="ggrc-form-item__row">
+                  <div class="ggrc-form-item ggrc-form-item--row">
                       <div class="expanded-area">
                           <div class="info-expand">
                               <a class="show-hidden-fields info-show-hide active" href="javascript://">
@@ -484,7 +472,6 @@
                             </div>
                           </div>
                       </div>
-                    </div>
                   </div>
                 {{/if}}
             </div>
