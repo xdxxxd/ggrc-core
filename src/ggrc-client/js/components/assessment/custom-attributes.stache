@@ -3,8 +3,7 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 }}
 {{#each items}}
-    <div class="ggrc-form-item">
-        <div class="{{#if_in attributeType 'input,text'}}ggrc-form-item__row{{else}}ggrc-form-item__multiple-row{{/if}}">
+    <div class="ggrc-form-item {{#if_in attributeType 'input,text'}}ggrc-form-item--row{{else}}ggrc-form-item--column{{/if}}">
             <inline-edit-control class="inline-edit-control"
                 (inline-save)="updateGlobalAttribute(%event, %context)"
                 {instance}="instance"
@@ -17,20 +16,19 @@
                 {value}="value"
                 {type}="attributeType"
                 with-read-more="true">
-                      <confirm-edit-action
-                          (set-edit-mode)="setEditModeInline(%event)"
-                          (set-in-progress)="setInProgressState()"
-                          {instance}="instance"
-                          {on-state-change-dfd}="onStateChangeDfd"
-                          {edit-mode}="editMode">
-                            <base-inline-control-title
-                                {edit-mode}="editMode"
-                                {is-edit-icon-denied}="isEditDenied"
-                                (set-edit-mode-inline)="confirmEdit()">
-                              <div class="ggrc-form__title">{{title}}</div>
-                            </base-inline-control-title>
-                      </confirm-edit-action>
+                  <confirm-edit-action
+                      (set-edit-mode)="setEditModeInline(%event)"
+                      (set-in-progress)="setInProgressState()"
+                      {instance}="instance"
+                      {on-state-change-dfd}="onStateChangeDfd"
+                      {edit-mode}="editMode">
+                        <base-inline-control-title
+                            {edit-mode}="editMode"
+                            {is-edit-icon-denied}="isEditDenied"
+                            (set-edit-mode-inline)="confirmEdit()">
+                          <div class="ggrc-form__title">{{title}}</div>
+                        </base-inline-control-title>
+                  </confirm-edit-action>
             </inline-edit-control>
-        </div>
     </div>
 {{/each}}
