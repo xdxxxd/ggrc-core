@@ -110,7 +110,7 @@ _DEFAULT_COLUMN_HANDLERS_DICT = {
     "report_start_date": handlers.DateColumnHandler,
     "secondary_contact": handlers.UserColumnHandler,
     "send_by_default": boolean.CheckboxColumnHandler,
-    "slug": handlers.ColumnHandler,
+    "slug": handlers.SlugColumnHandler,
     "sox_302_enabled": boolean.CheckboxColumnHandler,
     "start_date": handlers.DateColumnHandler,
     "status": handlers.StatusColumnHandler,
