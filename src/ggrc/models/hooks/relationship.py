@@ -371,6 +371,6 @@ def init_hook():  # noqa
       if comment.type not in ("Comment", "ExternalComment"):
         comment, other = other, comment
 
-      if isinstance(other, (Commentable, ExternalCommentable, ChangeTracked)):
+      if isinstance(other, (Commentable, ChangeTracked)):
         other.updated_at = datetime.utcnow()
         people_mentions.handle_comment_mapped(obj=other, comments=[comment])
