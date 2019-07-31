@@ -85,3 +85,7 @@ class Projects(SnapshotsDropdownTreeViewItem):
 
 class OrgGroups(SnapshotsDropdownTreeViewItem):
   """Class for Dropdown of Products TreeViewItem"""
+
+
+class Risks(SnapshotsDropdownTreeViewItem):
+  """Class for Dropdown of Risks TreeViewItem"""

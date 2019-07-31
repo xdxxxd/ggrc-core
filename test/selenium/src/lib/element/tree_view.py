@@ -90,3 +90,7 @@ class OrgGroups(CommonDropdownSettings):
 
 class Issues(CommonDropdownSettings):
   """Issues 3BBS button/dropdown settings on Tree View."""
+
+
+class Risks(CommonDropdownSettings):
+  """Risks 3BBS button/dropdown settings on Tree View."""

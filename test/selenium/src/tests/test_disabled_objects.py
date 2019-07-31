@@ -1,6 +1,6 @@
 # Copyright (C) 2019 Google Inc.
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
-"""Controls tests."""
+"""Disabled objects tests."""
 
 # pylint: disable=redefined-outer-name
 import copy
@@ -18,8 +18,8 @@ def controls_service(selenium):
   return webui_service.ControlsService(selenium)
 
 
-class TestControls(base.Test):
-  """Tests for Controls functionality."""
+class TestDisabledObjects(base.Test):
+  """Tests for disabled objects functionality."""
   # pylint: disable=no-self-use
   # pylint: disable=invalid-name
   # pylint: disable=unused-argument
@@ -121,16 +121,17 @@ class TestControls(base.Test):
     actual_conditions["same_url_for_new_tab"] = (old_tab.url == new_tab.url)
     assert expected_conditions == actual_conditions
 
-  @pytest.mark.parametrize(
-      'obj', ["product_mapped_to_control", "standard_mapped_to_control"],
-      indirect=True)
-  def test_cannot_unmap_control(self, control, obj, selenium):
-    """Checks that user cannot unmap Control from Scope Objects/Directives and
-    new tab opens."""
-    webui_service.ControlsService(selenium).open_info_panel_of_mapped_obj(
-        obj, control).three_bbs.select_unmap_in_new_frontend()
-    old_tab, new_tab = browsers.get_browser().windows()
-    expected_url = old_tab.url.replace(url.Widget.CONTROLS, url.Widget.INFO)
+  @pytest.mark.parametrize('obj', ["risk", "control"], indirect=True)
+  @pytest.mark.parametrize('mapped_obj', ["product", "standard"],
+                           indirect=True)
+  def test_cannot_unmap_disabled_obj(self, obj, mapped_obj, selenium):
+    """Check that user cannot unmap Risk/Control from Scope Objects/Directives
+    and new tab opens."""
+    webui_service.BaseWebUiService(
+        objects.get_plural(obj.type)).open_info_panel_of_mapped_obj(
+            mapped_obj, obj).three_bbs.select_unmap_in_new_frontend()
+    _, new_tab = browsers.get_browser().windows()
+    expected_url = mapped_obj.url + url.Widget.INFO
     assert new_tab.url == expected_url
 
   def test_review_details_for_disabled_obj(self, control, controls_service):

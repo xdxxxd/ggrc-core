@@ -596,6 +596,12 @@ def product():
 
 
 @pytest.fixture()
+def risk():
+  """Creates a risk."""
+  return rest_facade.create_risk()
+
+
+@pytest.fixture()
 def programs_with_audit_and_techenv(programs, technology_environment):
   """Creates 2 programs and 1 technology environment objects, then maps second
   program to first as a child, then creates an Audit in scope of program 2
@@ -607,13 +613,6 @@ def programs_with_audit_and_techenv(programs, technology_environment):
   return {'programs': programs,
           'audit': audit,
           'techenv': technology_environment}
-
-
-@pytest.fixture()
-def product_mapped_to_control(product, control):
-  """Creates a product mapped to control."""
-  rest_facade.map_objs(product, control)
-  return product
 
 
 @pytest.fixture()
@@ -761,6 +760,16 @@ def obj(request):
     return request.getfixturevalue(request.param)
 
 
+@pytest.fixture()
+def mapped_obj(request, obj):
+  """Fixture calls other fixture to create an object and map it to
+  object from 'obj' fixture."""
+  if hasattr(request, "param") and request.param and obj:
+    obj_to_map = request.getfixturevalue(request.param)
+    rest_facade.map_objs(obj_to_map, obj)
+    return obj_to_map
+
+
 # New fixtures
 
 @pytest.fixture(scope="function")
@@ -832,13 +841,6 @@ def app_control():
 def standard():
   """Creates a Standard."""
   return rest_facade.create_standard()
-
-
-@pytest.fixture()
-def standard_mapped_to_control(control, standard):
-  """Creates a Standard mapped to Control."""
-  rest_facade.map_objs(standard, control)
-  return standard
 
 
 @pytest.fixture()
