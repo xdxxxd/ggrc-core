@@ -118,7 +118,7 @@ def create_gcad(**attrs):
   """Creates global CADs for all types."""
   return rest_service.CustomAttributeDefinitionsService(
       is_external=True if (objects.get_plural(attrs["definition_type"])
-                           in objects.EXTERNAL_OBJECTS) else False).create_obj(
+                           in objects.DISABLED_OBJECTS) else False).create_obj(
       factory_params=attrs)
 
 
@@ -171,7 +171,7 @@ def map_objs(src_obj, dest_obj):
   def _is_external(src_obj, dest_obj):
     """Check if one of objects to map is external."""
     singular_title_external_objs = [
-        objects.get_singular(x, title=True) for x in objects.EXTERNAL_OBJECTS]
+        objects.get_singular(x, title=True) for x in objects.DISABLED_OBJECTS]
     objects_list = [src_obj, ]
     dest_ojbect_list = dest_obj if isinstance(dest_obj,
                                               (tuple, list)) else [dest_obj, ]
