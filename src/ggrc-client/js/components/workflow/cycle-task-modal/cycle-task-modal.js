@@ -3,9 +3,9 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import canMap from 'can-map';
 import canComponent from 'can-component';
 import * as businessModels from '../../../models/business-models';
+import MappingOperationsVM from '../../view-models/mapping-operations-vm';
 import {loadObjectsByTypes} from '../../../plugins/utils/query-api-utils';
 import {notifier} from '../../../plugins/utils/notifiers-utils';
 import {getAjaxErrorInfo} from '../../../plugins/utils/errors-utils';
@@ -17,13 +17,9 @@ import {getRelevantMappingTypes} from '../../../plugins/utils/workflow-utils';
  * @property {string} type - type of a pre-mapped object
  */
 
-const viewModel = canMap.extend({
+const viewModel = MappingOperationsVM.extend({
   instance: null,
   isNewInstance: false,
-  /**
-  * @type {Cacheable[]}
-  */
-  mappedObjects: [],
   /**
   * @type {Stub[]}
   */
@@ -32,6 +28,8 @@ const viewModel = canMap.extend({
   * @type {Cacheable[]}
   */
   preMappedObjects: [],
+  mappingsList: [],
+  fields: ['id', 'type', 'title', 'viewLink'],
   isLoading: false,
   loadPreMappedObjects() {
     return this.attr('preMappedStubs').map((stub) =>
@@ -40,7 +38,7 @@ const viewModel = canMap.extend({
   },
   loadMappedObjects() {
     const instance = this.attr('instance');
-    const fields = ['id', 'type', 'title'];
+    const fields = this.attr('fields').attr();
     return loadObjectsByTypes(
       instance,
       getRelevantMappingTypes(instance),
@@ -50,13 +48,16 @@ const viewModel = canMap.extend({
   async init() {
     this.attr('preMappedObjects', this.loadPreMappedObjects());
 
+    this.attr('mappingsList').push(...this.attr('preMappedObjects').attr());
+
     if (this.attr('isNewInstance')) {
       return;
     }
 
     this.attr('isLoading', true);
     try {
-      this.attr('mappedObjects', await this.loadMappedObjects());
+      const mappedObjects = await this.loadMappedObjects();
+      this.attr('mappingsList').push(...mappedObjects);
     } catch (xhr) {
       notifier('error', getAjaxErrorInfo(xhr).details);
     } finally {

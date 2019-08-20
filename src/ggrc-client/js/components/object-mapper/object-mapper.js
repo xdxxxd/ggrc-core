@@ -309,11 +309,7 @@ export default canComponent.extend({
     deferredSave: function (objects) {
       let source = this.viewModel.attr('deferred_to').instance;
       const deferredObjects = objects
-        .filter((destination) => allowedToMap(source, destination))
-        .map((object) => {
-          object.isNeedRefresh = true;
-          return object;
-        });
+        .filter((destination) => allowedToMap(source, destination));
 
       source.dispatch({
         ...DEFERRED_MAP_OBJECTS,
