@@ -22,7 +22,6 @@ import '../../components/assessment/assessment-object-type-dropdown';
 import '../../components/assessment-template-attributes/assessment-template-attributes';
 import '../../components/assessment-templates/people-list/people-list';
 import '../../components/textarea-array/textarea-array';
-import '../../components/object-list-item/object-list-item-updater';
 import '../../components/related-objects/related-documents';
 import '../../components/related-objects/related-urls';
 import '../../components/spinner-component/spinner-component';
