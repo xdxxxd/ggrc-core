@@ -143,11 +143,15 @@ export default canComponent.extend({
       }
     },
     '{viewModel.router} state'([router], event, newStatuses) {
+      // ignore empty "state" query param
+      if (!newStatuses) {
+        return;
+      }
+
       let isCurrent = this.viewModel.attr('widgetId') === router.attr('widget');
       let isEnabled = !this.viewModel.attr('disabled');
 
       let currentStates = this.viewModel.attr('currentStates');
-      newStatuses = newStatuses || this.viewModel.attr('allStates');
       let isChanged =
         loDifference(currentStates, newStatuses).length ||
         loDifference(newStatuses, currentStates).length;
