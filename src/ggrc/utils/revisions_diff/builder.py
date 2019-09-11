@@ -5,9 +5,11 @@
 instance state and proposed content."""
 
 import collections
+import json
 
 from flask import g
 
+from ggrc import utils
 from ggrc.utils.revisions_diff import meta_info
 
 
@@ -373,6 +375,7 @@ def prepare_content_full_diff(instance_meta_info, l_content, r_content):
   Returns:
       A dict representing the diff between two revision contents.
   """
+  r_content = json.loads(utils.as_json(r_content))
   diff = _construct_diff(instance_meta_info, l_content, r_content)
 
   remaining_fields = set(r_content.keys())
