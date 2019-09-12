@@ -4,6 +4,7 @@
 """This module provides endpoints to add/remove SavedSearch models"""
 
 from flask import request
+import sqlalchemy as sa
 
 from ggrc import db
 from ggrc import login
@@ -58,6 +59,8 @@ def get_saved_searches_by_type(search_type):
   If there isn't any saved searches with provided type, empty response will be
   returned.
 
+  Note that only saved searches marked as "visible" will be returned.
+
   Args:
     search_type (str): Type of saved search.
 
@@ -66,7 +69,8 @@ def get_saved_searches_by_type(search_type):
   """
   user = login.get_current_user(use_external_user=False)
   all_objects = user.saved_searches.filter(
-      SavedSearch.search_type == search_type
+      SavedSearch.search_type == search_type,
+      SavedSearch.is_visible == sa.true(),
   )
   if search_type == SavedSearch.ADVANCED_SEARCH or \
       (search_type == SavedSearch.GLOBAL_SEARCH and
@@ -131,14 +135,19 @@ def delete_saved_search(saved_search_id):
 
 
 @app.route("/api/saved_searches", methods=["POST"])
-@validate_post_data_keys(["name", "object_type", "search_type"])
+@validate_post_data_keys(["object_type", "search_type"])
 def create_saved_search():
   """Create a saved search.
 
   Endpoint creating saved search with provided parameters. Request payload
-  should contain saved search `name`, `search_type` and `object_type`. Also it
-  could contain saved search `filters`. If there will any error during saved
-  search creation, 400 status code and corresponding error will be returned.
+  should contain saved search `search_type` and `object_type`. Also it
+  could contain saved search `name`, `filters`, and `is_visible` parameters. If
+  there will any error during saved search creation, 400 status code and
+  corresponding error will be returned.
+
+  If no `name` parameter is provided, it will be generated atimatically.
+  If no `is_visible` parameter is provided, the default value will be used.
+    Defaults to `True`.
 
   Returns:
     Flask Response object containing JSON representation of created saved
@@ -155,6 +164,7 @@ def create_saved_search():
         user,
         data.get("search_type"),
         data.get("filters"),
+        data.get("is_visible", True),
     )
   except ValidationError as error:
     return make_error_response(error.message, 400, force_json=True)

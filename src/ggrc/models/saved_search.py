@@ -11,6 +11,7 @@
 """
 
 import json
+import uuid
 
 from sqlalchemy.orm import validates
 from sqlalchemy.schema import UniqueConstraint
@@ -66,9 +67,18 @@ class SavedSearch(CreationTimeTracked, Dictable, Identifiable, db.Model):
   filters = db.Column(db.Text, nullable=True)
   search_type = db.Column(db.String, nullable=False)
 
+  is_visible = db.Column(db.Boolean, nullable=False, default=True)
+
   # pylint: disable-msg=too-many-arguments
-  def __init__(self, name, object_type, user, search_type, filters=""):
-    self.validate_name_uniqueness(user, name, search_type, object_type)
+  def __init__(self, name, object_type, user, search_type, filters="",
+               is_visible=True):
+    if is_visible:
+      # For "invisible" saved searches it is not required for name to be
+      # unique. Such saved searches are used only in URL links and are not
+      # directly visible for users.
+      self.validate_name_uniqueness(user, name, search_type, object_type)
+    else:
+      name = uuid.uuid4()
 
     super(SavedSearch, self).__init__(
         name=name,
@@ -76,6 +86,7 @@ class SavedSearch(CreationTimeTracked, Dictable, Identifiable, db.Model):
         person_id=user.id,
         search_type=search_type,
         filters=filters,
+        is_visible=is_visible,
     )
 
   @staticmethod
