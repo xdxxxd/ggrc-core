@@ -7,12 +7,13 @@ import random
 import re
 
 from lib import url, users, base, browsers, factory
-from lib.constants import objects, element, object_states
+from lib.constants import objects, element, object_states, roles
 from lib.entities import entities_factory
 from lib.page import dashboard
 from lib.page.modal import unified_mapper
 from lib.page.widget import (generic_widget, object_modal, import_page,
                              related_proposals, version_history, widget_base)
+from lib.rest_facades import roles_rest_facade
 from lib.service import (webui_service, rest_service, rest_facade,
                          admin_webui_service)
 from lib.utils import selenium_utils, ui_utils, string_utils
@@ -476,3 +477,36 @@ def soft_assert_bulk_complete_for_opened_asmts(soft_assert, asmts, page,
         page.is_bulk_complete_displayed() == is_displayed,
         "'Bulk complete' for assessment with '{}' status should {}be "
         "available.".format(status, "" if is_displayed else "not "))
+
+
+def soft_assert_bulk_verify_for_not_in_review_state(page, asmts, soft_assert):
+  """Soft assert 'Bulk Verify' availability for assessments with different from
+  'In Review' status."""
+  statuses = object_states.ASSESSMENT_STATUSES_NOT_READY_FOR_REVIEW
+  for asmt, status in zip(asmts, statuses):
+    if status == object_states.COMPLETED:
+      # normally assessment cannot be in completed state if it has verifiers
+      # GGRC-7802: validation should be added on backend side
+      rest_facade.update_acl([asmt], [], rewrite_acl=True,
+                             **roles_rest_facade.get_role_name_and_id(
+                                 asmt.type, roles.VERIFIERS))
+    rest_facade.update_object(asmt, status=status)
+    browsers.get_browser().refresh()
+    ui_utils.wait_for_spinner_to_disappear()
+    soft_assert.expect(
+        not page.is_bulk_verify_displayed(),
+        "Bulk Verify should not be available if assessment is in "
+        "'{}' status.".format(status))
+
+
+def soft_assert_bulk_verify_for_in_review_state(page, asmt, soft_assert,
+                                                is_available):
+  """Soft assert 'Bulk Verify' availability for assessments in 'In Review'
+  status."""
+  rest_facade.update_object(asmt, status=object_states.READY_FOR_REVIEW)
+  browsers.get_browser().refresh()
+  ui_utils.wait_for_spinner_to_disappear()
+  soft_assert.expect(
+      page.is_bulk_verify_displayed() == is_available,
+      "Bulk Verify should {} be available if assessment is in '{}' status."
+      .format("" if is_available else "not", object_states.READY_FOR_REVIEW))

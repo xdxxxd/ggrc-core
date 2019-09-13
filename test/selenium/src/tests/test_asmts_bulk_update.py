@@ -1,13 +1,28 @@
 # Copyright (C) 2019 Google Inc.
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 """Tests for bulk update functionality."""
+# pylint: disable=no-self-use
 # pylint: disable=unused-argument
+# pylint: disable=redefined-outer-name
+# pylint: disable=invalid-name
+# pylint: disable=too-many-arguments
 import pytest
 
 from lib import base, users
 from lib.constants import object_states, roles
 from lib.rest_facades import roles_rest_facade
 from lib.service import rest_facade, webui_facade, webui_service
+
+
+@pytest.fixture()
+def asmts_w_verifier(second_creator, audit_w_auditor):
+  """Creates 7 assessments, set global creator as a verifier.
+
+  Returns:
+    List of created assessments.
+  """
+  return [rest_facade.create_asmt(
+      audit_w_auditor, verifiers=second_creator) for _ in xrange(7)]
 
 
 def audit_page(audit):
@@ -79,4 +94,36 @@ class TestBulkComplete(base.Test):
     webui_facade.soft_assert_bulk_complete_for_opened_asmts(
         soft_assert, deprecated_asmts, page,
         is_displayed=bulk_complete_btn_visibility)
+    soft_assert.assert_expectations()
+
+
+class TestBulkVerify(base.Test):
+  """Tests for Bulk Verify functionality."""
+
+  @pytest.mark.smoke_tests
+  @pytest.mark.parametrize('page', [audit_page, my_assessments_page])
+  def test_bulk_verify_option_for_verifier(
+      self, second_creator, login_as_creator, audit_w_auditor,
+      asmts_w_verifier, login_as_second_creator, page, soft_assert, selenium
+  ):
+    """Check bulk verify option for user with verifier role."""
+    page = page(audit_w_auditor)
+    webui_facade.soft_assert_bulk_verify_for_not_in_review_state(
+        page, asmts_w_verifier, soft_assert)
+    webui_facade.soft_assert_bulk_verify_for_in_review_state(
+        page, asmts_w_verifier[-1], soft_assert, is_available=True)
+    soft_assert.assert_expectations()
+
+  @pytest.mark.smoke_tests
+  @pytest.mark.parametrize('page', [audit_page, my_assessments_page])
+  def test_bulk_verify_option_for_non_verifier(
+      self, second_creator, login_as_creator, audit_w_auditor,
+      asmts_w_verifier, page, soft_assert, selenium
+  ):
+    """Check bulk verify option for user without verifier role."""
+    page = page(audit_w_auditor)
+    webui_facade.soft_assert_bulk_verify_for_not_in_review_state(
+        page, asmts_w_verifier, soft_assert)
+    webui_facade.soft_assert_bulk_verify_for_in_review_state(
+        page, asmts_w_verifier[-1], soft_assert, is_available=False)
     soft_assert.assert_expectations()

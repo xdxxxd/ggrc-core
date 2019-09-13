@@ -257,3 +257,12 @@ class MyAssessments(base.WithBrowser):
   def is_bulk_complete_displayed(self):
     """Returns whether 'Bulk complete' button is displayed."""
     return self.bulk_complete_button.exists
+
+  @property
+  def bulk_verify_button(self):
+    """Returns 'Bulk Verify' button element."""
+    return self._browser.button(text="Bulk Verify")
+
+  def is_bulk_verify_displayed(self):
+    """Returns whether 'Bulk Verify' button is displayed."""
+    return self.bulk_verify_button.exists

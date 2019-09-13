@@ -275,6 +275,16 @@ class Assessments(Widget):
     base.Element(self._driver,
                  self._locators.SHOW_GENERATED_ASSESSMENTS).click()
 
+  @property
+  def bulk_verify_option(self):
+    """Returns 'Bulk Verify' option from 3bbs menu."""
+    return self.three_bbs.option_by_text("Bulk Verify")
+
+  def is_bulk_verify_displayed(self):
+    """Returns whether 'Bulk Verify' option is displayed in 3bbs menu."""
+    selenium_utils.wait_for_js_to_load(self._driver)
+    return self.bulk_verify_option.exists
+
 
 class Controls(Widget):
   """Model for Controls generic widgets."""

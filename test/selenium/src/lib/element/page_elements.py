@@ -589,4 +589,4 @@ class MultiselectDropdown(object):
 
   def select_all(self):
     """Selects all options by selecting 'Select all' option."""
-    self.set_option_status("Select all")
+    self.set_option_status("Select All")
