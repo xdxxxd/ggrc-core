@@ -3,6 +3,7 @@
 
 """Test access to the PersonProfile."""
 
+from collections import OrderedDict
 import ddt
 
 from ggrc.models import all_models
@@ -10,6 +11,9 @@ from integration.ggrc import TestCase
 from integration.ggrc.api_helper import Api
 from integration.ggrc.generator import Generator
 from integration.ggrc.generator import ObjectGenerator
+from integration.ggrc.models import factories
+from integration.ggrc_basic_permissions.models \
+    import factories as rbac_factories
 
 
 @ddt.ddt
@@ -70,3 +74,33 @@ class TestPersonProfilePermissions(TestCase):
     else:
       self.assertEqual(len(api_profiles), 1)
       self.assertEqual(profile_id, api_profile_id)
+
+  def test_program_editor_permissions(self):
+    """Test checks that PE cannot delete objects mapped to program"""
+    creator = all_models.Role.query.filter(
+        all_models.Role.name == 'Creator')[0]
+    program_editor_email = 'creator@gmail.ru'
+    issue_slug = 'ISSUE-1'
+    with factories.single_commit():
+      issue = factories.IssueFactory(slug=issue_slug)
+      issue_id = issue.id
+      program_editors = factories.PersonFactory(email=program_editor_email)
+      program_editors_id = program_editors.id
+      rbac_factories.UserRoleFactory(role=creator,
+                                     person=program_editors)
+    self.client.get("/login")
+    response = self.import_data(OrderedDict([
+        ("object_type", "Program"),
+        ("Code*", "PROGRAM-1"),
+        ("Title", "New program"),
+        ("Program Managers*", "user@example.com"),
+        ("Program Editors", program_editor_email),
+        ("map:Issue", issue_slug),
+    ]))
+    self._check_csv_response(response, {})
+    user = all_models.Person.query.get(program_editors_id)
+    self.api.set_user(user)
+    self.client.get("/login")
+    issue = all_models.Issue.query.get(issue_id)
+    response = self.api.delete(issue)
+    self.assertStatus(response, 403)
