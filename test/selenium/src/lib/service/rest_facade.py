@@ -283,3 +283,23 @@ def cas_dashboards(obj, *urls):
   valid_urls = [i for i in urls if re.match(valid_dashboard_url_pattern, i)]
   return dict(zip([gca_def.title.replace(value_aliases.DASHBOARD + "_", "")
                    for gca_def in gca_defs], valid_urls))
+
+
+def update_acl(objs, people, rewrite_acl=False, **kwargs):
+  """Updates or rewrites access control list of objects.
+
+  Args:
+    objs: A list of objects to update.
+    people: Person or list of persons who will be assigned with role
+    rewrite_acl: Boolean indicating whether the object ACL will be updated or
+        rewritten.
+    **kwargs:
+      role_name: Name of access control role.
+      role_id: Id of access control role.
+
+  Returns: list of updated objects."""
+  return [
+      factory.get_cls_rest_service(objects.get_plural(obj.type))().
+      update_acl(obj=obj, people=people, rewrite_acl=rewrite_acl,
+                 role_name=kwargs["role_name"], role_id=kwargs["role_id"])
+      for obj in objs]

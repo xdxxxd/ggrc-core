@@ -5,9 +5,9 @@
 
 from selenium.common import exceptions
 
-from lib import base, decorator, url
+from lib import base, decorator, environment, url
 from lib.constants import locator
-from lib.element import tab_element
+from lib.element import tab_element, page_elements
 from lib.page import widget_bar, lhn
 from lib.page.modal import global_search
 from lib.page.widget import object_modal
@@ -229,3 +229,31 @@ class AdminDashboard(widget_bar.AdminDashboard, GenericHeader):
 class AllObjectsDashboard(widget_bar.AllObjectsDashboard, GenericHeader):
   """All Objects Dashboard"""
   # pylint: disable=abstract-method
+
+
+class MyAssessments(base.WithBrowser):
+  """Model for 'My Assessments' page."""
+
+  def __init__(self, driver=None):
+    super(MyAssessments, self).__init__(driver)
+
+  @property
+  def my_assessments_url(self):
+    """Returns 'My Assessments' page url."""
+    return environment.app_url + url.Widget.MY_ASSESSMENTS
+
+  @property
+  def status_filter_dropdown(self):
+    """Returns multi select dropdown for filtering Assessments by their
+    status."""
+    return page_elements.MultiselectDropdown(
+        self._browser.element(tag_name="tree-status-filter"))
+
+  @property
+  def bulk_complete_button(self):
+    """Represents 'Bulk complete' button."""
+    return self._browser.button(text="Bulk Complete")
+
+  def is_bulk_complete_displayed(self):
+    """Returns whether 'Bulk complete' button is displayed."""
+    return self.bulk_complete_button.exists

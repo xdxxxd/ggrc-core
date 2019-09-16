@@ -558,3 +558,35 @@ class PersonCAActionsStrategy(CAActionsStrategy):
     """Chooses user."""
     self._input.send_keys(value)
     ui_utils.select_user(self._root, value)
+
+
+class MultiselectDropdown(object):
+  """Class for multi select dropdown item."""
+
+  def __init__(self, container):
+    self._root = container.element(class_name="multiselect-dropdown")
+
+  @property
+  def is_expanded(self):
+    """Returns whether dropdown is expanded."""
+    return self._root.element(class_name="dropdown-focus").exists
+
+  def expand(self):
+    """Expands dropdown if it is not expanded."""
+    if not self.is_expanded:
+      self._root.click()
+
+  def collapse(self):
+    """Collapses dropdown if it is expanded."""
+    if self.is_expanded:
+      self._root.click()
+
+  def set_option_status(self, option, status=True):
+    """Selects or deselects option according to status value."""
+    self.expand()
+    self._root.element(text=option).checkbox().set(status)
+    self.collapse()
+
+  def select_all(self):
+    """Selects all options by selecting 'Select all' option."""
+    self.set_option_status("Select all")
