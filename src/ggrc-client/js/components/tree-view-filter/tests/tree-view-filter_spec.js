@@ -138,15 +138,21 @@ describe('tree-view-filter component', () => {
       viewModel.attr('advancedSearch.mappingItems', mappingItems);
       viewModel.attr('advancedSearch.appliedFilterItems', canList());
       viewModel.attr('advancedSearch.appliedMappingItems', canList());
+      viewModel.attr('model', {
+        model_plural: '',
+      });
       spyOn(viewModel, 'onFilter');
       spyOn(AdvancedSearch, 'buildFilter')
         .and.callFake((items, request) => {
           request.push({name: 'item'});
         });
       spyOn(QueryParser, 'joinQueries');
+      spyOn(viewModel, 'applySavedSearch');
     });
 
     it('copies filter and mapping items to applied', () => {
+      spyOn(CurrentPageUtils, 'isMyWork').and.returnValue(false);
+      spyOn(CurrentPageUtils, 'isAllObjects').and.returnValue(false);
       viewModel.applyAdvancedFilters();
 
       expect(viewModel.attr('advancedSearch.appliedFilterItems').attr())
@@ -161,6 +167,8 @@ describe('tree-view-filter component', () => {
       });
       viewModel.attr('advancedSearch.filter', null);
 
+      spyOn(CurrentPageUtils, 'isMyWork').and.returnValue(false);
+      spyOn(CurrentPageUtils, 'isAllObjects').and.returnValue(false);
       viewModel.applyAdvancedFilters();
 
       expect(viewModel.attr('advancedSearch.filter.name')).toBe('test');
@@ -168,7 +176,8 @@ describe('tree-view-filter component', () => {
 
     it('initializes advancedSearch.request property', () => {
       viewModel.attr('advancedSearch.request', canList());
-
+      spyOn(CurrentPageUtils, 'isMyWork').and.returnValue(false);
+      spyOn(CurrentPageUtils, 'isAllObjects').and.returnValue(false);
 
       viewModel.applyAdvancedFilters();
 
@@ -178,15 +187,28 @@ describe('tree-view-filter component', () => {
     it('closes modal window', () => {
       viewModel.attr('advancedSearch.open', true);
 
+      spyOn(CurrentPageUtils, 'isMyWork').and.returnValue(false);
+      spyOn(CurrentPageUtils, 'isAllObjects').and.returnValue(false);
       viewModel.applyAdvancedFilters();
 
       expect(viewModel.attr('advancedSearch.open')).toBe(false);
     });
 
     it('calls onFilter() method', () => {
+      spyOn(CurrentPageUtils, 'isMyWork').and.returnValue(false);
+      spyOn(CurrentPageUtils, 'isAllObjects').and.returnValue(false);
       viewModel.applyAdvancedFilters();
 
       expect(viewModel.onFilter).toHaveBeenCalled();
+    });
+
+    it('should call "applySavedSearch" method, ' +
+    'when "isSavedSearchShown" is true', () => {
+      // isMyWork page. "isSavedSearchShown" getter returns false
+      spyOn(CurrentPageUtils, 'isMyWork').and.returnValue(true);
+
+      viewModel.applyAdvancedFilters();
+      expect(viewModel.applySavedSearch).not.toHaveBeenCalled();
     });
   });
 
@@ -316,26 +338,54 @@ describe('tree-view-filter component', () => {
     let method;
 
     beforeEach(() => {
-      spyOn(viewModel, 'clearAppliedSavedSearch');
+      spyOn(viewModel, 'resetAppliedSavedSearch');
       viewModel.attr('filterIsDirty', false);
       viewModel.attr('savedSearchPermalink', '');
+      viewModel.attr('modelName', 'Control');
+      spyOn(AdvancedSearch, 'getFilters').and.returnValue([]);
 
       method = viewModel.applySavedSearch.bind(viewModel);
     });
 
-    it('should call "clearAppliedSavedSearch" when selectedSavedSearch is null',
+    it('should call "resetAppliedSavedSearch" when selectedSavedSearch is null',
       () => {
         method(null);
-        expect(viewModel.clearAppliedSavedSearch).toHaveBeenCalled();
+        expect(viewModel.resetAppliedSavedSearch).toHaveBeenCalled();
       }
     );
 
-    it('should call "clearAppliedSavedSearch" when filter is dirty', () => {
+    it('should call "resetAppliedSavedSearch" when filter is dirty', () => {
       viewModel.attr('filterIsDirty', true);
-
       method({});
-      expect(viewModel.clearAppliedSavedSearch).toHaveBeenCalled();
+      expect(viewModel.resetAppliedSavedSearch).toHaveBeenCalled();
     });
+
+    it('should set "appliedSavedSearch" attr when selectedSavedSearch is null',
+      () => {
+        viewModel.attr('appliedSavedSearch', null);
+        method(null);
+        expect(viewModel.attr('appliedSavedSearch').serialize()).toEqual({
+          search_type: 'AdvancedSearch',
+          object_type: viewModel.attr('modelName'),
+          is_visible: false,
+          filters: [],
+        });
+      }
+    );
+
+    it('should set "appliedSavedSearch" attr when filter is dirty',
+      () => {
+        viewModel.attr('appliedSavedSearch', null);
+        viewModel.attr('filterIsDirty', true);
+        method({});
+        expect(viewModel.attr('appliedSavedSearch').serialize()).toEqual({
+          search_type: 'AdvancedSearch',
+          object_type: viewModel.attr('modelName'),
+          is_visible: false,
+          filters: [],
+        });
+      }
+    );
 
     it('should set permalink when selectedSavedSearch is not empty ' +
     'and filter is NOT dirty', () => {
@@ -354,6 +404,63 @@ describe('tree-view-filter component', () => {
       method(new canMap(selectedSavedSearch));
       expect(viewModel.attr('appliedSavedSearch').serialize())
         .toEqual(selectedSavedSearch);
+    });
+  });
+
+  describe('applySavedSearchPermalink() method', () => {
+    beforeEach(() => {
+      viewModel.attr('widgetId', 1);
+      viewModel.attr('savedSearchPermalink', '');
+      spyOn(viewModel, 'savePermalinkToClipboard').and.callFake((permalink) => {
+        viewModel.attr('savedSearchPermalink', permalink);
+      });
+      spyOn(AdvancedSearch, 'buildSearchPermalink')
+        .and.callFake(function (id, widgetId) {
+          return id;
+        });
+    });
+
+    it('calls only savePermalinkToClipboard when permalink is defined ',
+      (done) => {
+        viewModel.attr('savedSearchPermalink', 1);
+        viewModel.applySavedSearchPermalink().then(() => {
+          expect(viewModel.savePermalinkToClipboard).toHaveBeenCalled();
+          done();
+        });
+      }
+    );
+
+    it('calls savePermalinkToClipboard when appliedSavedSearch is defined',
+      (done) => {
+        const appliedSavedSearch = {id: 2};
+        viewModel.attr('appliedSavedSearch', appliedSavedSearch);
+        viewModel.applySavedSearchPermalink().then(() => {
+          expect(viewModel.savePermalinkToClipboard).toHaveBeenCalled();
+          expect(viewModel.attr('savedSearchPermalink'))
+            .toEqual(appliedSavedSearch.id);
+          done();
+        });
+      }
+    );
+
+    it('saves hiddenSavedSearch when appliedSavedSearch does NOT have id and ' +
+    'is_visible is false', (done) => {
+      const dfd = $.Deferred();
+      const savedSearch = {id: 1};
+
+      const appliedSavedSearch = {
+        is_visible: false,
+        save: () => dfd,
+      };
+
+      viewModel.attr('appliedSavedSearch', appliedSavedSearch);
+      viewModel.applySavedSearchPermalink().then(() => {
+        expect(viewModel.savePermalinkToClipboard).toHaveBeenCalled();
+        expect(viewModel.attr('savedSearchPermalink')).toEqual(savedSearch.id);
+        expect(viewModel.attr('appliedSavedSearch')).toBeNull();
+        done();
+      });
+      dfd.resolve(savedSearch);
     });
   });
 
