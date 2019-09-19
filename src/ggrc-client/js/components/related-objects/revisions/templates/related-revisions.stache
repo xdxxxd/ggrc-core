@@ -26,7 +26,7 @@
     </div>
   </div>
   <div class="object-history__body {{#isLoading}}loading{{/isLoading}}">
-    <object-list items:from="visibleRevisions"
+    <object-list items:from="revisions"
                  isLoading:from="loading"
                  listType:from="'GRID'">
       <related-revisions-item class="object-history__row flex-box"
