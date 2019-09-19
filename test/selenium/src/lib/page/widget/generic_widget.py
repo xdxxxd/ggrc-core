@@ -297,8 +297,10 @@ class Programs(Widget):
   """Model for Programs generic widgets"""
   def __init__(self, driver=None, obj_name=objects.PROGRAMS):
     self._actual_name = obj_name
-    self.obj_name = (objects.PROGRAMS if obj_name == objects.PROGRAM_PARENTS
-                     else obj_name)
+    if obj_name in (objects.PROGRAM_PARENTS, objects.PROGRAM_CHILDS):
+      self.obj_name = objects.PROGRAMS
+    else:
+      self.obj_name = obj_name
     super(Programs, self).__init__(driver, self.obj_name)
 
   @property
@@ -341,3 +343,7 @@ class CADashboard(widget_bar.Dashboard):
   def active_dashboard_tab_elem(self):
     """Returns iframe content of selected CA dashboard tab."""
     return self._browser.iframe()
+
+
+class Regulations(Widget):
+  """Model for Regulations generic widgets."""

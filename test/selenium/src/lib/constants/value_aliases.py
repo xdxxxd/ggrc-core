@@ -21,3 +21,4 @@ SCROLL_HEIGHT = "scrollHeight"
 
 DEFAULT = "default"
 DASHBOARD = "Dashboard"
+CREATED = "Created"

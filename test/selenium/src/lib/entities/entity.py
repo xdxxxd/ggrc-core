@@ -663,7 +663,7 @@ class Entity(Representation):
         ControlEntity, AuditEntity, AssessmentEntity, AssessmentTemplateEntity,
         IssueEntity, CommentEntity, ObjectiveEntity, AccessControlRoleEntity,
         RiskEntity, OrgGroupEntity, ProposalEntity, ReviewEntity,
-        ProductEntity, TechnologyEnvironmentEntity
+        ProductEntity, TechnologyEnvironmentEntity, ChangeLogItemEntity
     )
 
   def __lt__(self, other):
@@ -899,7 +899,7 @@ class ChangeLogItemEntity(Representation):
 
   def __init__(self, **attrs):
     super(ChangeLogItemEntity, self).__init__()
-    self.set_attrs("author", "changes", **attrs)
+    self.set_attrs("author", "changes", "additional_info", **attrs)
 
 
 class ProposalEntity(Representation):

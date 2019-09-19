@@ -461,6 +461,27 @@ class ProgramModalSetVisibleFields(CommonModalSetVisibleFields):
       PRIMARY_CONTACTS)
 
 
+class ProgramChildModalSetVisibleFields(CommonModalSetVisibleFields):
+  """Common elements' labels and properties for Modal to Set visible
+   fields for Child Programs.
+   """
+  DEFAULT_SET_FIELDS = ProgramModalSetVisibleFields.DEFAULT_SET_FIELDS
+
+
+class RegulationModalSetVisibleFields(CommonModalSetVisibleFields):
+  """Common elements' labels and properties for Modal to Set visible
+  fields for Regulations.
+  """
+  REVIEW_STATE = TransformationSetVisibleFields.REVIEW_STATE
+  PRIMARY_CONTACTS = TransformationSetVisibleFields.PRIMARY_CONTACTS
+  ADMIN = TransformationSetVisibleFields.ADMIN
+  DEFAULT_SET_FIELDS = (
+      CommonModalSetVisibleFields.TITLE, CommonModalSetVisibleFields.CODE,
+      CommonModalSetVisibleFields.STATE,
+      CommonModalSetVisibleFields.LAST_UPDATED_BY, REVIEW_STATE,
+      PRIMARY_CONTACTS, ADMIN)
+
+
 class AuditModalSetVisibleFields(CommonModalSetVisibleFields):
   """Common elements' labels and properties for Modal to Set visible
  fields for Audits.

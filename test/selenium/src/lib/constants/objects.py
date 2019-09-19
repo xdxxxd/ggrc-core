@@ -11,6 +11,7 @@ import inflection
 RELATIONSHIPS = "relationships"
 PROGRAMS = "programs"
 PROGRAM_PARENTS = "program_parents"
+PROGRAM_CHILDS = "program_childs"
 WORKFLOWS = "workflows"
 AUDITS = "audits"
 ASSESSMENTS = "assessments"

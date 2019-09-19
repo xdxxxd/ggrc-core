@@ -360,6 +360,8 @@ class Programs(InfoWidget, page_mixins.WithProposals):
   # pylint: disable=too-many-instance-attributes
   _locators = locator.WidgetInfoProgram
   _elements = element.ProgramInfoWidget
+  CHILD_PROGRAMS_TAB_NAME = 'Programs (Child)'
+  PARENT_PROGRAMS_TAB_NAME = 'Programs (Parent)'
 
   def __init__(self, driver=None):
     super(Programs, self).__init__(driver)
@@ -369,6 +371,10 @@ class Programs(InfoWidget, page_mixins.WithProposals):
     self._extend_list_all_scopes(
         self.manager, self.manager_entered)
     self.reference_urls = self._related_urls(self._reference_url_label)
+
+  @property
+  def mega_program_icon(self):
+    return self._root.element(class_name='fa-bookmark')
 
   def description(self):
     """Returns the text of description."""

@@ -530,6 +530,12 @@ class BaseWebUiService(base.WithBrowser):
     """Return review message on info pane."""
     return self.open_info_page_of_obj(obj).get_object_review_txt()
 
+  def open_tab_via_add_tab_btn(self, src_obj, tab_name):
+    """Opens info page of src_obj, clicks Add tab button and chooses tab by
+    it's name."""
+    (self.open_info_page_of_obj(src_obj).click_add_tab_btn().
+        click_item_by_text(text=tab_name))
+
 
 class SnapshotsWebUiService(BaseWebUiService):
   """Class for snapshots business layer's services objects."""
@@ -788,7 +794,7 @@ class IssuesService(BaseWebUiService):
 
 class TechnologyEnvironmentService(BaseWebUiService):
   """Class for Technology Environments business layer's services objects."""
-  def __init__(self, driver):
+  def __init__(self, driver=None):
     super(TechnologyEnvironmentService, self).__init__(
         objects.TECHNOLOGY_ENVIRONMENTS, driver)
 
@@ -796,7 +802,7 @@ class TechnologyEnvironmentService(BaseWebUiService):
 class ProgramsService(BaseWebUiService):
   """Class for Programs business layer's services objects."""
 
-  def __init__(self, driver, obj_name=objects.PROGRAMS):
+  def __init__(self, driver=None, obj_name=objects.PROGRAMS):
     self._actual_obj_name = obj_name
     self.obj_name = objects.PROGRAMS
     super(ProgramsService, self).__init__(
@@ -828,6 +834,19 @@ class ProgramsService(BaseWebUiService):
 
 
 class ProductsService(BaseWebUiService):
-  """Class for Programs business layer's services objects."""
+  """Class for Products business layer's services objects."""
   def __init__(self, driver=None):
     super(ProductsService, self).__init__(objects.PRODUCTS, driver)
+
+
+class RegulationsService(BaseWebUiService):
+  """Class for Regulations business layer's services objects."""
+  def __init__(self, driver=None):
+    super(RegulationsService, self).__init__(objects.REGULATIONS, driver)
+
+
+class TechnologyEnvironmentsService(BaseWebUiService):
+  """Class for Technology Environments business layer's services objects."""
+  def __init__(self, driver=None):
+    super(TechnologyEnvironmentsService, self).__init__(
+        objects.TECHNOLOGY_ENVIRONMENTS, driver)

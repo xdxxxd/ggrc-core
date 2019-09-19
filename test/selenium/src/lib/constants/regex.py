@@ -5,3 +5,4 @@
 WIDGET_TITLE_AND_COUNT = r"(.*) \((.*)\)"
 TEXT_W_PARENTHESES = r"\([^)]*\) "
 TEXT_WO_PARENTHESES = r"\((.*?)\)"
+ADDITIONAL_INFO_IN_CHANGE_LOG = r"\((.*?)\)$"  # handles inner closing brackets

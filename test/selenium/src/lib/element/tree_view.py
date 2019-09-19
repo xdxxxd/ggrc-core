@@ -52,6 +52,10 @@ class Programs(CommonDropdownSettings):
   """Programs 3BBS button/dropdown settings on Tree View."""
 
 
+class ProgramChilds(CommonDropdownSettings):
+  """ProgramChilds 3BBS button/dropdown settings on Tree View."""
+
+
 class Controls(CommonDropdownSettings):
   """Controls 3BBS button/dropdown settings on Tree View."""
 
@@ -94,3 +98,7 @@ class Issues(CommonDropdownSettings):
 
 class Risks(CommonDropdownSettings):
   """Risks 3BBS button/dropdown settings on Tree View."""
+
+
+class Regulations(CommonDropdownSettings):
+  """Regulations 3BBS button/dropdown settings on Tree View."""

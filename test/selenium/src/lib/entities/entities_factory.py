@@ -11,7 +11,8 @@ import random
 
 from lib import factory, users
 from lib.constants import (
-    objects, roles, value_aliases, messages, object_states, element)
+    objects, roles, value_aliases, messages, object_states, element,
+    str_formats)
 from lib.constants.element import AdminWidgetCustomAttributes, ReviewStates
 from lib.decorator import lazy_property
 from lib.entities import entity
@@ -885,8 +886,29 @@ class ChangeLogItemsFactory(EntitiesFactory):
     source object."""
     return self.obj_inst().update_attrs(
         author=users.current_user().email,
-        changes=[
-            {"attribute_name":
-             "Mapping to {}: {}".format(source_obj.type, source_obj.title),
-             "original_value": None,
-             "new_value": "Created"}])
+        changes=[{
+            "attribute_name": str_formats.CHANGE_LOG_MAPPING_MSG.format(
+                obj_name=source_obj.type,
+                obj_title=source_obj.title),
+            "original_value": None,
+            "new_value": value_aliases.CREATED}])
+
+  def generate_log_entity_for_automapping(self, src_obj, mapped_obj,
+                                          automapped_obj, user):
+    """Create and return expected ChangeLogItem entity which describes
+    automapping of automapped_obj to src_obj after mapping of mapped_obj to
+    src_obj."""
+    return self.obj_inst().update_attrs(
+        author=roles.SYSTEM,
+        changes=[{
+            "attribute_name": str_formats.CHANGE_LOG_MAPPING_MSG.format(
+                obj_name=automapped_obj.type,
+                obj_title=automapped_obj.title),
+            "original_value": None,
+            "new_value": value_aliases.CREATED}],
+        additional_info=str_formats.CHANGE_LOG_AUTOMAPPING_MSG.format(
+            user_name=user.email,
+            src_obj_name=src_obj.type,
+            src_obj_title=src_obj.title,
+            mapped_obj_name=mapped_obj.type,
+            mapped_obj_title=mapped_obj.title))
