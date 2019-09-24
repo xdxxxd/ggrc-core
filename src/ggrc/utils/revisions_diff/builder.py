@@ -375,7 +375,6 @@ def prepare_content_full_diff(instance_meta_info, l_content, r_content):
   Returns:
       A dict representing the diff between two revision contents.
   """
-  r_content = json.loads(utils.as_json(r_content))
   diff = _construct_diff(instance_meta_info, l_content, r_content)
 
   remaining_fields = set(r_content.keys())
@@ -408,6 +407,12 @@ def prepare_content_full_diff(instance_meta_info, l_content, r_content):
   return diff
 
 
+def _normalize_content(content):
+  """Prepare content to changes_present"""
+  new_content = json.loads(utils.as_json(content))
+  return new_content
+
+
 def changes_present(obj, new_rev_content, prev_rev_content=None,
                     obj_meta=None):
   """Check if `new_rev_content` contains obj changes.
@@ -431,6 +436,7 @@ def changes_present(obj, new_rev_content, prev_rev_content=None,
       Boolean flag indicating whether `new_rev_content` contains any changes
         in `obj` state comparing to `prev_rev_content`.
   """
+  new_rev_content = _normalize_content(new_rev_content)
   if obj_meta is None:
     obj_meta = meta_info.MetaInfo(obj)
   if prev_rev_content is None:
