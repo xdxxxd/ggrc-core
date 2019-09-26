@@ -10,7 +10,7 @@ from lib import url, users, base, browsers, factory
 from lib.constants import objects, element, object_states, roles
 from lib.entities import entities_factory
 from lib.page import dashboard
-from lib.page.modal import unified_mapper
+from lib.page.modal import bulk_update, unified_mapper
 from lib.page.widget import (generic_widget, object_modal, import_page,
                              related_proposals, version_history, widget_base)
 from lib.rest_facades import roles_rest_facade
@@ -510,3 +510,29 @@ def soft_assert_bulk_verify_for_in_review_state(page, asmt, soft_assert,
       page.is_bulk_verify_displayed() == is_available,
       "Bulk Verify should {} be available if assessment is in '{}' status."
       .format("" if is_available else "not", object_states.READY_FOR_REVIEW))
+
+
+def bulk_verify_all(widget, wait_for_completion=True):
+  """Bulk verify all available assessments in specified widget."""
+  bulk_verify_modal = bulk_update.BulkVerifyModal()
+  if not bulk_verify_modal.is_displayed:
+    widget.open_bulk_verify_modal()
+  bulk_verify_modal.select_assessments_section.click_select_all()
+  bulk_verify_modal.click_verify()
+  if wait_for_completion:
+    widget.submit_message.wait_until(lambda e: e.exists)
+    widget.finish_message.wait_until(lambda e: e.exists)
+
+
+def soft_assert_verified_state_after_bulk_verify(page, src_obj, soft_assert):
+  """Soft assert that assessments statuses actually have been updated after
+  bulk verify has been completed."""
+  bulk_verify_all(page)
+  # reload page to see actual assessments state
+  browsers.get_browser().refresh()
+  asmts_from_ui = (webui_service.AssessmentsService()
+                   .get_list_objs_from_tree_view(src_obj))
+  soft_assert.expect(
+      all([asmt.status == object_states.COMPLETED and asmt.verified is True
+           for asmt in asmts_from_ui]),
+      "All assessments should be verified and have 'Completed' state.")

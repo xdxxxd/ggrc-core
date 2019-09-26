@@ -127,3 +127,24 @@ class TestBulkVerify(base.Test):
     webui_facade.soft_assert_bulk_verify_for_in_review_state(
         page, asmts_w_verifier[-1], soft_assert, is_available=False)
     soft_assert.assert_expectations()
+
+  @pytest.mark.smoke_tests
+  @pytest.mark.parametrize('page', [audit_page, my_assessments_page])
+  def test_bulk_verification(
+      self, second_creator, login_as_creator, audit_w_auditor,
+      asmts_w_verifier, login_as_second_creator, page, soft_assert, selenium
+  ):
+    """Check that assessments statuses actually have been updated after
+    bulk verify has been completed."""
+    for asmt in asmts_w_verifier:
+      rest_facade.update_object(asmt, status=object_states.READY_FOR_REVIEW)
+    page = page(audit_w_auditor)
+    modal = page.open_bulk_verify_modal()
+    soft_assert.expect(
+        not modal.is_verify_button_active,
+        "'Bulk Verify' button should be disabled if no selected assessments.")
+    soft_assert.expect(not modal.filter_section.is_expanded,
+                       "'Filter' section should be collapsed.")
+    webui_facade.soft_assert_verified_state_after_bulk_verify(
+        page, audit_w_auditor, soft_assert)
+    soft_assert.assert_expectations()

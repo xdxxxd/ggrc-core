@@ -11,6 +11,7 @@ from lib.constants import locator, regex, element, counters, messages, objects
 from lib.element import three_bbs
 from lib.page import widget_bar
 from lib.page.modal import unified_mapper
+from lib.page.widget import page_mixins
 from lib.utils import selenium_utils
 
 
@@ -255,18 +256,9 @@ class AssessmentTemplates(Widget):
   """Model for Assessment Templates generic widgets."""
 
 
-class Assessments(Widget):
+class Assessments(page_mixins.WithBulkUpdateOptions, Widget):
   """Model for Assessments generic widgets."""
   _locators = locator.Assessments
-
-  @property
-  def bulk_complete_option(self):
-    """Returns 'Bulk complete' option from 3bbs menu."""
-    return self.three_bbs.option_by_text("Bulk Complete")
-
-  def is_bulk_complete_displayed(self):
-    """Returns whether 'Bulk complete' option is displayed in 3bbs menu."""
-    return self.bulk_complete_option.exists
 
   def show_generated_results(self):
     """Wait for Assessments generated successfully message.
@@ -274,16 +266,6 @@ class Assessments(Widget):
     """
     base.Element(self._driver,
                  self._locators.SHOW_GENERATED_ASSESSMENTS).click()
-
-  @property
-  def bulk_verify_option(self):
-    """Returns 'Bulk Verify' option from 3bbs menu."""
-    return self.three_bbs.option_by_text("Bulk Verify")
-
-  def is_bulk_verify_displayed(self):
-    """Returns whether 'Bulk Verify' option is displayed in 3bbs menu."""
-    selenium_utils.wait_for_js_to_load(self._driver)
-    return self.bulk_verify_option.exists
 
 
 class Controls(Widget):
