@@ -23,6 +23,8 @@ class Symbols(object):
   BACK_QUOTE = "`"
   BACKSLASH = "\\"
   PIPE = "|"
+  AT_SIGN = "@"
+  PLUS = "+"
 
   def __init__(self, additional_exclude=''):
     """Create symbols sets.
