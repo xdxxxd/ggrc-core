@@ -14,14 +14,15 @@
         <i class="fa fa-asterisk"></i>
         <i class="fa fa-question-circle" rel="tooltip" title="Give new {{model.title_plural}} a name."></i>
       </label>
-      <input-filter
-        name:from="'title'"
-        value:bind="title"
-        placeholder:from="'Enter Title'"
-        excludeSymbols:from="'*'"
-        tabindex:from="1"
-        autofocus:from="true">
-      </input-filter>
+      <input
+        type="text"
+        name="title"
+        el:value:bind="title"
+        class="input-filter input-block-level"
+        placeholder="Enter Title"
+        tabindex="1"
+        autofocus>
+      {{#instance.computed_errors.title}}<label class="help-inline warning">{{this}}</label>{{/instance.computed_errors.title}}
     </div>
     <div class="span4">
       <label class="form-label">
