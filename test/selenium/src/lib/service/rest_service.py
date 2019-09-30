@@ -79,7 +79,8 @@ class BaseRestService(object):
         self.client.update_object(href=obj.href, **attrs)), **obj.__dict__)
 
   @staticmethod  # noqa: ignore=C901
-  def get_items_from_resp(resp, timeout=constants.ux.MAX_USER_WAIT_SECONDS):
+  def get_items_from_resp(resp,
+                          timeout=constants.timeouts.MAX_USER_WAIT_SECONDS):
     """Check response (waiting object of requests library) from server and get
     items {key: value} from it."""
     def get_items_from_resp():

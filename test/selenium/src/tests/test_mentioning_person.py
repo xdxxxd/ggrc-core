@@ -9,9 +9,9 @@
 import pytest
 
 from lib.rest_facades import person_rest_facade
-from lib.service import webui_facade
+from lib.service import webui_facade, webui_service
 from lib.ui import mentioning_ui_facade
-from lib.utils import string_utils
+from lib.utils import random_utils, string_utils
 
 
 class TestMentioningPerson(object):
@@ -39,6 +39,29 @@ class TestMentioningPerson(object):
     """
     mentioning_ui_facade.check_mentioning_on_asmt_comment_panel(
         selenium, soft_assert, audit, assessment, first_symbol)
+
+  @pytest.mark.parametrize('first_symbol', [string_utils.Symbols.PLUS,
+                                            string_utils.Symbols.AT_SIGN])
+  def test_mention_list_does_not_appear(
+      self, audit, assessment, selenium, first_symbol
+  ):
+    """Checks if the mentioning list does not appear when there is no search
+     result on comments panel on assessment info panel.
+
+    Firstly call mention list, then additionally type some trash symbols and
+    check that dropdown disappears.
+        Preconditions:
+        - Program created via REST API.
+        - Audit created under Program via REST API.
+        - Assessment created under Audit via REST API.
+    """
+    comment_input = (webui_service.AssessmentsService(selenium).
+                     open_info_panel_of_mapped_obj(
+                         src_obj=audit, obj=assessment).comments_panel.
+                     comment_input)
+    comment_input.call_email_dropdown(first_symbol)
+    comment_input.fill(text=random_utils.get_string())
+    assert comment_input.emails_dropdown.wait_until_disappears()
 
   @pytest.mark.smoke_tests
   @pytest.mark.parametrize('first_symbol', [string_utils.Symbols.PLUS,

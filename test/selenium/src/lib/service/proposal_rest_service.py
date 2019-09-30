@@ -26,7 +26,7 @@ class ProposalsService(rest_service.HelpRestService):
             order_by=[
                 {"name": "status", "desc": True},
                 {"name": "created_at", "desc": True}]),
-        timeout=constants.ux.TWO_MIN_USER_WAIT).get("values")
+        timeout=constants.timeouts.TWO_MIN_USER_WAIT).get("values")
 
   def get_proposal_creation_date(self, obj, proposal):
     """Get proposal creation date."""
@@ -39,6 +39,6 @@ class ProposalsService(rest_service.HelpRestService):
               if prop_value in prop["content"]["fields"]["description"]]
 
     actual_proposal = test_utils.wait_for(
-        needed_proposal, constants.ux.MAX_USER_WAIT_SECONDS)
+        needed_proposal, constants.timeouts.MAX_USER_WAIT_SECONDS)
     return parser.parse(actual_proposal[0]["created_at"]).replace(
         tzinfo=tz.tzutc())
