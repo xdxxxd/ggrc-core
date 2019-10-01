@@ -3,22 +3,13 @@
 
 """Test Archived Audit."""
 
-from os.path import abspath
-from os.path import dirname
-from os.path import join
 from ddt import data, ddt, unpack
-from ggrc.app import app  # NOQA pylint: disable=unused-import
 from ggrc.app import db
 from ggrc.models import all_models
+from ggrc.models.inflector import get_model
 from integration.ggrc import TestCase
 from integration.ggrc.api_helper import Api
 from integration.ggrc.models import factories
-
-
-CONTEXT_OBJECTS = ('issue', 'assessment', 'template', 'archived_issue')
-ARCHIVED_CONTEXT_OBJECTS = (
-    'archived_assessment',
-    'archived_template')
 
 
 def _create_obj_dict(obj, audit_id, context_id, assessment_id=None):
@@ -86,96 +77,12 @@ def _create_obj_dict(obj, audit_id, context_id, assessment_id=None):
 
 class TestAuditArchivingBase(TestCase):
   """Base class for testing archived audits."""
-  CSV_DIR = join(abspath(dirname(__file__)), "test_csvs")
-
-  @classmethod
-  def setUpClass(cls):
-    """Prepare data needed to run the tests."""
-    TestCase.clear_data()
-
-    with app.app_context():
-      cls.response = cls._import_file("audit_rbac.csv")
-      cls.people = {
-          person.name: person
-          for person in all_models.Person.eager_query().all()
-      }
-      created_objects = (
-          (all_models.Audit, 'AUDIT-1', 'audit'),
-          (all_models.Audit, 'AUDIT-2', 'archived_audit'),
-          (all_models.Issue, 'PMRBACISSUE-1', 'issue'),
-          (all_models.Issue, 'PMRBACISSUE-2', 'archived_issue'),
-          (all_models.Assessment, 'PMRBACASSESSMENT-1', 'assessment'),
-          (all_models.Assessment, 'PMRBACASSESSMENT-2', 'archived_assessment')
-      )
-      for model, slug, name in created_objects:
-        setattr(cls, name, model.eager_query().filter_by(slug=slug).first())
-
-      revision = all_models.Revision.query.filter(
-          all_models.Revision.resource_type == 'Objective').first()
-      cls.rev_id = revision.id
-
-      # Create snapshot objects:
-      for audit, name in ((cls.audit, 'snapshot'),
-                          (cls.archived_audit, 'archived_snapshot')):
-        snapshot = factories.SnapshotFactory(
-            child_id=revision.resource_id,
-            child_type=revision.resource_type,
-            parent=audit,
-            revision=revision,
-            context=audit.context,
-        )
-        factories.RelationshipFactory(source=audit, destination=snapshot)
-        setattr(cls, name, snapshot)
-
-      # Create asessment template objects:
-      for audit, name in ((cls.audit, 'template'),
-                          (cls.archived_audit, 'archived_template')):
-        template = factories.AssessmentTemplateFactory(
-            context=audit.context,
-        )
-        factories.RelationshipFactory(
-            source=audit,
-            destination=template,
-            context=audit.context
-        )
-        setattr(cls, name, template)
-      # Refresh objects in the session
-      for obj in db.session:
-        db.session.refresh(obj)
-
+  # pylint: disable=too-many-instance-attributes
   def setUp(self):
-    """Imports test_csvs/audit_rbac.csv needed by the tests"""
-    self._check_csv_response(self.response, {})
+    """Generates objects needed by the tests"""
+    super(TestAuditArchivingBase, self).setUp()
     self.api = Api()
     self.client.get("/login")
-    db.engine.execute("""
-      UPDATE audits
-         SET archived = 0,
-             description = ""
-      WHERE title = '2016: Program Manager Audit RBAC Test - Audit 1'
-    """)
-    db.engine.execute("""
-      UPDATE audits
-         SET archived = 1,
-             description = ""
-       WHERE title = '2016: Program Manager Audit RBAC Test - Audit 2'
-    """)
-    db.engine.execute("""
-      UPDATE issues
-         SET title = slug
-    """)
-    db.engine.execute("""
-      UPDATE assessments
-         SET title = slug
-    """)
-    db.engine.execute("""
-      UPDATE assessment_templates
-         SET title = slug
-    """)
-    db.engine.execute("""
-      UPDATE snapshots
-         SET revision_id = {}
-    """.format(self.rev_id))
 
 
 @ddt
@@ -189,61 +96,51 @@ class TestAuditArchiving(TestAuditArchivingBase):
   """
 
   @data(
-      ('Admin', 200),
-      ('Editor', 403),
-      ('Reader', 403),
-      ('Creator', 403),
-      ('Creator PM', 200),
-      ('Creator PE', 403),
-      ('Creator PR', 403)
+      ('Administrator', '', 200, False, 'archive'),
+      ('Editor', '', 403, False, 'archive'),
+      ('Reader', '', 403, False, 'archive'),
+      ('Creator', '', 403, False, 'archive'),
+      ('Creator', 'Program Managers', 200, False, 'archive'),
+      ('Creator', 'Program Editors', 403, False, 'archive'),
+      ('Creator', 'Program Readers', 403, False, 'archive'),
+      ('Administrator', '', 200, True, 'unarchive'),
+      ('Editor', '', 403, True, 'unarchive'),
+      ('Reader', '', 403, True, 'unarchive'),
+      ('Creator', '', 403, True, 'unarchive'),
+      ('Creator', 'Program Managers', 200, True, 'unarchive'),
+      ('Creator', 'Program Editors', 403, True, 'unarchive'),
+      ('Creator', 'Program Readers', 403, True, 'unarchive')
   )
   @unpack
-  def test_setting_archived_state(self, person, status):
-    """Test if {0} can archive an audit: expected {1}."""
-    self.api.set_user(self.people[person])
+  # pylint: disable-msg=too-many-arguments
+  def test_archived_state(self, rolename, object_role, status,
+                          start_state, end_state):
+    """Test if {0}-{1} can {4} an audit: expected {2}."""
+    with factories.single_commit():
+      audit = factories.AuditFactory(archived=start_state)
+      audit_id = audit.id
+      program = audit.program
+      factories.RelationshipFactory(source=program, destination=audit)
+      user = self.create_user_with_role(rolename)
+      if object_role:
+        program.add_person_with_role_name(user, object_role)
+
+    audit = all_models.Audit.query.get(audit_id)
+    self.api.set_user(user)
     audit_json = {
-        "archived": True
+        "archived": not start_state
     }
-    response = self.api.put(self.audit, audit_json)
+    response = self.api.put(audit, audit_json)
     assert response.status_code == status, \
         "{} put returned {} instead of {}".format(
-            person, response.status, status)
+            rolename, response.status, status)
     if status != 200:
       # if editing is allowed check if edit was correctly saved
       return
 
-    assert response.json["audit"].get("archived", None) is True, \
-        "Audit has not been archived correctly {}".format(
-        response.json["audit"])
-
-  @data(
-      ('Admin', 200),
-      ('Editor', 403),
-      ('Reader', 403),
-      ('Creator', 403),
-      ('Creator PM', 200),
-      ('Creator PE', 403),
-      ('Creator PR', 403)
-  )
-  @unpack
-  def test_unsetting_archived_state(self, person, status):
-    """Test if {0} can unarchive an audit: expected {1}."""
-
-    self.api.set_user(self.people[person])
-    audit_json = {
-        "archived": False
-    }
-    response = self.api.put(self.archived_audit, audit_json)
-    assert response.status_code == status, \
-        "{} put returned {} instead of {}".format(
-            person, response.status, status)
-    if status != 200:
-      # if editing is allowed check if edit was correctly saved
-      return
-
-    assert response.json["audit"].get("archived", None) is False, \
-        "Audit has not been unarchived correctly {}".format(
-        response.json["audit"])
+    assert response.json["audit"].get("archived", None) is not start_state, \
+        "Audit has not been {}d correctly {}".format(
+        end_state, response.json["audit"])
 
 
 @ddt
@@ -260,34 +157,41 @@ class TestArchivedAudit(TestAuditArchivingBase):
   """
 
   @data(
-      ('Admin', 200, 'audit'),
-      ('Editor', 200, 'audit'),
-      ('Reader', 403, 'audit'),
-      ('Creator', 403, 'audit'),
-      ('Creator PM', 200, 'audit'),
-      ('Creator PE', 200, 'audit'),
-      ('Creator PR', 403, 'audit'),
-      ('Admin', 403, 'archived_audit'),
-      ('Editor', 403, 'archived_audit'),
-      ('Reader', 403, 'archived_audit'),
-      ('Creator', 403, 'archived_audit'),
-      ('Creator PM', 403, 'archived_audit'),
-      ('Creator PE', 403, 'archived_audit'),
-      ('Creator PR', 403, 'archived_audit')
+      ('Administrator', '', 200, False),
+      ('Editor', '', 200, False),
+      ('Reader', '', 403, False),
+      ('Creator', '', 403, False),
+      ('Creator', 'Program Managers', 200, False),
+      ('Creator', 'Program Editors', 200, False),
+      ('Creator', 'Program Readers', 403, False),
+      ('Administrator', '', 403, True),
+      ('Editor', '', 403, True),
+      ('Reader', '', 403, True),
+      ('Creator', '', 403, True),
+      ('Creator', 'Program Managers', 403, True),
+      ('Creator', 'Program Editors', 403, True),
+      ('Creator', 'Program Readers', 403, True)
   )
   @unpack
-  def test_audit_editing(self, person, status, audit_type):
-    """Test if {0} can edit an {2}: expected {1}"""
-    audit = getattr(self, audit_type)
-
-    self.api.set_user(self.people[person])
+  def test_audit_editing(self, rolename, object_role, status, archived):
+    """Test if {0}-{1} can edit an audit with archived {3}: expected {2}"""
+    with factories.single_commit():
+      audit = factories.AuditFactory(archived=archived)
+      audit_id = audit.id
+      program = audit.program
+      factories.RelationshipFactory(source=program, destination=audit)
+      user = self.create_user_with_role(rolename)
+      if object_role:
+        program.add_person_with_role_name(user, object_role)
+    audit = all_models.Audit.query.get(audit_id)
+    self.api.set_user(user)
     audit_json = {
         "description": "New"
     }
     response = self.api.put(audit, audit_json)
     assert response.status_code == status, \
-        "{} put returned {} instead of {} for {}".format(
-            person, response.status, status, audit_type)
+        "{} put returned {} instead of {} for archived is {}".format(
+            rolename, response.status, status, archived)
     if status != 200:
       # if editing is allowed check if edit was correctly saved
       return
@@ -297,74 +201,147 @@ class TestArchivedAudit(TestAuditArchivingBase):
         response.json["audit"])
 
   @data(
-      ('Admin', 200, CONTEXT_OBJECTS),
-      ('Editor', 200, CONTEXT_OBJECTS),
-      ('Reader', 403, CONTEXT_OBJECTS),
-      ('Creator', 403, CONTEXT_OBJECTS),
-      ('Creator PM', 200, CONTEXT_OBJECTS),
-      ('Creator PE', 200, CONTEXT_OBJECTS),
-      ('Creator PR', 403, CONTEXT_OBJECTS),
-      ('Admin', 403, ARCHIVED_CONTEXT_OBJECTS),
-      ('Editor', 403, ARCHIVED_CONTEXT_OBJECTS),
-      ('Reader', 403, ARCHIVED_CONTEXT_OBJECTS),
-      ('Creator', 403, ARCHIVED_CONTEXT_OBJECTS),
-      ('Creator PM', 403, ARCHIVED_CONTEXT_OBJECTS),
-      ('Creator PE', 403, ARCHIVED_CONTEXT_OBJECTS),
-      ('Creator PR', 403, ARCHIVED_CONTEXT_OBJECTS)
+      ('Administrator', '', 200, False, 'Issue'),
+      ('Editor', '', 200, False, 'Issue'),
+      ('Reader', '', 403, False, 'Issue'),
+      ('Creator', '', 403, False, 'Issue'),
+      ('Creator', 'Program Managers', 200, False, 'Issue'),
+      ('Creator', 'Program Editors', 200, False, 'Issue'),
+      ('Creator', 'Program Readers', 403, False, 'Issue'),
+      ('Administrator', '', 200, False, 'Assessment'),
+      ('Editor', '', 200, False, 'Assessment'),
+      ('Reader', '', 403, False, 'Assessment'),
+      ('Creator', '', 403, False, 'Assessment'),
+      ('Creator', 'Program Managers', 200, False, 'Assessment'),
+      ('Creator', 'Program Editors', 200, False, 'Assessment'),
+      ('Creator', 'Program Readers', 403, False, 'Assessment'),
+      ('Administrator', '', 200, False, 'AssessmentTemplate'),
+      ('Editor', '', 200, False, 'AssessmentTemplate'),
+      ('Reader', '', 403, False, 'AssessmentTemplate'),
+      ('Creator', '', 403, False, 'AssessmentTemplate'),
+      ('Creator', 'Program Managers', 200, False, 'AssessmentTemplate'),
+      ('Creator', 'Program Editors', 200, False, 'AssessmentTemplate'),
+      ('Creator', 'Program Readers', 403, False, 'AssessmentTemplate'),
+      ('Administrator', '', 200, True, 'Issue'),
+      ('Editor', '', 200, True, 'Issue'),
+      ('Reader', '', 403, True, 'Issue'),
+      ('Creator', '', 403, True, 'Issue'),
+      ('Creator', 'Program Managers', 200, True, 'Issue'),
+      ('Creator', 'Program Editors', 200, True, 'Issue'),
+      ('Creator', 'Program Readers', 403, True, 'Issue'),
+      ('Administrator', '', 403, True, 'Assessment'),
+      ('Editor', '', 403, True, 'Assessment'),
+      ('Reader', '', 403, True, 'Assessment'),
+      ('Creator', '', 403, True, 'Assessment'),
+      ('Creator', 'Program Managers', 403, True, 'Assessment'),
+      ('Creator', 'Program Editors', 403, True, 'Assessment'),
+      ('Creator', 'Program Readers', 403, True, 'Assessment'),
+      ('Administrator', '', 403, True, 'AssessmentTemplate'),
+      ('Editor', '', 403, True, 'AssessmentTemplate'),
+      ('Reader', '', 403, True, 'AssessmentTemplate'),
+      ('Creator', '', 403, True, 'AssessmentTemplate'),
+      ('Creator', 'Program Managers', 403, True, 'AssessmentTemplate'),
+      ('Creator', 'Program Editors', 403, True, 'AssessmentTemplate'),
+      ('Creator', 'Program Readers', 403, True, 'AssessmentTemplate'),
   )
   @unpack
-  def test_audit_context_editing(self, person, status, objects):
-    """Test if {0} can edit objects in the audit context: {1} - {2}"""
-    self.api.set_user(self.people[person])
-    for obj in objects:
-      obj_instance = getattr(self, obj)
-      title = factories.random_str().strip().encode('utf-8')
-      json = {
-          "title": title,
-      }
-      if obj == "issue":
-        json["due_date"] = "10/10/2019"
-      response = self.api.put(obj_instance, json)
-      self.assertStatus(
-          response, status,
-          "{} put returned {} instead of {} for {}".format(
-              person, response.status, status, obj
-          ),
-      )
+  def test_audit_context_editing(self, rolename, object_role,
+                                 status, archived, objects):
+    # pylint: disable=too-many-arguments
+    """Test if {0}-{1} can edit objects in the audit context:{2} -{4}"""
+    with factories.single_commit():
+      audit = factories.AuditFactory(archived=archived)
+      program = audit.program
+      factories.RelationshipFactory(source=program, destination=audit)
+      user = self.create_user_with_role(rolename)
+      if object_role:
+        program.add_person_with_role_name(user, object_role)
+      if objects == "Assessment":
+        local_model = factories.AssessmentFactory(audit=audit)
+      elif objects == "AssessmentTemplate":
+        local_model = factories.AssessmentTemplateFactory(
+            context=audit.context)
+      else:
+        local_model = factories.IssueFactory()
 
-      if status != 200:
-        # if editing is allowed check if edit was correctly saved
-        continue
-      table_singular = obj_instance._inflector.table_singular
-      self.assertEqual(
-          response.json[table_singular].get("title", None), title,
-          "{} has not been updated correctly {} != {}".format(
-              obj, response.json[table_singular]['title'], title,
-          ),
-      )
+      factories.RelationshipFactory(source=audit, destination=local_model)
+    local_model = db.session.query(get_model(objects)).filter().one()
+    self.api.set_user(user)
+    title = factories.random_str().strip().encode('utf-8')
+    json = {
+        "title": title,
+    }
+    if objects == "issue":
+      json["due_date"] = "10/10/2019"
+    response = self.api.put(local_model, json)
+    self.assertStatus(
+        response, status,
+        "{} put returned {} instead of {} for {}".format(
+            rolename, response.status, status, objects
+        ),
+    )
+
+    if status != 200:
+      # if editing is allowed check if edit was correctly saved
+      return
+    table_singular = local_model._inflector.table_singular
+    self.assertEqual(
+        response.json[table_singular].get("title", None), title,
+        "{} has not been updated correctly {} != {}".format(
+            objects, response.json[table_singular]['title'], title,
+        ),
+    )
 
   @data(
-      ('Admin', 200, 'snapshot'),
-      ('Editor', 200, 'snapshot'),
-      ('Reader', 403, 'snapshot'),
-      ('Creator', 403, 'snapshot'),
-      ('Creator PM', 200, 'snapshot'),
-      ('Creator PE', 200, 'snapshot'),
-      ('Creator PR', 403, 'snapshot'),
-      ('Admin', 403, 'archived_snapshot'),
-      ('Editor', 403, 'archived_snapshot'),
-      ('Reader', 403, 'archived_snapshot'),
-      ('Creator', 403, 'archived_snapshot'),
-      ('Creator PM', 403, 'archived_snapshot'),
-      ('Creator PE', 403, 'archived_snapshot'),
-      ('Creator PR', 403, 'archived_snapshot')
+      ('Administrator', '', 200, False),
+      ('Editor', '', 200, False),
+      ('Reader', '', 403, False),
+      ('Creator', '', 403, False),
+      ('Creator', 'Program Managers', 200, False),
+      ('Creator', 'Program Editors', 200, False),
+      ('Creator', 'Program Readers', 403, False),
+      ('Administrator', '', 403, True),
+      ('Editor', '', 403, True),
+      ('Reader', '', 403, True),
+      ('Creator', '', 403, True),
+      ('Creator', 'Program Managers', 403, True),
+      ('Creator', 'Program Editors', 403, True),
+      ('Creator', 'Program Readers', 403, True)
   )
   @unpack
-  def test_audit_snapshot_editing(self, person, status, obj):
-    """Test if {0} can edit objects in the audit context: {1} - {2}"""
-    self.api.set_user(self.people[person])
-    obj_instance_id = getattr(self, obj).id
-    snapshot = all_models.Snapshot.query.get(obj_instance_id)
+  def test_audit_snapshot_editing(self, rolename, object_role,
+                                  status, archived):
+    """Test if {0}-{1} can edit objects in the audit context: {1}-snapshot"""
+    with factories.single_commit():
+      audit = factories.AuditFactory(archived=archived)
+      program = audit.program
+      factories.RelationshipFactory(source=program, destination=audit)
+      user = self.create_user_with_role(rolename)
+      if object_role:
+        program.add_person_with_role_name(user, object_role)
+
+      objective = factories.ObjectiveFactory(title="objective")
+      factories.RelationshipFactory(source=program,
+                                    destination=objective)
+
+      revision = all_models.Revision.query.filter(
+          all_models.Revision.resource_type == 'Objective').first()
+      rev_id = revision.id
+
+      # Create snapshot objects:
+      snapshot = factories.SnapshotFactory(
+          child_id=revision.resource_id,
+          child_type=revision.resource_type,
+          parent=audit,
+          revision=revision,
+          context=audit.context,
+      )
+      snapshot_id = snapshot.id
+      factories.RelationshipFactory(source=audit,
+                                    destination=snapshot)
+
+    self.api.set_user(user)
+    snapshot = all_models.Snapshot.query.get(snapshot_id)
     # update obj to create new revision
     self.api.put(
         all_models.Objective.query.get(snapshot.revision.resource_id),
@@ -379,14 +356,13 @@ class TestArchivedAudit(TestAuditArchivingBase):
     response = self.api.put(snapshot, json)
     assert response.status_code == status, \
         "{} put returned {} instead of {} for {}".format(
-            person, response.status, status, obj)
+            rolename, response.status, status, 'snapshot')
     if status != 200:
       # if editing is allowed check if edit was correctly saved
       return
-    assert response.json[obj].get("revision_id", None) > self.rev_id, \
-        "{} has not been updated to the latest revision {}".format(
-        obj,
-        response.json[obj])
+    assert response.json['snapshot'].get("revision_id", None) > rev_id, \
+        "snapshot has not been updated to the latest revision {}".format(
+        response.json['snapshot'])
 
 
 @ddt
