@@ -590,10 +590,37 @@ class TestRevisions(query_helper.WithQueryApi, TestCase):
     self.assertFalse(revisions[0].is_empty)
     self.assertTrue(revisions[1].is_empty)
 
+  def test_normalize_content(self):
+    """Test converting new revision data"""
+    with factories.single_commit():
+      audit = factories.AuditFactory()
+
+    response = self.api_helper.put(audit, {})
+    self.assert200(response)
+
     # pylint: disable=protected-access
     with mock.patch(
         "ggrc.utils.revisions_diff.builder._normalize_content",
         side_effect=ggrc.utils.revisions_diff.builder._normalize_content
+    ) as mock_normalize_content:
+      response = self.api_helper.put(audit, {
+          "report_start_date": "2019-09-26"
+      })
+      self.assert200(response)
+      mock_normalize_content.assert_called_once()
+
+  def test_changes_present(self):
+    """Test changes present between revisions"""
+    with factories.single_commit():
+      audit = factories.AuditFactory()
+
+    response = self.api_helper.put(audit, {})
+    self.assert200(response)
+
+    # pylint: disable=protected-access
+    with mock.patch(
+        "ggrc.utils.revisions_diff.builder.changes_present",
+        side_effect=ggrc.utils.revisions_diff.builder.changes_present
     ) as mock_normalize_content:
       response = self.api_helper.put(audit, {
           "report_start_date": "2019-09-26"
@@ -604,5 +631,7 @@ class TestRevisions(query_helper.WithQueryApi, TestCase):
       revisions = _get_revisions(audit)
 
       self.assertEqual(len(revisions), 3)
+      self.assertFalse(revisions[0].is_empty)
+      self.assertTrue(revisions[1].is_empty)
       self.assertFalse(revisions[2].is_empty)
       mock_normalize_content.assert_called_once()

@@ -408,7 +408,17 @@ def prepare_content_full_diff(instance_meta_info, l_content, r_content):
 
 
 def _normalize_content(content):
-  """Prepare content to changes_present"""
+  """Prepare content to changes_present.
+
+  This functionality is needed to convert new revision data into data of the
+  same type as another revision.
+
+  Args:
+      content: Content of new revision.
+
+  Returns:
+      Prepared content to changes_present.
+  """
   new_content = json.loads(utils.as_json(content))
   return new_content
 
