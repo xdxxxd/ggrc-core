@@ -72,7 +72,7 @@ class TestAssessmentsWorkflow(base.Test):
     asmt_comments_panel = asmts_ui_service.add_comments(
         src_obj=audit, obj=expected_asmt,
         comment_objs=expected_asmt_comments)
-    assert asmt_comments_panel.is_input_empty is True
+    assert asmt_comments_panel.comment_input.is_empty is True
     # 'expected_asmt_comments': created_at (None) *factory
     expected_asmt_comments = [expected_comment.update_attrs(
         created_at=self.info_service().get_comment_obj(

@@ -181,6 +181,7 @@ class WithProposals(WithDisabledProposals):
   def click_propose_changes(self):
     """Click on Propose Changes button."""
     self.propose_changes_btn.click()
+    selenium_utils.wait_for_js_to_load(self._driver)
 
   def related_proposals(self):
     """Open related proposals tab."""
