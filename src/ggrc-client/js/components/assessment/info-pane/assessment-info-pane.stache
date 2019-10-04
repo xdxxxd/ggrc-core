@@ -491,8 +491,11 @@
                           </div>
                           <div class="hidden-fields-area">
                             <div class="info-pane__section-ticket-tracker">
-                              <info-pane-issue-tracker-fields instance:from="instance">
-                              </info-pane-issue-tracker-fields>
+                              <info-pane-issue-tracker-fields
+                                note:from="'Turns on Ticket Tracker integration.'"
+                                linkingNote:from="'Please leave this empty for a new ticket to be generated and linked to this assessment. If you would like to link to an existing ticket please provide the ticket number.'"
+                                instance:from="instance"
+                              />
                             </div>
                           </div>
                       </div>
