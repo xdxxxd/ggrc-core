@@ -178,7 +178,9 @@
       <label>Custom Attributes</label>
       <div class="row-fluid">
         <div class="span12">
-          <assessment-template-attributes fields:from="instance.custom_attribute_definitions">
+          <assessment-template-attributes
+            instance:from="instance"
+            fields:from="instance.custom_attribute_definitions">
           </assessment-template-attributes>
         </div>
       </div>

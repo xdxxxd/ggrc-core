@@ -26,6 +26,7 @@ const CA_DD_FLAGS = {
   COMMENT: 0b001, // 1
   ATTACHMENT: 0b10, // 2
   URL: 0b100, // 4
+  IS_NEGATIVE_RESPONSE: 0b1000, // 8
 };
 
 const LCA_DROPDOWN_TITLES_MAP = {
@@ -49,6 +50,7 @@ function ddValidationValueToMap(value) {
     attachment: !!(value & CA_DD_FLAGS.ATTACHMENT),
     comment: !!(value & CA_DD_FLAGS.COMMENT),
     url: !!(value & CA_DD_FLAGS.URL),
+    isNegativeResponse: !!(value & CA_DD_FLAGS.IS_NEGATIVE_RESPONSE),
   };
 }
 
@@ -61,8 +63,11 @@ function ddValidationMapToValue(map = {}) {
   let attach = map.attachment ? CA_DD_FLAGS.ATTACHMENT : 0;
   let comment = map.comment ? CA_DD_FLAGS.COMMENT : 0;
   let url = map.url ? CA_DD_FLAGS.URL : 0;
+  let isNegativeResponse = map.isNegativeResponse ?
+    CA_DD_FLAGS.IS_NEGATIVE_RESPONSE :
+    0;
 
-  return attach | comment | url;
+  return attach | comment | url | isNegativeResponse;
 }
 
 

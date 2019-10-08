@@ -154,6 +154,7 @@
                 Custom Attributes
               </label>
               <assessment-template-attributes
+                instance:from="instance"
                 fields:from="assessmentTemplate.custom_attribute_definitions"
                 isLoading:from="isAttributesLoading"
                 editMode:from="false" />

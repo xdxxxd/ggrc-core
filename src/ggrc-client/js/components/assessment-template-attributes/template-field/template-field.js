@@ -16,6 +16,16 @@ import {
 } from '../../../plugins/utils/ca-utils';
 import template from './template-field.stache';
 
+const TEXT_FIELDS = [
+  'Text',
+  'Rich Text',
+];
+
+const TEXT_OPTIONS = [
+  'Not Empty',
+  'Empty',
+];
+
 /*
  * Template field
  *
@@ -27,8 +37,28 @@ export default canComponent.extend({
   leakScope: true,
   viewModel: canMap.extend({
     types: [],
+    attrs: [],
+    instance: {},
     editMode: true,
     field: null,
+    define: {
+      isTextField: {
+        get() {
+          return TEXT_FIELDS.includes(this.attr('field.attribute_type'));
+        },
+      },
+      isDropdownField: {
+        get() {
+          return this.attr('field.attribute_type') === 'Dropdown';
+        },
+      },
+      isTextFieldOptionsVisible: {
+        get() {
+          return this.attr('isTextField') &&
+            this.attr('instance.sox_302_enabled');
+        },
+      },
+    },
     /*
      * Removes `field` from `fields`
      */
@@ -86,6 +116,16 @@ export default canComponent.extend({
     normalizeMandatory: function (attrs) {
       return filteredMap(attrs, ddValidationMapToValue).join(',');
     },
+    initTextFieldOptions() {
+      // the field has already contain options
+      if (this.attr('field.multi_choice_options')) {
+        return;
+      }
+
+      // init options
+      this.attr('field.multi_choice_options', TEXT_OPTIONS.join(','));
+      this.attr('field.multi_choice_mandatory', '0,0');
+    },
   }),
   events: {
     /**
@@ -93,24 +133,41 @@ export default canComponent.extend({
      *
      * @param {Object} element - the (unwrapped) DOM element that triggered
      *   creating the component instance
-     * @param {Object} options - the component instantiation options
      */
-    init: function (element, options) {
-      const field = this.viewModel.attr('field');
-      const denormalized = this.viewModel.denormalizeMandatory(field);
-      const types = this.viewModel.attr('types');
+    init(element) {
+      const vm = this.viewModel;
+      const field = vm.attr('field');
+
+      if (vm.attr('isTextFieldOptionsVisible')) {
+        vm.initTextFieldOptions();
+      }
+
+      const denormalized = vm.denormalizeMandatory(field);
+      const types = vm.attr('types');
       const item = loFind(types, function (obj) {
         return obj.type === field.attr('attribute_type');
       });
-      this.viewModel.field.attr('attribute_name', item.name);
-      this.viewModel.attr('attrs', denormalized);
+      vm.field.attr('attribute_name', item.name);
+      vm.attr('attrs').replace(denormalized);
 
-      this.viewModel.attr('$rootEl', $(element));
+      vm.attr('$rootEl', $(element));
     },
-    '{attrs} change': function () {
+    '{attrs} change'() {
       const attrs = this.viewModel.attr('attrs');
       const normalized = this.viewModel.normalizeMandatory(attrs);
       this.viewModel.field.attr('multi_choice_mandatory', normalized);
+    },
+    '{viewModel.instance} sox_302_enabled'() {
+      const vm = this.viewModel;
+      if (!vm.attr('isTextFieldOptionsVisible')) {
+        return;
+      }
+
+      vm.initTextFieldOptions();
+
+      const field = vm.attr('field');
+      const denormalized = vm.denormalizeMandatory(field);
+      vm.attr('attrs').replace(denormalized);
     },
   },
 });

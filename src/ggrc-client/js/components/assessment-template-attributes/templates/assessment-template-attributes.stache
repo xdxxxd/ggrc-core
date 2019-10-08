@@ -41,6 +41,7 @@
       {{#fields}}
         <div class="assessment-template-attributes__attribute-item sortable-item" {{canData 'field'}}>
           <template-field
+            instance:from="instance"
             field:from="{.}"
             types:from="types"
             on:remove="fieldRemoved" />
