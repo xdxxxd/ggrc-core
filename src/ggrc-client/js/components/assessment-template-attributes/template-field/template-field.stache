@@ -7,28 +7,51 @@
   <div class="template-grid__row-item template-field__title">{{field.title}}</div>
   <div class="template-grid__row-item template-grid__row-item_attr-type">{{field.attribute_name}}</div>
 
-  <div class="template-grid__row-item template-field__section-values">
-    {{#attrs}}
-      <div class="template-grid__row">
-        <div class="template-grid__row-item template-grid__row-item_attr-values single-line">
-          <span title="{{value}}">{{value}}</span>
+  <div class="template-grid__row-item template-grid__row-item-options">
+    {{#if isDropdownField}}
+      {{#attrs}}
+        <div class="template-grid__row">
+          <div class="template-grid__row-item template-grid__row-item_attr-values single-line">
+            <span title="{{value}}">{{value}}</span>
+          </div>
+          {{#is(type, "Dropdown")}}
+            <div class="template-grid__row-item template-grid__row-item_checkbox">
+              <input type="checkbox" el:checked:bind="attachment" {{^if editMode}}disabled{{/if}}>
+            </div>
+            <div class="template-grid__row-item template-grid__row-item_checkbox">
+              <input type="checkbox" el:checked:bind="url" {{^if editMode}}disabled{{/if}}>
+            </div>
+            <div class="template-grid__row-item template-grid__row-item_checkbox">
+              <input type="checkbox" el:checked:bind="comment" {{^if editMode}}disabled{{/if}}>
+            </div>
+            {{#if instance.sox_302_enabled}}
+              <div class="template-grid__row-item template-grid__row-item_checkbox">
+                <input type="checkbox" el:checked:bind="isNegativeResponse" {{^if editMode}}disabled{{/if}}>
+              </div>
+            {{/if}}
+          {{/is}}
         </div>
-        {{#is(type, "Dropdown")}}
-          <div class="template-grid__row-item template-grid__row-item_checkbox">
-            <input type="checkbox" el:checked:bind="attachment" {{^if editMode}}disabled{{/if}}>
+      {{/attrs}}
+    {{else}}
+      {{#if isTextFieldOptionsVisible}}
+        {{#attrs}}
+          <div class="template-grid__row">
+            <div class="template-grid__row-item template-grid__row-item_attr-values single-line">
+              <span title="{{value}}">{{value}}</span>
+            </div>
+            <div class="template-grid__row-item template-grid__row-item_negative-response">
+              <div class="template-grid__row-item template-grid__row-item_checkbox">
+                <input type="checkbox" el:checked:bind="isNegativeResponse" {{^if editMode}}disabled{{/if}}>
+              </div>
+            </div>
           </div>
-          <div class="template-grid__row-item template-grid__row-item_checkbox">
-            <input type="checkbox" el:checked:bind="url" {{^if editMode}}disabled{{/if}}>
-          </div>
-          <div class="template-grid__row-item template-grid__row-item_checkbox">
-            <input type="checkbox" el:checked:bind="comment" {{^if editMode}}disabled{{/if}}>
-          </div>
-        {{/is}}
-      </div>
-    {{/attrs}}
+        {{/attrs}}
+      {{/if}}
+    {{/if}}
+
   </div>
 
-  <div class="template-grid__row-item template-grid__row-item_checkbox">
+  <div class="template-grid__row-item template-grid__row-item_mandatory-checkbox">
     <input type="checkbox" el:checked:bind="field.mandatory" {{^if editMode}}disabled{{/if}}>
   </div>
 
