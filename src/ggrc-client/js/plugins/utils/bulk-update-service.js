@@ -40,7 +40,22 @@ export default {
   },
 };
 
-export const requestAssessmentsCount = (relevant = null) => {
+const requestAssessmentsCount = (
+  relevant = null,
+  filters,
+  permissions = null
+) => {
+  const param = buildParam('Assessment', {}, relevant, [], filters);
+  param.type = 'count';
+
+  if (permissions) {
+    param.permissions = permissions;
+  }
+
+  return batchRequests(param).then(({Assessment: {count}}) => count);
+};
+
+export const getAsmtCountForComplete = (relevant) => {
   const filters = {
     expression: {
       left: {
@@ -81,9 +96,57 @@ export const requestAssessmentsCount = (relevant = null) => {
     },
   };
 
-  const param = buildParam('Assessment', {}, relevant, [], filters);
-  param.type = 'count';
-  param.permissions = 'update';
+  return requestAssessmentsCount(relevant, filters, 'update');
+};
 
-  return batchRequests(param).then(({Assessment: {count}}) => count);
+export const getAsmtCountForVerify = (relevant) => {
+  const filters = {
+    expression: {
+      left: {
+        object_name: 'Person',
+        op: {
+          name: 'relevant',
+        },
+        ids: [
+          GGRC.current_user.id,
+        ],
+      },
+      op: {
+        name: 'AND',
+      },
+      right: {
+        left: {
+          left: 'status',
+          op: {
+            name: '=',
+          },
+          right: 'In Review',
+        },
+        op: {
+          name: 'AND',
+        },
+        right: {
+          left: {
+            left: 'archived',
+            op: {
+              name: '=',
+            },
+            right: 'false',
+          },
+          op: {
+            name: 'AND',
+          },
+          right: {
+            left: 'verifiers',
+            op: {
+              name: '~',
+            },
+            right: GGRC.current_user.email,
+          },
+        },
+      },
+    },
+  };
+
+  return requestAssessmentsCount(relevant, filters);
 };
