@@ -66,6 +66,23 @@ class Test(InstanceRepresentation):
             expected_objs_wo_excluded_attrs, actual_objs_wo_excluded_attrs))
 
   @staticmethod
+  def general_equal_soft_assert(soft_assert, expected_objs, actual_objs,
+                                *exclude_attrs):
+    """Perform general equal SOFT assert for deepcopy converted to list
+    expected and actual objects according to '*exclude_attrs' tuple of
+    excluding attributes' names (compare objects' collections w/ attributes'
+    values set to None).
+    """
+    expected_objs_wo_excluded_attrs, actual_objs_wo_excluded_attrs = (
+        entity.Representation.extract_objs(
+            help_utils.convert_to_list(expected_objs),
+            help_utils.convert_to_list(actual_objs), *exclude_attrs))
+    soft_assert.expect(
+        expected_objs_wo_excluded_attrs == actual_objs_wo_excluded_attrs,
+        messages.AssertionMessages.format_err_msg_equal(
+            expected_objs_wo_excluded_attrs, actual_objs_wo_excluded_attrs))
+
+  @staticmethod
   def general_contain_assert(expected_obj, actual_objs, *exclude_attrs):
     """Perform general contain assert for deepcopy converted expected object
     and actual objects according to '*exclude_attrs' tuple of excluding
@@ -552,7 +569,7 @@ class TreeView(Component):
   # pylint: disable=too-many-instance-attributes
   _locators = constants.locator.TreeView
 
-  def __init__(self, driver, obj_name=None):
+  def __init__(self, driver=None, obj_name=None):
     super(TreeView, self).__init__(driver)
     self._tree_view_headers = []
     self._tree_view_items = []
@@ -686,6 +703,13 @@ class UnifiedMapperTreeView(TreeView):
     return MapperSetVisibleFieldsModal(self._driver, self.fields_to_set)
 
 
+class BulkUpdateTreeView(UnifiedMapperTreeView):
+  """Tree-View class for Bulk Update modal."""
+
+  def __init__(self, driver=None, obj_name=None):
+    super(BulkUpdateTreeView, self).__init__(driver, obj_name)
+
+
 class AdminTreeView(TreeView):
   """Class for representing Tree View list in Admin dashboard."""
   _locators = constants.locator.AdminTreeView
@@ -791,14 +815,14 @@ class TreeViewItem(Element):
                 self.element, self._locators.CELL)]
 
 
-class CommentsPanel(Element):
+class CommentsPanel(WithBrowser):
   """Representing comments panel witch contains input part and items."""
-  _locators = constants.locator.CommentsPanel
 
-  def __init__(self, driver, locator_or_element):
-    super(CommentsPanel, self).__init__(driver, locator_or_element)
+  def __init__(self, container=None):
+    super(CommentsPanel, self).__init__()
     self._items = []
     self._root = self._browser.div(text="Responses/Comments").parent()
+    self._container = container or self._root
 
   @property
   def emails_dropdown(self):
@@ -823,25 +847,8 @@ class CommentsPanel(Element):
     {'modified_by': person, 'created_at': datetime, 'description': text,
     'links': list}.
     """
-    self._items = [
-        CommentItem(self._driver, element) for element in
-        self.element.find_elements(*self._locators.ITEMS_CSS)]
-    comments = []
-    for item in self._items:
-      description = item.content.text
-      # reviewers emails in review comment message need to be sorted as they
-      # are displayed in UI in random order
-      if (re.compile(constants.element.Common.REVIEW_COMMENT_REGEXP).
-         match(description)):
-        splited_description = description.split('\n')
-        splited_description[1] = ', '.join(
-            sorted(splited_description[1].split(', ')))
-        description = '\n'.join(splited_description)
-      comments.append({"modified_by": item.author.text,
-                       "created_at": item.datetime,
-                       "description": description,
-                       "links": item.link_values_from_text})
-    return comments
+    return [CommentItem(el).scope for el in self._container.elements(
+        class_name="comment-object-item")]
 
   @property
   def count(self):
@@ -899,19 +906,22 @@ class CommentsPanel(Element):
     self.wait_until_dropdown_appears()
 
 
-class CommentItem(Element):
+class CommentItem(object):
   """Representing single comment item in comments' panel."""
-  _locators = constants.locator.CommentItem
+
+  def __init__(self, container):
+    self.container = container
 
   @property
   def author(self):
     """Return author element of comment from comments item."""
-    return Element(self.element, self._locators.AUTHOR_CSS)
+    return self.container.element(class_name="person-holder")
 
   @property
   def datetime(self):
     """Return datetime of comment from comments item."""
-    text = self.element.find_element(*self._locators.DATETIME_CSS).text
+    text = self.container.element(
+        class_name="comment-object-item__header-author-info").text
     match = re.search(r"\(.+\) (.+)", text)
     if match:
       return match.group(1)
@@ -920,14 +930,33 @@ class CommentItem(Element):
   @property
   def content(self):
     """Return content element of comment from comments item."""
-    return Label(self.element, self._locators.CONTENT_CSS)
+    return self.container.element(class_name="comment-object-item__text")
+
+  @property
+  def scope(self):
+    """Returns comment in dictionary format:
+    {'modified_by': person, 'created_at': datetime, 'description': text}.
+    """
+    description = self.content.text
+    # reviewers emails in review comment message need to be sorted as they
+    # are displayed in UI in random order
+    if (re.compile(constants.element.Common.REVIEW_COMMENT_REGEXP).
+       match(description)):
+      splited_description = description.split('\n')
+      splited_description[1] = ', '.join(
+          sorted(splited_description[1].split(', ')))
+      description = '\n'.join(splited_description)
+    return {"modified_by": self.author.text,
+            "created_at": self.datetime,
+            "description": description,
+            "links": self.link_values_from_text}
 
   @property
   def link_values_from_text(self):
     """Returns link's href attribute values form the comment content."""
     try:
       return [el.get_attribute("href") for el in
-              self.content.element.find_elements_by_tag_name("a")]
+              self.content.links()]
     except exceptions.NoSuchElementException:
       return []
 
