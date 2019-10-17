@@ -590,48 +590,59 @@ class TestRevisions(query_helper.WithQueryApi, TestCase):
     self.assertFalse(revisions[0].is_empty)
     self.assertTrue(revisions[1].is_empty)
 
-  def test_normalize_content(self):
+  @ddt.data({
+      'id': 2676L, 'object_type': u'Assessment', 'object_id': 19L,
+      'base_id': 2676L, 'created_at': datetime(2019, 10, 17, 9, 44, 5),
+      'updated_at': datetime(2019, 10, 17, 9, 44, 5), 'modified_by_id': None,
+      'display_name': '', 'type': 'AccessControlList', 'context_id': None,
+      'ac_role_id': 73L, 'parent_id': None, 'parent_id_nn': 0L,
+      'modified_by': None
+  },
+      {
+      u'parent_id': None, u'modified_by_id': None, u'object_id': 19,
+      u'created_at': u'2019-10-17T09:44:05', u'base_id': 2676,
+      u'updated_at': u'2019-10-17T09:44:05', u'object_type': u'Assessment',
+      u'display_name': u'', u'type': u'AccessControlList', u'context_id': None,
+      u'ac_role_id': 73, u'id': 2676, u'parent_id_nn': 0, u'modified_by': None
+  })
+  @ddt.unpack
+  def test_normalize_content(self, **content):
     """Test converting new revision data"""
+    expected_result = {u'parent_id': None, u'modified_by_id': None,
+                       u'object_id': 19, u'created_at': u'2019-10-17T09:44:05',
+                       u'base_id': 2676, u'updated_at': u'2019-10-17T09:44:05',
+                       u'object_type': u'Assessment', u'display_name': u'',
+                       u'type': u'AccessControlList', u'context_id': None,
+                       u'ac_role_id': 73, u'id': 2676, u'parent_id_nn': 0,
+                       u'modified_by': None}
+
+    # pylint: disable=protected-access
+    result = ggrc.utils.revisions_diff.builder._normalize_content(content)
+
+    self.assertEqual(result, expected_result)
+
+  def test_changes_revision(self):
+    """Test revision is marked empty or not depending on changes"""
     with factories.single_commit():
       audit = factories.AuditFactory()
 
-    response = self.api_helper.put(audit, {})
+    response = self.api_helper.put(audit, {
+        'end_date': '2019-09-26',
+        'report_start_date': datetime(2019, 10, 17, 9, 44, 5),
+        'status': 'In Progress'
+    })
     self.assert200(response)
 
-    # pylint: disable=protected-access
-    with mock.patch(
-        "ggrc.utils.revisions_diff.builder._normalize_content",
-        side_effect=ggrc.utils.revisions_diff.builder._normalize_content
-    ) as mock_normalize_content:
-      response = self.api_helper.put(audit, {
-          "report_start_date": "2019-09-26"
-      })
-      self.assert200(response)
-      mock_normalize_content.assert_called_once()
-
-  def test_changes_present(self):
-    """Test changes present between revisions"""
-    with factories.single_commit():
-      audit = factories.AuditFactory()
-
-    response = self.api_helper.put(audit, {})
+    response = self.api_helper.put(audit, {
+        'end_date': datetime(2019, 9, 26),
+        'report_start_date': '2019-10-17',
+    })
     self.assert200(response)
 
-    # pylint: disable=protected-access
-    with mock.patch(
-        "ggrc.utils.revisions_diff.builder.changes_present",
-        side_effect=ggrc.utils.revisions_diff.builder.changes_present
-    ) as mock_normalize_content:
-      response = self.api_helper.put(audit, {
-          "report_start_date": "2019-09-26"
-      })
-      self.assert200(response)
+    self.refresh_object(audit)
+    revisions = _get_revisions(audit)
 
-      self.refresh_object(audit)
-      revisions = _get_revisions(audit)
-
-      self.assertEqual(len(revisions), 3)
-      self.assertFalse(revisions[0].is_empty)
-      self.assertTrue(revisions[1].is_empty)
-      self.assertFalse(revisions[2].is_empty)
-      mock_normalize_content.assert_called_once()
+    self.assertEqual(len(revisions), 3)
+    self.assertFalse(revisions[0].is_empty)
+    self.assertFalse(revisions[1].is_empty)
+    self.assertTrue(revisions[2].is_empty)
