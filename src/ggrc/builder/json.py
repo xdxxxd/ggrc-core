@@ -401,7 +401,7 @@ def build_type_query(type_, result_spec):
   return columns_indexes, query
 
 
-def build_stub_union_query(queries):  # noqa
+def build_stub_union_query(queries):  # noqa: C901
   results = {}
   for (type_, conditions) in queries:
     if isinstance(conditions, (int, long, str, unicode)):
@@ -523,6 +523,9 @@ def publish_representation(resource):
     return resource
 
   results, type_columns, query = build_stub_union_query(queries)
+  if query is None:
+    resource['modified_by'] = None
+    return resource
   rows = query.all()
   for row in rows:
     type_ = row[0]

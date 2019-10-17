@@ -389,15 +389,42 @@ class TestAssessment(TestAssessmentBase):
         # for control that related to assessment
         self.assert_propagated_role(role, person_email, snapshot)
 
-  @mock.patch('ggrc.models.inflector.get_model')
-  def test_assessment_when_get_model_none(self, mocked_get_model):
+  def test_assessment_when_get_model_work_correct(self):
+    """Test get_model return right result in build_type_query for json"""
+    with factories.single_commit():
+      audit = factories.AuditFactory()
+
+    response = self.api.post(all_models.Assessment, {
+        "assessment": {
+            "title": "Assessment",
+            "context": None,
+            "audit": {
+                "id": audit.id,
+                "type": "Audit"
+            }
+        }
+    })
+
+    self.assert201(response)
+
+  def test_assessment_when_get_model_none(self):
     """Test get_model return None in build_type_query for json"""
     with factories.single_commit():
-      asmt = factories.AssessmentFactory()
+      audit = factories.AuditFactory()
 
-    mocked_get_model.return_value = None
-    response = self.api.get(asmt, asmt.id)
-    self.assert200(response)
+    with mock.patch('ggrc.models.get_model', return_value=None):
+      response = self.api.post(all_models.Assessment, {
+          "assessment": {
+              "title": "Assessment",
+              "context": None,
+              "audit": {
+                  "id": audit.id,
+                  "type": "Audit"
+              }
+          }
+      })
+
+    self.assert201(response)
 
 
 @ddt.ddt
