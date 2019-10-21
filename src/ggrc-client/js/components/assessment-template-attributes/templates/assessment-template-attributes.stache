@@ -36,7 +36,8 @@
       <h6>Mandatory</h6>
     </div>
     {{#if editMode}}
-      <div class="template-grid__row-item"></div>
+      <div class="template-grid__row-item  template-grid__row-item_remove-item">
+      </div>
     {{/if}}
   </div>
   {{#if editMode}}

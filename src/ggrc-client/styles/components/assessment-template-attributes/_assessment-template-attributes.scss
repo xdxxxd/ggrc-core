@@ -99,11 +99,16 @@
     &_mandatory-checkbox {
       flex-grow: 0.8;
       text-align: center;
+      margin-right: 10px;
     }
 
     &_negative-response {
       display: flex;
       flex-direction: row-reverse;
+    }
+
+    &_remove-item {
+      flex-grow: 1.2;
     }
   }
 }

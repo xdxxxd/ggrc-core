@@ -9,6 +9,7 @@ import loRange from 'lodash/range';
 import loFind from 'lodash/find';
 import canStache from 'can-stache';
 import canMap from 'can-map';
+import canBatch from 'can-event/batch/batch';
 import canComponent from 'can-component';
 import {
   ddValidationValueToMap,
@@ -19,11 +20,6 @@ import template from './template-field.stache';
 const TEXT_FIELDS = [
   'Text',
   'Rich Text',
-];
-
-const TEXT_OPTIONS = [
-  'Not Empty',
-  'Empty',
 ];
 
 /*
@@ -42,11 +38,6 @@ export default canComponent.extend({
     editMode: true,
     field: null,
     define: {
-      isTextField: {
-        get() {
-          return TEXT_FIELDS.includes(this.attr('field.attribute_type'));
-        },
-      },
       isDropdownField: {
         get() {
           return this.attr('field.attribute_type') === 'Dropdown';
@@ -54,7 +45,9 @@ export default canComponent.extend({
       },
       isTextFieldOptionsVisible: {
         get() {
-          return this.attr('isTextField') &&
+          const isTextField =
+            TEXT_FIELDS.includes(this.attr('field.attribute_type'));
+          return isTextField &&
             this.attr('instance.sox_302_enabled');
         },
       },
@@ -117,14 +110,15 @@ export default canComponent.extend({
       return filteredMap(attrs, ddValidationMapToValue).join(',');
     },
     initTextFieldOptions() {
-      // the field has already contain options
+      // the field has already options
       if (this.attr('field.multi_choice_options')) {
         return;
       }
 
-      // init options
-      this.attr('field.multi_choice_options', TEXT_OPTIONS.join(','));
+      canBatch.start();
+      this.attr('field.multi_choice_options', 'Not Empty,Empty');
       this.attr('field.multi_choice_mandatory', '0,0');
+      canBatch.stop();
     },
   }),
   events: {
@@ -136,20 +130,20 @@ export default canComponent.extend({
      */
     init(element) {
       const vm = this.viewModel;
-      const field = vm.attr('field');
 
       if (vm.attr('isTextFieldOptionsVisible')) {
         vm.initTextFieldOptions();
       }
 
+      const field = vm.attr('field');
       const denormalized = vm.denormalizeMandatory(field);
       const types = vm.attr('types');
       const item = loFind(types, function (obj) {
         return obj.type === field.attr('attribute_type');
       });
-      vm.field.attr('attribute_name', item.name);
-      vm.attr('attrs').replace(denormalized);
+      field.attr('attribute_name', item.name);
 
+      vm.attr('attrs').replace(denormalized);
       vm.attr('$rootEl', $(element));
     },
     '{attrs} change'() {

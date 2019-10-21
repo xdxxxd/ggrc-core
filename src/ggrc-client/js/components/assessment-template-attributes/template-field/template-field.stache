@@ -56,7 +56,7 @@
   </div>
 
   {{#if editMode}}
-    <div class="template-grid__row-item">
+    <div class="template-grid__row-item template-grid__row-item_remove-item">
       <div class="pull-right">
         <a on:el:click="removeField()"><i class="fa fa-trash"></i></a>
       </div>

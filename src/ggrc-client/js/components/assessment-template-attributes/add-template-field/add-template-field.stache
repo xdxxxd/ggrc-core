@@ -23,15 +23,15 @@
 
   <div class="template-grid__row-item template-grid__row-item-options add-template-field__options">
     <div class="template-grid__row-item add-template-field__options-values
-      {{#selected.invalidValues}} field-failure{{/selected.invalidValues}}">
+      {{#if selected.invalidValues}} field-failure{{/if}}">
         {{#if isDisplayValues}}
           <input type="text" class="add-template-field__input"
                 el:value:bind="selected.values"
                 placeholder="{{placeholder}}"/>
             <i class="fa fa-question-circle" rel="tooltip" title="{{placeholder}}"></i>
-            {{#selected.invalidValues}}
+            {{#if selected.invalidValues}}
               <label class="warning">Cannot be blank</label>
-            {{/selected.invalidValues}}
+            {{/if}}
         {{else}}
           N/A
         {{/if}}
