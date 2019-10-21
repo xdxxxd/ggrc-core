@@ -33,11 +33,12 @@ def _hint_verifier_assignees(actual_people_label, control_people_label,
                              risk_people_label):
   """Returns description default verifiers/assignees fields"""
 
-  description = "For all Assessment Types except of " \
-                "Control and Risk options are:\n{}\nuser@example.com\n" \
-                "For Assessment type of Control options are:\n{}\n" \
+  description = "Allowed values are:\n" \
+                "For all Assessment Types except of Control and Risk:" \
+                "\n{}\nuser@example.com\n" \
+                "For Assessment type of Control:\n{}\n" \
                 "user@example.com\n" \
-                "For Assessment type of Risk options are:\n{}\n" \
+                "For Assessment type of Risk:\n{}\n" \
                 "user@example.com".format(
                     "\n".join(actual_people_label.values()),
                     "\n".join(control_people_label.values()),
@@ -192,7 +193,8 @@ class AssessmentTemplate(assessment.AuditRelationship,
       "status": {
           "display_name": "State",
           "mandatory": False,
-          "description": "Options are:\n{}".format('\n'.join(VALID_STATES))
+          "description": "Allowed values are:\n{}".format(
+              '\n'.join(VALID_STATES))
       },
       "default_assignees": {
           "display_name": "Default Assignees",
