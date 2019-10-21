@@ -1,5 +1,6 @@
 # Copyright (C) 2019 Google Inc.
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+# pylint: disable=too-many-lines
 """Tests exported csv files"""
 from os.path import abspath, dirname, join
 
@@ -253,6 +254,20 @@ class TestExportEmptyTemplate(TestCase):
 
     self.assertIn("Allowed values are:\n{}".format('\n'.join(
         all_models.Product.TYPE_OPTIONS)), response.data)
+
+  def test_policy_tip(self):
+    """Tests if Policy Kind/Type column has tip message in export file"""
+    data = {
+        "export_to": "csv",
+        "objects": [
+            {"object_name": "Policy", "fields": "all"},
+        ],
+    }
+    response = self.client.post("/_service/export_csv",
+                                data=dumps(data), headers=self.headers)
+
+    self.assertIn("Allowed values are:\n{}".format('\n'.join(
+        all_models.Policy.POLICY_OPTIONS)), response.data)
 
   def test_f_realtime_email_updates(self):
     """Tests if Force real-time email updates column has tip message. """
