@@ -7,6 +7,7 @@
 
 from ggrc.models import exceptions
 from ggrc.utils.custom_dict import MissingKeyDict
+from ggrc.integrations import constants
 
 
 class IssueTrackerParamsContainer(object):
@@ -33,7 +34,6 @@ class IssueTrackerParamsContainer(object):
   )
 
   # Available values for Issue Tracker severity and priority.
-  AVAILABLE_PRIORITIES = ("P0", "P1", "P2", "P3", "P4", )
   AVAILABLE_SEVERITIES = ("S0", "S1", "S2", "S3", "S4", )
   AVAILABLE_TYPES = ("PROCESS", )
 
@@ -98,10 +98,10 @@ class IssueTrackerParamsContainer(object):
     if not value:
       return
 
-    if value not in self.AVAILABLE_PRIORITIES:
+    if value not in constants.AVAILABLE_PRIORITIES:
       raise exceptions.ValidationError(
           "Invalid priority value: {}. Valid priority values: '{}'"
-          .format(value, ", ".join(self.AVAILABLE_PRIORITIES))
+          .format(value, ", ".join(constants.AVAILABLE_PRIORITIES))
       )
     self._issue_priority = value
 

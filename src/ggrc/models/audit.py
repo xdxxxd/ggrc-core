@@ -28,6 +28,7 @@ from ggrc.models.relationship import Relatable, Relationship
 from ggrc.models.snapshot import Snapshotable
 from ggrc.rbac import SystemWideRoles
 from ggrc.utils import errors
+from ggrc.integrations import constants
 
 
 class Audit(Snapshotable,
@@ -136,7 +137,13 @@ class Audit(Snapshotable,
           "mandatory": True,
           "description": "Allowed values are:\n{}".format(
               '\n'.join(VALID_STATES))
-      }
+      },
+      "issue_priority": {
+          "display_name": "Priority",
+          "mandatory": False,
+          "description": "Allowed values are:\n{}".format(
+              '\n'.join(constants.AVAILABLE_PRIORITIES)),
+      },
   }
 
   def _clone(self, source_object):

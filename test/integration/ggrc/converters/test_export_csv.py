@@ -474,9 +474,22 @@ class TestExportEmptyTemplate(TestCase):
     }
     response = self.client.post("/_service/export_csv",
                                 data=dumps(data), headers=self.headers)
-
     self.assertIn("Allowed values are:\n{}".format(
         '\n'.join(constants.AVAILABLE_SEVERITIES)), response.data)
+
+  @ddt.data("Assessment", "AssessmentTemplate", "Issue", "Audit")
+  def test_priority_tip(self, model):
+    """Tests for tip in Priority column for {} """
+    data = {
+        "export_to": "csv",
+        "objects": [
+            {"object_name": model, "fields": "all"},
+        ],
+    }
+    response = self.client.post("/_service/export_csv",
+                                data=dumps(data), headers=self.headers)
+    self.assertIn("Allowed values are:\n{}".format('\n'.join(
+        constants.AVAILABLE_PRIORITIES)), response.data)
 
 
 @ddt.ddt
