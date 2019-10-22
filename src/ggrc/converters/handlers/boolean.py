@@ -136,8 +136,8 @@ class StrictBooleanColumnHandler(CheckboxColumnHandler):
   Will be raised exception.
 
   """
-  _true = "true"
-  _false = "false"
-  TRUE_VALUES = {_true, }
-  FALSE_VALUES = {_false, }
   NONE_VALUES = set()  # Radical, only true or false
+
+  @property
+  def raw_column_value(self):
+    return self.raw_value.lower().strip()
