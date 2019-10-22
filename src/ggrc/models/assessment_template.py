@@ -190,6 +190,7 @@ class AssessmentTemplate(assessment.AuditRelationship,
                                      "Standards",
                                      "Threats",
                                      )
+  TICKET_TRACKER_STATES = ("On", "Off")
 
   _aliases = {
       "status": {
@@ -237,6 +238,12 @@ class AssessmentTemplate(assessment.AuditRelationship,
           "mandatory": False,
           "ignore_on_update": True,
           "view_only": True,
+      },
+      "enabled": {
+          "display_name": "Ticket Tracker Integration",
+          "mandatory": False,
+          "description": "Allowed values are:\n{}".format(
+              '\n'.join(TICKET_TRACKER_STATES)),
       },
       "template_custom_attributes": {
           "display_name": "Custom Attributes",
