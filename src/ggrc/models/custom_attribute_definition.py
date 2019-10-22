@@ -3,6 +3,7 @@
 
 """Custom attribute definition module"""
 
+import collections
 import re
 
 import flask
@@ -208,6 +209,7 @@ class CustomAttributeDefinition(CustomAttributeDefinitionBase):
   class MultiChoiceMandatoryFlags(object):
     """Enum representing flags in multi_choice_mandatory bitmaps."""
     # pylint: disable=too-few-public-methods
+    DEFAULT = 0b0
     COMMENT_REQUIRED = 0b001
     EVIDENCE_REQUIRED = 0b010
     URL_REQUIRED = 0b100
@@ -274,6 +276,7 @@ class CustomAttributeDefinition(CustomAttributeDefinitionBase):
 
   @property
   def negative_options(self):
+    # type: () -> list
     """Get list of negative options of this CAD.
 
     Return list of negative options of CAD this property is called on. CAD
@@ -293,6 +296,94 @@ class CustomAttributeDefinition(CustomAttributeDefinitionBase):
         option for option, bitmask in zip(options, bitmasks)
         if int(bitmask) & self.MultiChoiceMandatoryFlags.IS_NEGATIVE
     ]
+
+  @staticmethod
+  def _is_negative_dropdown(cav, negative_options):
+    # type: (models.CustomAttributeValue, list) -> bool
+    """Check if passed CAV of `Dropdown` type is negative.
+
+    Check if passed CustomAttributeValue object contains value which should be
+    considered "negative" on current CustomAttributeDefinition. Note that for
+    correct resuls only CAV related to current CAD should be passed here and
+    current CAD should be of `Dropdown` type.
+
+    Args:
+      cav (models.CustomAttributeValue): CustomAttributeValue instance related
+        to current CustomAttributeDefinition.
+      negative_options (list): List of strings representing options that are
+        marked as "negative" for current CustomAttributeDefinition.
+
+    Returns:
+      Boolean flag indicating if CAV's value is negative.
+    """
+    return cav.attribute_value in negative_options
+
+  @staticmethod
+  def _is_negative_text(cav, negative_options):
+    # type: (models.CustomAttributeValue, list) -> bool
+    """Check if passed CAV of `Text` or `Rich Text` type is negative.
+
+    Check if passed CustomAttributeValue object contains value which should be
+    considered "negative" on current CustomAttributeDefinition. Note that for
+    correct resuls only CAV related to current CAD should be passed here and
+    current CAD should be of `Text` or `Rich Text` type.
+
+    Args:
+      cav (models.CustomAttributeValue): CustomAttributeValue instance related
+        to current CustomAttributeDefinition.
+      negative_options (list): List of strings representing options that are
+        marked as "negative" for current CustomAttributeDefinition.
+
+    Returns:
+      Boolean flag indicating if CAV's value is negative.
+    """
+    negative_options = [o.lower() for o in negative_options]
+    return "empty" in negative_options and not cav.attribute_value \
+        or "not empty" in negative_options and cav.attribute_value
+
+  @staticmethod
+  def _is_negative(cav, negative_options):  # pylint: disable=unused-argument
+    # type: (models.CustomAttributeValue, list) -> bool
+    """Check if passed CAV is negative.
+
+    Check if passed CustomAttributeValue object contains value which should be
+    considered "negative" on current CustomAttributeDefinition. Note that this
+    is a default implementation and it always returns `False`. For each CAD
+    type specific method should be implemented.
+
+    Args:
+      cav (models.CustomAttributeValue): CustomAttributeValue instance related
+        to current CustomAttributeDefinition.
+      negative_options (list): List of strings representing options that are
+        marked as "negative" for current CustomAttributeDefinition.
+
+    Returns:
+      Boolean flag indicating if CAV's value is negative.
+    """
+    return False
+
+  def is_value_negative(self, cav):
+    # type: (models.CustomAttributeValue) -> bool
+    """Check if passed CAV has value marked as negative on current CAD.
+
+    Check if passed CustomAttributeValue `cav` has value which is marked as a
+    negative one on the current CustomAttributeDefinition.
+
+    Args:
+      cav (models.CustomAttributeValue): CAV which value should be checked.
+
+    Returns:
+      Boolean flag indicating if CAV value is negative or not.
+    """
+    is_negative_validators = collections.defaultdict(lambda: self._is_negative)
+    is_negative_validators.update({
+        "Dropdown": self._is_negative_dropdown,
+        "Rich Text": self._is_negative_text,
+        "Text": self._is_negative_text,
+    })
+
+    is_negative_validator = is_negative_validators[self.attribute_type]
+    return is_negative_validator(cav, self.negative_options)
 
   def _clone(self, target):
     """Clone custom attribute definitions."""
