@@ -66,13 +66,33 @@ class SimpleField(object):
 
   def __init__(self, container, label):
     self._label_text = label
-    self._root = container.h6(text=label).parent()
-    if "action-toolbar" in self._root.classes:
-      self._root = self._root.parent()
+    self._container = container
+
+  @property
+  def root(self):
+    """Returns root element."""
+    root = self._container.h6(text=self._label_text).parent()
+    if "action-toolbar" in root.classes:
+      root = root.parent()
+    return root
 
   @property
   def text(self):
-    return self._root.text[len(self._label_text):].strip()
+    """Returns text of element."""
+    return self.root.text[len(self._label_text):].strip()
+
+
+class EditableSimpleField(SimpleField):
+  """Represents an editable simple field
+  (with header and text within the same element).
+  """
+
+  @property
+  def root(self):
+    """Returns root element."""
+    return self._container.element(
+        tag_name="base-inline-control-title", text=self._label_text).parent(
+        tag_name="inline-edit-control")
 
 
 class Datepicker(object):

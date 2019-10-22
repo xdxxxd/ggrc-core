@@ -407,6 +407,10 @@ class Programs(InfoWidget, page_mixins.WithProposals):
         self.manager, self.manager_entered)
     self.reference_urls = self._related_urls(self._reference_url_label)
 
+  def description(self):
+    """Returns the text of description."""
+    return self._editable_simple_field("Description", self._root).text
+
   def els_shown_for_editor(self):
     """Elements shown for user with edit permissions"""
     return [self.request_review_btn,
@@ -433,6 +437,7 @@ class Workflow(InfoWidget):
     """Method overriding without action due to Workflows don't have
     'review states'.
     """
+    # pylint: disable=invalid-name
     pass
 
   def obj_scope(self):
@@ -550,6 +555,7 @@ class Audits(page_mixins.WithAssignFolder, InfoWidget):
     """Method overriding without action due to Audits don't have
     'review states'.
     """
+    # pylint: disable=invalid-name
     pass
 
   def els_shown_for_editor(self):
@@ -764,6 +770,7 @@ class AssessmentTemplates(InfoWidget):
     """Method overriding without action due to Assessment Templates don't have
     'review states'.
     """
+    # pylint: disable=invalid-name
     pass
 
 
@@ -774,6 +781,10 @@ class Issues(InfoWidget):
 
   def __init__(self, driver):
     super(Issues, self).__init__(driver)
+
+  def description(self):
+    """Returns the text of description."""
+    return self._editable_simple_field("Description", self._root).text
 
 
 class Regulations(InfoWidget):
