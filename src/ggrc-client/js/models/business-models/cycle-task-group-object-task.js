@@ -18,6 +18,7 @@ import CaUpdate from '../mixins/ca-update';
 import CycleTaskNotifications from '../mixins/notifications/cycle-task-notifications';
 import Stub from '../stub';
 import {reify} from '../../plugins/utils/reify-utils';
+import {refreshAll} from '../../models/refresh_queue';
 
 function populateFromWorkflow(form, workflow) {
   if (!workflow || typeof workflow === 'string') {
@@ -40,7 +41,7 @@ function populateFromWorkflow(form, workflow) {
     return;
   }
 
-  workflow.refresh_all('cycles').then(function (cycleList) {
+  refreshAll(workflow, ['cycles']).then(function (cycleList) {
     let activeCycleList = loFilter(cycleList, {is_current: true});
     let activeCycle;
 
@@ -181,7 +182,7 @@ export default Cacheable.extend({
         // Example: Cycle, Cycle Task Group and Cycle Task are
         // in FINISHED state, create new CT: Cycle, CTG should
         // change status to In Progress.
-        instance.refresh_all_force('cycle_task_group', 'cycle', 'workflow');
+        refreshAll(instance, ['cycle_task_group', 'cycle', 'workflow'], true);
       }
     });
 
@@ -191,7 +192,7 @@ export default Cacheable.extend({
         instance instanceof this &&
         getPageType() === 'Workflow'
       ) {
-        instance.refresh_all_force('cycle_task_group', 'cycle', 'workflow');
+        refreshAll(instance, ['cycle_task_group', 'cycle', 'workflow'], true);
       }
     });
   },
@@ -241,7 +242,7 @@ export default Cacheable.extend({
     },
   },
   _workflow: function () {
-    return this.refresh_all('cycle', 'workflow').then(function (workflow) {
+    return refreshAll(this, ['cycle', 'workflow']).then(function (workflow) {
       return workflow;
     });
   },
