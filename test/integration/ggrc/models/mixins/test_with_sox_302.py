@@ -26,47 +26,36 @@ class BaseTestWithSOX302(integration_tests_ggrc.TestCase):
     self.client.get("/login")
 
   @staticmethod
-  def _get_query_by_audit_for(obj_type, audit):
-    # type: (db.Model, models.Audit) -> sqlalchemy.Query
+  def _get_query_by_audit_for(obj_type, audit_id):
+    # type: (db.Model, int) -> sqlalchemy.Query
     """Build sqlalchemy query for specific object type filtered by audit.
 
     Build sqlalchemy query for objects of type `obj_type` which are related to
-    given audit `audit`. This helper method allows to build DB query when audit
-    ID is known and audit isn't detached from a session yet and use this query
-    later when audit might become detached from a session.
+    audit with `audit_id` ID. This helper method allows to build DB query when
+    audit ID is known and use this query later.
 
     Args:
         obj_type (db.Model): Class instance of objects to query.
-        audit (models.Audit): Audit instance whose related objects should be
+        audit_id (int): ID of Audit instance whose related objects should be
           queried.
 
     Returns:
       Sqlalchemy.Query object which could be used for later queries.
     """
-    return obj_type.query.filter(obj_type.audit_id == audit.id)
+    return obj_type.query.filter(obj_type.audit_id == audit_id)
 
   @staticmethod
-  def _get_query_to_refresh(*objs):
-    # type: (Tuple[db.Model]) -> sqlalchemy.Query
-    """Build sqlalchemy query for the given object to use it later.
-
-    Build sqlalchemy query for the given objects. This helper method allows to
-    build DB query when object IDs are known and they aren't detached from a
-    session yet and use this query later when object might become detached from
-    a session to refresh it.
+  def _refresh_object(obj_type, obj_id):
+    # type: (db.Model) -> db.Model
+    """Refresh passed object and attach it to the current session.
 
     Args:
-        objs (Tuple[db.Model]): Instances of db.Model class represeting object
-          to query from DB.
+        objs (db.Model): Instances of db.Model class to be refreshed.
 
     Returns:
-      Sqlalchemy.Query object which could be used for later queries.
+      Refreshed instance of db.Model class.
     """
-    if not objs:
-      return None
-
-    model = objs[0].__class__
-    return model.query.filter(model.id.in_(o.id for o in objs))
+    return obj_type.query.get(obj_id)
 
   @staticmethod
   def _get_asmt_tmpl_lcas(assessment_template):
@@ -148,10 +137,7 @@ class TestImportWithSOX302(BaseTestWithSOX302):
   def test_sox_302_tmpl_create(self, imported_value, exp_value):
     """Test SOX302 enabled={exp_value} when create asmt tmpl via import."""
     audit = ggrc_factories.AuditFactory()
-    tmpl_q = self._get_query_by_audit_for(
-        obj_type=all_models.AssessmentTemplate,
-        audit=audit,
-    )
+    audit_id = audit.id
 
     asmt_tmpl_data = collections.OrderedDict([
         ("object_type", "Assessment Template"),
@@ -167,10 +153,9 @@ class TestImportWithSOX302(BaseTestWithSOX302):
     response = self.import_data(asmt_tmpl_data)
 
     self._check_csv_response(response, {})
-    self._assert_sox_302_enabled_flag(
-        tmpl_q.one(),
-        exp_value,
-    )
+    tmpl = self._get_query_by_audit_for(
+        all_models.AssessmentTemplate, audit_id).one()
+    self._assert_sox_302_enabled_flag(tmpl, exp_value)
 
   @ddt.data(
       {"init_value": True, "imported_value": "yes", "exp_value": True},
@@ -185,7 +170,7 @@ class TestImportWithSOX302(BaseTestWithSOX302):
     """Test SOX302 enabled={exp_value} when update asmt tmpl via import."""
     tmpl = ggrc_factories.AssessmentTemplateFactory(
         sox_302_enabled=init_value)
-    tmpl_q = self._get_query_to_refresh(tmpl)
+    tmpl_id = tmpl.id
 
     asmt_tmpl_data = collections.OrderedDict([
         ("object_type", "Assessment Template"),
@@ -197,10 +182,8 @@ class TestImportWithSOX302(BaseTestWithSOX302):
     response = self.import_data(asmt_tmpl_data)
 
     self._check_csv_response(response, {})
-    self._assert_sox_302_enabled_flag(
-        tmpl_q.one(),
-        exp_value,
-    )
+    tmpl = self._refresh_object(tmpl.__class__, tmpl_id)
+    self._assert_sox_302_enabled_flag(tmpl, exp_value)
 
   @ddt.data(
       {"imported_value": "yes", "exp_value": False},
@@ -211,15 +194,12 @@ class TestImportWithSOX302(BaseTestWithSOX302):
   def test_sox_302_immut_asmt_create(self, imported_value, exp_value):
     """Test SOX 302 enabled is immutable when create asmt via import.
 
-    SOX 302 enabled flag is read only on Assessment and could not be set via
-    import directly. Only if assessment template is provided in imported data.
-    This test check Assessment creation without AssessmentTemplate provided.
+    Test `sox_302_enabled` on Assessment could not be set via import if there
+    isn't any AssessmentTemplate provided in import data. SOX 302 enabled flag
+    is read only on Assessment and could be set only from template.
     """
     audit = ggrc_factories.AuditFactory()
-    asmt_q = self._get_query_by_audit_for(
-        obj_type=all_models.Assessment,
-        audit=audit,
-    )
+    audit_id = audit.id
 
     asmt_data = collections.OrderedDict([
         ("object_type", "Assessment"),
@@ -236,10 +216,8 @@ class TestImportWithSOX302(BaseTestWithSOX302):
     response = self.import_data(asmt_data)
 
     self._check_csv_response(response, {})
-    self._assert_sox_302_enabled_flag(
-        asmt_q.one(),
-        exp_value,
-    )
+    asmt = self._get_query_by_audit_for(all_models.Assessment, audit_id).one()
+    self._assert_sox_302_enabled_flag(asmt, exp_value)
 
   @ddt.data(
       {"tmpl_value": True, "imported_value": "yes", "exp_value": True},
@@ -255,9 +233,9 @@ class TestImportWithSOX302(BaseTestWithSOX302):
     # pylint: disable=invalid-name
     """Test SOX 302 enabled is mutable when create asmt with tmpl via import.
 
-    SOX 302 enabled flag is read only on Assessment and could not be set via
-    import directly. Only if assessment template is provided in imported data.
-    This test check Assessment creation with AssessmentTemplate provided.
+    Test `sox_302_enabled` on Assessment could be set via import if there is an
+    AssessmentTemplate provided in import data. SOX 302 enabled flag is read
+    only on Assessment and could be set only from template.
     """
     with ggrc_factories.single_commit():
       audit = ggrc_factories.AuditFactory()
@@ -265,10 +243,7 @@ class TestImportWithSOX302(BaseTestWithSOX302):
           audit=audit,
           sox_302_enabled=tmpl_value,
       )
-    asmt_q = self._get_query_by_audit_for(
-        obj_type=all_models.Assessment,
-        audit=audit,
-    )
+    audit_id = audit.id
 
     asmt_data = collections.OrderedDict([
         ("object_type", "Assessment"),
@@ -285,10 +260,8 @@ class TestImportWithSOX302(BaseTestWithSOX302):
     response = self.import_data(asmt_data)
 
     self._check_csv_response(response, {})
-    self._assert_sox_302_enabled_flag(
-        asmt_q.one(),
-        exp_value,
-    )
+    asmt = self._get_query_by_audit_for(all_models.Assessment, audit_id).one()
+    self._assert_sox_302_enabled_flag(asmt, exp_value)
 
   @ddt.data(
       {"init_value": True, "imported_value": "yes", "exp_value": True},
@@ -302,12 +275,13 @@ class TestImportWithSOX302(BaseTestWithSOX302):
   def test_sox_302_immut_asmt_upd(self, init_value, imported_value, exp_value):
     """Test SOX 302 enabled is immutable when update asmt via import.
 
-    SOX 302 enabled flag is read only on Assessment and could not be set via
-    import directly. Only if assessment template is provided in imported data.
-    This test check Assessment update case without AssessmentTemplate provided.
+    Test `sox_302_enabled` on Assessment could not be set via import during
+    Assessment update if there isn't any AssessmentTemplate provided in import
+    data. SOX 302 enabled flag is read only on Assessment and could not be
+    updated in noway.
     """
     asmt = ggrc_factories.AssessmentFactory(sox_302_enabled=init_value)
-    asmt_q = self._get_query_to_refresh(asmt)
+    asmt_id = asmt.id
 
     asmt_data = collections.OrderedDict([
         ("object_type", "Assessment"),
@@ -319,10 +293,8 @@ class TestImportWithSOX302(BaseTestWithSOX302):
     response = self.import_data(asmt_data)
 
     self._check_csv_response(response, {})
-    self._assert_sox_302_enabled_flag(
-        asmt_q.one(),
-        exp_value,
-    )
+    asmt = self._refresh_object(asmt.__class__, asmt_id)
+    self._assert_sox_302_enabled_flag(asmt, exp_value)
 
   @ddt.data(
       {"init_value": True, "tmpl_value": True, "exp_value": True},
@@ -334,9 +306,10 @@ class TestImportWithSOX302(BaseTestWithSOX302):
   def test_sox_302_asmt_with_tmpl_upd(self, init_value, tmpl_value, exp_value):
     """Test SOX 302 enabled is immutable when update asmt with tmpl via import.
 
-    SOX 302 enabled flag is read only on Assessment and could not be set via
-    import directly. Only if assessment template is provided in imported data.
-    This test check Assessment update case with AssessmentTemplate provided.
+    Test `sox_302_enabled` on Assessment could not be set via import during
+    Assessment update if there is an AssessmentTemplate provided in import
+    data. SOX 302 enabled flag is read only on Assessment and could not be
+    updated in noway.
     """
     with ggrc_factories.single_commit():
       asmt = ggrc_factories.AssessmentFactory(sox_302_enabled=init_value)
@@ -344,7 +317,7 @@ class TestImportWithSOX302(BaseTestWithSOX302):
           audit=asmt.audit,
           sox_302_enabled=tmpl_value,
       )
-    asmt_q = self._get_query_to_refresh(asmt)
+    asmt_id = asmt.id
 
     asmt_data = collections.OrderedDict([
         ("object_type", "Assessment"),
@@ -356,10 +329,8 @@ class TestImportWithSOX302(BaseTestWithSOX302):
     response = self.import_data(asmt_data)
 
     self._check_csv_response(response, {})
-    self._assert_sox_302_enabled_flag(
-        asmt_q.one(),
-        exp_value,
-    )
+    asmt = self._refresh_object(asmt.__class__, asmt_id)
+    self._assert_sox_302_enabled_flag(asmt, exp_value)
 
   @ddt.data(
       {
@@ -390,10 +361,7 @@ class TestImportWithSOX302(BaseTestWithSOX302):
     creating new Assessment Template via import.
     """
     audit = ggrc_factories.AuditFactory()
-    tmpl_q = self._get_query_by_audit_for(
-        obj_type=all_models.AssessmentTemplate,
-        audit=audit,
-    )
+    audit_id = audit.id
 
     asmt_tmpl_data = collections.OrderedDict([
         ("object_type", "Assessment Template"),
@@ -409,83 +377,8 @@ class TestImportWithSOX302(BaseTestWithSOX302):
     response = self.import_data(asmt_tmpl_data)
 
     self._check_csv_response(response, {})
-    tmpl = tmpl_q.one()
-    self._assert_negative_options(
-        cads=self._get_asmt_tmpl_lcas(tmpl),
-        expected_cad_count=expected_lca_count,
-        expected_options=expected_options,
-        expected_negatives=expected_negatives,
-    )
-
-  @ddt.data(
-      {
-          "lca_to_import": "Dropdown, LCA with negative, yes, (n)no",
-          "expected_options": ["yes,no"],
-          "expected_negatives": ["no"],
-          "expected_lca_count": 1,
-      },
-      {
-          "lca_to_import": "Rich Text, LCA with negative, empty, (n)not empty",
-          "expected_options": ["empty,not empty"],
-          "expected_negatives": ["not empty"],
-          "expected_lca_count": 1,
-      },
-      {
-          "lca_to_import": "Text, LCA with negative, (n)empty, not empty",
-          "expected_options": ["empty,not empty"],
-          "expected_negatives": ["empty"],
-          "expected_lca_count": 1,
-      },
-  )
-  @ddt.unpack
-  def test_negative_lca_update(self, lca_to_import, expected_options,
-                               expected_negatives, expected_lca_count):
-    """Test LCA with negative options is created when update via import.
-
-    Check that local Custom Attribute with negative options is created and all
-    previous attached local Custom Attributes are deleted when updating
-    Assessment Template via import.
-    """
-    with ggrc_factories.single_commit():
-      tmpl = ggrc_factories.AssessmentTemplateFactory()
-      lca_1 = ggrc_factories.CustomAttributeDefinitionFactory(
-          title="Dropdown LCA with no negatives to be deleted",
-          definition_type=tmpl._inflector.table_singular,
-          definition_id=tmpl.id,
-          attribute_type="Dropdown",
-          multi_choice_options="yes,no",
-          multi_choice_mandatory="0,0",
-      )
-      lca_2 = ggrc_factories.CustomAttributeDefinitionFactory(
-          title="Rich Text LCA with negatives to be deleted",
-          definition_type=tmpl._inflector.table_singular,
-          definition_id=tmpl.id,
-          attribute_type="Rich Text",
-          multi_choice_options="empty,not empty",
-          multi_choice_mandatory="0,8",
-      )
-      lca_3 = ggrc_factories.CustomAttributeDefinitionFactory(
-          title="Text LCA with negatives to be deleted",
-          definition_type=tmpl._inflector.table_singular,
-          definition_id=tmpl.id,
-          attribute_type="Text",
-          multi_choice_options="empty,not empty",
-          multi_choice_mandatory="8,0",
-      )
-    tmpl_q = self._get_query_to_refresh(tmpl)
-    old_cads_q = self._get_query_to_refresh(lca_1, lca_2, lca_3)
-    asmt_tmpl_data = collections.OrderedDict([
-        ("object_type", "Assessment Template"),
-        ("Code*", tmpl.slug),
-        ("Custom Attributes", lca_to_import),
-    ])
-
-    self._login()
-    response = self.import_data(asmt_tmpl_data)
-
-    self._check_csv_response(response, {})
-    tmpl = tmpl_q.one()
-    self.assertEqual(old_cads_q.all(), [])
+    tmpl = self._get_query_by_audit_for(
+        all_models.AssessmentTemplate, audit_id).one()
     self._assert_negative_options(
         cads=self._get_asmt_tmpl_lcas(tmpl),
         expected_cad_count=expected_lca_count,
@@ -592,10 +485,7 @@ class TestApiWithSOX302(BaseTestWithSOX302):
   def test_sox_302_tmpl_create(self, sent_value, exp_value):
     """Test SOX302 enabled={exp_value} when create asmt tmpl via API."""
     audit = ggrc_factories.AuditFactory()
-    tmpl_q = self._get_query_by_audit_for(
-        obj_type=all_models.AssessmentTemplate,
-        audit=audit,
-    )
+    audit_id = audit.id
 
     response = self.api.post(
         all_models.AssessmentTemplate,
@@ -614,10 +504,9 @@ class TestApiWithSOX302(BaseTestWithSOX302):
     )
 
     self.assert201(response)
-    self._assert_sox_302_enabled_flag(
-        tmpl_q.one(),
-        exp_value,
-    )
+    tmpl = self._get_query_by_audit_for(
+        all_models.AssessmentTemplate, audit_id).one()
+    self._assert_sox_302_enabled_flag(tmpl, exp_value)
 
   @ddt.data(
       {"init_value": True, "sent_value": True, "exp_value": True},
@@ -630,7 +519,7 @@ class TestApiWithSOX302(BaseTestWithSOX302):
     """Test SOX302 enabled={exp_value} when update asmt tmpl via API."""
     tmpl = ggrc_factories.AssessmentTemplateFactory(
         sox_302_enabled=init_value)
-    tmpl_q = self._get_query_to_refresh(tmpl)
+    tmpl_id = tmpl.id
 
     response = self.api.put(
         tmpl,
@@ -640,10 +529,8 @@ class TestApiWithSOX302(BaseTestWithSOX302):
     )
 
     self.assert200(response)
-    self._assert_sox_302_enabled_flag(
-        tmpl_q.one(),
-        exp_value,
-    )
+    tmpl = self._refresh_object(tmpl.__class__, tmpl_id)
+    self._assert_sox_302_enabled_flag(tmpl, exp_value)
 
   @ddt.data(
       {"orig_value": True, "exp_value": True},
@@ -654,12 +541,8 @@ class TestApiWithSOX302(BaseTestWithSOX302):
     """Test AssessmentTemplate SOX 302 enabled={0} when clone via API."""
     tmpl = ggrc_factories.AssessmentTemplateFactory(
         sox_302_enabled=orig_value)
-    tmpl_clone_q = self._get_query_by_audit_for(
-        all_models.AssessmentTemplate,
-        tmpl.audit,
-    ).filter(
-        all_models.AssessmentTemplate.id != tmpl.id,
-    )
+    audit_id = tmpl.audit.id
+    tmpl_id = tmpl.id
 
     response = self.api.send_request(
         self.api.client.post,
@@ -675,10 +558,11 @@ class TestApiWithSOX302(BaseTestWithSOX302):
     )
 
     self.assert200(response)
-    self._assert_sox_302_enabled_flag(
-        tmpl_clone_q.one(),
-        exp_value,
-    )
+    tmpl_q = self._get_query_by_audit_for(
+        all_models.AssessmentTemplate, audit_id)
+    tmpl_clone = tmpl_q.filter(
+        all_models.AssessmentTemplate.id != tmpl_id).one()
+    self._assert_sox_302_enabled_flag(tmpl_clone, exp_value)
 
   @ddt.data(
       {"sent_value": True, "exp_value": False},
@@ -688,15 +572,12 @@ class TestApiWithSOX302(BaseTestWithSOX302):
   def test_sox_302_immut_asmt_create(self, sent_value, exp_value):
     """Test SOX 302 enabled is immutable when create asmt via API.
 
-    SOX 302 enabled flag is read only on Assessment and could not be set via
-    REST API directly. Only if assessment template is provided in request data.
-    This test check Assessment creation without AssessmentTemplate provided.
+    Test `sox_302_enabled` on Assessment could not be set via API if there
+    isn't any AssessmentTemplate provided in request data. SOX 302 enabled flag
+    is read only on Assessment and could be set only from template.
     """
     audit = ggrc_factories.AuditFactory()
-    asmt_q = self._get_query_by_audit_for(
-        obj_type=all_models.Assessment,
-        audit=audit,
-    )
+    audit_id = audit.id
 
     response = self.api.post(
         all_models.Assessment,
@@ -710,10 +591,8 @@ class TestApiWithSOX302(BaseTestWithSOX302):
     )
 
     self.assert201(response)
-    self._assert_sox_302_enabled_flag(
-        asmt_q.one(),
-        exp_value,
-    )
+    asmt = self._get_query_by_audit_for(all_models.Assessment, audit_id).one()
+    self._assert_sox_302_enabled_flag(asmt, exp_value)
 
   @ddt.data(
       {"tmpl_value": True, "sent_value": True, "exp_value": True},
@@ -727,9 +606,9 @@ class TestApiWithSOX302(BaseTestWithSOX302):
     # pylint: disable=invalid-name
     """Test SOX 302 enabled is mutable when create asmt with tmpl via API.
 
-    SOX 302 enabled flag is read only on Assessment and could not be set via
-    REST API directly. Only if assessment template is provided in request data.
-    This test check Assessment creation with AssessmentTemplate provided.
+    Test `sox_302_enabled` on Assessment could be set via API if there is an
+    AssessmentTemplate provided in request data. SOX 302 enabled flag is read
+    only on Assessment and could be set only from template.
     """
     with ggrc_factories.single_commit():
       audit = ggrc_factories.AuditFactory()
@@ -737,10 +616,7 @@ class TestApiWithSOX302(BaseTestWithSOX302):
           audit=audit,
           sox_302_enabled=tmpl_value,
       )
-    asmt_q = self._get_query_by_audit_for(
-        obj_type=all_models.Assessment,
-        audit=audit,
-    )
+    audit_id = audit.id
 
     response = self.api.post(
         all_models.Assessment,
@@ -755,10 +631,8 @@ class TestApiWithSOX302(BaseTestWithSOX302):
     )
 
     self.assert201(response)
-    self._assert_sox_302_enabled_flag(
-        asmt_q.one(),
-        exp_value,
-    )
+    asmt = self._get_query_by_audit_for(all_models.Assessment, audit_id).one()
+    self._assert_sox_302_enabled_flag(asmt, exp_value)
 
   @ddt.data(
       {"init_value": True, "sent_value": True, "exp_value": True},
@@ -770,12 +644,12 @@ class TestApiWithSOX302(BaseTestWithSOX302):
   def test_sox_302_immut_asmt_upd(self, init_value, sent_value, exp_value):
     """Test SOX 302 enabled is immutable when update asmt via API.
 
-    SOX 302 enabled flag is read only on Assessment and could not be set via
-    REST API directly. Only if assessment template is provided in request data.
-    This test check Assessment update without AssessmentTemplate provided.
+    Test `sox_302_enabled` on Assessment could not be updated via API.
+    SOX 302 enabled flag is read only on Assessment and could be set only
+    during creation with AssessmentTemplate.
     """
     asmt = ggrc_factories.AssessmentFactory(sox_302_enabled=init_value)
-    asmt_q = self._get_query_to_refresh(asmt)
+    asmt_id = asmt.id
 
     response = self.api.put(
         asmt,
@@ -785,10 +659,8 @@ class TestApiWithSOX302(BaseTestWithSOX302):
     )
 
     self.assert200(response)
-    self._assert_sox_302_enabled_flag(
-        asmt_q.one(),
-        exp_value,
-    )
+    asmt = self._refresh_object(asmt.__class__, asmt_id)
+    self._assert_sox_302_enabled_flag(asmt, exp_value)
 
 
 @ddt.ddt
@@ -1002,7 +874,7 @@ class TestStatusFlowWithSOX302(BaseTestWithSOX302):
       verifier = ggrc_factories.PersonFactory()
       asmt.add_person_with_role_name(verifier, "Verifiers")
       self._setup_local_custom_attributes(asmt, cad_cav_pairs)
-    asmt_q = self._get_query_to_refresh(asmt)
+    asmt_id = asmt.id
 
     self._login()
     response = self.api.put(
@@ -1013,10 +885,8 @@ class TestStatusFlowWithSOX302(BaseTestWithSOX302):
     )
 
     self.assert200(response)
-    self._assert_status_field(
-        asmt_q.one(),
-        end_status,
-    )
+    asmt = self._refresh_object(asmt.__class__, asmt_id)
+    self._assert_status_field(asmt, end_status)
 
   @ddt.data(
       {
@@ -1100,7 +970,8 @@ class TestStatusFlowWithSOX302(BaseTestWithSOX302):
       verifier = ggrc_factories.PersonFactory()
       asmt.add_person_with_role_name(verifier, "Verifiers")
       self._setup_local_custom_attributes(asmt, cad_cav_pairs)
-    asmt_q = self._get_query_to_refresh(asmt)
+    asmt_id = asmt.id
+
     asmt_data = collections.OrderedDict([
         ("object_type", "Assessment"),
         ("Code*", asmt.slug),
@@ -1111,7 +982,5 @@ class TestStatusFlowWithSOX302(BaseTestWithSOX302):
     response = self.import_data(asmt_data)
 
     self._check_csv_response(response, {})
-    self._assert_status_field(
-        asmt_q.one(),
-        end_status,
-    )
+    asmt = self._refresh_object(asmt.__class__, asmt_id)
+    self._assert_status_field(asmt, end_status)
