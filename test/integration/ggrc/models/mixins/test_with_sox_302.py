@@ -1,7 +1,7 @@
 # Copyright (C) 2019 Google Inc.
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 
-# pylint: disable=protected-access
+# pylint: disable=protected-access,too-many-lines
 
 """Integration tests for `WithSOX302Flow` logic."""
 
@@ -10,6 +10,7 @@ import collections
 import ddt
 
 from ggrc.models import all_models
+from ggrc.models.mixins import statusable
 from ggrc.models.mixins import with_sox_302
 from integration import ggrc as integration_tests_ggrc
 from integration.ggrc import api_helper
@@ -881,4 +882,236 @@ class TestQueriesWithSOX302(query_helper.WithQueryApi,
         response.json,
         "Assessment",
         searched_amst_id,
+    )
+
+
+@ddt.ddt
+class TestStatusFlowWithSOX302(BaseTestWithSOX302):
+  """Test status flow for `WithSOX302Flow` objects."""
+
+  def setUp(self):
+    """Set up for SOX 302 status flow test case."""
+    super(TestStatusFlowWithSOX302, self).setUp()
+    self.api = api_helper.Api()
+
+  def _assert_status_field(self, obj, expected_value):
+    # type: (db.Model, bool) -> None
+    """Assert that `status` field has expected value on object.
+
+    For this assertion to pass, following conditions should be met:
+      - Given object should be derived from `Statusable` mixin;
+      - Value of `status` field on object should match `expected_value`.
+
+    Args:
+      obj (db.Model): Instance of db.Model class on which value of
+        `status` flag should be checked.
+      expected_value (bool): Expected value of `status` field on the
+        given object.
+    """
+    self.assertTrue(isinstance(obj, statusable.Statusable))
+    self.assertIsNotNone(obj)
+    self.assertEqual(
+        obj.status,
+        expected_value,
+    )
+
+  @staticmethod
+  def _setup_local_custom_attributes(obj, cad_cav_pairs):
+    # type: (db.Model, list) -> None
+    """Setup custom attribute definitions and values for the given object.
+
+    Create custom attribute definitions and and values for them from the given
+    `cad_cav_pairs` list of string representations and attach them to `obj`.
+
+    Args:
+      obj (db.Model): Object for which custom attributes should be created.
+      cad_cav_pairs (list): List containing string representation of custom
+        attributes and their values in form:
+        [("<Type>; <Title>; <Option1,...>; <Negative1,...>", <Value>),...]
+    """
+    flag_enum = all_models.CustomAttributeDefinition.MultiChoiceMandatoryFlags
+
+    for cad, cav in cad_cav_pairs:
+      cad_type, cad_title, cad_options, cad_negatives = cad.split(";")
+      cad_negatives = cad_negatives.split(",")
+      cad_option_flags = ",".join(
+          str(flag_enum.IS_NEGATIVE)
+          if o in cad_negatives
+          else str(flag_enum.DEFAULT)
+          for o in cad_options.split(",")
+      )
+      lca = ggrc_factories.CustomAttributeDefinitionFactory(
+          title=cad_title,
+          definition_type=obj._inflector.table_singular,
+          definition_id=obj.id,
+          attribute_type=cad_type,
+          multi_choice_options=cad_options,
+          multi_choice_mandatory=cad_option_flags,
+      )
+      ggrc_factories.CustomAttributeValueFactory(
+          custom_attribute=lca,
+          attributable=obj,
+          attribute_value=cav,
+      )
+
+  @ddt.data(
+      {
+          "cad_cav_pairs": [
+              ("Dropdown; LCA 1; yes,no; no", "yes"),
+          ],
+          "start_status": "Not Started",
+          "sent_status": "In Review",
+          "end_status": "Completed",
+      },
+      {
+          "cad_cav_pairs": [
+              ("Text; LCA 1; empty,not empty; empty", "positive"),
+          ],
+          "start_status": "Not Started",
+          "sent_status": "In Review",
+          "end_status": "Completed",
+      },
+      {
+          "cad_cav_pairs": [
+              ("Rich Text; LCA 1; empty,not empty; not empty", ""),
+          ],
+          "start_status": "Not Started",
+          "sent_status": "In Review",
+          "end_status": "Completed",
+      },
+      {
+          "cad_cav_pairs": [
+              ("Dropdown; LCA 1; yes,no; no", "yes"),
+              ("Text; LCA 2; empty,not empty; empty", "positive"),
+              ("Rich Text; LCA 3; empty,not empty; not empty", ""),
+          ],
+          "start_status": "Not Started",
+          "sent_status": "In Review",
+          "end_status": "Completed",
+      },
+  )
+  @ddt.unpack
+  def test_sox_302_status_flow_api(self, cad_cav_pairs, start_status,
+                                   sent_status, end_status):
+    """Test status change flow via API for SOX 302 objects."""
+    with ggrc_factories.single_commit():
+      asmt = ggrc_factories.AssessmentFactory(
+          sox_302_enabled=True,
+          status=start_status,
+      )
+      verifier = ggrc_factories.PersonFactory()
+      asmt.add_person_with_role_name(verifier, "Verifiers")
+      self._setup_local_custom_attributes(asmt, cad_cav_pairs)
+    asmt_q = self._get_query_to_refresh(asmt)
+
+    self._login()
+    response = self.api.put(
+        asmt,
+        {
+            "status": sent_status,
+        },
+    )
+
+    self.assert200(response)
+    self._assert_status_field(
+        asmt_q.one(),
+        end_status,
+    )
+
+  @ddt.data(
+      {
+          "cad_cav_pairs": [
+              ("Dropdown; LCA 1; yes,no; no", "yes"),
+          ],
+          "start_status": "Not Started",
+          "imported_status": "In Review",
+          "end_status": "Completed",
+      },
+      {
+          "cad_cav_pairs": [
+              ("Text; LCA 1; empty,not empty; empty", "positive"),
+          ],
+          "start_status": "Not Started",
+          "imported_status": "In Review",
+          "end_status": "Completed",
+      },
+      {
+          "cad_cav_pairs": [
+              ("Rich Text; LCA 1; empty,not empty; not empty", ""),
+          ],
+          "start_status": "Not Started",
+          "imported_status": "In Review",
+          "end_status": "Completed",
+      },
+      {
+          "cad_cav_pairs": [
+              ("Dropdown; LCA 1; yes,no; no", "yes"),
+              ("Text; LCA 2; empty,not empty; empty", "positive"),
+              ("Rich Text; LCA 3; empty,not empty; not empty", ""),
+          ],
+          "start_status": "Not Started",
+          "imported_status": "In Review",
+          "end_status": "Completed",
+      },
+      {
+          "cad_cav_pairs": [
+              ("Dropdown; LCA 1; yes,no; no", "yes"),
+          ],
+          "start_status": "Not Started",
+          "imported_status": "Completed",
+          "end_status": "Completed",
+      },
+      {
+          "cad_cav_pairs": [
+              ("Text; LCA 1; empty,not empty; empty", "positive"),
+          ],
+          "start_status": "Not Started",
+          "imported_status": "Completed",
+          "end_status": "Completed",
+      },
+      {
+          "cad_cav_pairs": [
+              ("Rich Text; LCA 1; empty,not empty; not empty", ""),
+          ],
+          "start_status": "Not Started",
+          "imported_status": "Completed",
+          "end_status": "Completed",
+      },
+      {
+          "cad_cav_pairs": [
+              ("Dropdown; LCA 1; yes,no; no", "yes"),
+              ("Text; LCA 2; empty,not empty; empty", "positive"),
+              ("Rich Text; LCA 3; empty,not empty; not empty", ""),
+          ],
+          "start_status": "Not Started",
+          "imported_status": "Completed",
+          "end_status": "Completed",
+      },
+  )
+  @ddt.unpack
+  def test_sox_302_status_flow_import(self, cad_cav_pairs, start_status,
+                                      imported_status, end_status):
+    """Test status change flow via import for SOX 302 objects."""
+    with ggrc_factories.single_commit():
+      asmt = ggrc_factories.AssessmentFactory(
+          sox_302_enabled=True,
+          status=start_status,
+      )
+      verifier = ggrc_factories.PersonFactory()
+      asmt.add_person_with_role_name(verifier, "Verifiers")
+      self._setup_local_custom_attributes(asmt, cad_cav_pairs)
+    asmt_q = self._get_query_to_refresh(asmt)
+    asmt_data = collections.OrderedDict([
+        ("object_type", "Assessment"),
+        ("Code*", asmt.slug),
+        ("State", imported_status),
+    ])
+
+    self._login()
+    response = self.import_data(asmt_data)
+
+    self._check_csv_response(response, {})
+    self._assert_status_field(
+        asmt_q.one(),
+        end_status,
     )
