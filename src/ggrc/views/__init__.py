@@ -34,7 +34,6 @@ from ggrc.snapshotter import rules, indexer as snapshot_indexer
 from ggrc.utils import benchmark, helpers, log_event, revisions
 from ggrc.utils import empty_revisions
 from ggrc.utils.contributed_objects import CONTRIBUTED_OBJECTS
-from ggrc.views import issue_tracker as issue_tracker_views
 from ggrc.views import saved_searches  # noqa: F401
 from ggrc.views import converters, cron, filters, notifications, registry, \
     utils, serializers, folder
@@ -1060,7 +1059,6 @@ def init_extra_views(app_):
   query_views.init_query_views(app_)
   query_views.init_clone_views(app_)
   folder.init_folder_views(app_)
-  issue_tracker_views.init_issue_tracker_views(app_)
 
 
 def init_all_views(app_):

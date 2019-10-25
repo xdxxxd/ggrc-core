@@ -9,12 +9,6 @@ import canComponent from 'can-component';
 import '../dropdown/dropdown-component';
 import '../numberbox/numberbox-component';
 import template from './templates/modal-issue-tracker-fields.stache';
-import {
-  checkIssueTrackerTicketId,
-} from '../../plugins/utils/issue-tracker-utils';
-import {validateAttr} from '../../plugins/utils/validation-utils';
-import {getAjaxErrorInfo} from '../../plugins/utils/errors-utils';
-import {notifier} from '../../plugins/utils/notifiers-utils';
 
 const state = {
   NOT_SELECTED: 0,
@@ -35,27 +29,6 @@ export default canComponent.extend({
             this.attr('currentState') !== state.NOT_SELECTED;
         },
       },
-      ticketIdErrorMessage: {
-        get() {
-          const instance = this.attr('instance');
-          const validationError =
-            validateAttr(instance, 'issue_tracker.issue_id');
-          if (validationError) {
-            return validationError;
-          }
-
-          const hasTicketIdError = this.attr('isTicketIdChecked') &&
-            !this.attr('isTicketIdCheckSuccessful');
-
-          return hasTicketIdError ? this.attr('ticketIdCheckMessage') : '';
-        },
-      },
-      isTicketIdDisabled: {
-        get() {
-          return this.attr('isTicketIdChecking') ||
-            !this.attr('instance.issue_tracker.issue_id');
-        },
-      },
     },
     instance: {},
     note: '',
@@ -63,10 +36,6 @@ export default canComponent.extend({
     isTicketIdMandatory: false,
     state,
     currentState: state.NOT_SELECTED,
-    isTicketIdChecking: false,
-    isTicketIdChecked: false,
-    isTicketIdCheckSuccessful: false,
-    ticketIdCheckMessage: '',
     generateNewTicket() {
       if (this.attr('currentState') === state.GENERATE_NEW) {
         return;
@@ -115,53 +84,6 @@ export default canComponent.extend({
         this.linkToExistingTicket();
       }
     },
-    checkTicketId() {
-      const instance = this.attr('instance');
-      if (this.attr('isTicketIdDisabled')) {
-        return;
-      }
-
-      this.attr('isTicketIdChecking', true);
-      this.attr('isTicketIdChecked', false);
-      this.attr('isTicketIdCheckSuccessful', false);
-
-      return checkIssueTrackerTicketId(instance.issue_tracker.issue_id)
-        .then((data) => {
-          const type = data.type;
-          const id = data.id;
-          if (type && id && type === instance.type && id === instance.id) {
-            // ignore 'valid' field, because ticket has already
-            // linked to current instance
-
-            this.attr('isTicketIdCheckSuccessful', true);
-            this.attr('ticketIdCheckMessage', '');
-          } else {
-            this.attr('isTicketIdCheckSuccessful', data.valid);
-            this.attr('ticketIdCheckMessage', data.msg);
-          }
-
-          this.attr('isTicketIdChecked', true);
-        })
-        .fail((xhr) => {
-          this.resetTicketIdCheckState();
-          notifier('error', getAjaxErrorInfo(xhr).details);
-        })
-        .always(() => {
-          this.attr('isTicketIdChecking', false);
-        });
-    },
-    resetTicketIdCheckState() {
-      this.attr('isTicketIdCheckSuccessful', false);
-      this.attr('ticketIdCheckMessage', '');
-      this.attr('isTicketIdChecked', false);
-    },
-    onTicketIdKeyUp(ev) {
-      // ENTER key
-      if (ev.keyCode === 13) {
-        this.checkTicketId();
-        ev.stopPropagation();
-      }
-    },
   }),
   events: {
     inserted() {
@@ -185,9 +107,6 @@ export default canComponent.extend({
         instance.removeAttr('issue_tracker.is_linking');
         instance.removeAttr('issue_tracker._initialized');
       }
-    },
-    '{viewModel.instance.issue_tracker} issue_id'() {
-      this.viewModel.resetTicketIdCheckState();
     },
   },
 });
