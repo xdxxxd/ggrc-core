@@ -259,6 +259,48 @@ class TestAssessmentImport(TestCase):
     ).first()
     self.assertEqual(len(assessment.evidences_file), 1)
 
+  @mock.patch('ggrc.gdrive.file_actions.process_gdrive_file')
+  @mock.patch('ggrc.gdrive.file_actions.get_gdrive_file_link')
+  def test_bulk_mode_update_evidence(self, get_gdrive_link,
+                                     process_gdrive_mock):
+    """Test update assessment evidence file in bulk_import mode"""
+
+    evidence_file = "mock_id2"
+    process_gdrive_mock.return_value = {
+        "id": "mock_id2",
+        "webViewLink": "mock_link2",
+        "name": "mock_name2",
+    }
+    get_gdrive_link.return_value = "mock_id"
+
+    with factories.single_commit():
+      audit = factories.AuditFactory()
+      assessment = factories.AssessmentFactory()
+      assessment_slug = assessment.slug
+      factories.RelationshipFactory(source=audit, destination=assessment)
+      evidence = factories.EvidenceFileFactory(link="mock_link",
+                                               gdrive_id="mock_id")
+      factories.RelationshipFactory(source=assessment, destination=evidence)
+
+    with mock.patch("ggrc.converters.base.ImportConverter.is_bulk_import",
+                    return_value=True):
+      response = self.import_data(collections.OrderedDict([
+          ("object_type", "Assessment"),
+          ("Code*", assessment_slug),
+          ("Evidence File", evidence_file),
+      ]))
+    self.assertEqual(process_gdrive_mock.call_count, 1)
+    self.assertEqual(get_gdrive_link.call_count, 1)
+    self._check_csv_response(response, {})
+    assessment = all_models.Assessment.query.filter_by(
+        slug=assessment_slug
+    ).first()
+    self.assertEqual(len(assessment.evidences_file), 1)
+    for evidence in assessment.evidences_file:
+      self.assertEqual(evidence.gdrive_id, "mock_id2")
+      self.assertEqual(evidence.link, "mock_link2")
+      self.assertEqual(evidence.title, "mock_name2")
+
   def _test_assessment_users(self, asmt, users):
     """ Test that all users have correct roles on specified Assessment"""
     verification_errors = ""
