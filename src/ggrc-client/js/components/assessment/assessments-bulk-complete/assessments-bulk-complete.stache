@@ -19,6 +19,7 @@
       disabled:from="is_loading"
       mappedToItems:from="mappedToItems"
       defaultFilterItems:from="defaultFilterItems"
+      availableAttributes:from="filterAttributes"
       filterItems:bind="filterItems"
       mappingItems:to="mappingItems"
       on:vm:onSubmit="onSubmit()">

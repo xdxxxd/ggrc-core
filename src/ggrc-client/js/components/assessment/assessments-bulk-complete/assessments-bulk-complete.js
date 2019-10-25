@@ -39,6 +39,7 @@ import {
   create,
   setDefaultStatusConfig,
 } from '../../../plugins/utils/advanced-search-utils';
+import {getAvailableAttributes} from '../../../plugins/utils/tree-view-utils';
 
 /**
  * Map of types from FE to BE format
@@ -91,6 +92,7 @@ const viewModel = ObjectOperationsBaseVM.extend({
   filterItems: [],
   defaultFilterItems: [],
   mappingItems: [],
+  filterAttributes: [],
   statesCollectionKey: STATES_KEYS.BULK_COMPLETE,
   type: 'Assessment',
   isAttributesGenerating: false,
@@ -399,8 +401,11 @@ const viewModel = ObjectOperationsBaseVM.extend({
     this.attr('filterItems', items);
     this.attr('defaultFilterItems', items);
   },
-  init() {
-    this.initDefaultFilter();
+  initFilterAttributes() {
+    const attributes = getAvailableAttributes(this.attr('type'))
+      .filter(({attr_name: attrName}) => attrName !== 'status');
+
+    this.attr('filterAttributes', attributes);
   },
   getValForCompleteRequest(type, value) {
     switch (type) {
@@ -527,6 +532,10 @@ const viewModel = ObjectOperationsBaseVM.extend({
   },
   closeModal() {
     this.attr('element').find('.modal-dismiss').trigger('click');
+  },
+  init() {
+    this.initDefaultFilter();
+    this.initFilterAttributes();
   },
 });
 

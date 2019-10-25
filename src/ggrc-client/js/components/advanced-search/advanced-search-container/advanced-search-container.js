@@ -11,7 +11,6 @@ import canComponent from 'can-component';
 import canStache from 'can-stache';
 import canMap from 'can-map';
 import template from './advanced-search-container.stache';
-import {getAvailableAttributes} from '../../../plugins/utils/tree-view-utils';
 
 const viewModel = canMap.extend({
   filterItems: [],
@@ -28,10 +27,6 @@ const viewModel = canMap.extend({
   },
   onSubmit() {
     this.dispatch('onSubmit');
-  },
-  init() {
-    this.attr('availableAttributes', getAvailableAttributes(
-      this.attr('modelName')));
   },
 });
 
