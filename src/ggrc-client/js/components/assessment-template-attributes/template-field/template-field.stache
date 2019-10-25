@@ -8,7 +8,7 @@
   <div class="template-grid__row-item template-grid__row-item_attr-type">{{field.attribute_name}}</div>
 
   <div class="template-grid__row-item template-grid__row-item-options">
-    {{#if isDropdownField}}
+    {{#if isDropdownOrMultiselect}}
       {{#attrs}}
         <div class="template-grid__row">
           <div class="template-grid__row-item template-grid__row-item_attr-values single-line">

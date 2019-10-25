@@ -38,9 +38,10 @@ export default canComponent.extend({
     editMode: true,
     field: null,
     define: {
-      isDropdownField: {
+      isDropdownOrMultiselect: {
         get() {
-          return this.attr('field.attribute_type') === 'Dropdown';
+          return this.attr('field.attribute_type') === 'Dropdown' ||
+            this.attr('field.attribute_type') === 'Multiselect';
         },
       },
       isTextFieldOptionsVisible: {

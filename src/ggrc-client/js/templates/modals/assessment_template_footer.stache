@@ -1,0 +1,32 @@
+{{!
+    Copyright (C) 2019 Google Inc.
+    Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+}}
+
+<div class="row-fluid">
+  <div class="span5">
+      <div class="deny-buttons">
+        {{^new_object_form}}
+          {{#is_allowed 'delete' instance context='for'}}
+            <a
+              tabindex="37"
+              class="btn btn-small btn-red"
+              data-toggle="modal-ajax-deleteform"
+              data-object-plural="{{model.table_plural}}"
+              data-object-singular="{{model.model_singular}}"
+              data-modal-reset="reset"
+              data-modal-class="modal"
+              data-object-id="{{instance.id}}"
+              href="javascript://"
+              >Delete</a>
+          {{/is_allowed}}
+        {{/new_object_form}}
+      </div>
+  </div>
+  <div class="span7">
+    <div class="confirm-buttons">
+      <spinner-component toggle:from="isSaving"></spinner-component>
+      <assessment-template-save-button instance:from="instance"/>
+    </div>
+  </div>
+</div>
