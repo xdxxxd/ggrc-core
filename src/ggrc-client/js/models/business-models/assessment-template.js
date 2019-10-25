@@ -40,6 +40,7 @@ export default Cacheable.extend({
   },
   defaults: {
     test_plan_procedure: true,
+    sox_302_enabled: false,
     template_object_type: 'Control',
     default_people: {
       assignees: 'Principal Assignees',
