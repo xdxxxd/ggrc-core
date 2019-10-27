@@ -150,16 +150,18 @@ class EvidenceFileHandler(EvidenceHandler, FileHandler,
     return {get_gdrive_file_link(d): d for d in self.value}
 
   def set_obj_attr(self):
-    self.value = self.parse_item()
+    if self.row_converter.block_converter.converter.is_bulk_import():
+      self.value = self._parse_item()
+    else:
+      # parse_item method without bulk mode doesn't return anything.
+      # We can't change evidence data here. This method used only to
+      # compare old and new data and add warnings.
+      self.parse_item()
 
   def build_evidence(self, link, user_id):
     """Build evidence object"""
     # pylint:disable=no-self-use,unused-argument
     return link
-
-  def build_files(self):  # pylint: disable=inconsistent-return-statements
-    if self.row_converter.block_converter.converter.is_bulk_import():
-      return self._parse_item()
 
   def insert_object(self):
     """Update document URL values

@@ -34,17 +34,11 @@ class FileHandler(object):
         for d in getattr(self.row_converter.obj, self.files_object)
     )
 
-  def build_files(self):
-    pass
-
-  def parse_item(self):  # pylint: disable=inconsistent-return-statements
+  def parse_item(self):
     """Is not allowed to import document of type File
 
     if file already mapped to parent we ignore it and not show warning
     """
-
-    if self.row_converter.block_converter.converter.is_bulk_import():
-      return self.build_files()
     if self.raw_value:
       parent = self.row_converter.obj
       existing_file_links = {
