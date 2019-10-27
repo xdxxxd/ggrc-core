@@ -241,3 +241,113 @@ class TestBulkComplete(ggrc.TestCase):
       urls = {ev_file.gdrive_id for ev_file in assmt.evidences_file}
       self.assertEqual(urls, {u"mock_id"})
       self.assertEqual(assmt.status, "Completed")
+
+  @ddt.data(
+      ("Text", "abc", "abc"),
+      ("Rich Text", "abc", "abc"),
+      ("Date", "7/15/2015", "2015-07-15"),
+      ("Checkbox", "1", "1"),
+      ("Checkbox", "0", "0"),
+      ("Map:Person", "test@test.com", "test@test.com"),
+  )
+  @ddt.unpack
+  def test_attributes_values(self, attribute_type, value, expected_value):
+    """Test complete asmts set cavs with attribute_type {0}."""
+    # pylint: disable=too-many-locals
+    asmts = []
+    asmts_ids = []
+    cads_ids = []
+    with factories.single_commit():
+      for _ in range(2):
+        assmt = factories.AssessmentFactory(status="Not Started")
+        cad = factories.CustomAttributeDefinitionFactory(
+            definition_id=assmt.id,
+            title="test_lca",
+            definition_type="assessment",
+            attribute_type=attribute_type,
+        )
+        asmts.append(assmt)
+        asmts_ids.append(assmt.id)
+        cads_ids.append(cad.id)
+
+    bulk_update = [{
+        "assessment_id": asmt.id,
+        "attribute_definition_id": cad_id,
+        "slug": asmt.slug} for cad_id, asmt in zip(cads_ids, asmts)]
+    data = {
+        "assessments_ids": asmts_ids,
+        "attributes": [{
+            "attribute_value": value,
+            "attribute_title": "test_lca",
+            "attribute_type": attribute_type,
+            "extra": {},
+            "bulk_update": bulk_update,
+        }],
+    }
+    self.init_taskqueue()
+    response = self.client.post("/api/bulk_operations/complete",
+                                data=json.dumps(data),
+                                headers=self.headers)
+    self.assert200(response)
+    asmts = models.Assessment.query.all()
+    cavs = models.CustomAttributeValue.query.filter(
+        models.CustomAttributeValue.custom_attribute_id.in_(cads_ids)
+    ).all()
+    for asmt in asmts:
+      self.assertEqual(asmt.status, "Completed")
+    for cav in cavs:
+      self.assertEqual(cav.attribute_value, expected_value)
+
+  @ddt.data(
+      ("Multiselect", "onE,tWo,Three", "One,three", "onE,Three"),
+      ("Dropdown", "yes,No", "no", "No"),
+  )
+  @ddt.unpack
+  def test_attributes_select_values(self, attribute_type, options,
+                                    value, expected_value):
+    """Test complete asmts select cavs with attribute_type {0}."""
+    # pylint: disable=too-many-locals
+    asmts = []
+    asmts_ids = []
+    cads_ids = []
+    with factories.single_commit():
+      for _ in range(2):
+        assmt = factories.AssessmentFactory(status="Not Started")
+        cad = factories.CustomAttributeDefinitionFactory(
+            definition_id=assmt.id,
+            title="test_lca",
+            definition_type="assessment",
+            attribute_type=attribute_type,
+            multi_choice_options=options,
+        )
+        asmts.append(assmt)
+        asmts_ids.append(assmt.id)
+        cads_ids.append(cad.id)
+
+    bulk_update = [{
+        "assessment_id": asmt.id,
+        "attribute_definition_id": cad_id,
+        "slug": asmt.slug} for cad_id, asmt in zip(cads_ids, asmts)]
+    data = {
+        "assessments_ids": asmts_ids,
+        "attributes": [{
+            "attribute_value": value,
+            "attribute_title": "test_lca",
+            "attribute_type": attribute_type,
+            "extra": {},
+            "bulk_update": bulk_update,
+        }],
+    }
+    self.init_taskqueue()
+    response = self.client.post("/api/bulk_operations/complete",
+                                data=json.dumps(data),
+                                headers=self.headers)
+    self.assert200(response)
+    asmts = models.Assessment.query.all()
+    cavs = models.CustomAttributeValue.query.filter(
+        models.CustomAttributeValue.custom_attribute_id.in_(cads_ids)
+    ).all()
+    for asmt in asmts:
+      self.assertEqual(asmt.status, "Completed")
+    for cav in cavs:
+      self.assertEqual(cav.attribute_value, expected_value)
