@@ -34,9 +34,6 @@ class Widget(base.Widget):
     self.filter = base.FilterCommon(
         driver, text_box_locator=self._locators_filter.TXTFIELD_TO_FILTER_CSS,
         bt_submit_locator=self._locators_filter.FILTER_BTN_CSS)
-    if self.obj_name not in objects.ALL_OBJS_WO_STATE_FILTERING:
-      self.dropdown_states = base.DropdownStatic(
-          driver, self._locators_filter.DD_CSS)
     super(Widget, self).__init__(driver)
     self._root = self._browser.element(
         class_name="widget governance treeview",
@@ -261,6 +258,15 @@ class AssessmentTemplates(Widget):
 class Assessments(Widget):
   """Model for Assessments generic widgets."""
   _locators = locator.Assessments
+
+  @property
+  def bulk_complete_option(self):
+    """Returns 'Bulk complete' option from 3bbs menu."""
+    return self.three_bbs.option_by_text("Bulk Complete")
+
+  def is_bulk_complete_displayed(self):
+    """Returns whether 'Bulk complete' option is displayed in 3bbs menu."""
+    return self.bulk_complete_option.exists
 
   def show_generated_results(self):
     """Wait for Assessments generated successfully message.

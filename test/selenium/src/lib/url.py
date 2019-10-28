@@ -42,6 +42,7 @@ class Widget(object):
   AUDITS = "#!audit"
   SUMMARY = "#!summary"  # audits
   ASSESSMENTS = "#!assessment"
+  MY_ASSESSMENTS = "assessments_view" + ASSESSMENTS
   ASSESSMENT_TEMPLATES = "#!assessment_template"
   CONTROLS = "#!control"
   ISSUES = "#!issue"

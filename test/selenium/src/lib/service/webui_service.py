@@ -732,6 +732,17 @@ class AssessmentsService(BaseWebUiService):
     return (self.open_info_page_of_obj(asmt).open_mapped_control_snapshot_info(
         control).get_related_snapshots(obj_type))
 
+  def open_my_assessments_page(self):
+    """Opens 'My Assessments' page via URL and sets status filter to display
+     Assessments in all states.
+    Returns:
+      MyAssessments page."""
+    page = dashboard.MyAssessments()
+    selenium_utils.open_url(page.my_assessments_url)
+    selenium_utils.wait_for_js_to_load(self._driver)
+    page.status_filter_dropdown.select_all()
+    return page
+
 
 class ControlsService(SnapshotsWebUiService):
   """Class for Controls business layer's services objects."""

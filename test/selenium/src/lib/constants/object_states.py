@@ -37,3 +37,7 @@ INACTIVE = "Inactive"
 # For Workflow cycles
 ASSIGNED = "Assigned"
 FINISHED = "Finished"
+
+# Assessment states for Bulk updates functionality
+OPENED_STATES = (NOT_STARTED, IN_PROGRESS, REWORK_NEEDED)
+COMPLETED_STATES = (DEPRECATED, READY_FOR_REVIEW, COMPLETED, VERIFIED)
