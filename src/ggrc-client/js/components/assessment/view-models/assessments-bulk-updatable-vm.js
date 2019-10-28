@@ -12,6 +12,7 @@ import {
   setDefaultStatusConfig,
 } from '../../../plugins/utils/advanced-search-utils';
 import {getAvailableAttributes} from '../../../plugins/utils/tree-view-utils';
+import {isConnectionLost} from '../../../plugins/utils/errors-utils';
 
 export default ObjectOperationsBaseVM.extend({
   showSearch: false,
@@ -60,6 +61,14 @@ export default ObjectOperationsBaseVM.extend({
       url,
       () => this.onSuccessHandler(),
       () => this.onFailureHandler());
+  },
+  handleBulkUpdateErrors() {
+    if (isConnectionLost()) {
+      notifier('error', 'Internet connection was lost.');
+    } else {
+      notifier('error', 'Bulk update is failed. ' +
+      'Please refresh the page and start bulk update again.');
+    }
   },
   onSuccessHandler() {
     const reloadLink = window.location.href;

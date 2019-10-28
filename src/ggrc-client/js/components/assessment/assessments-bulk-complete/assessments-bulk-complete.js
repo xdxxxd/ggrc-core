@@ -19,10 +19,7 @@ import {request} from '../../../plugins/utils/request-utils';
 import {backendGdriveClient} from '../../../plugins/ggrc-gapi-client';
 import {ggrcPost} from '../../../plugins/ajax-extensions';
 import {confirm} from '../../../plugins/utils/modals';
-import {
-  getFetchErrorInfo,
-  isConnectionLost,
-} from '../../../plugins/utils/errors-utils';
+import {getFetchErrorInfo} from '../../../plugins/utils/errors-utils';
 import {notifier} from '../../../plugins/utils/notifiers-utils';
 import {
   getCustomAttributeType,
@@ -434,13 +431,10 @@ const viewModel = AssessmentsBulkUpdatable.extend({
         this.trackBackgroundTask(id);
       })
       .fail((error) => {
-        if (isConnectionLost()) {
-          notifier('error', 'Internet connection was lost.');
-        } else if (error && error.responseJSON && error.responseJSON.message) {
+        if (error && error.responseJSON && error.responseJSON.message) {
           notifier('error', error.responseJSON.message);
         } else {
-          notifier('error', 'Bulk update is failed. ' +
-          'Please refresh the page and start bulk update again.');
+          this.handleBulkUpdateErrors();
         }
       })
       .always(() => {
