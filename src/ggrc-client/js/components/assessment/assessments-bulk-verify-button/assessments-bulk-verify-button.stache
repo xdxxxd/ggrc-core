@@ -6,7 +6,7 @@
 {{#if isButtonView}}
     <button
       type="button"
-      class="btn btn-small btn-darkBlue bulk-verify__button"
+      class="btn btn-small btn-darkBlue"
     >
       Bulk Verify
     </button>

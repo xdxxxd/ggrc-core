@@ -8,7 +8,9 @@
     <assessments-bulk-complete-button isButtonView:from="true" />
   {{/if}}
   {{#if showBulkVerify}}
-    <assessments-bulk-verify-button isButtonView:from="true" />
+    <assessments-bulk-verify-button
+      class="bulk-verify__button"
+      isButtonView:from="true" />
   {{/if}}
 {{else}}
   {{#if_instance_of parentInstance 'Audit'}}
