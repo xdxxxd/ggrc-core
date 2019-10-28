@@ -9,9 +9,6 @@ import {
   makeFakeInstance,
 } from '../../../../js_specs/spec_helpers';
 import Cacheable from '../../../models/cacheable';
-import * as AjaxUtils from '../../../plugins/ajax_extensions';
-import * as ErrorsUtils from '../../../plugins/utils/errors-utils';
-import * as NotifierUtils from '../../../plugins/utils/notifiers-utils';
 
 describe('modal-issue-tracker-fields component', () => {
   let viewModel;
@@ -199,117 +196,6 @@ describe('modal-issue-tracker-fields component', () => {
 
         viewModel.statusChanged();
         expect(viewModel.linkToExistingTicket).toHaveBeenCalled();
-      });
-    });
-
-    describe('checkTicketId() method', () => {
-      let method;
-      let ggrcGetSpy;
-
-      beforeAll(() => {
-        ggrcGetSpy = spyOn(AjaxUtils, 'ggrcGet')
-          .and.returnValue($.Deferred().resolve({}));
-      });
-
-      beforeEach(() => {
-        viewModel.attr('instance').attr('issue_tracker', {issue_id: '55'});
-        viewModel.attr('instance.type', 'Assessment');
-        viewModel.attr('instance.id', 1);
-
-        viewModel.attr('isTicketIdChecking', false);
-        viewModel.attr('isTicketIdChecked', false);
-        viewModel.attr('isTicketIdCheckSuccessful', false);
-        method = viewModel.checkTicketId.bind(viewModel);
-      });
-
-      it('should not make GET request when issue_id is not defined', () => {
-        viewModel.attr('instance.issue_tracker', {issue_id: null});
-        expect(method()).toBeUndefined();
-      });
-
-      it('should not make GET request when checking in progress', () => {
-        viewModel.attr('isTicketIdChecking', true);
-        expect(method()).toBeUndefined();
-      });
-
-      it('should set flags before send GET request', () => {
-        method();
-        expect(viewModel.attr('isTicketIdChecking')).toBeTruthy();
-        expect(viewModel.attr('isTicketIdChecked')).toBeFalsy();
-        expect(viewModel.attr('isTicketIdCheckSuccessful')).toBeFalsy();
-      });
-
-      it('should set flags and message from GET response. ' +
-      'type and id are null', (done) => {
-        ggrcGetSpy.and.returnValue($.Deferred().resolve({
-          valid: false,
-          msg: 'invalid',
-          type: null,
-          id: null,
-        }));
-
-        method().done(() => {
-          expect(viewModel.attr('ticketIdCheckMessage')).toEqual('invalid');
-          expect(viewModel.attr('isTicketIdChecked')).toBeTruthy();
-          expect(viewModel.attr('isTicketIdCheckSuccessful')).toBeFalsy();
-          expect(viewModel.attr('isTicketIdChecking')).toBeFalsy();
-
-          done();
-        });
-      });
-
-      it('should set flags and message from GET response. ' +
-      'type and id are NOT matched to instance\'s type and id', (done) => {
-        ggrcGetSpy.and.returnValue($.Deferred().resolve({
-          valid: false,
-          msg: 'invalid',
-          type: 'Assessment',
-          id: 3,
-        }));
-
-        method().done(() => {
-          expect(viewModel.attr('ticketIdCheckMessage')).toEqual('invalid');
-          expect(viewModel.attr('isTicketIdChecked')).toBeTruthy();
-          expect(viewModel.attr('isTicketIdCheckSuccessful')).toBeFalsy();
-          expect(viewModel.attr('isTicketIdChecking')).toBeFalsy();
-
-          done();
-        });
-      });
-
-      it('should NOT set flags and message from GET response. ' +
-      'type and id are matched to instance\'s type and id', (done) => {
-        ggrcGetSpy.and.returnValue($.Deferred().resolve({
-          valid: false,
-          msg: 'invalid',
-          type: 'Assessment',
-          id: 1,
-        }));
-
-        method().done(() => {
-          expect(viewModel.attr('ticketIdCheckMessage')).toEqual('');
-          expect(viewModel.attr('isTicketIdChecked')).toBeTruthy();
-          expect(viewModel.attr('isTicketIdCheckSuccessful')).toBeTruthy();
-          expect(viewModel.attr('isTicketIdChecking')).toBeFalsy();
-
-          done();
-        });
-      });
-
-      it('should set flags and message when GET request was failed', (done) => {
-        ggrcGetSpy.and.returnValue($.Deferred().reject());
-        spyOn(NotifierUtils, 'notifier');
-        spyOn(ErrorsUtils, 'getAjaxErrorInfo')
-          .and.returnValue({details: 'err'});
-
-        method().fail(() => {
-          expect(viewModel.attr('ticketIdCheckMessage')).toEqual('');
-          expect(viewModel.attr('isTicketIdChecked')).toBeFalsy();
-          expect(viewModel.attr('isTicketIdCheckSuccessful')).toBeFalsy();
-          expect(viewModel.attr('isTicketIdChecking')).toBeFalsy();
-
-          done();
-        });
       });
     });
   });

@@ -61,13 +61,6 @@ export default canComponent.extend({
         this.attr('value', '');
       }
     },
-    onInputKeyDown(el, ev) {
-      // ENTER key
-      if (ev.keyCode === 13) {
-        this.attr('value', el.value);
-        this.validateValue();
-      }
-    },
   }),
   events: {
     '.numberbox-input keypress'(el, ev) {

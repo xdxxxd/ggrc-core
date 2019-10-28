@@ -1,8 +1,10 @@
-[//]: <> (updated 10/01/2019)
+[//]: <> (updated 10/29/2019)
 
 Our product team is working hard to engineer compliance @ scale and make your day to day user journeys easier. We have been adding key capabilities to the product as listed here below.
 
-[Administration of Global Custom Attributes for Controls and Risks is moved to the new frontend (v2.17.0, 10/1/2019)](https://docs.google.com/document/d/1Tm1nRVDIgUArjezZSnCvcwCm3gLcXdB6wRJKUaF6VUA/edit#heading=h.4djbh0pcizjf)
+[Ability to create a new Cycle Task Group during active Cycle (v2.20.0, 10/29/2019)](https://docs.google.com/document/d/1Tm1nRVDIgUArjezZSnCvcwCm3gLcXdB6wRJKUaF6VUA/edit#heading=h.cp0yr3co31ie)
+
+[Administration of Global Custom Attributes for Controls and Risks is moved to the new frontend (v2.17.0, 10/1/2019)](https://docs.google.com/document/d/1Tm1nRVDIgUArjezZSnCvcwCm3gLcXdB6wRJKUaF6VUA/edit#heading=h.mt9dxl2sc0g6)
 
 [Create a single Assessment with custom attributes from an Assessment Template (v2.10.0, 07/31/2019)](https://docs.google.com/document/d/1Tm1nRVDIgUArjezZSnCvcwCm3gLcXdB6wRJKUaF6VUA/edit#heading=h.s2dqe41tlzl1)
 
@@ -113,6 +115,10 @@ Our product team is working hard to engineer compliance @ scale and make your da
 [Linking assessments with other issue tracking systems (v0.10.36, 12/12/2017)](https://docs.google.com/document/d/1Tm1nRVDIgUArjezZSnCvcwCm3gLcXdB6wRJKUaF6VUA/edit#heading=h.9ry21bbez6aa)
 
 [Performance improvements](https://docs.google.com/document/d/1Tm1nRVDIgUArjezZSnCvcwCm3gLcXdB6wRJKUaF6VUA/edit#heading=h.m9vl04nitn8)
+
+### Ability to create a new Cycle Task Group during active Cycle (v2.20.0, 10/29/2019)
+
+For ‘Repeat Off’ Workflows added a possibility to create/delete a new Cycle Task Group during an active Cycle. The option is available for Workflow Admins.
 
 ### Administration of Global Custom Attributes for Controls and Risks is moved to the new frontend (v2.17.0, 10/1/2019)
 

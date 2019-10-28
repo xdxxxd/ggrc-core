@@ -61,16 +61,6 @@ COMMENT_TMPL = (
     u"information from the GGRC '{model}'. Link - {link}"
 )
 
-TICKET_NO_ACCESS_TMPL = (
-    u"Ticket tracker ID does not exist or you do not have access to it."
-)
-
-TICKET_ALREADY_LINKED_TMPL = (
-    u"This ticket was already linked to another GGRC issue, assessment or "
-    u"review object. Linking the same ticket to multiple objects is not "
-    u"allowed due to potential for conflicting updates."
-)
-
 AVAILABLE_PRIORITIES = ("P0", "P1", "P2", "P3", "P4", )
 AVAILABLE_SEVERITIES = ("S0", "S1", "S2", "S3", "S4", )
 

@@ -7,7 +7,6 @@
   class="numberbox-input {{additionalClass}}"
   placeholder="{{placeholder}}"
   type="text"
-  on:el:keydown="onInputKeyDown(scope.element, scope.event)"
   el:value:bind="value"
   {{#if disabled}}disabled{{/if}}
 />

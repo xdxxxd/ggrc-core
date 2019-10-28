@@ -1,10 +1,9 @@
 /*
-  Copyright (C) 2019 Google Inc.
-  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
-*/
+ Copyright (C) 2019 Google Inc.
+ Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+ */
 
 import {notifier} from './notifiers-utils';
-import {ggrcGet} from '../ajax_extensions';
 
 const issueTrackerStaticFields = {
   issue_tracker_enable_options: [
@@ -65,37 +64,33 @@ const cleanUpBeforeSave = (instance) => {
  * @param  {Object} [defaultValues={}] issue tracker properties
  * @param  {Boolean} [canUseIssueTracker=false] should IssueTracker controls be shown
  */
-const initIssueTrackerObject = (
+function initIssueTrackerObject(
   instance = {},
   defaultValues = {},
   canUseIssueTracker = false
-) => {
+) {
   if (!isIssueTrackerInitialized(instance)) {
     instance.attr('issue_tracker', defaultValues);
   }
   instance.attr('can_use_issue_tracker', canUseIssueTracker);
-};
+}
 
-const checkIssueTrackerTicketId = (ticketId) => {
-  return ggrcGet(`/api/validate_issue/${ticketId}`);
-};
-
-const cleanUpWarnings = (instance) => {
+function cleanUpWarnings(instance) {
   // clear warnings because CanJS save prev value of warning after merge
   // current instance and response
   if (instance.attr('issue_tracker._warnings')) {
     instance.attr('issue_tracker._warnings', []);
   }
-};
+}
 
-const checkWarnings = (instance) => {
+function checkWarnings(instance) {
   let warnings = instance.attr('issue_tracker._warnings');
 
   if (warnings && warnings.length) {
     let warningMessage = warnings.join('; ');
     notifier('warning', warningMessage);
   }
-};
+}
 
 export {
   issueTrackerStaticFields,
@@ -103,7 +98,6 @@ export {
   isIssueTrackerEnabled,
   isIssueCreated,
   initIssueTrackerObject,
-  checkIssueTrackerTicketId,
   checkWarnings,
   cleanUpWarnings,
   cleanUpBeforeSave,

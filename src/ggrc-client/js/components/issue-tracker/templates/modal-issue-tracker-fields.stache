@@ -57,7 +57,7 @@
             {{{mandatoryTicketIdNote}}}
           {{/if}}
         </div>
-      </div>
+      </div> 
     {{/if}}
   </div>
 </div>
@@ -79,39 +79,15 @@
         {{/case}}
 
         {{#case state.LINK_TO_EXISTING}}
-          <div class="{{#if ticketIdErrorMessage}}field-failure{{/if}}">
-            <div class="issue-tracker__ticket-id">
-
-              <div class="ggrc-form-item__multiple-row issue-tracker__ticket-id-input">
-                <numberbox-component additionalClass:from="'input-block-level'"
-                                      placeholder:from="'Enter Ticket ID'"
-                                      on:el:keyup="onTicketIdKeyUp(scope.event)"
-                                      value:bind="instance.issue_tracker.issue_id">
-                </numberbox-component>
-                <spinner-component toggle:from="isTicketIdChecking"></spinner-component>
-                {{#if isTicketIdChecked}}
-                  <span class="issue-tracker__ticket-id-checked-icon">
-                    {{#if isTicketIdCheckSuccessful}}
-                      <i class="fa fa-check"></i>
-                    {{else}}
-                      <i class="fa fa-times"></i>
-                    {{/if}}
-                  </span>
-                {{/if}}
-              </div>
-
-              <button type="button"
-                class="{{#if isTicketIdDisabled}}disabled{{/if}} btn btn-small btn-darkBlue"
-                on:el:click="checkTicketId()">
-                Check Ticket ID
-              </button>
-
-            </div>
-            {{#ticketIdErrorMessage}}
-              <label class="help-inline">
-                {{this}}
-              </label>
-            {{/ticketIdErrorMessage}}
+          <div class="ggrc-form-item__multiple-row">
+            <numberbox-component
+                        additionalClass:from="'input-block-level'"
+                        placeholder:from="'Enter Ticket ID'"
+                        value:bind="instance.issue_tracker.issue_id">
+            </numberbox-component>
+            {{#validateAttr instance "issue_tracker.issue_id"}}
+              <label class="help-inline warning">{{this}}</label>
+            {{/validateAttr}}
           </div>
         {{/case}}
 

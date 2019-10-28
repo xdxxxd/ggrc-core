@@ -26,34 +26,6 @@ modal-issue-tracker-config-fields {
     }
   }
 
-  .issue-tracker__ticket-id {
-    display: flex;
-
-    .issue-tracker__ticket-id-input {
-      position: relative;
-      margin-right: 8px !important;
-    }
-
-    .btn-darkBlue {
-      height: 100%;
-    }
-
-    spinner-component,
-    .issue-tracker__ticket-id-checked-icon {
-      position: absolute;
-      left: 230px;
-      bottom: 20px;
-
-      .fa.fa-times {
-        color: $red;
-      }
-
-      .fa.fa-check {
-        color: $green;
-      }
-    }
-  }
-
   .issue-tracker__toolbar {
     margin: 4px 0;
 
