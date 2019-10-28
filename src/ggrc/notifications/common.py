@@ -277,7 +277,9 @@ def should_receive(notif, user_data, people_cache):
     if not notification_configs:
       # If we have no results, we need to use the default value, which is
       # False for all emails.
-      return False
+      if notif_type == "Email_Digest":
+        return False
+      # False for all emails.
     return notification_configs[0].enable_flag
 
   has_digest = force_notif or is_enabled("Email_Digest", person)
@@ -459,7 +461,7 @@ def send_email(user_email, subject, body):
   if not sender:
     logger.error("APPENGINE_EMAIL setting is invalid.")
     return
-
+  subject = "[Pilot Environment]" + subject
   message = mail.EmailMessage(sender=sender, subject=subject)
 
   message.to = user_email
