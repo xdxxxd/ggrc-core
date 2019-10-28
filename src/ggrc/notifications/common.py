@@ -276,8 +276,8 @@ def should_receive(notif, user_data, people_cache):
                             if nc.notif_type == notif_type]
     if not notification_configs:
       # If we have no results, we need to use the default value, which is
-      # true for digest emails.
-      return notif_type == "Email_Digest"
+      # False for all emails.
+      return False
     return notification_configs[0].enable_flag
 
   has_digest = force_notif or is_enabled("Email_Digest", person)
