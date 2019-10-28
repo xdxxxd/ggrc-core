@@ -27,7 +27,7 @@ export default ObjectOperationsBaseVM.extend({
   getSelectedAssessmentsIds() {
     return this.attr('selected').serialize().map((selected) => selected.id);
   },
-  initDefaultFilter() {
+  initDefaultFilter(roleName) {
     const stateConfig = setDefaultStatusConfig(
       new canMap,
       this.attr('type'),
@@ -37,7 +37,7 @@ export default ObjectOperationsBaseVM.extend({
       create.state(stateConfig),
       create.operator('AND'),
       create.attribute({
-        field: 'Assignees',
+        field: roleName,
         operator: '~',
         value: GGRC.current_user.email,
       }),

@@ -81,7 +81,7 @@
       {{/if}}
       {{#if showBulkVerify}}
         <li>
-          <assessments-bulk-verify-button />
+          <assessments-bulk-verify-button parentInstance:from="parentInstance" />
         </li>
       {{/if}}
     </three-dots-menu>

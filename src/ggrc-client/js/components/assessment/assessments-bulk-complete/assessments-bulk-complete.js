@@ -461,7 +461,7 @@ const viewModel = AssessmentsBulkUpdatable.extend({
     }
   },
   init() {
-    this.initDefaultFilter();
+    this.initDefaultFilter('Assignees');
     this.initFilterAttributes();
   },
 });
