@@ -53,6 +53,7 @@
         <div class="assessment-template-attributes__attribute-item">
           <template-field
             class="readonly"
+            instance:from="instance"
             field:from="{.}"
             types:from="types"
             editMode:from="editMode" />
