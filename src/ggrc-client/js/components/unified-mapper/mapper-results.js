@@ -81,7 +81,7 @@ export default canComponent.extend({
     mappingItems: [],
     statusItem: {},
     selected: [],
-    refreshItems: false,
+    selectionState: {},
     disableColumnsConfiguration: false,
     applyOwnedFilter: false,
     objectsPlural: false,
@@ -99,6 +99,7 @@ export default canComponent.extend({
     deferredList: [],
     disabledIds: [],
     megaRelationObj: {},
+    itemDetailsViewType: '',
     setItems: function () {
       const stopFn = tracker.start(this.attr('type'),
         tracker.USER_JOURNEY_KEYS.NAVIGATION,
@@ -159,9 +160,8 @@ export default canComponent.extend({
     },
     onSearch: function () {
       this.resetSearchParams();
-      this.attr('refreshItems', true);
+      this.attr('selectionState').dispatch('resetSelection');
       this.setItemsDebounced();
-      this.attr('refreshItems', false);
     },
     prepareRelevantQuery: function () {
       let relevantList = this.attr('relevantTo') || [];

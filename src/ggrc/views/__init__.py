@@ -36,6 +36,7 @@ from ggrc.utils import empty_revisions
 from ggrc.utils.contributed_objects import CONTRIBUTED_OBJECTS
 from ggrc.views import issue_tracker as issue_tracker_views
 from ggrc.views import saved_searches  # noqa: F401
+from ggrc.views import bulk_operations  # noqa: F401
 from ggrc.views import converters, cron, filters, notifications, registry, \
     utils, serializers, folder
 
@@ -718,7 +719,7 @@ def get_import_types(export_only=False):
     A list of models with model_singular and title_plural as keys.
   """
   # pylint: disable=protected-access
-  types = ggrc_converters.get_importables
+  types = ggrc_converters.get_importables_visible
   if export_only:
     types = ggrc_converters.get_exportables
   data = []

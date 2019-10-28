@@ -10,9 +10,9 @@
                 <label class="field__title-text">{{content.title}}</label>
             </div>
             <custom-attributes-field type:from="content.type"
-                                     value:from="content.value"
-                                     options:from="content.options"
-                                     disabled:from="true">
+                                      value:from="content.value"
+                                      options:from="content.options"
+                                      disabled:from="true">
             </custom-attributes-field>
         </div>
         {{#if comment}}
@@ -61,7 +61,7 @@
                                 context:from="instance.context"
                                 on:setEditMode="setUrlEditMode(false)">
                         <form class="create-form">
-                            <fieldset class="create-form__layout">
+                            <fieldset class="create-form__layout create-form__layout_wide">
                                 <input el:value:bind="value" class="create-form__input" type="text" placeholder="Add URL" spellcheck="false" autocomplete="false">
                                 <div class="create-form__controls">
                                     <button type="button" class="create-form__confirm" on:el:click="create">
@@ -82,19 +82,17 @@
         {{/if}}
     </form>
 </div>
-<div class="ca-object-modal-content__footer">
-    <div class="simple-modal__footer">
-        <div class="simple-modal__toolbar">
-        {{#if comment}}
-            <comment-add-button class="simple-modal__toolbar-item"
-                                value:bind="scope.vars.commentValue"
-                                isSaving:to="scope.vars.isSaving"
-                                on:commentCreated="onCommentCreated(scope.event)"
-                                isDisabled:from="isUpdatingEvidences">
-              Save
-            </comment-add-button>
-        {{/if}}
-            <button type="button" class="btn btn-small btn-white simple-modal__toolbar-item" on:el:click="hide; setUrlEditMode(false)">Close</button>
-        </div>
+<div class="simple-modal__footer">
+    <div class="simple-modal__toolbar">
+    {{#if comment}}
+        <comment-add-button class="simple-modal__toolbar-item"
+                            value:bind="scope.vars.commentValue"
+                            isSaving:to="scope.vars.isSaving"
+                            on:commentCreated="onCommentCreated(scope.event)"
+                            isDisabled:from="isUpdatingEvidences">
+          Save
+        </comment-add-button>
+    {{/if}}
+        <button type="button" class="btn btn-small btn-white simple-modal__toolbar-item" on:el:click="hide; setUrlEditMode(false)">Close</button>
     </div>
 </div>

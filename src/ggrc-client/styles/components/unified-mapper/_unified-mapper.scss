@@ -159,6 +159,20 @@ mapper-results {
       opacity: 0.6;
 
     }
+
+    &.bulk-update-view {
+      .item-wrapper__button-container {
+        width: 76px;
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      object-selection-item {
+        width: 16px;
+        margin-left: 10px;
+      }
+    }
+
     reusable-objects-item {
       padding: 0;
       justify-content: flex-end;
@@ -181,72 +195,87 @@ mapper-results {
   }
 
   mapper-results-item-details {
-    display: block;
-    padding: 8px 16px 20px;
-    font-size: 12px;
-    padding-left: $list-item-padding +
-                  $item-status-width +
-                  2 * $icon-width;
-    cursor: auto;
+    .subtree__wrapper {
+      display: block;
+      padding: 5px 16px 12px 54px;
+      font-size: 12px;
+      cursor: auto;
 
-    &.is-snapshot {
+      &-item{
+        &:not(:last-child) {
+          padding-bottom: 14px;
+        }
+      }
+    }
+
+    .details__wrapper {
+      display: block;
+      padding: 8px 16px 20px;
+      font-size: 12px;
       padding-left: $list-item-padding +
+                    $item-status-width +
                     2 * $icon-width;
-    }
+      cursor: auto;
 
-    .col-container {
-      display: flex;
-      flex: 1 1;
-      flex-direction: column;
-      justify-content: space-between;
-
-      &:first-child {
-        padding-right: 15px;
+      &.is-snapshot {
+        padding-left: $list-item-padding +
+                      2 * $icon-width;
       }
 
-      .attr-container {
-        h6 {
-          margin: 4px 0;
+      .col-container {
+        display: flex;
+        flex: 1 1;
+        flex-direction: column;
+        justify-content: space-between;
+
+        &:first-child {
+          padding-right: 15px;
         }
 
-        .attr-value {
-          white-space: normal;
-          word-break: break-all;
-          overflow: hidden;
-        }
+        .attr-container {
+          h6 {
+            margin: 4px 0;
+          }
 
-        &.description .attr-value,
-        &.notes .attr-value {
-          line-height: 18px;
+          .attr-value {
+            white-space: normal;
+            word-break: break-all;
+            overflow: hidden;
+          }
+
+          &.description .attr-value,
+          &.notes .attr-value {
+            line-height: 18px;
+          }
         }
       }
-    }
 
-    .open-link-container,
-    .menu-button-container{
-      display: flex;
-      justify-content: flex-end;
-    }
+      .open-link-container,
+      .menu-button-container{
+        display: flex;
+        justify-content: flex-end;
+      }
 
-    .open-link-container {
-      margin-top: 3px;
+      .open-link-container {
+        margin-top: 3px;
+
+        a {
+          i {
+            color: $linkColor;
+            font-size: 12px;
+          }
+        }
+      }
+
+      .dropdown-toggle {
+        width: 32px;
+        background-color: transparent;
+        border: 1px solid #e0e4e5;
+      }
 
       a {
-        i {
-          color: $linkColor;
-          font-size: 12px;
-        }
+        cursor: pointer;
       }
-    }
-
-    .dropdown-toggle {
-      width: 32px;
-      background-color: transparent;
-      border: 1px solid #e0e4e5;
-    }
-
-    a {
-      cursor: pointer;
     }
   }
 
@@ -483,7 +512,12 @@ mapper-results-columns-configuration {
 
 .object-modal {
 
-  object-mapper, object-search, object-generator, object-bulk-update, assessment-template-clone {
+  object-mapper,
+  object-search,
+  object-generator,
+  object-bulk-update,
+  assessment-template-clone,
+  assessments-bulk-complete {
     collapsible-panel {
       h6 {
         width: inherit;
@@ -548,17 +582,28 @@ mapper-results-columns-configuration {
         margin: 0;
       }
     }
+
     .modal-footer {
       border-top: 1px solid #E0E0E0;
 
-      .well.well-small {
-        font-size: 13px;
-        padding: 9px 16px 7px;
-      }
       &.modal-filter {
         padding-bottom: 0;
       }
     }
+
+    .modal-section {
+      border-top: 1px solid $itemBorder;
+      padding: 20px;
+    }
+
+    .modal-footer,
+    .modal-section {
+      .well.well-small {
+        font-size: 13px;
+        padding: 9px 16px 7px;
+      }
+    }
+
     .modal-footer {
       border-top: 1px solid $itemBorder;
 

@@ -44,6 +44,7 @@ class FileHandler(object):
       existing_file_links = {
           file.link for file in getattr(parent, self.files_object)
       }
+
       for line in self.raw_value.splitlines():
         if line:
           link = self._parse_line(line)
