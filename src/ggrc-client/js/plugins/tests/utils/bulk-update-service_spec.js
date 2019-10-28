@@ -4,7 +4,8 @@
 */
 
 import * as AjaxExtensions from '../../ajax-extensions';
-import service from '../../utils/bulk-update-service';
+import service, {getAsmtCountForVerify} from '../../utils/bulk-update-service';
+import * as QueryApiUtils from '../../utils/query-api-utils';
 
 describe('GGRC BulkUpdateService', function () {
   describe('update() method', function () {
@@ -39,6 +40,85 @@ describe('GGRC BulkUpdateService', function () {
           contentType: 'application/json',
           data: '[{"id":1,"state":"In Progress"}]',
         });
+    });
+  });
+
+  describe('getAsmtCountForVerify() method', () => {
+    let dfd;
+    let filters;
+
+    beforeEach(() => {
+      dfd = $.Deferred();
+      filters = {
+        expression: {
+          left: {
+            object_name: 'Person',
+            op: {
+              name: 'relevant',
+            },
+            ids: [
+              GGRC.current_user.id,
+            ],
+          },
+          op: {
+            name: 'AND',
+          },
+          right: {
+            left: {
+              left: 'status',
+              op: {
+                name: '=',
+              },
+              right: 'In Review',
+            },
+            op: {
+              name: 'AND',
+            },
+            right: {
+              left: {
+                left: 'archived',
+                op: {
+                  name: '=',
+                },
+                right: 'false',
+              },
+              op: {
+                name: 'AND',
+              },
+              right: {
+                left: 'verifiers',
+                op: {
+                  name: '~',
+                },
+                right: GGRC.current_user.email,
+              },
+            },
+          },
+        },
+      };
+    });
+
+    it('returns deferred object with assessments count', (done) => {
+      spyOn(QueryApiUtils, 'buildParam').withArgs(
+        'Assessment',
+        {},
+        null,
+        [],
+        filters)
+        .and.returnValue({});
+      spyOn(QueryApiUtils, 'batchRequests').withArgs({type: 'count'})
+        .and.returnValue(dfd);
+
+      dfd.resolve({
+        Assessment: {
+          count: 3,
+        },
+      });
+
+      getAsmtCountForVerify().then((count) => {
+        expect(count).toEqual(3);
+        done();
+      });
     });
   });
 });
