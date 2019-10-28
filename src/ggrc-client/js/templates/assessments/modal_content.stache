@@ -148,13 +148,23 @@
         </div>
       </div>
       {{#if assessmentTemplate}}
+        {{#if assessmentTemplate.sox_302_enabled}}
+          <div class="ggrc-form-item">
+            <div class="ggrc-form-item__row alert alert-nomargin">
+              This assessment template enables “302 assessment workflow”:
+              <p>
+                - Verification step will be skipped if only positive answers are given for the assessment.
+              </p>
+            </div>
+          </div>
+        {{/if}}
         <div class="ggrc-form-item">
           <div class="ggrc-form-item__row">
               <label class="ggrc-form-item__label">
                 Custom Attributes
               </label>
               <assessment-template-attributes
-                instance:from="instance"
+                instance:from="assessmentTemplate"
                 fields:from="assessmentTemplate.custom_attribute_definitions"
                 isLoading:from="isAttributesLoading"
                 editMode:from="false" />
