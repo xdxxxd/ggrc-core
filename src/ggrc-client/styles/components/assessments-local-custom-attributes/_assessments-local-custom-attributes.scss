@@ -1,0 +1,105 @@
+/*
+ * Copyright (C) 2019 Google Inc.
+ * Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+*/
+
+.assessments-lca {
+  margin: 15px 0 0;
+  font-size: 13px;
+
+  .field-wrapper {
+    padding: 0 0 20px 20px;
+
+    .form-field__title {
+      box-sizing: border-box;
+      padding: 0 15px 0 0;
+    }
+  }
+
+  .field__title-text {
+    font-size: 13px;
+
+    label {
+      display: inline;
+      line-height: 16px;
+    }
+  }
+
+  form-validation-icon {
+    width: 15px;
+    height: 26px;
+  }
+
+  .popover-component__container {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    margin-left: 3px;
+    vertical-align: middle;
+
+    .fa-exclamation-circle {
+      margin-left: 6px;
+    }
+  }
+}
+
+.popover.btstrp-popover__wrapper {
+  .popover-title {
+    color: $black;
+
+    &__header {
+      margin: 0 0 5px 0;
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+
+    &__description {
+      font-size: 13px;
+      font-weight: normal;
+      line-height: 1.4;
+    }
+  }
+
+  .popover-content {
+    color: $black;
+
+    &__list {
+      margin: 0;
+      line-height: 1.2;
+      list-style: none;
+    }
+
+    &__item:not(:last-child) {
+      margin-bottom: 10px;
+    }
+  }
+
+  .popover-content__item-title {
+    padding: 5px 0;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  .popover-content__item-value  {
+    font-size: 13px;
+    font-style: italic;
+  }
+
+  .field-wrapper {
+    padding: 0;
+
+    .field__title-text  {
+      color: $black;
+      @extend .popover-content__item-title;
+    }
+
+    .form-field__content {
+      @extend .popover-content__item-value;
+
+      .view-wrapper {
+        word-break: break-word;
+      }
+    }
+  }
+}

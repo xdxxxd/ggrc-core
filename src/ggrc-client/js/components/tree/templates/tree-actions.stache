@@ -25,7 +25,7 @@
           </span>
         </li>
       {{/if}}
-      {{#if showGenerateAssessments}}
+      {{#if isAssessmentOnAudit}}
         <assessment-generator-button audit:from="parent_instance">
         </assessment-generator-button>
       {{/if}}
@@ -72,6 +72,11 @@
               Create Task Group
             </a>
           </create-task-group-button>
+        </li>
+      {{/if}}
+      {{#if showBulkComplete}}
+        <li>
+          <assessments-bulk-complete-button parentInstance:from="parentInstance" />
         </li>
       {{/if}}
     </three-dots-menu>

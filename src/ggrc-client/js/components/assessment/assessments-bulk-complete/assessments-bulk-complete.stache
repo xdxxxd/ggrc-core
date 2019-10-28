@@ -1,0 +1,111 @@
+{{!
+    Copyright (C) 2019 Google Inc.
+    Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+}}
+
+<div class="modal-header">
+  <a class="modal-dismiss pull-right" href="javascript://" data-dismiss="modal">
+    <i class="fa fa-times black"></i>
+  </a>
+  <h2>
+    Bulk Complete
+  </h2>
+</div>
+<div class="modal-section">
+  <collapsible-panel softMode:from="true" titleText:from="'Filter'" expanded:bind="showSearch">
+    <advanced-search-container
+      modelName:from="type"
+      statesCollectionKey:from="statesCollectionKey"
+      disabled:from="is_loading"
+      mappedToItems:from="mappedToItems"
+      defaultFilterItems:from="defaultFilterItems"
+      availableAttributes:from="filterAttributes"
+      filterItems:bind="filterItems"
+      mappingItems:to="mappingItems"
+      on:vm:onSubmit="onSubmit()">
+        <can-template name="mapped-to-section">
+          {{#isMyAssessmentsView}}
+            <h6 class="spacing-top">My Assessments</h6>
+          {{/isMyAssessmentsView}}
+        </can-template>
+    </advanced-search-container>
+  </collapsible-panel>
+</div>
+
+<div class="modal-section modal-footer">
+  <collapsible-panel softMode:from="true" titleText:from="'Select assessments to complete in bulk ({{entriesTotalCount}})'" expanded:bind="showResults">
+    <div class="search-results">
+      {{#if resultsRequested}}
+        <mapper-results
+          type:from="type"
+          selected:from="selected"
+          filterItems:from="filterItems"
+          mappingItems:from="mappingItems"
+          relevantTo:from="mappedToItems"
+          @onSearch:to="onSearchCallback"
+          paging.total:to="entriesTotalCount"
+          isLoading:bind="is_loading"
+          items:bind="entries"
+          on:vm:loaded="onLoaded()"
+          itemDetailsViewType:from="'bulk-update'" />
+
+        <div class="control-buttons">
+          <div class="confirm-buttons">
+            <spinner-component toggle:from="isAttributesGenerating" />
+            <span class="confirm-buttons__objects-count">
+              {{selected.length}}
+              object(s) selected
+            </span>
+            <button
+              type="button"
+              class="btn btn-small btn-darkBlue"
+              on:el:click="onSelectClick()"
+              {{#if isSelectButtonDisabled}}disabled="disabled"{{/if}}>
+                Select
+            </button>
+          </div>
+        </div>
+      {{else}}
+        <div class="well well-small">
+          No results
+        </div>
+      {{/if}}
+    </div>
+  </collapsible-panel>
+</div>
+
+<div class="modal-section">
+  <collapsible-panel {{^if isAttributesGenerated}}class="disabled-block"{{/if}} softMode:from="true" titleText:from="'Provide information below to finish bulk completion of assessments'" expanded:bind="showFields">
+    {{#if attributeFields.length}}
+      <assessments-local-custom-attributes
+        fields:from="attributeFields"
+        disabled:from="hasChangedSelection"
+        on:vm:fieldValueChanged="updateAttributeField(scope.event)"
+        on:vm:updateRequiredInfo="showRequiredInfoModal(scope.event.field)" />
+      <required-info-modal
+        title:from="requiredInfoModal.title"
+        state:from="requiredInfoModal.state"
+        content:from="requiredInfoModal.content"
+        on:vm:submit="updateRequiredInfo(scope.event)" />
+    {{else}}
+      <div class="well well-small spacing-top">No attributes were found</div>
+    {{/if}}
+  </collapsible-panel>
+</div>
+
+<div class="modal-section modal-footer">
+  <div class="confirm-buttons">
+    {{#if isCompleting}}
+      <spinner-component toggle:from="isCompleting" />
+      <span class="confirm-buttons__objects-count">
+        Completion is underway
+      </span>
+    {{/if}}
+    <button type="button" class="btn btn-small btn-white" on:el:click="closeModal()">
+      Cancel
+    </button>
+    <button type="button" class="btn btn-small btn-green" on:el:click="onCompleteClick()" {{#if isCompleteButtonDisabled}}disabled{{/if}}>
+      Complete
+    </button>
+  </div>
+</div>

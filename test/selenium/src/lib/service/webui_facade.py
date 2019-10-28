@@ -7,7 +7,7 @@ import random
 import re
 
 from lib import url, users, base, browsers, factory
-from lib.constants import objects, element
+from lib.constants import objects, element, object_states
 from lib.entities import entities_factory
 from lib.page import dashboard
 from lib.page.modal import unified_mapper
@@ -323,8 +323,8 @@ def edit_gca(selenium, old_ca_type, new_ca_type):
     dict with actual edited CA and expected CA.
   """
   new_ca = rest_facade.create_gcad(definition_type=objects.get_singular(
-      random.choice(objects.EDITABLE_CA_OBJS)), attribute_type=old_ca_type,
-      mandatory=True)
+      random.choice(objects.OBJS_SUPPORTING_MANDATORY_CA)),
+      attribute_type=old_ca_type, mandatory=True)
   expected_ca = entities_factory.CustomAttributeDefinitionsFactory().create(
       attribute_type=new_ca_type, definition_type=new_ca.definition_type,
       helptext=element.Common.TITLE_EDITED_PART, mandatory=False)
@@ -432,3 +432,32 @@ def soft_assert_techenv_mapped_to_programs(
         [technology_environment] == mapped_technology_environments,
         '{} should be mapped to {}'.format(technology_environment.title,
                                            program.title))
+
+
+def soft_assert_bulk_complete_for_completed_asmts(soft_assert, asmts, page):
+  """Performs soft assert that 'Bulk complete' option/button is not
+  displayed for several assessments when all of them are in one of the
+  completed states."""
+  for asmt, status in zip(asmts, object_states.COMPLETED_STATES):
+    rest_facade.update_object(asmt, status=status)
+    browsers.get_browser().refresh()
+    ui_utils.wait_for_spinner_to_disappear()
+    soft_assert.expect(
+        not page.is_bulk_complete_displayed(),
+        "'Bulk complete' for assessment with '{}' status should not be "
+        "available.".format(status))
+
+
+def soft_assert_bulk_complete_for_opened_asmts(soft_assert, asmts, page,
+                                               is_displayed=True):
+  """Performs soft assert that 'Bulk complete' option/button is displayed or
+  not for several assessments when at least one of them is in one of the opened
+  states."""
+  for status in object_states.OPENED_STATES:
+    rest_facade.update_object(asmts[-1], status=status)
+    browsers.get_browser().refresh()
+    ui_utils.wait_for_spinner_to_disappear()
+    soft_assert.expect(
+        page.is_bulk_complete_displayed() == is_displayed,
+        "'Bulk complete' for assessment with '{}' status should {}be "
+        "available.".format(status, "" if is_displayed else "not "))

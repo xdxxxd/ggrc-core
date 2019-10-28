@@ -9,6 +9,8 @@ import canMap from 'can-map';
 import canComponent from 'can-component';
 import '../three-dots-menu/three-dots-menu';
 import '../change-request-link/change-request-link';
+import '../assessment/assessments-bulk-complete-button/assessments-bulk-complete-button';
+import '../assessment/assessment-tree-actions/assessment-tree-actions';
 import {
   isMyAssessments,
   isMyWork,
@@ -19,6 +21,7 @@ import {
 import {
   isSnapshotRelated,
 } from '../../plugins/utils/snapshot-utils';
+import {requestAssessmentsCount} from '../../plugins/utils/bulk-update-service';
 import {isAllowed} from '../../permission';
 import template from './templates/tree-actions.stache';
 import pubSub from '../../pub-sub';
@@ -58,9 +61,8 @@ export default canComponent.extend({
             || this.attr('options.objectVersion'));
         },
       },
-      showGenerateAssessments: {
-        type: Boolean,
-        get: function () {
+      isAssessmentOnAudit: {
+        get() {
           let parentInstance = this.attr('parentInstance');
           let model = this.attr('model');
 
@@ -115,6 +117,26 @@ export default canComponent.extend({
         type: 'boolean',
         get() {
           return this.attr('showedItems').length;
+        },
+      },
+      showBulkComplete: {
+        value: false,
+        get(lastSetValue, setAttrValue) {
+          setAttrValue(lastSetValue); // set default value before request
+
+          if (this.attr('isAssessmentOnAudit')) {
+            const parentInstance = this.attr('parentInstance');
+            const relevant = {
+              type: parentInstance.type,
+              id: parentInstance.id,
+              operation: 'relevant',
+            };
+
+            requestAssessmentsCount(relevant)
+              .then((count) => {
+                setAttrValue(count > 0);
+              });
+          }
         },
       },
     },

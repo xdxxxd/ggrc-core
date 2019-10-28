@@ -4,7 +4,7 @@
 from lib import url
 from lib.constants import objects
 from lib.decorator import lazy_property, memoize
-from lib.service.rest.client import RestClient
+from lib.service.rest import client
 
 
 # global roles
@@ -65,7 +65,7 @@ NO_ACCESS = "No Access"
 def global_roles():
   """Get global roles as array of dicts"""
   global_roles_url = "/".join([url.API, url.GLOBAL_ROLES])
-  return RestClient().send_get(global_roles_url)[
+  return client.RestClient().send_get(global_roles_url)[
       "{}_collection".format(url.GLOBAL_ROLES)][url.GLOBAL_ROLES]
 
 
@@ -80,7 +80,7 @@ class ACLRolesIDsMetaClass(type):
   def roles(cls):
     """Return ACL roles."""
     acr_url = "/".join([url.API, url.ACCESS_CONTROL_ROLES])
-    return RestClient("").get_object(acr_url).json()[
+    return client.RestClient("").get_object(acr_url).json()[
         "{}_collection".format(url.ACCESS_CONTROL_ROLES)][
         url.ACCESS_CONTROL_ROLES]
 
@@ -91,6 +91,7 @@ class ACLRolesIDsMetaClass(type):
 
   def _role_id_from_list(cls, roles, object_type, name):
     """Get id of the role by `object_type` and `name` from roles."""
+    role_id = None
     for role in roles:
       if role["object_type"] == object_type and role["name"] == name:
         role_id = role["id"]

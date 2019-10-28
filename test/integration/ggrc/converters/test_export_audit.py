@@ -59,7 +59,7 @@ class TestAuditExport(TestCase):
         format_ = "map:{}"
       mapping_name = format_.format(utils.title_from_camelcase(type_))
       self.assertIn(mapping_name, audit_data)
-      self.assertEqual(audit_data[mapping_name], "\n".join(sorted(slugs)))
+      self.assertEqual(set(audit_data[mapping_name].split('\n')), set(slugs))
 
   def test_export_deprecated_date(self):
     """Test export of audit last deprecated date"""
