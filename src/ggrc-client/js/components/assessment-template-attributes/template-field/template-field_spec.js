@@ -7,7 +7,7 @@ import canStache from 'can-stache';
 import canList from 'can-list';
 import canMap from 'can-map';
 import Component from './template-field';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM, spyProp} from '../../../../js_specs/spec_helpers';
 
 describe('template-field component', function () {
   let viewModel;
@@ -89,6 +89,42 @@ describe('template-field component', function () {
   });
 
   describe('emitting events', function () {
+    describe('"{viewModel.instance} sox_302_enabled" event', () => {
+      let event;
+
+      beforeEach(() => {
+        const eventName = '{viewModel.instance} sox_302_enabled';
+        event = Component.prototype.events[eventName].bind({viewModel});
+      });
+
+      it('should call "initTextFieldOptions" function when ' +
+      'isTextFieldOptionsVisible is TRUE', () => {
+        spyProp(viewModel, 'isTextFieldOptionsVisible').and.returnValue(true);
+        spyOn(viewModel, 'initTextFieldOptions');
+        spyOn(viewModel, 'denormalizeMandatory').and
+          .returnValue([
+            {value: 'Empty'},
+            {value: 'Not Empty'},
+          ]);
+
+        event();
+        expect(viewModel.initTextFieldOptions).toHaveBeenCalled();
+        expect(viewModel.attr('attrs').serialize()).toEqual([
+          {value: 'Empty'},
+          {value: 'Not Empty'},
+        ]);
+      });
+
+      it('should NOT call "initTextFieldOptions" function when ' +
+      'isTextFieldOptionsVisible is FALSE', () => {
+        spyProp(viewModel, 'isTextFieldOptionsVisible').and.returnValue(false);
+        spyOn(viewModel, 'initTextFieldOptions');
+
+        event();
+        expect(viewModel.initTextFieldOptions).not.toHaveBeenCalled();
+      });
+    });
+
     describe('on-remove event', function () {
       let $root; // the component's root DOM element
       let onRemoveCallback;
