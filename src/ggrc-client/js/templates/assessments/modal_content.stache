@@ -153,7 +153,7 @@
             <div class="ggrc-form-item__row alert alert-nomargin">
               This assessment template enables “302 assessment workflow”:
               <p>
-                - Verification step will be skipped if only positive answers are given for the assessment.
+                - Assignees will have read only permissions upon assessment completion.
               </p>
             </div>
           </div>
