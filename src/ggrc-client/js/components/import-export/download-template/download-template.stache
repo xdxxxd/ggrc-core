@@ -53,6 +53,7 @@
               <autocomplete-component searchItemsType:from="'AssessmentTemplate'"
                                       extraCssClass:from="'search-icon'"
                                       on:vm:itemSelected="selectTemplate(scope.event.selectedItem, @index)"
+                                      on:vm:itemErased="eraseTemplate(@index)"
                                       placeholder:from="'Enter text to search for Assessment Template'"
                                       class="autocomplete__large">
               </autocomplete-component>

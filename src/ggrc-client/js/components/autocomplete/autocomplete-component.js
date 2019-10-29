@@ -43,6 +43,15 @@ let component = {
       });
     },
 
+    'input input': function (el) {
+      const inputValue = el.val();
+      if (!inputValue) {
+        this.viewModel.dispatch({
+          type: 'itemErased',
+        });
+      }
+    },
+
     /**
      * Event handler when an item is selected from the list of autocomplete's
      * search results.
