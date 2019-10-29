@@ -33,6 +33,11 @@ def run_job(job):
   except:  # pylint: disable=bare-except
     logger.exception("Job '%s' failed", job.__name__)
     send_error_notification(
+      """
+        <b style="font-size: 25px; text-align: center;"> This is a notification 
+        from the GGRC Pilot Environment. No action is needed from you.</b>
+        <br>
+      """ +
         "Job '%s' failed with: \n%s" % (job.__name__, format_exc())
     )
 
