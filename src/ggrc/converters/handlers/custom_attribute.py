@@ -2,6 +2,8 @@
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 
 """Handlers used for custom attribute columns."""
+import re
+
 from datetime import datetime
 from dateutil.parser import parse
 
@@ -85,7 +87,6 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
     definition = self.get_ca_definition()
     if not definition:
       return ""
-
     for value in self.row_converter.obj.custom_attribute_values:
       if value.custom_attribute_id == definition.id:
         if value.custom_attribute.attribute_type.startswith("Map:"):
@@ -100,7 +101,7 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
             attr_val = int(attr_val)
           except ValueError:
             attr_val = False
-          return str(bool(attr_val)).upper()
+          return "yes" if bool(attr_val) else "no"
         elif value.custom_attribute.attribute_type == _types.DATE:
           return _get_ca_date_value(value)
         else:
@@ -156,6 +157,7 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
     """Get boolean value for checkbox fields."""
     if not self.mandatory and self.raw_value == "":
       return None  # ignore empty fields
+    self.raw_value = re.sub(r'\s+', "", self.raw_value)
     value = self.raw_value.lower() in ("yes", "true")
     if self.raw_value.lower() not in ("yes", "true", "no", "false"):
       self.add_warning(errors.WRONG_VALUE, column_name=self.display_name)

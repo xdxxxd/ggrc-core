@@ -146,7 +146,7 @@ class TestCustomAttributableMixin(TestCase):
     self.assertEqual(prog.custom_attribute_values[0].attribute_value,
                      expected_value)
 
-  @ddt.data("", u"0", u"", None, "0")
+  @ddt.data("", u"0", u"", None, "0", " 0", "Fa l se", "false", "no")
   def test_validate_checkbox_ca(self, value):
     """Test validator for Checkbox CA value."""
     generator = ObjectGenerator()

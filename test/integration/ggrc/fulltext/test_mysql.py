@@ -56,6 +56,8 @@ class TestMysql(TestCase):
       (0, "No"),
       ("1", "Yes"),
       ("0", "No"),
+      ("yes", "Yes"),
+      ("no", "No"),
   )
   @ddt.unpack
   def test_checkbox_fulltext(self, value, search_value):

@@ -59,7 +59,7 @@ class GetValueTestCase(CustomAttributeColumHandlerTestCase):
     self.handler.row_converter.obj.custom_attribute_values.append(ca_value)
 
     result = self.handler.get_value()
-    self.assertEqual(result, u"TRUE")
+    self.assertEqual(result, u"yes")
 
   @ddt.data(u"0", "", None)
   def test_returns_string_false_for_falsy_checkbox(self, value,
@@ -72,7 +72,7 @@ class GetValueTestCase(CustomAttributeColumHandlerTestCase):
     self.handler.row_converter.obj.custom_attribute_values.append(ca_value)
 
     result = self.handler.get_value()
-    self.assertEqual(result, u"FALSE")
+    self.assertEqual(result, u"no")
 
   def test_returns_string_false_for_missing_checkbox_value(
       self, get_ca_definition
@@ -85,7 +85,7 @@ class GetValueTestCase(CustomAttributeColumHandlerTestCase):
     self.handler.row_converter.obj.custom_attribute_values.append(ca_value)
 
     result = self.handler.get_value()
-    self.assertEqual(result, u"FALSE")
+    self.assertEqual(result, u"no")
 
   @ddt.data(
       (u"2018-05-01", u"05/01/2018"),

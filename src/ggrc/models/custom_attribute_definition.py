@@ -63,6 +63,8 @@ class CustomAttributeDefinitionBase(attributevalidator.AttributeValidator,
             False: "No",
             "0": "No",
             "1": "Yes",
+            "yes": "Yes",
+            "no": "No"
         },
     }
 
