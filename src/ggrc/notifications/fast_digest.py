@@ -4,6 +4,7 @@
 """  Fast digest handlers """
 from datetime import datetime
 import itertools
+from logging import getLogger
 
 from werkzeug import exceptions
 from google.appengine.api import mail
@@ -17,6 +18,7 @@ from ggrc.notifications import data_handlers
 from ggrc.notifications import proposal_helpers
 from ggrc.notifications import review_helpers
 
+logger = getLogger(__name__)
 
 DIGEST_TITLE_TMPL = "GGRC Change requests review digest for {}"
 DIGEST_TMPL = settings.JINJA2.get_template("notifications/fast_digest.html")
@@ -55,6 +57,12 @@ def build_address_body(proposals, review_notifications):
 
 def send_notification():
   """Send notifications about proposals."""
+
+  from ggrc.notifications.common import get_app_engine_email
+  if not get_app_engine_email():
+    logger.error("APPENGINE_EMAIL setting is invalid.")
+    return
+
   proposals = proposal_helpers.get_email_proposal_list()
   review_notifications = review_helpers.get_review_notifications()
   subject = build_subject()
