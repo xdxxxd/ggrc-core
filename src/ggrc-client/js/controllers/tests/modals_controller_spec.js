@@ -7,7 +7,6 @@ import canMap from 'can-map';
 import ModalsController from '../modals/modals_controller';
 import * as NotifiersUtils from '../../plugins/utils/notifiers-utils';
 import Person from '../../models/business-models/person';
-import * as ReifyUtils from '../../plugins/utils/reify-utils';
 import * as currentPageUtils from '../../plugins/utils/current-page-utils';
 
 describe('ModalsController', function () {
@@ -24,11 +23,11 @@ describe('ModalsController', function () {
     Person.cache = cacheBackup;
   });
 
-  describe('init() method', function () {
-    let ctrlInst; // fake controller instance
-    let init; // the method under tests
+  describe('init() method', () => {
+    let ctrlInst;
+    let init;
 
-    beforeEach(function () {
+    beforeEach(() => {
       let html = [
         '<div>',
         '  <div class="modal-body"></div>',
@@ -46,75 +45,101 @@ describe('ModalsController', function () {
       init = Ctrl.prototype.init.bind(ctrlInst);
     });
 
-    it('waits until current user is pre-fetched if not yet in cache',
-      function (done) {
-        let userId = GGRC.current_user.id;
-        let dfdFetch = new $.Deferred();
-        let fetchedUser = new canMap({id: userId, email: 'john@doe.com'});
-
-        spyOn(Person, 'findOne').and.returnValue(dfdFetch.promise());
-        delete Person.cache[userId];
+    it('calls after_preload when promise from fetchCurrentUser has resolved',
+      (done) => {
+        let dfdFetchUser = new $.Deferred().resolve();
+        ctrlInst.fetchCurrentUser =
+          jasmine.createSpy()
+            .and.returnValue(dfdFetchUser);
 
         init();
 
-        expect(ctrlInst.after_preload).not.toHaveBeenCalled();
-        dfdFetch.resolve(fetchedUser).then(() => {
+        expect(ctrlInst.fetchCurrentUser).toHaveBeenCalled();
+        dfdFetchUser.then(() => {
           expect(ctrlInst.after_preload).toHaveBeenCalled();
           done();
         });
       }
     );
+  });
 
-    it('waits until current user is pre-fetched if only partially in cache',
-      function (done) {
-        let userId = GGRC.current_user.id;
-        let dfdRefresh = new $.Deferred();
-        let fetchedUser = new canMap({id: userId, email: 'john@doe.com'});
+  describe('fetchCurrentUser() method', () => {
+    let fetchCurrentUser;
+    let origCurrentUser;
+    let cachedUser;
 
-        let partialUser = new canMap({
-          id: userId,
-          email: '', // simulate user object only partially loaded
-          refresh: jasmine.createSpy().and.returnValue(dfdRefresh.promise()),
-        });
+    beforeAll(() => {
+      origCurrentUser = GGRC.current_user;
 
-        spyOn(ReifyUtils, 'reify').and.returnValue(partialUser);
-        Person.cache[userId] = partialUser;
+      cachedUser = {
+        id: 33345,
+        data: 'asdasd',
+        email: 'john@doe.com',
+      };
+    });
 
-        init();
+    beforeEach(() => {
+      fetchCurrentUser = Ctrl.prototype.fetchCurrentUser;
+      GGRC.current_user = {
+        id: 12345,
+      };
 
-        expect(ctrlInst.after_preload).not.toHaveBeenCalled();
-        dfdRefresh.resolve(fetchedUser).then(() => {
-          expect(ctrlInst.after_preload).toHaveBeenCalled();
+      spyOn(Person, 'findOne').and.returnValue(
+        $.Deferred().resolve(cachedUser)
+      );
+    });
+
+    afterAll(() => {
+      GGRC.current_user = origCurrentUser;
+    });
+
+    it('fetchs current user if he doesn\'t is yet in cache', (done) => {
+      fetchCurrentUser(null)
+        .then((response) => {
+          expect(response).toEqual({
+            id: 33345,
+            data: 'asdasd',
+            email: 'john@doe.com',
+          });
+          expect(Person.findOne)
+            .toHaveBeenCalledWith({id: GGRC.current_user.id});
           done();
         });
-      }
-    );
+    });
+
+    it('fetchs current user if he is only partially in cache', (done) => {
+      const currentUser = {
+        id: GGRC.current_user.id,
+        email: '',
+        refresh: jasmine.createSpy().and.returnValue(
+          $.Deferred().resolve(cachedUser)
+        ),
+      };
+
+      fetchCurrentUser(currentUser)
+        .then((response) => {
+          expect(response).toEqual({
+            id: 33345,
+            data: 'asdasd',
+            email: 'john@doe.com',
+          });
+          expect(currentUser.refresh).toHaveBeenCalled();
+          done();
+        });
+    });
 
     it('does not wait for fetching the current user if already in cache',
-      function () {
-        jasmine.clock().install();
+      (done) => {
+        const currentUser = {...cachedUser, refresh: jasmine.createSpy()};
 
-        let dfdRefresh = new $.Deferred();
-        let userId = GGRC.current_user.id;
-
-        let fullUser = new canMap({
-          id: userId,
-          email: 'john@doe.com',
-          refresh: jasmine.createSpy().and.returnValue(dfdRefresh.promise()),
-        });
-
-        spyOn(ReifyUtils, 'reify').and.returnValue(fullUser);
-        Person.cache[userId] = fullUser;
-
-        init();
-
-        jasmine.clock().tick(1);
-        // after_preload should have been called immediately
-        expect(ctrlInst.after_preload).toHaveBeenCalled();
-
-        jasmine.clock().uninstall();
-      }
-    );
+        fetchCurrentUser(currentUser)
+          .then((response) => {
+            expect(response).toEqual(currentUser);
+            expect(currentUser.refresh).not.toHaveBeenCalled();
+            expect(Person.findOne).not.toHaveBeenCalled();
+            done();
+          });
+      });
   });
 
   describe('save_error method', function () {
@@ -278,6 +303,7 @@ describe('ModalsController', function () {
           .returnValue(newInstance),
         reset_form: jasmine.createSpy('reset_form').and
           .returnValue(resetFormDfd),
+        afterResetForm: jasmine.createSpy('afterPrepare'),
         apply_object_params: jasmine.createSpy('apply_object_params'),
         serialize_form: jasmine.createSpy('serialize_form'),
         restore_ui_status: jasmine.createSpy('restore_ui_status'),
@@ -296,8 +322,9 @@ describe('ModalsController', function () {
       done();
     });
 
-    it('assigns new prepared instance into controller options ' +
-    'after reset_form()', (done) => {
+    it('assigns new instance into controller options', (done) => {
+      ctrlInst.options.attr('instance', null);
+
       method();
 
       resetFormDfd.done(() => {
@@ -309,29 +336,38 @@ describe('ModalsController', function () {
     });
 
     it('calls apply_object_params()', (done) => {
-      jasmine.clock().install();
-
-      resetFormDfd.resolve();
       method();
 
-      jasmine.clock().tick(1);
-      expect(ctrlInst.apply_object_params).toHaveBeenCalled();
-      done();
+      resetFormDfd.then(() => {
+        expect(ctrlInst.apply_object_params).toHaveBeenCalled();
+        done();
+      });
 
-      jasmine.clock().uninstall();
+      resetFormDfd.resolve();
     });
 
     it('calls serialize_form()', (done) => {
-      jasmine.clock().install();
-
-      resetFormDfd.resolve();
       method();
 
-      jasmine.clock().tick(1);
-      expect(ctrlInst.serialize_form).toHaveBeenCalled();
-      done();
+      resetFormDfd.then(() => {
+        expect(ctrlInst.serialize_form).toHaveBeenCalled();
+        done();
+      });
 
-      jasmine.clock().uninstall();
+      resetFormDfd.resolve();
+    });
+
+    it('calls instance.backup()', (done) => {
+      method();
+
+      resetFormDfd.done(() => {
+        ctrlInst.options.attr('instance').backup = jasmine.createSpy();
+      }).then(() => {
+        expect(ctrlInst.options.attr('instance').backup).toHaveBeenCalled();
+        done();
+      });
+
+      resetFormDfd.resolve();
     });
   });
 });
