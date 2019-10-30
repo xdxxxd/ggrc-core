@@ -38,7 +38,21 @@ const viewModel = AssessmentsBulkUpdate.extend({
     }
   },
   init() {
-    this.initDefaultFilter('Verifiers');
+    const attributeFilter = {
+      attribute: {
+        field: 'Verifiers',
+        operator: '~',
+        value: GGRC.current_user.email,
+      },
+      options: {
+        disabled: true,
+      },
+    };
+    const operatorOptions = {
+      disabled: true,
+    };
+
+    this.initDefaultFilter(attributeFilter, operatorOptions);
     this.initFilterAttributes();
   },
 });

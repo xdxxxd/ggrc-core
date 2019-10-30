@@ -41,6 +41,18 @@ let viewModel = canMap.extend({
         return attributes;
       },
     },
+    disabled: {
+      type: 'boolean',
+      value: false,
+    },
+    /**
+     * Indicates that action buttons should be displayed.
+     * @type {boolean}
+     */
+    showActions: {
+      type: 'boolean',
+      value: true,
+    },
   },
   /**
    * Contains criterion's fields: field, operator, value.
@@ -61,11 +73,6 @@ let viewModel = canMap.extend({
    * @type {boolean}
    */
   extendable: false,
-  /**
-   * Indicates that action buttons should be displayed.
-   * @type {boolean}
-   */
-  showActions: true,
   /**
    * Dispatches event meaning that the component should be removed from parent container.
    */

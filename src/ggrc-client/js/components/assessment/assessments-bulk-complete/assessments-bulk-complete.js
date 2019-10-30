@@ -461,7 +461,15 @@ const viewModel = AssessmentsBulkUpdatable.extend({
     }
   },
   init() {
-    this.initDefaultFilter('Assignees');
+    const attributeFilter = {
+      attribute: {
+        field: 'Assignees',
+        operator: '~',
+        value: GGRC.current_user.email,
+      },
+    };
+
+    this.initDefaultFilter(attributeFilter);
     this.initFilterAttributes();
   },
 });

@@ -104,6 +104,9 @@ let viewModel = AdvancedSearchContainer.extend({
       AdvancedSearch.create.attribute(),
     ]));
   },
+  isAttributeActionsShown(isAttrDisabled = false) {
+    return !isAttrDisabled;
+  },
 });
 
 /**

@@ -16,12 +16,14 @@ export const create = {
   /**
    * Creates Filter Attribute.
    * @param {object} value - Filter Attribute data.
+   * @param {object} options - List of options for attribute.
    * @return {object} - Attribute model.
    */
-  attribute: (value) => {
+  attribute: (value, options = null) => {
     return {
       type: 'attribute',
       value: value || { },
+      options,
     };
   },
   /**
@@ -38,12 +40,14 @@ export const create = {
   /**
    * Creates Operator.
    * @param {string} value - Operator name.
+   * @param {object} options - List of options for operator.
    * @return {object} - Operator model.
    */
-  operator: (value) => {
+  operator: (value, options = null) => {
     return {
       type: 'operator',
       value: value || '',
+      options,
     };
   },
   /**
