@@ -475,7 +475,7 @@ def send_email(user_email, subject, body):
     logger.error("Invalid email recipient: %s", user_email)
     return
   if not sender:
-    logger.error("APPENGINE_EMAIL setting is invalid.")
+    logger.warning("APPENGINE_EMAIL setting is invalid.")
     return
 
   subject = prefix_subject(subject)

@@ -60,7 +60,7 @@ def send_notification():
 
   from ggrc.notifications.common import get_app_engine_email
   if not get_app_engine_email():
-    logger.error("APPENGINE_EMAIL setting is invalid.")
+    logger.warning("APPENGINE_EMAIL setting is invalid.")
     return
 
   proposals = proposal_helpers.get_email_proposal_list()
