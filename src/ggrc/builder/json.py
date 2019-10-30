@@ -402,6 +402,7 @@ def build_type_query(type_, result_spec):
 
 
 def build_stub_union_query(queries):  # noqa: C901
+  logger.warning('Queries to build_stub_union_query: %s', queries)
   results = {}
   for (type_, conditions) in queries:
     if isinstance(conditions, (int, long, str, unicode)):
@@ -517,6 +518,7 @@ def reify_representation(resource, results, type_columns):
 
 
 def publish_representation(resource):
+  logger.warning('Resource to publish_representation: %s', resource)
   queries = gather_queries(resource)
 
   if not queries:

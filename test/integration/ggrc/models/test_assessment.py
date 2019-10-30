@@ -417,6 +417,8 @@ class TestAssessment(TestAssessmentBase):
           "assessment": {
               "title": "Assessment",
               "context": None,
+              "status": "In Progress",
+              "modified_by_id": None,
               "audit": {
                   "id": audit.id,
                   "type": "Audit"
