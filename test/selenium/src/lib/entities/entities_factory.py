@@ -11,7 +11,7 @@ import random
 
 from lib import factory, users
 from lib.constants import (
-    objects, roles, value_aliases, messages, object_states)
+  objects, roles, value_aliases, messages, object_states, element)
 from lib.constants.element import AdminWidgetCustomAttributes, ReviewStates
 from lib.decorator import lazy_property
 from lib.entities import entity
@@ -437,10 +437,6 @@ class ControlsFactory(EntitiesFactory):
         external_id=self.generate_external_id(),
         review_status=ReviewStates.UNREVIEWED,
         review_status_display_name=ReviewStates.UNREVIEWED, **attrs)
-    if is_add_rest_attrs:
-      obj.update_attrs(recipients=",".join((
-          unicode(roles.ADMIN), unicode(roles.CONTROL_OPERATORS),
-          unicode(roles.CONTROL_OWNERS))))
     return obj
 
 
@@ -832,3 +828,53 @@ class EvidenceFactory(EntitiesFactory):
     if 'is_add_rest_attrs' then add attributes for REST."""
     return self.obj_inst().update_attrs(
         title=self.obj_title, link=self.obj_title, kind="URL")
+
+
+class ChangeLogItemsFactory(EntitiesFactory):
+  """Factory class for ChangeLogItem entities."""
+
+  def __init__(self):
+    super(ChangeLogItemsFactory, self).__init__(objects.CHANGE_LOG_ITEMS)
+
+  _attrs_to_exclude_from_log = (
+      "tree_view_attrs_to_exclude", "people_attrs_names",
+      "custom_attribute_definitions", "access_control_list", "url",
+      "type", "selfLink", "review_status_display_name", "id", "href",
+      "external_slug", "external_id", "modified_by")
+
+  def _generate_creation_entry_dict(self, obj):
+    """Returns dict of obj's attributes that is expected to be displayed
+    in change log entry related to obj creation."""
+    displayed_attrs = {}
+    for attr_name, attr_value in entity.Representation.repr_obj_to_dict(
+            obj).iteritems():
+      if attr_name not in self._attrs_to_exclude_from_log and attr_value:
+        if isinstance(attr_value, list):
+          displayed_attrs.update({attr_name: ", ".join(attr_value)})
+        elif attr_name in ["created_at", "updated_at"]:
+          displayed_attrs.update(
+              {attr_name: date_utils.iso8601_to_ui_str_date(attr_value)})
+        elif attr_name == element.CommonAssessment.RECIPIENTS.lower():
+          # 'recipients' need to be sorted as their order is different in
+          # object from rest and its UI representation
+          displayed_attrs.update(
+              {attr_name: ", ".join(sorted(attr_value.split(",")))})
+        elif attr_name == "custom_attributes" and isinstance(attr_value, dict):
+          displayed_attrs.update(
+              {ca_name: ca_val for ca_name, ca_val in attr_value.iteritems()
+               if ca_val})
+        else:
+          displayed_attrs.update({attr_name: attr_value})
+    return displayed_attrs
+
+  def generate_obj_creation_entity(self, obj):
+    """Create and return expected ChangeLogItemEntity instance for newly
+    created object according to its attributes."""
+    expected_changes = []
+    for attr_name, attr_value in (self._generate_creation_entry_dict(
+                                  obj).iteritems()):
+      expected_changes.append({"attribute_name": attr_name,
+                               "original_value": None,
+                               "new_value": attr_value})
+    return self.obj_inst().update_attrs(author=users.current_user().email,
+                                        changes=sorted(expected_changes))

@@ -56,6 +56,7 @@ PRODUCT_GROUPS = "product_groups"
 PROPOSALS = "proposals"
 EVIDENCE = 'evidence'
 REVIEWS = "reviews"
+CHANGE_LOG_ITEMS = "change_log_items"
 
 EDITABLE_GGRC_OBJ = (
     ACCESS_GROUPS, CONTRACTS, DATA_ASSETS, FACILITIES,

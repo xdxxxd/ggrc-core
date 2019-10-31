@@ -91,6 +91,7 @@ class Representation(object):
         els.LAST_UPDATED: "updated_at",
         els.AUDIT_CAPTAINS: "audit_captains",
         els.AUDITORS: "auditors",
+        els.CREATED_AT: "created_at",
         "MAPPED_OBJECTS": "mapped_objects", els.ASSIGNEES: "assignees",
         els.CREATORS: "creators", "VERIFIERS": "verifiers",
         "COMMENTS": "comments", "CREATED_AT": "created_at",
@@ -889,6 +890,14 @@ class ReviewEntity(Entity):
         "last_reviewed_by": "Last reviewed by\n{}\non {}".format(
             self.last_reviewed_by, self.last_reviewed_at) if
         self.last_reviewed_by and self.last_reviewed_at else None}
+
+
+class ChangeLogItemEntity(Representation):
+  """Change log item entity from UI."""
+
+  def __init__(self, **attrs):
+    super(ChangeLogItemEntity, self).__init__()
+    self.set_attrs("author", "changes", **attrs)
 
 
 class ProposalEntity(Representation):

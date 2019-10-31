@@ -90,6 +90,12 @@ def iso8601_to_ui_str_with_zone(iso8601_str):
       iso8601_to_local_datetime(iso8601_str), "%m/%d/%Y %I:%M:%S %p")
 
 
+def iso8601_to_ui_str_date(iso8601_str):
+  """Converts ISO 8601 (yyyy-mm-ddThh:mm:ss) string to (mm/dd/yyyy) format."""
+  return datetime.datetime.strftime(
+      iso8601_to_datetime(iso8601_str), "%m/%d/%Y")
+
+
 def user_timezone_offset():
   """Returns user timezone offset in seconds."""
   return (time.mktime(datetime.datetime.now().timetuple()) -

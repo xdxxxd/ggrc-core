@@ -150,7 +150,7 @@ class Common(object):
   STATE = Base.STATE
   # fictional elements (need to convert UI attrs to Entities attrs)
   MODIFIED_BY = "Last updated by"
-  CREATED_AT = "Created date"
+  CREATED_AT = "Created Date"
   UPDATED_AT = "Updated at"
   # roles
   OBJECT_ADMINS = "Object Admins"
@@ -202,6 +202,7 @@ class TransformationSetVisibleFields(CommonModalSetVisibleFields):
   PROGRAM_MANAGERS = "Program Managers"
   MAPPED_OBJECTS = "Mapped Objects"
   REVIEW_STATE = "Review State"
+  REVIEW_STATUS = "Review Status"
   CREATORS = roles.CREATORS
   ASSIGNEES = roles.ASSIGNEES
   VERIFIERS = roles.VERIFIERS
@@ -270,6 +271,7 @@ class CommonAssessment(Common):
   VERIFIERS = roles.VERIFIERS
   MAPPED_OBJECTS = TransformationSetVisibleFields.MAPPED_OBJECTS
   ASMT_TYPE = "Assessment Type"
+  RECIPIENTS = "Recipients"
   VERIFIED = TransformationSetVisibleFields.VERIFIED
 
 
