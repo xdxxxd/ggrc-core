@@ -81,7 +81,7 @@ class Representation(object):
     # common for UI and CSV
     result_remap_items = {
         els.TITLE: "title", els.ADMIN: "admins",
-        els.CODE: "slug", els.REVIEW_STATE: "os_state",
+        els.CODE: "slug", els.REVIEW_STATE: "review_status",
         els.OBJECT_REVIEW: "os_state",
         els.STATE: "status"
     }
@@ -97,6 +97,8 @@ class Representation(object):
         "COMMENTS": "comments", "CREATED_AT": "created_at",
         els.MODIFIED_BY: "modified_by", "LAST_UPDATED_BY": "modified_by",
         "UPDATED_AT": "updated_at", "ASSESSMENT_TYPE": "assessment_type",
+        els.ASMT_TYPE: "assessment_type",
+        els.RECIPIENTS: "recipients",
         "IS_VERIFIED": "verified",
         "CUSTOM_ATTRIBUTES": "custom_attributes",
         "DESCRIPTION": "description",

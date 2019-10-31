@@ -522,16 +522,6 @@ class AsmtAttrsTab(object):
   TAB_NAME = AssessmentTabContainer.OTHER_ATTRS_TAB
 
 
-class AsmtLogTab(object):
-  """Common elements' labels of Assessment Log Tab on Assessment Info
-   Widget."""
-  TAB_NAME = AssessmentTabContainer.CHANGE_LOG_TAB
-  FIELD = "Field"
-  ORIGINAL_VALUE = "Original value"
-  NEW_VALUE = "New value"
-  EMPTY_STATEMENT = u"\u2014"  # em-dash
-
-
 class RelatedAsmtsTab(object):
   """Common elements' labels of Assessment Related Assessments Tab on
   Assessment InfoWidget.

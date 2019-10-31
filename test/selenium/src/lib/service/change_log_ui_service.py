@@ -11,7 +11,6 @@ from lib.utils import ui_utils
 
 class ChangeLogService(base.WithBrowser):
   """Class for Change Log business layer's services objects."""
-  # pylint: disable=too-few-public-methods
 
   def open_obj_changelog_tab(self, obj):
     """Open obj info page and open changelog tab of an obj.
@@ -25,3 +24,7 @@ class ChangeLogService(base.WithBrowser):
     return (change_log.ChangeLog()
             if objects.get_plural(obj.type) not in objects.DISABLED_OBJECTS
             else change_log.ReadonlyChangeLog())
+
+  def get_obj_changelog(self, obj):
+    """Returns object Change Log as list of ChangeLogItemEntity instances."""
+    return self.open_obj_changelog_tab(obj).get_changelog_items()

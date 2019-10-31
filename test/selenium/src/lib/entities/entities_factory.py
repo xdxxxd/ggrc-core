@@ -11,7 +11,7 @@ import random
 
 from lib import factory, users
 from lib.constants import (
-  objects, roles, value_aliases, messages, object_states, element)
+    objects, roles, value_aliases, messages, object_states, element)
 from lib.constants.element import AdminWidgetCustomAttributes, ReviewStates
 from lib.decorator import lazy_property
 from lib.entities import entity
@@ -840,7 +840,8 @@ class ChangeLogItemsFactory(EntitiesFactory):
       "tree_view_attrs_to_exclude", "people_attrs_names",
       "custom_attribute_definitions", "access_control_list", "url",
       "type", "selfLink", "review_status_display_name", "id", "href",
-      "external_slug", "external_id", "modified_by")
+      "external_slug", "external_id", "modified_by", "audit",
+      "bulk_update_modal_tree_view_attrs_to_exclude")
 
   def _generate_creation_entry_dict(self, obj):
     """Returns dict of obj's attributes that is expected to be displayed
@@ -878,3 +879,14 @@ class ChangeLogItemsFactory(EntitiesFactory):
                                "new_value": attr_value})
     return self.obj_inst().update_attrs(author=users.current_user().email,
                                         changes=sorted(expected_changes))
+
+  def generate_log_entity_for_mapping(self, source_obj):
+    """Create and return expected ChangeLogItem entity for object mapping to
+    source object."""
+    return self.obj_inst().update_attrs(
+        author=users.current_user().email,
+        changes=[
+            {"attribute_name":
+             "Mapping to {}: {}".format(source_obj.type, source_obj.title),
+             "original_value": None,
+             "new_value": "Created"}])
