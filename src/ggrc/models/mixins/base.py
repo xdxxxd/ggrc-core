@@ -175,6 +175,7 @@ class CreationTimeTracked(object):
       "created_at": {
           "display_name": "Created Date",
           "mandatory": False,
+          "description": "Automatically provided values"
       },
   }
 
@@ -249,10 +250,12 @@ class ChangeTracked(CreationTimeTracked):
       "updated_at": {
           "display_name": "Last Updated Date",
           "mandatory": False,
+          "description": "Automatically provided values"
       },
       "modified_by": {
           "display_name": "Last Updated By",
           "mandatory": False,
+          "description": "Automatically provided values"
       },
   }
 

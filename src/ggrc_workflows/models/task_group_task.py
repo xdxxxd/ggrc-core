@@ -158,16 +158,6 @@ class TaskGroupTask(roleable.Roleable,
           "description": ("Accepted values are:"
                           "\n'Rich Text'\n'Checkbox'"),
       },
-      "updated_at": {
-          "display_name": "Last Updated Date",
-          "mandatory": False,
-          "description": DATE_HINT
-      },
-      "created_at": {
-          "display_name": "Created Date",
-          "mandatory": False,
-          "description": DATE_HINT
-      }
   }
 
   @property

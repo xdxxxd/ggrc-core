@@ -224,6 +224,7 @@ class WithLastDeprecatedDate(object):
       "last_deprecated_date": {
           "display_name": "Last Deprecated Date",
           "view_only": True,
+          "description": "Automatically provided values"
       },
   }
 
@@ -258,6 +259,7 @@ class LastDeprecatedTimeboxed(Timeboxed):
       "end_date": {
           "display_name": "Last Deprecated Date",
           "view_only": True,
+          "description": "Automatically provided values"
       },
   }
 
@@ -351,7 +353,10 @@ class FinishedDate(object):
   )
 
   _aliases = {
-      "finished_date": "Finished Date"
+      "finished_date": {
+          "display_name": "Finished Date",
+          "description": "Automatically provided values",
+      }
   }
 
   _fulltext_attrs = [
@@ -415,7 +420,10 @@ class VerifiedDate(object):
   )
 
   _aliases = {
-      "verified_date": "Verified Date"
+      "verified_date": {
+          "display_name": "Verified Date",
+          "description": "Automatically provided values",
+      }
   }
 
   _fulltext_attrs = [
