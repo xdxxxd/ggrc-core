@@ -193,7 +193,6 @@ class Assessment(Assignable,
       "operationally",
       "reminderType",
       "issue_tracker",
-      "map: GlobalCustomAttributes",
       "map: Snapshots",
       "map: Issue",
   )
