@@ -64,3 +64,7 @@ MAPPED_ASSESSMENT = (u"The following Audit cannot be deleted due to existing "
                      u"assessment(s) or assessment template(s) mappings. "
                      u"Please delete assessment(s) or assessment template(s) "
                      u"mapped to this Audit to continue.")
+
+SNAPSHOT_INVALID_OBJECT_SLUG = (u"Snapshot for object %s with ID=%s contains "
+                                u"invalid object slug. The value will be "
+                                u"ignored.")
