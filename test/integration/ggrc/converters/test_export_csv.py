@@ -1,5 +1,6 @@
 # Copyright (C) 2019 Google Inc.
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+# pylint: disable=too-many-lines
 """Tests exported csv files"""
 from os.path import abspath, dirname, join
 
@@ -186,6 +187,20 @@ class TestExportEmptyTemplate(TestCase):
     response = self.client.post("/_service/export_csv",
                                 data=dumps(data), headers=self.headers)
     self.assertIn("Allowed value is:\nYes", response.data)
+
+  @ddt.data("Assessment", "Issue")
+  def test_ga_tip_people_type(self, model):
+    """Tests if Predefined GA of people type  has tip message for {}"""
+    data = {
+        "export_to": "csv",
+        "objects": [
+            {"object_name": model, "fields": "all"},
+        ],
+    }
+    response = self.client.post("/_service/export_csv",
+                                data=dumps(data), headers=self.headers)
+    self.assertIn(u"Multiple values are allowed.\nDelimiter is"
+                  u" 'line break'.\nAllowed values are emails", response.data)
 
   def test_conclusion_tip(self):
     """Tests if design and operationally are with tip in export file."""

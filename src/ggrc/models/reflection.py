@@ -345,7 +345,8 @@ class AttributeInfo(object):
             "attr_name": name,
             "mandatory": mandatory,
             "unique": False,
-            "description": u"List of people with '{}' role".format(name),
+            "description": u"Multiple values are allowed.\nDelimiter is"
+                           u" 'line break'.\nAllowed values are emails",
             "type": cls.Type.AC_ROLE,
         }
         for name, mandatory in flask.g.acl_role_names[object_class.__name__]
