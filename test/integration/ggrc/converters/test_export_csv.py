@@ -242,6 +242,26 @@ class TestExportEmptyTemplate(TestCase):
     self.assertIn("Allowed values are:\n{}".format('\n'.join(
         all_models.Assessment.ASSESSMENT_TYPE_OPTIONS)), response.data)
 
+  @ddt.data("Program", "Regulation", "Objective", "Contract", "Policy",
+            "Standard", "Threat", "Requirement")
+  def test_comment_type_tip(self, model):
+    """Tests if {} type column has tip message for Comments."""
+    data = {
+        "export_to": "csv",
+        "objects": [
+            {"object_name": model, "fields": "all"},
+        ],
+    }
+    response = self.client.post("/_service/export_csv",
+                                data=dumps(data), headers=self.headers)
+    comments = 'Multiple values are allowed. Delimiter is ' \
+               '""double semi-colon separated values"" ("";;"")"". To ' \
+               'mention person at the comment use the following format <a ' \
+               'href=""mailto:some_user@example.com"">' \
+               '+some_user@example.com</a>.'
+
+    self.assertIn(comments, response.data)
+
   def test_role_tip(self):
     """Tests if Role column has tip message in export file (People Object)."""
     data = {
