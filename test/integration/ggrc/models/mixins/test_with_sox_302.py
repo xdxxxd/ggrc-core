@@ -839,7 +839,7 @@ class TestQueriesWithSOX302(query_helper.WithQueryApi,
     query_request_data = [
         self._make_query_dict(
             "AssessmentTemplate",
-            expression=["sox_302_enabled", "=", filter_by_value],
+            expression=["SOX 302 assessment workflow", "=", filter_by_value],
         ),
     ]
 
@@ -869,7 +869,7 @@ class TestQueriesWithSOX302(query_helper.WithQueryApi,
     query_request_data = [
         self._make_query_dict(
             "Assessment",
-            expression=["sox_302_enabled", "=", filter_by_value],
+            expression=["SOX 302 assessment workflow", "=", filter_by_value],
         ),
     ]
 
