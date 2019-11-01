@@ -224,25 +224,23 @@ export const buildFilter = (data, request) => {
 
 /**
  * Fills statusItem with default values for passed modelName.
- * @param {canMap} state - Current state.
  * @param {String} modelName - Name of the model to find states of.
  * @param {Symbol=} statesCollectionKey - describes key of collection with
  * states for certain model.
  * @return {canMap} - updated state.
  */
 export const setDefaultStatusConfig = (
-  state,
   modelName,
   statesCollectionKey = null
 ) => {
   const items = StateUtils.getStatesForModel(modelName, statesCollectionKey);
 
-  state.attr('items', items);
-  state.attr('operator', 'ANY');
-  state.attr('modelName', modelName);
-  state.attr('statesCollectionKey', statesCollectionKey);
-
-  return state;
+  return {
+    items,
+    modelName,
+    statesCollectionKey,
+    operator: 'ANY',
+  };
 };
 
 /**

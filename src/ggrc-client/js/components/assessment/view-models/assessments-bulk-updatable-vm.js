@@ -3,7 +3,6 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import canMap from 'can-map';
 import ObjectOperationsBaseVM from '../../view-models/object-operations-base-vm';
 import {notifier} from '../../../plugins/utils/notifiers-utils';
 import {trackStatus} from '../../../plugins/utils/background-task-utils';
@@ -32,7 +31,6 @@ export default ObjectOperationsBaseVM.extend({
     options: attributeOptions = null,
   }, operatorOptions = null) {
     const stateConfig = setDefaultStatusConfig(
-      new canMap,
       this.attr('type'),
       this.attr('statesCollectionKey')
     );
