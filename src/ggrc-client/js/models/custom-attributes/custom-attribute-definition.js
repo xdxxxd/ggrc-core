@@ -28,6 +28,7 @@ export default Cacheable.extend({
       value: '',
       validate: {
         required: true,
+        validateOnExcludedSymbols: true,
       },
     },
     // Besides multi_choice_options we need toset the validation on the
@@ -44,6 +45,9 @@ export default Cacheable.extend({
       validate: {
         validateMultiChoiceOptions: true,
       },
+    },
+    excludedSymbols: {
+      value: '*',
     },
   },
 });
