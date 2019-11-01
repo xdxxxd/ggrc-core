@@ -80,12 +80,21 @@ let viewModel = AdvancedSearchContainer.extend({
    */
   statesCollectionKey: null,
   /**
+   * Contains list of options for "operator" control. May used, for example,
+   * to disable changing of operator (using {disable: true} option).
+   * @type {object|null}
+   */
+  filterOperatorOptions: null,
+  /**
    * Adds Filter Operator and Filter Attribute to the collection.
    */
   addFilterCriterion: function () {
     let items = this.attr('items');
     if (items.length) {
-      items.push(AdvancedSearch.create.operator('AND'));
+      items.push(AdvancedSearch.create.operator(
+        'AND',
+        this.attr('filterOperatorOptions'))
+      );
     }
     items.push(AdvancedSearch.create.attribute());
   },

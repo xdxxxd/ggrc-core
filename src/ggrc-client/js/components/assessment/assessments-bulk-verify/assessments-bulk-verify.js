@@ -23,6 +23,7 @@ const viewModel = AssessmentsBulkUpdate.extend({
   },
   statesCollectionKey: STATES_KEYS.BULK_VERIFY,
   isVerifying: false,
+  filterOperatorOptions: null,
   async onVerifyClick() {
     this.attr('isVerifying', true);
     try {
@@ -51,6 +52,10 @@ const viewModel = AssessmentsBulkUpdate.extend({
     const operatorOptions = {
       disabled: true,
     };
+
+    // disable ability to change default operator for all of the attributes
+    // in advanced search (except in grouped filter)
+    this.attr('filterOperatorOptions', operatorOptions);
 
     this.initDefaultFilter(attributeFilter, operatorOptions);
     this.initFilterAttributes();

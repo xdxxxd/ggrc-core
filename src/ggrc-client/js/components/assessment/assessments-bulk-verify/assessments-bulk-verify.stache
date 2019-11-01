@@ -16,6 +16,7 @@
     <advanced-search-container
       modelName:from="type"
       statesCollectionKey:from="statesCollectionKey"
+      filterOperatorOptions:from="filterOperatorOptions"
       disabled:from="is_loading"
       mappedToItems:from="mappedToItems"
       defaultFilterItems:from="defaultFilterItems"
