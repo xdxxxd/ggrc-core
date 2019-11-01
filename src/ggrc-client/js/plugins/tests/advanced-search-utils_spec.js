@@ -278,9 +278,11 @@ describe('AdvancedSearch', () => {
           operator: '~',
           value: ' test',
         },
+        options: null,
       }, {
         type: 'operator',
         value: 'AND',
+        options: null,
       }, {
         type: 'group',
         value: [{
@@ -290,9 +292,11 @@ describe('AdvancedSearch', () => {
             operator: '=',
             value: 'meter',
           },
+          options: null,
         }, {
           type: 'operator',
           value: 'AND',
+          options: null,
         }, {
           type: 'attribute',
           value: {
@@ -300,9 +304,11 @@ describe('AdvancedSearch', () => {
             operator: '~=',
             value: 'value ',
           },
+          options: null,
         }]}, {
         type: 'operator',
         value: 'OR',
+        options: null,
       }];
 
       let result = AdvancedSearch.reversePolishNotation(items);
