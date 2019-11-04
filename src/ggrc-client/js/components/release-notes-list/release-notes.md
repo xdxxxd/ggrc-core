@@ -1,6 +1,8 @@
-[//]: <> (updated 10/29/2019)
+[//]: <> (updated 11/13/2019)
 
 Our product team is working hard to engineer compliance @ scale and make your day to day user journeys easier. We have been adding key capabilities to the product as listed here below.
+
+## Additional description for an evidence (v2.21.0, 11/13/2019)
 
 ## Ability to create a new Cycle Task Group during active Cycle (v2.20.0, 10/29/2019)
 
@@ -115,6 +117,10 @@ Our product team is working hard to engineer compliance @ scale and make your da
 ## Linking assessments with other issue tracking systems (v0.10.36, 12/12/2017)
 
 ## Performance improvements
+
+### Additional description for an evidence (v2.21.0, 11/13/2019)
+
+From now, you can add an optional additional description to an evidence file or evidence URL.
 
 ### Ability to create a new Cycle Task Group during active Cycle (v2.20.0, 10/29/2019)
 
