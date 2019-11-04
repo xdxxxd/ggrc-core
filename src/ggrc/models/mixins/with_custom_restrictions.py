@@ -4,6 +4,7 @@
 """Contains the WithCustomRestrictions mixin"""
 import logging
 
+from ggrc.builder import simple_property
 from ggrc.models import reflection
 from ggrc.models.mixins.statusable import Statusable
 from ggrc.rbac import permissions
@@ -75,6 +76,11 @@ class WithCustomRestrictions(object):
     user = permissions.get_user()
     return self.sox_302_enabled and self.is_user_role_restricted(user)
 
+  @simple_property
+  def is_sox_restricted(self):
+    """Property for public access"""
+    return self._is_sox_restricted()
+
   def _readonly_fields(self):
     # type: () -> tuple
     """Get list of all readonly fields for object {self} for user current
@@ -88,6 +94,11 @@ class WithCustomRestrictions(object):
            obj_state == field_value:
           return read_only_fields
     return tuple()
+
+  @simple_property
+  def readonly_fields(self):
+    """Property for public access"""
+    return self._readonly_fields()
 
   def is_updating_readonly_fields(self, src):
     """Check is {src} going to update fields that is readonly for current

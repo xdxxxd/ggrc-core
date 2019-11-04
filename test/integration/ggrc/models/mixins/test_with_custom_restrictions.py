@@ -76,6 +76,9 @@ class TestWithCustomRestrictions(TestCase):
 
     assessment = factories.AssessmentFactory(audit=audit, sox_302_enabled=True)
     self.assign_person(assessment, acr_assmnt, user.id)
+    factories.RelationshipFactory(
+        source=audit, destination=assessment
+    )
 
     self.assertFalse(assessment.is_user_role_restricted(user))
 

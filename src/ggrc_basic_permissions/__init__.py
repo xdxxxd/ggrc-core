@@ -516,6 +516,7 @@ def load_permissions_for(user):
 
 
 def _get_or_create_personal_context(user):
+  """Get or create personal context for user"""
   personal_context = user.get_or_create_object_context(
       context=1,
       name='Personal Context for {0}'.format(user.id),

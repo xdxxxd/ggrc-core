@@ -232,6 +232,7 @@ class DeleteColumnHandler(ColumnHandler):
 
 
 class StatusColumnHandler(ColumnHandler):
+  """Handle for Status attribute."""
 
   def __init__(self, row_converter, key, **options):
     self.key = key
@@ -491,6 +492,7 @@ class NullableDateColumnHandler(DateColumnHandler):
 
 
 class EmailColumnHandler(ColumnHandler):
+  """Handler for Email attribute."""
 
   def parse_item(self):
     """ emails are case insensitive """

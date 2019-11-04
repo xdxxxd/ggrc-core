@@ -431,15 +431,14 @@ class ImportRowConverter(RowConverter):
       return
 
     if isinstance(self.obj, WithCustomRestrictions):
-      if self.obj._is_sox_restricted():
+      if self.obj.is_sox_restricted:
         ignored_names = list()
         for attr_name, handler in self.attrs.items():
-          if attr_name in self.obj._readonly_fields() and \
-            handler.value and \
-            not json_comparator.fields_equal(
-              getattr(self.obj, attr_name, None),
-              handler.value
-            ):
+          if attr_name in self.obj.readonly_fields and \
+              handler.value and \
+              not json_comparator.fields_equal(
+                  getattr(self.obj, attr_name, None),
+                  handler.value):
             handler.ignore = True
             ignored_names.append(attr_name)
 
@@ -449,7 +448,6 @@ class ImportRowConverter(RowConverter):
         columns_str = ', '.join("'{}'".format(name)
                                 for name in sorted(ignored_names))
         self.add_warning(errors.READONLY_ACCESS_WARNING, columns=columns_str)
-
 
   def process_row(self):
     """Parse, set, validate and commit data specified in self.row."""
