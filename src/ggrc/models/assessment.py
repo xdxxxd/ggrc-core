@@ -33,6 +33,7 @@ from ggrc.models.mixins import with_sox_302
 from ggrc.models.mixins.assignable import Assignable
 from ggrc.models.mixins.autostatuschangeable import AutoStatusChangeable
 from ggrc.models.mixins.with_action import WithAction
+from ggrc.models.mixins.with_custom_restrictions import WithCustomRestrictions
 from ggrc.models.mixins.with_evidence import WithEvidence
 from ggrc.models.mixins.with_similarity_score import WithSimilarityScore
 from ggrc.models.deferred import deferred
