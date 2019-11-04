@@ -169,8 +169,22 @@ class Policy(review.Reviewable,
       "Product Policy", "Contract-Related Policy", "Company Controls Policy"
   ])
 
+  POLICY_OPTIONS = ("Company Policy",
+                    "Org Group Policy",
+                    "Data Asset Policy",
+                    "Product Policy",
+                    "Contract-Related Policy",
+                    "Company Controls Policy"
+                    )
+
   _aliases = {
       "documents_file": None,
+      "kind": {
+          "display_name": "Kind/Type",
+          "filter_by": "_filter_by_kind",
+          "description": "Allowed values are:\n{}".format(
+              "\n".join(POLICY_OPTIONS))
+      },
   }
 
   # pylint: disable=unused-argument
