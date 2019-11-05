@@ -32,6 +32,8 @@ class TestBulkComplete(base.Test):
     return [rest_facade.create_asmt(audit, status=object_states.DEPRECATED)
             for _ in xrange(5)]
 
+  @pytest.mark.skip(
+      reason="Bulk Complete flow is currently disabled and will be reworked.")
   @pytest.mark.parametrize("page", [audit_page, my_assessments_page])
   def test_bulk_complete_state_for_author(
       self, login_as_creator, audit, deprecated_asmts, soft_assert, page,
@@ -46,6 +48,8 @@ class TestBulkComplete(base.Test):
         soft_assert, deprecated_asmts, page)
     soft_assert.assert_expectations()
 
+  @pytest.mark.skip(
+      reason="Bulk Complete flow is currently disabled and will be reworked.")
   @pytest.mark.parametrize("page", [audit_page, my_assessments_page])
   @pytest.mark.parametrize(
       "audit_role, asmt_role, bulk_complete_btn_visibility",

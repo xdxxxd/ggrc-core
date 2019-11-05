@@ -21,7 +21,6 @@ import {
 import {
   isSnapshotRelated,
 } from '../../plugins/utils/snapshot-utils';
-import {requestAssessmentsCount} from '../../plugins/utils/bulk-update-service';
 import {isAllowed} from '../../permission';
 import template from './templates/tree-actions.stache';
 import pubSub from '../../pub-sub';
@@ -121,23 +120,6 @@ export default canComponent.extend({
       },
       showBulkComplete: {
         value: false,
-        get(lastSetValue, setAttrValue) {
-          setAttrValue(lastSetValue); // set default value before request
-
-          if (this.attr('isAssessmentOnAudit')) {
-            const parentInstance = this.attr('parentInstance');
-            const relevant = {
-              type: parentInstance.type,
-              id: parentInstance.id,
-              operation: 'relevant',
-            };
-
-            requestAssessmentsCount(relevant)
-              .then((count) => {
-                setAttrValue(count > 0);
-              });
-          }
-        },
       },
     },
     parentInstance: null,
