@@ -165,11 +165,9 @@
       {{#if instance.sox_302_enabled}}
         <div class="row-fluid hidable">
           <div class="alert alert-nomargin sox-302-enabled__note">
+            By checking this checkbox:
             <p>
-              By checking this checkbox:
-              <p>
-                - Assignees will have read only permissions upon assessment completion.
-              </p>
+              - Assignees will have read only permissions upon assessment completion.
             </p>
           </div>
         </div>

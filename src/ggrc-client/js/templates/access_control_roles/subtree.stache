@@ -10,10 +10,10 @@
   {{#instance}}
   <td>{{name}}</td>
   <td>{{#if read}}Yes{{else}}No{{/if}}</td>
-  <td>
+  <td class="update-permissions">
     {{#if update}}
       Yes
-     {{else}}
+    {{else}}
       No
     {{/if}}
     {{#eq(instance.object_type, "Assessment")}}
