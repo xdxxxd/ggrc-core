@@ -3,9 +3,9 @@
 
 """Test for indexing of snapshotted objects"""
 
+import ddt
 from sqlalchemy import exc as sa_exc
 from sqlalchemy.sql.expression import tuple_
-import ddt
 
 from ggrc import db
 from ggrc import models
