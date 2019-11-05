@@ -64,6 +64,16 @@ class Types(object):
       "Risk",
   }
 
+  @classmethod
+  def internal_types(cls):
+    """Return set of internal type names."""
+    return cls.all - cls.external
+
+  @classmethod
+  def external_types(cls):
+    """Return set of external type names."""
+    return cls.external
+
 
 class Rules(object):
   """Returns a dictionary of rules

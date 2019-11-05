@@ -58,35 +58,55 @@ PARENT_PROPERTY_TMPL = u"{parent_type}-{parent_id}"
 CHILD_PROPERTY_TMPL = u"{child_type}-{child_id}"
 
 
-def _get_custom_attribute_dict():
-  """Get fulltext indexable properties for all snapshottable objects
+def _gather_cads_of(class_names, accumulator,
+                    cad_model=models.CustomAttributeDefinition):
+  # type: (set, dict, models.CustomAttributeDefinition) -> None
+  """Gather CADs related to provided object types.
+
+  Gather custom attribute definitions (of `cad_model` type) related to
+  objects of `class_names` types and store them into `accumulator`.
 
   Args:
-    None
+    class_names (Set[str]): Set of string class names.
+    accumulator (Dict[str, list]): Accumulator where to store gathered CADs.
+      Keys are object names and values are lists of CADs.
+    cad_model (db.Model): Model of custom attribute definitions to query.
+      Defaults to models.CustomAttributeDefinition.
+  """
+  class_definition_names = {
+      getattr(all_models, class_name)._inflector.table_singular: class_name
+      for class_name in class_names}
+  if not class_definition_names:
+    return
+
+  cad_q = cad_model.query.filter(
+      cad_model.definition_type.in_(class_definition_names.keys()),
+  ).options(
+      orm.undefer('title'),
+  )
+
+  for cad in cad_q:
+    accumulator[class_definition_names[cad.definition_type]].append(cad)
+
+
+def _get_custom_attribute_dict():
+  # type: () -> Dict[str, List[models.CustomAttributeDefinition]]
+  """Get fulltext indexable properties for all snapshottable objects.
+
+  Build dictionary representing mapping between object types and related
+  custom attribute definitions. Dictionary's keys are object class names and
+  values are lists of CustomAttributeDefinitions.
+
   Returns:
-    custom_attribute_definitions dict - representing dictionary of custom
-                                        attribute definition attributes.
+    Dictionary containing list of CustomAttributeDefinitions per class name.
   """
   # pylint: disable=protected-access
-  cadef_klass_names = {
-      getattr(all_models, c)._inflector.table_singular: c for c in Types.all
-  }
-
-  query = models.CustomAttributeDefinition.query.filter(
-      models.CustomAttributeDefinition.definition_type.in_(
-          cadef_klass_names.keys()
-      )
-  ).options(orm.undefer('title'))
   cads = defaultdict(list)
-  for cad in query:
-    cads[cadef_klass_names[cad.definition_type]].append(cad)
-  query = models.ExternalCustomAttributeDefinition.query.filter(
-      models.CustomAttributeDefinition.definition_type.in_(
-          cadef_klass_names.keys()
-      )
-  ).options(orm.undefer('title'))
-  for cad in query:
-    cads[cadef_klass_names[cad.definition_type]].append(cad)
+
+  _gather_cads_of(Types.internal_types(), cads)
+  _gather_cads_of(Types.external_types(), cads,
+                  cad_model=models.ExternalCustomAttributeDefinition)
+
   return cads
 
 
