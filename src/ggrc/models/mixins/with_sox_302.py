@@ -24,9 +24,8 @@ class WithSOX302Flow(object):  # pylint: disable=too-few-public-methods
           "display_name": "SOX 302 assessment workflow",
           "description": (
               "Allowed values are:\n"
-              "YES (Verification step will be skipped if only positive "
-              "answers are given for the assessment. Specify negative answers "
-              "at column 'Custom attributes')\n"
+              "YES (Assignees will have read only permissions upon "
+              "assessment completion.)\n"
               "NO (Standard Assessment flow will be used)"
           ),
           "mandatory": False,

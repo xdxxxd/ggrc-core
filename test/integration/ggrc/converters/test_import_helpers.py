@@ -506,6 +506,7 @@ class TestGetObjectColumnDefinitions(TestCase):
         "Issue Type",
         "Ticket Title",
         "Ticket Tracker Integration",
+        "SOX 302 assessment workflow",
     }
     expected_fields = {
         "mandatory": {
