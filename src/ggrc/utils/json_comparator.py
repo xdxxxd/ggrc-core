@@ -32,9 +32,10 @@ def dicts_equal(dict1, dict2):
     if str(field).startswith("_"):
       # Debug information does not related to model
       continue
-    if field in dict2:
-      if not fields_equal(dict2[field], value):
-        return False
+    if field not in dict2:
+      return False
+    if not fields_equal(dict2[field], value):
+      return False
   return True
 
 

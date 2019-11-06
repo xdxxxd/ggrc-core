@@ -651,7 +651,7 @@ class Resource(ModelView):
   def _validate_readonly_fields(obj, src):
     if hasattr(obj, "is_updating_readonly_fields"):
       if obj.is_updating_readonly_fields(src):
-        raise MethodNotAllowed(
+        raise Forbidden(
             description="Some fields in the object is in a read-only "
                         "mode for Assignees")
 

@@ -194,7 +194,7 @@ class Assessment(Assignable,
       "operationally",
       "reminderType",
       "issue_tracker",
-      "map: Snapshots",
+      "map: Snapshot",
       "map: Issue",
   )
 

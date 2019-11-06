@@ -5,7 +5,7 @@
 
 import sqlalchemy as sa
 
-from werkzeug.exceptions import MethodNotAllowed
+from werkzeug import exceptions
 
 from ggrc import db
 from ggrc.fulltext import mixin
@@ -56,11 +56,11 @@ def check_mapping_permissions(obj1, obj2):
   error_message = "Mapping of this objects is not allowed"
   if isinstance(obj1, WithCustomRestrictions):
     if obj1.is_mapping_restricted(obj2):
-      raise MethodNotAllowed(description=error_message)
+      raise exceptions.Forbidden(description=error_message)
 
   if isinstance(obj2, WithCustomRestrictions):
     if obj2.is_mapping_restricted(obj1):
-      raise MethodNotAllowed(description=error_message)
+      raise exceptions.Forbidden(description=error_message)
 
 
 def _handle_obj_delete(mapper, connection, target):
