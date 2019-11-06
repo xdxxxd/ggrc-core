@@ -58,36 +58,32 @@ function redirectToHistory() {
 }
 
 function generateCycle(workflow) {
-  let dfd = new $.Deferred();
-  let cycle;
+  return new Promise((resolve, reject) => {
+    confirm({
+      modal_title: 'Confirm',
+      modal_confirm: 'Proceed',
+      skip_refresh: true,
+      button_view: '/workflows/confirm-start-buttons.stache',
+      content_view: '/workflows/confirm-start.stache',
+      instance: workflow,
+    }, (params) => {
+      let data = {};
 
-  confirm({
-    modal_title: 'Confirm',
-    modal_confirm: 'Proceed',
-    skip_refresh: true,
-    button_view: '/workflows/confirm-start-buttons.stache',
-    content_view: '/workflows/confirm-start.stache',
-    instance: workflow,
-  }, (params, option) => {
-    let data = {};
+      loForEach(params, function (item) {
+        data[item.name] = item.value;
+      });
 
-    loForEach(params, function (item) {
-      data[item.name] = item.value;
-    });
+      const cycle = createCycle(workflow);
 
-    cycle = createCycle(workflow);
-
-    cycle.save().then((cycle) => {
-      // Cycle created. Workflow started.
-      setTimeout(() => {
-        dfd.resolve();
-        redirectToCycle(cycle);
-      }, 250);
-    });
-  }, function () {
-    dfd.reject();
+      cycle.save().then((cycle) => {
+        // Cycle created. Workflow started.
+        setTimeout(() => {
+          resolve();
+          redirectToCycle(cycle);
+        }, 250);
+      });
+    }, reject);
   });
-  return dfd;
 }
 
 async function updateStatus(instance, status) {
