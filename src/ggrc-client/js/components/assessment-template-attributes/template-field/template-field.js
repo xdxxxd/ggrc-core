@@ -117,7 +117,7 @@ export default canComponent.extend({
       }
 
       canBatch.start();
-      this.attr('field.multi_choice_options', 'Not Empty,Empty');
+      this.attr('field.multi_choice_options', 'Not empty,Empty');
       this.attr('field.multi_choice_mandatory', '0,0');
       canBatch.stop();
     },

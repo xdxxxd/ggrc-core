@@ -104,14 +104,14 @@ describe('template-field component', function () {
         spyOn(viewModel, 'denormalizeMandatory').and
           .returnValue([
             {value: 'Empty'},
-            {value: 'Not Empty'},
+            {value: 'Not empty'},
           ]);
 
         event();
         expect(viewModel.initTextFieldOptions).toHaveBeenCalled();
         expect(viewModel.attr('attrs').serialize()).toEqual([
           {value: 'Empty'},
-          {value: 'Not Empty'},
+          {value: 'Not empty'},
         ]);
       });
 
