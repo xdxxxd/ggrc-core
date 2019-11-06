@@ -76,6 +76,7 @@ import {
 } from '../../plugins/utils/models-utils';
 import {getUrlParams, changeHash} from '../../router';
 import {getPageInstance} from '../../plugins/utils/current-page-utils';
+import {refreshAll} from '../../models/refresh_queue';
 
 export default canControl.extend({
   defaults: {
@@ -234,7 +235,7 @@ export default canControl.extend({
           instance.load_custom_attribute_definitions &&
           instance.load_custom_attribute_definitions(),
           instance.custom_attribute_values ?
-            instance.refresh_all('custom_attribute_values') :
+            refreshAll(instance, ['custom_attribute_values']) :
             []
         );
       }

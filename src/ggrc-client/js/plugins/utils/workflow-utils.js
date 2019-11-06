@@ -10,6 +10,7 @@ import Cycle from '../../models/business-models/cycle';
 import Stub from '../../models/stub';
 import {changeHash} from '../../router';
 import {getMappingList} from '../../models/mappers/mappings';
+import {refreshAll} from '../../models/refresh_queue';
 
 /**
  * A set of properties which describe minimum information
@@ -101,7 +102,7 @@ async function updateStatus(instance, status) {
 
 function refreshTGRelatedItems(taskGroup) {
   refreshPermissions();
-  taskGroup.refresh_all_force('workflow', 'context');
+  refreshAll(taskGroup, ['workflow', 'context'], true);
 }
 
 function getRelevantMappingTypes(instance) {
