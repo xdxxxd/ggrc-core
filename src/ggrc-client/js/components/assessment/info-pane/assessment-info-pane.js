@@ -92,7 +92,7 @@ export default canComponent.extend({
   viewModel: canMap.extend({
     define: {
       verifiers: {
-        get: function () {
+        get() {
           let acl = this.attr('instance.access_control_list');
           let verifierRoleId = this.attr('_verifierRoleId');
           let verifiers;
@@ -122,7 +122,7 @@ export default canComponent.extend({
         },
       },
       showProcedureSection: {
-        get: function () {
+        get() {
           return this.instance.attr('test_plan') ||
             this.instance.attr('issue_tracker.issue_url');
         },
@@ -135,19 +135,19 @@ export default canComponent.extend({
         Value: canList,
       },
       assessmentTypeNameSingular: {
-        get: function () {
+        get() {
           let type = this.attr('instance.assessment_type');
           return businessModels[type].title_singular;
         },
       },
       assessmentTypeNamePlural: {
-        get: function () {
+        get() {
           let type = this.attr('instance.assessment_type');
           return businessModels[type].title_plural;
         },
       },
       assessmentTypeObjects: {
-        get: function () {
+        get() {
           let self = this;
           return this.attr('mappedSnapshots')
             .filter(function (item) {
@@ -157,7 +157,7 @@ export default canComponent.extend({
         },
       },
       relatedInformation: {
-        get: function () {
+        get() {
           let self = this;
           return this.attr('mappedSnapshots')
             .filter(function (item) {
@@ -177,7 +177,7 @@ export default canComponent.extend({
       },
       editMode: {
         type: 'boolean',
-        get: function () {
+        get() {
           if (this.attr('instance.archived')) {
             return false;
           }
@@ -196,30 +196,30 @@ export default canComponent.extend({
             .constructor.editModeStatuses;
           return editModeStatuses.includes(instanceStatus);
         },
-        set: function () {
+        set() {
           this.onStateChange({state: 'In Progress', undo: false});
         },
       },
       isEditDenied: {
-        get: function () {
+        get() {
           return !isAllowedFor('update', this.attr('instance')) ||
             this.attr('instance.archived');
         },
       },
       isAllowedToMap: {
-        get: function () {
+        get() {
           let audit = this.attr('instance.audit');
           return !!audit && isAllowedFor('read', audit);
         },
       },
       isRestricted: {
-        get: function () {
+        get() {
           return this.attr('isEditDenied')
             || this.attr('instance._is_sox_restricted');
         },
       },
       isSemiRestrictedOnStatus: {
-        get: function () {
+        get() {
           const isSemiRestrictedStatus = SEMI_RESTRICTED_STATUSES
             .includes(this.attr('instance.status'))
             && this.attr('instance._is_sox_restricted');
@@ -228,13 +228,13 @@ export default canComponent.extend({
         },
       },
       isReuseNeeded: {
-        get: function () {
+        get() {
           return !this.attr('isSemiRestrictedOnStatus');
         },
       },
       instance: {},
       isInfoPaneSaving: {
-        get: function () {
+        get() {
           if (this.attr('isUpdatingRelatedItems') ||
             this.attr('isLoadingComments')) {
             return false;
@@ -249,7 +249,7 @@ export default canComponent.extend({
         },
       },
       noItemsText: {
-        get: function () {
+        get() {
           return this.attr('isSemiRestrictedOnStatus') ? 'None' : '';
         },
       },

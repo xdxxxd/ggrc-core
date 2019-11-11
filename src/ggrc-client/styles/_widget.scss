@@ -229,9 +229,8 @@
     padding-bottom: 2px;
   }
 
-  .update-permissions {
-    display: flex;
-    align-items: center;
+  .update-permissions > * {
+    vertical-align: middle;
   }
 
   .tree-action-list {
