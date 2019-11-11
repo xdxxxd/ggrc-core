@@ -239,8 +239,6 @@ class CustomAttributeDefinition(CustomAttributeDefinitionBase):
   _include_links = [
       'definition_type',
       'definition_id',
-      'attribute_type',
-      'multi_choice_options',
       'multi_choice_mandatory',
       'mandatory',
       'helptext',
@@ -252,6 +250,9 @@ class CustomAttributeDefinition(CustomAttributeDefinitionBase):
                            read=True,
                            create=False,
                            update=False),
+      reflection.Attribute("title", update=False),
+      reflection.Attribute("attribute_type", update=False),
+      reflection.Attribute("multi_choice_options", update=False),
       *_include_links)
 
   @property
