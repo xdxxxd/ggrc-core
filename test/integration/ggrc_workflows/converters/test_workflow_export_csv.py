@@ -38,6 +38,19 @@ class TestExportEmptyTemplate(TestCase):
     self.assertEqual(response.status_code, 200)
     self.assertIn("Title*", response.data)
 
+  def test_unit_tip(self):
+    """Test Workflow's Unit column has hint correctly"""
+    data = {
+        "export_to": "csv",
+        "objects": [{"object_name": "Workflow", "fields": "all"}]
+    }
+
+    response = self.client.post("/_service/export_csv",
+                                data=dumps(data), headers=self.headers)
+    self.assertEqual(response.status_code, 200)
+    self.assertIn("Allowed values are:\n{}".format(
+        "\n".join(Workflow.VALID_UNITS)), response.data)
+
   def test_multiple_objects(self):
     """Test empty exports for all workflow object in one query."""
     data = [

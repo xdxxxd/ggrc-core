@@ -83,7 +83,8 @@ class Issue(Roleable,
       "status": {
           "display_name": "State",
           "mandatory": False,
-          "description": "Options are: \n{} ".format('\n'.join(VALID_STATES))
+          "description": "Allowed values are:\n{} ".format(
+              '\n'.join(VALID_STATES))
       },
       "audit": None,
       "documents_file": None,
