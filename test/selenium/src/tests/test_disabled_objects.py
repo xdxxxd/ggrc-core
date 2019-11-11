@@ -9,7 +9,7 @@ import pytest
 from lib import base, browsers, factory, url
 from lib.constants import element, objects
 from lib.entities import entity
-from lib.service import webui_service, webui_facade
+from lib.service import rest_facade, webui_service, webui_facade
 
 
 @pytest.fixture()
@@ -91,20 +91,20 @@ class TestDisabledObjects(base.Test):
     actual_conditions["same_url_for_new_tab"] = (old_tab.url == new_tab.url)
     assert expected_conditions == actual_conditions
 
-  def test_user_cannot_update_custom_attribute(
-      self, gcads_for_control, control, controls_service
-  ):
+  @pytest.mark.parametrize('obj', ["control", "risk"], indirect=True)
+  def test_user_cannot_update_custom_attribute(self, obj, selenium,
+                                               soft_assert):
     """Tests that user cannot update custom attribute."""
-    expected_conditions = {"same_url_for_new_tab": True,
-                           "controls_ca_editable": False}
-    actual_conditions = copy.deepcopy(expected_conditions)
-
-    actual_conditions["controls_ca_editable"] = (
-        controls_service.has_gca_inline_edit(
-            control, ca_type=element.AdminWidgetCustomAttributes.RICH_TEXT))
-    old_tab, new_tab = browsers.get_browser().windows()
-    actual_conditions["same_url_for_new_tab"] = (old_tab.url == new_tab.url)
-    assert expected_conditions == actual_conditions
+    cad = rest_facade.create_gcad(
+        definition_type=obj.type.lower(),
+        attribute_type=element.AdminWidgetCustomAttributes.RICH_TEXT)
+    soft_assert.expect(
+        not factory.get_cls_webui_service(objects.get_plural(
+            obj.type))().has_gca_inline_edit(obj, ca_title=cad.title),
+        "GCA field should not be editable.")
+    soft_assert.expect(webui_facade.are_tabs_urls_equal(),
+                       "Tabs urls should be equal.")
+    soft_assert.assert_expectations()
 
   def test_user_cannot_update_predefined_field(self, control, selenium):
     """Tests that user cannot update predefined field."""

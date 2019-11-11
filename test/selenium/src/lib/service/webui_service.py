@@ -479,14 +479,9 @@ class BaseWebUiService(base.WithBrowser):
     obj_page = self.open_info_page_of_obj(obj)
     obj_page.fill_global_cas_inline(custom_attributes)
 
-  def has_gca_inline_edit(self, obj, ca_type):
+  def has_gca_inline_edit(self, obj, ca_title):
     """Checks if edit_inline is open for selected gca."""
-    obj_page = self.open_info_page_of_obj(obj)
-    ca_title = next(
-        x for x in obj_page.get_custom_attributes().keys()
-        if ca_type.lower() in x.lower()
-    )
-    return obj_page.has_ca_inline_edit(ca_title)
+    return self.open_info_page_of_obj(obj).has_ca_inline_edit(ca_title)
 
   def edit_obj_via_edit_modal_from_info_page(self, obj):
     """Open generic widget of object, open edit modal from drop down menu.
