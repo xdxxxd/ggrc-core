@@ -71,7 +71,7 @@ export default Cacheable.extend({
       attr_name: 'modified_by',
       order: 71,
     }, {
-      attr_title: 'Enable SOX 302 assessment workflow',
+      attr_title: 'SOX 302 assessment workflow',
       attr_name: 'sox_302_enabled',
       order: 72,
     }],
