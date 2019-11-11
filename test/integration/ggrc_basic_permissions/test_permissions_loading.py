@@ -127,6 +127,12 @@ class TestPermissionsLoading(TestMemcacheBase):
 
   def test_add_acl(self):
     """Permissions are recalculated only for assigned people on PUT."""
+    # Memcache should be cleared first since it contains permissions for
+    # both users on startup due to setUp method which creates users with
+    # `UserRole`. Creation of `UserRole` causes cached permissions
+    # recalculation.
+    self.memcache_client.delete("permissions:list")
+
     pa_role = all_models.AccessControlRole.query.filter(
         all_models.AccessControlRole.object_type == "Program",
         all_models.AccessControlRole.name == "Program Managers"

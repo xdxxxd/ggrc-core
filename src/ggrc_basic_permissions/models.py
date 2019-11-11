@@ -7,13 +7,15 @@ from logging import getLogger
 from sqlalchemy.orm import backref
 
 from ggrc import db
-from ggrc.models import all_models
 from ggrc.builder import simple_property
+from ggrc.models import all_models
 from ggrc.models.context import Context
 from ggrc.models.person import Person
 from ggrc.models.mixins import base
+from ggrc.models.mixins import rest_handable
 from ggrc.models.mixins import Base, Described
 from ggrc.models import reflection
+from ggrc import utils
 
 from ggrc_basic_permissions.contributed_roles import (
     DECLARED_ROLE,
@@ -115,7 +117,13 @@ def _Context_eager_query(cls, **kwargs):
 Context.eager_query = classmethod(_Context_eager_query)
 
 
-class UserRole(base.ContextRBAC, Base, db.Model):
+class UserRole(rest_handable.WithDeleteHandable,
+               rest_handable.WithPostHandable,
+               base.ContextRBAC,
+               Base,
+               db.Model):
+  """`UserRole` model represents mapping between `User` and `Role` models."""
+
   __tablename__ = 'user_roles'
 
   # Override default from `ContextRBAC` to provide backref
@@ -172,6 +180,30 @@ class UserRole(base.ContextRBAC, Base, db.Model):
       context_related = ''
     return u'{0} <-> {1}{2}'.format(
         self.person.display_name, self.role.display_name, context_related)
+
+  def _recalculate_permissions_cache(self):
+    """Recalculate permissions cache for user `UserRole` relates to."""
+    with utils.benchmark("Invalidate permissions cache for user in UserRole"):
+      from ggrc_basic_permissions import load_permissions_for
+      load_permissions_for(self.person, expire_old=True)
+
+  def handle_delete(self):
+    """Handle `model_deleted` signals invoked on `UserRole` instance.
+
+    HTTP DELTE method on `UserRole` model triggers following actions:
+      - Recalculate permissions cache for user the `UserRole` object is
+        related to.
+    """
+    self._recalculate_permissions_cache()
+
+  def handle_post(self):
+    """Handle `model_posted` signals invoked on `UserRole` instance.
+
+    HTTP POST method on `UserRole` model triggers following actions:
+      - Recalculate permissions cache for user the `UserRole` object is
+        related to.
+    """
+    self._recalculate_permissions_cache()
 
 
 all_models.register_model(Role)
