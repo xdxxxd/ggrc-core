@@ -11,11 +11,13 @@
   <td>{{name}}</td>
   <td>{{#if read}}Yes{{else}}No{{/if}}</td>
   <td class="update-permissions">
-    {{#if update}}
-      Yes
-    {{else}}
-      No
-    {{/if}}
+    <span>
+      {{#if update}}
+        Yes
+      {{else}}
+        No
+      {{/if}}
+    </span>
     {{#eq(instance.object_type, "Assessment")}}
       {{#eq(instance.name, "Assignees")}}
         <i class="fa fa-question-circle" rel="tooltip"
