@@ -63,7 +63,10 @@ export default canComponent.extend({
       try {
         const [loadedTemplate] = await loadObjectsByStubs(
           [templateStub],
-          ['custom_attribute_definitions']
+          [
+            'custom_attribute_definitions',
+            'sox_302_enabled',
+          ]
         );
 
         instance.attr('template', templateStub);

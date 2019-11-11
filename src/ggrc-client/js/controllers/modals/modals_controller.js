@@ -52,6 +52,7 @@ import '../../components/custom-attributes-modal/custom-attributes-modal';
 import '../../components/modal-autocomplete/modal-autocomplete';
 import '../../components/people-autocomplete-dropdown/people-autocomplete-dropdown';
 import '../../components/person-autocomplete-field/person-autocomplete-field';
+import '../../components/assessment-templates/assessment-template-save-button/assessment-template-save-button';
 import {
   bindXHRToButton,
   bindXHRToDisableElement,
@@ -472,7 +473,10 @@ export default canControl.extend({
       this.triggerSave(el, ev);
     },
 
-  "{footerEl} a.btn[data-toggle='modal-submit'] click": function (el, ev) {
+  "{footerEl} a.btn[data-toggle='modal-submit'] submit": ' submit-form',
+  "{footerEl} a.btn[data-toggle='modal-submit'] click": ' submit-form',
+
+  ' submit-form': function (el, ev) {
     let options = this.options;
     let instance = options.attr('instance');
     let oldData = options.attr('oldData');

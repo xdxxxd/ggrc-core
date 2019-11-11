@@ -20,6 +20,7 @@ from ggrc.models import relationship
 from ggrc.models.mixins import base
 from ggrc.models.mixins import clonable
 from ggrc.models.mixins import issue_tracker
+from ggrc.models.mixins import with_sox_302
 from ggrc.models.exceptions import ValidationError
 from ggrc.models.reflection import AttributeInfo
 from ggrc.models import reflection
@@ -56,6 +57,7 @@ class AssessmentTemplate(assessment.AuditRelationship,
                          mixins.Slugged,
                          mixins.Stateful,
                          clonable.MultiClonable,
+                         with_sox_302.WithSOX302Flow,
                          Indexed,
                          db.Model):
   """A class representing the assessment template entity.
@@ -251,10 +253,19 @@ class AssessmentTemplate(assessment.AuditRelationship,
               "and trailing spaces are ignored.\n"
               "list of attribute values: Comma separated list, only used if "
               "attribute type is 'Dropdown'. Prepend '(a)' if the value has a "
-              "mandatory attachment and/or (c) if the value requires a "
+              "mandatory attachment and/or '(c)' if the value requires a "
               "mandatory comment.\n\n"
-              "Limitations: Dropdown values can not start with either '(a)' or"
-              "'(c)' and attribute names can not contain commas ','."
+              "list of attribute values (only if 'SOX 302 Assessment "
+              "workflow' = YES):\n"
+              "- for Dropdown: Comma separated list. Prepend '(a)' if the "
+              "value has a mandatory attachment and/or '(c)' if the value "
+              "requires a mandatory comment and/or '(n)' if the value should "
+              "be treated as negative answer.\n"
+              "- for Text and Reach text: options possible are 'Not empty' or "
+              "'Empty'. Prepend '(n)' if the value should be treated as "
+              "negative answer.\n\n"
+              "Limitations: Dropdown values can not start with either '(a)', "
+              "'(c)' or '(n)' and attribute names can not contain commas ','."
           ),
       },
   }
@@ -308,6 +319,7 @@ class AssessmentTemplate(assessment.AuditRelationship,
         "default_people": self.default_people,
         "modified_by": login.get_current_user(),
         "status": self.status,
+        "sox_302_enabled": self.sox_302_enabled,
     }
     assessment_template_copy = AssessmentTemplate(**data)
     db.session.add(assessment_template_copy)

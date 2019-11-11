@@ -1,0 +1,30 @@
+{{!
+    Copyright (C) 2019 Google Inc.
+    Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+}}
+
+{{#if invalidDefinitions.allPositiveAnswers.length}}
+  <div class="negative-response-warning">
+    <p>
+      Pay attention that the following attributes do not have the negative answers selected.
+    </p>
+    <ul>
+      {{#invalidDefinitions.allPositiveAnswers}}
+        <li>{{this}}</li>
+      {{/invalidDefinitions.allPositiveAnswers}}
+    </ul>
+  </div>
+{{/if}}
+
+{{#if invalidDefinitions.noPositiveAnswers.length}}
+  <div class="negative-response-warning">
+    <p>
+      Pay attention that the following attributes do not have the positive answers selected.
+    </p>
+    <ul>
+      {{#invalidDefinitions.noPositiveAnswers}}
+        <li>{{this}}</li>
+      {{/invalidDefinitions.noPositiveAnswers}}
+    </ul>
+  </div>
+{{/if}}

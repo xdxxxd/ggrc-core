@@ -22,6 +22,8 @@ const CONTENT_VIEW_WARNING =
 const BUTTON_VIEW_CONFIRM = `${path}/modals/confirm_button.stache`;
 const CONTENT_VIEW_CONFIRM = `${path}/modals/confirm.stache`;
 const BUTTON_CREATE_PROPOSAL = `${path}/modals/create_proposal.stache`;
+const ASSESSMENT_TEMPLATE_FOOTER = // eslint-disable-line
+  `${path}/modals/assessment_template_footer.stache`;
 
 /**
  * Shows a warning popup within given options. If a user confirms
@@ -234,4 +236,5 @@ export {
   BUTTON_VIEW_SAVE_CANCEL_DELETE,
   BUTTON_VIEW_CONFIRM_CANCEL,
   BUTTON_CREATE_PROPOSAL,
+  ASSESSMENT_TEMPLATE_FOOTER,
 };

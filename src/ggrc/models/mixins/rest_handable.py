@@ -45,6 +45,32 @@ class WithPutAfterCommitHandable(object):
       model.handle_put_after_commit(kwargs["obj"], kwargs["event"])
 
 
+class WithPutBeforeCommitHandable(object):
+  """Mixin that add PUT before commit handler."""
+  __lazy_init__ = True
+
+  def handle_put_before_commit(self, initial_state):
+    """Handle `model_put_before_commit` signals.
+
+    Abstract method that handles `model_put_before_commit` signals. Should be
+    implemented in derived classes.
+
+    Args:
+      initial_state (collections.namedtuple): Named tuple representing initial
+        state of the object method is called on.
+    """
+    raise NotImplementedError
+
+  @classmethod
+  def init(cls, model):
+    """Init handler."""
+    # pylint: disable=unused-variable,unused-argument
+    @signals.Restful.model_put_before_commit.connect_via(model)
+    def model_put_before_commit(*args, **kwargs):
+      """PUT before commit handler."""
+      model.handle_put_before_commit(kwargs["obj"], kwargs["initial_state"])
+
+
 class WithDeleteHandable(object):
   """Mixin that adds DELETE handler"""
   __lazy_init__ = True

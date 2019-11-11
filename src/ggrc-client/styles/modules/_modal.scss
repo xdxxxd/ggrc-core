@@ -82,6 +82,19 @@
       }
     }
   }
+
+  .negative-response-warning {
+    margin-bottom: 24px;
+
+    ul {
+      li {
+        list-style-type: none;
+        font-weight: bold;
+        @extend %oneline;
+      }
+    }
+  }
+
   .reset-form {
     margin-bottom: 10px;
     margin-right: 4px;
@@ -231,6 +244,31 @@
         .assessment-procedure-message__checkbox {
           margin: 0 4px 0 0;
         }
+      }
+    }
+    .sox-302-enabled {
+      &__checkbox-content {
+        display: flex;
+        align-items: center;
+        margin-top: 8px;
+
+        .sox-302-label {
+          font-size: 14px;
+          margin-bottom: 0;
+
+          &__checkbox {
+            margin: 3px 6px 7px 0;
+          }
+        }
+
+        .sox-302-icon {
+          margin: 0 0 2px 10px;
+        }
+      }
+
+      &__note {
+        width: fit-content;
+        margin-top: 8px;
       }
     }
     label {

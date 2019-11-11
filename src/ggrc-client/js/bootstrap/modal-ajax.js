@@ -11,6 +11,7 @@ import {
   warning,
   BUTTON_VIEW_SAVE_CANCEL_DELETE,
   BUTTON_CREATE_PROPOSAL,
+  ASSESSMENT_TEMPLATE_FOOTER,
 } from '../plugins/utils/modals';
 import {
   hasWarningType,
@@ -29,6 +30,18 @@ import DeleteModalControl from '../controllers/modals/delete_modal_controller';
 
 let originalModalShow = $.fn.modal.Constructor.prototype.show;
 let originalModalHide = $.fn.modal.Constructor.prototype.hide;
+
+const getButtonView = (modelName, isProposal) => {
+  if (isProposal) {
+    return BUTTON_CREATE_PROPOSAL;
+  }
+
+  if (modelName === 'AssessmentTemplate') {
+    return ASSESSMENT_TEMPLATE_FOOTER;
+  }
+
+  return BUTTON_VIEW_SAVE_CANCEL_DELETE;
+};
 
 let handlers = {
   modal: function ($target, $trigger, option) {
@@ -109,6 +122,7 @@ let handlers = {
     let instance;
     let modalTitle;
     let contentView;
+    const modelName = $trigger.attr('data-object-singular');
 
     if ($trigger.attr('data-object-id') === 'page') {
       instance = getPageInstance();
@@ -125,7 +139,7 @@ let handlers = {
       (instance ? 'Edit ' : 'New ') +
       ($trigger.attr('data-object-singular-override') ||
       model.title_singular ||
-      $trigger.attr('data-object-singular'));
+      modelName);
 
     if (isProposal) {
       modalTitle = `Proposal for ${model.title_singular}`;
@@ -143,9 +157,7 @@ let handlers = {
       new_object_form: !$trigger.attr('data-object-id'),
       object_params: objectParams,
       extendNewInstance,
-      button_view: isProposal ?
-        BUTTON_CREATE_PROPOSAL :
-        BUTTON_VIEW_SAVE_CANCEL_DELETE,
+      button_view: getButtonView(modelName, isProposal),
       model: model,
       oldData: {
         status: instance && instance.status, // status before changing
