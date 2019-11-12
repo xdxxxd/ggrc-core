@@ -5,7 +5,7 @@ import re
 
 from dateutil import parser, tz
 
-from lib import factory, url, base
+from lib import factory, url, base, cache, constants
 from lib.constants import objects, messages, element, regex, locator
 from lib.element import tab_containers
 from lib.entities import entity
@@ -13,8 +13,7 @@ from lib.page import dashboard, widget_bar, export_page
 from lib.page.modal import unified_mapper, request_review
 from lib.page.widget import generic_widget, object_modal
 from lib.utils import (
-    selenium_utils, file_utils, conftest_utils, test_utils, ui_utils,
-    string_utils)
+    selenium_utils, file_utils, test_utils, ui_utils, string_utils)
 
 
 class BaseWebUiService(base.WithBrowser):
@@ -114,10 +113,19 @@ class BaseWebUiService(base.WithBrowser):
     return self._create_list_objs(
         entity_factory=self.entities_factory_cls, list_scopes=[scope])[0]
 
+  def get_lhn_accordion(self, object_name):
+    """Select relevant section in LHN and return relevant section accordion."""
+    selenium_utils.open_url(url.Urls().dashboard)
+    lhn_menu = dashboard.Header(self._driver).open_lhn_menu()
+    # if object button not visible, open this section first
+    if object_name in cache.LHN_SECTION_MEMBERS:
+      method_name = factory.get_method_lhn_select(object_name)
+      lhn_menu = getattr(lhn_menu, method_name)()
+    return getattr(lhn_menu, constants.method.SELECT_PREFIX + object_name)()
+
   def create_obj_and_get_obj(self, obj):
     """Creates obj via LHN and returns a created obj."""
-    object_name = objects.get_plural(obj.type)
-    conftest_utils.get_lhn_accordion(self._driver, object_name).create_new()
+    self.get_lhn_accordion(objects.get_plural(obj.type)).create_new()
     self.submit_obj_modal(obj)
     return self.build_obj_from_page()
 

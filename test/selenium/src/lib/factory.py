@@ -47,8 +47,8 @@ def get_method_lhn_select(object_name):
  Args:
     object_name (basestring)
  """
-  return constants.method.SELECT_PREFIX \
-      + cache.LHN_SECTION_MEMBERS[object_name]
+  return (constants.method.SELECT_PREFIX +
+          cache.LHN_SECTION_MEMBERS[object_name])
 
 
 def get_method_select(object_name):
