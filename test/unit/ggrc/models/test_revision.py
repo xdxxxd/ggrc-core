@@ -9,6 +9,7 @@ import unittest
 import ddt
 import mock
 
+import ggrc
 from ggrc.models import all_models
 from ggrc.utils.revisions_diff import builder as revisions_diff
 
@@ -429,3 +430,35 @@ class TestCheckPopulatedContent(unittest.TestCase):
         revisions_diff.is_identical_revision(None, context_1, context_2),
         expected_result
     )
+
+  @ddt.data({
+      'id': 2676L, 'object_type': u'Assessment', 'object_id': 19L,
+      'base_id': 2676L, 'modified_by_id': None,
+      'created_at': datetime.datetime(2019, 10, 17, 9, 44, 5),
+      'updated_at': datetime.datetime(2019, 10, 17, 9, 44, 5),
+      'display_name': '', 'type': 'AccessControlList', 'context_id': None,
+      'ac_role_id': 73L, 'parent_id': None, 'parent_id_nn': 0L,
+      'modified_by': None
+  },
+      {
+      u'parent_id': None, u'modified_by_id': None, u'object_id': 19,
+      u'created_at': u'2019-10-17T09:44:05', u'base_id': 2676,
+      u'updated_at': u'2019-10-17T09:44:05', u'object_type': u'Assessment',
+      u'display_name': u'', u'type': u'AccessControlList', u'context_id': None,
+      u'ac_role_id': 73, u'id': 2676, u'parent_id_nn': 0, u'modified_by': None
+  })
+  @ddt.unpack
+  def test_normalize_content(self, **content):
+    """Test converting new revision data"""
+    expected_result = {u'parent_id': None, u'modified_by_id': None,
+                       u'object_id': 19, u'created_at': u'2019-10-17T09:44:05',
+                       u'base_id': 2676, u'updated_at': u'2019-10-17T09:44:05',
+                       u'object_type': u'Assessment', u'display_name': u'',
+                       u'type': u'AccessControlList', u'context_id': None,
+                       u'ac_role_id': 73, u'id': 2676, u'parent_id_nn': 0,
+                       u'modified_by': None}
+
+    # pylint: disable=protected-access
+    result = ggrc.utils.revisions_diff.builder._normalize_content(content)
+
+    self.assertEqual(result, expected_result)
