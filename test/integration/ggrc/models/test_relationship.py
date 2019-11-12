@@ -147,15 +147,15 @@ class TestRelationship(TestCase):
       p2 = factories.ProgramFactory()
       p1_id = p1.id
       p2_id = p2.id
-      r1_id = factories.RelationshipFactory(source=p1, destination=p2).id
+      factories.RelationshipFactory(source=p1, destination=p2)
 
     resp, r2 = self.object_generator.generate_relationship(
         all_models.Program.query.get(p2_id),
         all_models.Program.query.get(p1_id)
     )
 
-    self.assert201(resp)
-    self.assertEqual(r1_id, r2.id)
+    self.assert200(resp)
+    self.assertIsNone(r2)
 
   def test_reuse_relationship_on_post_not_swapped(self):
     """Test relationship is reused for 2nd POST with not swapped src/dst"""
@@ -164,15 +164,15 @@ class TestRelationship(TestCase):
       p2 = factories.ProgramFactory()
       p1_id = p1.id
       p2_id = p2.id
-      r1_id = factories.RelationshipFactory(source=p1, destination=p2).id
+      factories.RelationshipFactory(source=p1, destination=p2)
 
     resp, r2 = self.object_generator.generate_relationship(
         all_models.Program.query.get(p1_id),
         all_models.Program.query.get(p2_id)
     )
 
-    self.assert201(resp)
-    self.assertEqual(r1_id, r2.id)
+    self.assert200(resp)
+    self.assertIsNone(r2)
 
 
 @ddt.ddt
@@ -312,7 +312,7 @@ class TestExternalRelationship(TestCase):
         headers=self.HEADERS)
     self.assert200(response)
     self.assertEqual(
-        response.json[0][1]["relationship"]["is_external"], True)
+        response.json[0][1]["relationship"]["is_external"], False)
 
   def test_delete_ext_user_ext_relationship(self):
     """Validation external app user deletes external relationship."""
@@ -447,5 +447,4 @@ class TestExternalRelationship(TestCase):
     self.api.set_user(all_models.Person.query.get(self.person_ext_id))
     relationship = all_models.Relationship.query.get(rel.id)
     response = self.api.delete(relationship)
-    print response.json
     self.assert200(response)
