@@ -68,6 +68,14 @@ class AutoStatusChangeable(object):
                   statusable.Statusable.START_STATE
               },
           },
+          'ignored_attributes': {
+              'notes',
+              'description',
+          },
+          'regular_attributes': {
+              'updated_at',
+              'modified_by_id'
+          }
       },
       'Snapshot': {
           'key': lambda _: 'ALL',
@@ -285,6 +293,30 @@ class AutoStatusChangeable(object):
         break
 
   @classmethod
+  def track_evidence_attrs_edit(cls, obj, related_settings):
+    """Track edit in evidence object.
+    Args:
+      obj: `evidence.Evidence` instance on which to perform check.
+      related_settings: track fields map for `obj`
+    Returns:
+      bool: True if changed `obj` important attrs and
+        related object need status changes else False
+    """
+    is_acl_changed = obj.has_acr_acl_changed('Admin')
+    tracked_attrs = (
+        {
+            attr.key for attr in inspect(obj).attrs
+        }.difference(
+            related_settings["ignored_attributes"]
+        ).difference(
+            related_settings["regular_attributes"]
+        )
+    )
+    tracked_attrs_changed = any(
+        cls._has_changes(obj, attr) for attr in tracked_attrs)
+    return is_acl_changed or tracked_attrs_changed
+
+  @classmethod
   def adjust_status_before_flush(cls, alchemy_session,
                                  flush_context, instances):
     """Reset status of AutoStatusChangeable objects with _need_status_reset.
@@ -386,9 +418,8 @@ class AutoStatusChangeable(object):
         target_object._reset_to_status = target_object.PROGRESS_STATE
 
     @signals.Restful.model_put.connect_via(evidence.Evidence)
-    @signals.Restful.model_deleted.connect_via(evidence.Evidence)
     def handle_evidence_relationship(sender, obj=None, src=None, service=None):
-      """Handle PUT and DELETE of Evidence.
+      """Handle PUT of Evidence.
 
         See blinker library documentation for other parameters (all necessary).
 
@@ -398,13 +429,42 @@ class AutoStatusChangeable(object):
         src: The original PUT JSON dictionary.
         service: The instance of Resource handling the PUT request.
       """
-      # pylint: disable=unused-argument,unused-variable,protected-access
+      # pylint: disable=unused-argument,unused-variable
+      _handle_evidence_action(obj, "PUT")
+
+    @signals.Restful.model_deleted.connect_via(evidence.Evidence)
+    def handle_evidence_delete(sender, obj=None, src=None, service=None):
+      """Handle DELETE of Evidence.
+
+        See blinker library documentation for other parameters (all necessary).
+
+      Args:
+        sender: class that sends event
+        obj (db.model): Object on which we will perform manipulation.
+        src: The original PUT JSON dictionary.
+        service: The instance of Resource handling the PUT request.
+      """
+      # pylint: disable=unused-argument,unused-variable
+      _handle_evidence_action(obj, "DELETE")
+
+    def _handle_evidence_action(obj=None, action="PUT"):
+      """Handle PUT and DELETE of Evidence.
+
+
+      Args:
+        obj (db.model): Object on which we will perform manipulation.
+        action: str param which contains name of the request method
+      """
+      # pylint: disable=protected-access
       auto_changeables = obj.related_objects(_types={model.__name__})
       related_settings = cls.RELATED_OBJ_STATUS_MAPPING.get(obj.type)
       key = related_settings['key'](obj)
       monitor_states = related_settings['mappings'].get(key, set())
+      need_status_change = cls.track_evidence_attrs_edit(
+          obj, related_settings
+      ) if action == "PUT" else True
       for auto_changeable in auto_changeables:
-        if auto_changeable.status in monitor_states:
+        if auto_changeable.status in monitor_states and need_status_change:
           auto_changeable._reset_to_status = auto_changeable.PROGRESS_STATE
           auto_changeable.change_status()
 
