@@ -370,6 +370,48 @@ class TestGlobalCustomAttributes(ProductTestCase):
     ]
     self.assertEqual([cads[definition_model].id], resp_cad_ids)
 
+  @ddt.data(
+      ("title", "new_title", "Text", None, False),
+      ("attribute_type", "Rich Text", "Text", None, False),
+      ("helptext", "new helptext", "Text", None, True),
+      ("placeholder", "new placeholder", "Text", None, True),
+      ("mandatory", True, "Text", None, True),
+      ("multi_choice_options", "new,multi,choice,options",
+       "Dropdown", "old,multi,choice,options", False),
+      ("multi_choice_options", "new,multi,choice,options",
+       "Multiselect", "old,multi,choice,options", False),
+  )
+  @ddt.unpack
+  def test_attribute_update(self, attr_name, new_attr_value,
+                            attribute_type, multi_choice_options, is_editable):
+    """Test editability of {0} which is {2}"""
+    # pylint: disable=too-many-arguments
+    cad = factories.CustomAttributeDefinitionFactory(
+        definition_type="program",
+        attribute_type=attribute_type,
+        multi_choice_options=multi_choice_options,
+    )
+    old_attr_value = getattr(cad, attr_name)
+    response = self.client.get(
+        "/api/custom_attribute_definitions/{}".format(cad.id)
+    )
+    headers, data = response.headers, response.json
+    data["custom_attribute_definition"].update({attr_name: new_attr_value})
+
+    response = self._put(
+        "/api/custom_attribute_definitions/{}".format(cad.id),
+        data,
+        extra_headers={
+            'If-Unmodified-Since': headers["Last-Modified"],
+            'If-Match': headers["Etag"],
+        }
+    )
+    self.assert200(response)
+
+    cad = all_models.CustomAttributeDefinition.query.get(cad.id)
+    is_changed = old_attr_value != getattr(cad, attr_name)
+    self.assertEquals(is_changed, is_editable)
+
 
 class TestOldApiCompatibility(ProductTestCase):
   """Test Legacy CA values API.

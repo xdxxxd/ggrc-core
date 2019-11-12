@@ -311,7 +311,8 @@ class Assessment(Assignable,
       "status": {
           "display_name": "State",
           "mandatory": False,
-          "description": "Options are:\n{}".format('\n'.join(VALID_STATES))
+          "description": "Allowed values are:\n{}".format('\n'.join(
+              VALID_STATES))
       },
       "issue_tracker": {
           "display_name": "Ticket Tracker",

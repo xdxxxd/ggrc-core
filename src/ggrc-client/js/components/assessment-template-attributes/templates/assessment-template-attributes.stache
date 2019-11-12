@@ -5,29 +5,39 @@
 
 <div class="assessment-template-attributes">
   <div class="template-grid__row assessment-template-attributes__header">
-    <div class="template-grid__row-item">
+    <div class="template-grid__row-item template-grid__row-item_attr-title">
       <h6>Attribute Title</h6>
     </div>
     <div class="template-grid__row-item template-grid__row-item_attr-type">
       <h6>Attribute type</h6>
     </div>
-    <div class="template-grid__row-item template-grid__row-item_attr-values">
-      <h6>Attribute values</h6>
+    <div class="template-grid__row-item template-grid__row-item-options">
+      <div class="template-grid__row">
+        <div class="template-grid__row-item template-grid__row-item_attr-values">
+          <h6>Attribute values</h6>
+        </div>
+        <div class="template-grid__row-item template-grid__row-item_checkbox">
+          <h6>Evidence File Required</h6>
+        </div>
+        <div class="template-grid__row-item template-grid__row-item_checkbox">
+          <h6>Evidence URL Required</h6>
+        </div>
+        <div class="template-grid__row-item template-grid__row-item_checkbox">
+          <h6>Comment required</h6>
+        </div>
+        {{#if instance.sox_302_enabled}}
+          <div class="template-grid__row-item template-grid__row-item_checkbox">
+            <h6>Is Negative Response</h6>
+          </div>
+        {{/if}}
+      </div>
     </div>
-    <div class="template-grid__row-item template-grid__row-item_checkbox">
-      <h6>Evidence File Required</h6>
-    </div>
-    <div class="template-grid__row-item template-grid__row-item_checkbox">
-      <h6>Evidence URL Required</h6>
-    </div>
-    <div class="template-grid__row-item template-grid__row-item_checkbox">
-      <h6>Comment required</h6>
-    </div>
-    <div class="template-grid__row-item template-grid__row-item_checkbox">
+    <div class="template-grid__row-item template-grid__row-item_mandatory-checkbox">
       <h6>Mandatory</h6>
     </div>
     {{#if editMode}}
-      <div class="template-grid__row-item"></div>
+      <div class="template-grid__row-item  template-grid__row-item_remove-item">
+      </div>
     {{/if}}
   </div>
   {{#if editMode}}
@@ -41,6 +51,7 @@
       {{#fields}}
         <div class="assessment-template-attributes__attribute-item sortable-item" {{canData 'field'}}>
           <template-field
+            instance:from="instance"
             field:from="{.}"
             types:from="types"
             on:remove="fieldRemoved" />

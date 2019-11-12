@@ -41,28 +41,6 @@ class TestCADProposalsApi(base.BaseTestProposalApi):
                      program.proposals[0].content["custom_attribute_values"])
     self.assertEqual(1, len(program.comments))
 
-  def test_change_cad_title(self):
-    """Test program revision after changing CAD's title."""
-    # pylint: disable=protected-access
-    new_title = "new title"
-    with factories.single_commit():
-      program = factories.ProgramFactory(title="1")
-      cad = factories.CustomAttributeDefinitionFactory(
-          definition_type="program")
-      factories.CustomAttributeValueFactory(
-          custom_attribute=cad,
-          attributable=program,
-          attribute_value="text")
-
-    self.api.put(cad, {"title": new_title})
-
-    revision = all_models.Revision.query.filter(
-        all_models.Revision.resource_type == "Program").order_by(
-        all_models.Revision.id.desc()).first()
-    self.assertEqual(
-        revision._content['custom_attribute_definitions'][0]['title'],
-        new_title)
-
   @ddt.data(
       ("1", "1", None),
       ("0", "0", None),

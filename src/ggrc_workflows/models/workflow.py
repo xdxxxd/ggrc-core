@@ -350,8 +350,8 @@ class Workflow(roleable.Roleable,
       },
       "unit": {
           "display_name": "Unit",
-          "description": "Allowed values for\n'Unit' are:\n{}"
-                         "\nor '-' for None".format("\n".join(VALID_UNITS)),
+          "description": "Allowed values are:\n{}".format(
+              "\n".join(VALID_UNITS)),
       },
       "is_verification_needed": {
           "display_name": "Need Verification",

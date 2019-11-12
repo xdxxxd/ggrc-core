@@ -76,40 +76,6 @@ class TestCADReindex(query_helper.WithQueryApi, ggrc.TestCase):
 
   @ddt.data(
       ("assessment", "Checkbox", "no"),
-      ("assessment", "Text", ""),
-      ("audit", "Checkbox", "no"),
-      ("audit", "Text", ""),
-  )
-  @ddt.unpack
-  def test_reindex_cad_edit(self, definition_type, attribute_type, value):
-    """Test reindex after CAD editing"""
-    model_name = cad.get_inflector_model_name_dict()[definition_type]
-    model_id = factories.get_model_factory(model_name)().id
-    expected = [model_id]
-    title = "test_title %s %s" % (definition_type, attribute_type)
-    cad_model = models.all_models.CustomAttributeDefinition
-    response = self.api.post(cad_model, [
-        self._create_cad_body(
-            title, attribute_type, definition_type, model_name
-        )
-    ])
-    self.assert200(response)
-
-    cad_obj = db.session.query(cad_model).filter_by(title=title).first()
-    title_edited = "%s_edited" % title
-    self.api.put(cad_obj, {"title": title_edited})
-    self.assert200(response)
-
-    ids = self.simple_query(
-        model_name,
-        expression=[title_edited, "=", value],
-        type_="ids",
-        field="ids"
-    )
-    self.assertItemsEqual(ids, expected)
-
-  @ddt.data(
-      ("assessment", "Checkbox", "no"),
       ("assessment", "Multiselect", ""),
       ("assessment", "Text", ""),
       ("audit", "Checkbox", "no"),

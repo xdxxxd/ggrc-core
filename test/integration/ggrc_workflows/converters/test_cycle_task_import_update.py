@@ -5,7 +5,7 @@
 updates via import"""
 
 # pylint: disable=invalid-name
-from collections import OrderedDict
+import collections
 
 from os.path import join
 from os.path import abspath
@@ -13,7 +13,6 @@ from os.path import dirname
 from freezegun import freeze_time
 
 import ddt
-
 from ggrc.models import all_models
 from ggrc import db
 from ggrc.access_control import role
@@ -21,7 +20,7 @@ from ggrc.converters import errors
 from ggrc_workflows.models import Cycle
 from ggrc_workflows.models import CycleTaskGroupObjectTask
 from ggrc_workflows.models import Workflow
-from integration.ggrc_workflows.models import factories
+from integration.ggrc_workflows.models import factories as wf_factories
 from integration.ggrc.models import factories as ggrc_factories
 from integration.ggrc import TestCase
 from integration.ggrc.access_control import acl_helper
@@ -57,7 +56,8 @@ class TestCycleTaskImportUpdate(BaseTestCycleTaskImportUpdate):
   IMPORTABLE_COLUMN_NAMES = [
       "Summary",
       "Task Description",
-      "Start Date", "Due Date",
+      "Start Date",
+      "Due Date",
       "State",
       "Task Assignees",
       "Task Secondary Assignees",
@@ -68,8 +68,7 @@ class TestCycleTaskImportUpdate(BaseTestCycleTaskImportUpdate):
     self.wf_generator = WorkflowsGenerator()
     self.object_generator = ObjectGenerator()
     self.random_objects = self.object_generator.generate_random_objects(2)
-    _, self.person_1 = self.object_generator.generate_person(
-        user_role="Administrator")
+    self.person_1 = ggrc_factories.PersonFactory()
     self.ftime_active = "2016-07-01"
     self.ftime_historical = "2014-05-01"
     self._create_test_cases_data()
@@ -84,8 +83,15 @@ class TestCycleTaskImportUpdate(BaseTestCycleTaskImportUpdate):
     """Test cycle task update via import with correct data"""
     self._generate_cycle_tasks()
     with freeze_time(self.ftime_active):
-      self.import_file("cycle_task_correct.csv")
-      self._cmp_tasks(self.expected_cycle_task_correct)
+      cycle_task = wf_factories.CycleTaskGroupObjectTaskFactory(
+          description="task active description 1")
+      self.import_data(collections.OrderedDict([
+          ("object_type", "Cycle Task Group Object Task"),
+          ("Code*", cycle_task.slug),
+          ("description", "task active description 1"),
+      ]))
+
+    self._cmp_tasks(self.expected_cycle_task_correct)
 
   def test_cycle_task_warnings(self):
     """Test cycle task update via import with data which is the reason of
@@ -96,7 +102,7 @@ class TestCycleTaskImportUpdate(BaseTestCycleTaskImportUpdate):
         'Cycle Task': {
             'block_warnings': {
                 errors.ONLY_IMPORTABLE_COLUMNS_WARNING.format(
-                    line=7,
+                    line=2,
                     columns=", ".join(self.IMPORTABLE_COLUMN_NAMES)
                 )
             },
@@ -105,7 +111,24 @@ class TestCycleTaskImportUpdate(BaseTestCycleTaskImportUpdate):
     }
 
     with freeze_time(self.ftime_active):
-      response = self.import_file("cycle_task_warnings.csv", safe=False)
+      person = ggrc_factories.PersonFactory()
+      cycle_task = wf_factories.CycleTaskGroupObjectTaskFactory(
+          title="task active title134567890")
+      ct_data = collections.OrderedDict([
+          ("object_type", "Cycle Task Group Object Task"),
+          ("Code*", cycle_task.slug),
+          ("Summary*", "task active title1-Updated"),
+          ("Task Description", "task active title1 description"),
+          ("Start Date", self.ftime_historical),
+          ("Due Date", self.ftime_active),
+          ("Actual Finish Date", self.ftime_active),
+          ("Actual Verified Date", self.ftime_active),
+          ("State", "Assigned"),
+          ("Task Assignees", person.email),
+          ("Task Secondary Assignees", person.email),
+      ])
+
+      response = self.import_data(ct_data)
       self._check_csv_response(response, expected_warnings)
       self._cmp_tasks(self.expected_cycle_task_correct)
 
@@ -115,11 +138,19 @@ class TestCycleTaskImportUpdate(BaseTestCycleTaskImportUpdate):
     self._generate_cycle_tasks()
     with freeze_time(self.ftime_active):
       _, creator = self.object_generator.generate_person(user_role="Creator")
-      response = self.import_file("cycle_task_correct.csv",
+
+      cycle_task = wf_factories.CycleTaskGroupObjectTaskFactory(
+          description="task active description 1")
+      ct_data = collections.OrderedDict([
+          ("object_type", "Cycle Task Group Object Task"),
+          ("Code*", cycle_task.slug),
+      ])
+      response = self.import_data(ct_data,
                                   person=creator, safe=False)
       self._check_csv_response(response, self.expected_permission_error)
       # Cycle tasks' data shouldn't be changed in test DB after import run from
       # non-admin user
+
       expected_cycle_task_permission_error = {}
       expected_cycle_task_permission_error.update(
           self.generated_cycle_tasks_active)
@@ -130,14 +161,14 @@ class TestCycleTaskImportUpdate(BaseTestCycleTaskImportUpdate):
   def _cmp_tasks(self, expected_ctasks):
     """Compare tasks values from argument's list and test DB."""
     for ctask in db.session.query(CycleTaskGroupObjectTask).all():
-      if ctask.slug not in expected_ctasks:
+      if ctask.title not in expected_ctasks:
         continue
-      exp_task = expected_ctasks[ctask.slug]
+      exp_task = expected_ctasks[ctask.title]
       for attr, val in exp_task.iteritems():
         self.assertEqual(
             str(getattr(ctask, attr, None)),
             val,
-            "attr {} value for {} not expected".format(attr, ctask.slug)
+            "attr {} value for {} not expected".format(attr, ctask.title)
         )
 
   # pylint: disable=too-many-arguments
@@ -152,7 +183,6 @@ class TestCycleTaskImportUpdate(BaseTestCycleTaskImportUpdate):
       self.wf_generator.generate_task_group_object(tg, random_object)
       _, cycle = self.wf_generator.generate_cycle(wf)
       self.wf_generator.activate_workflow(wf)
-
       for exp_slug, exp_task in cycle_tasks.iteritems():
         obj = db.session.query(CycleTaskGroupObjectTask).filter_by(
             slug=exp_slug
@@ -542,7 +572,7 @@ class TestCycleTaskImportUpdateAssignee(BaseTestCycleTaskImportUpdate):
   """Test cases for update assignee column on import cycle tasks"""
 
   def setUp(self):
-    self.instance = factories.CycleTaskGroupObjectTaskFactory()
+    self.instance = wf_factories.CycleTaskGroupObjectTaskFactory()
     self.assignee = ggrc_factories.PersonFactory()
     self.s_assignee = ggrc_factories.PersonFactory()
     self.query = CycleTaskGroupObjectTask.query.filter(
@@ -562,7 +592,7 @@ class TestCycleTaskImportUpdateAssignee(BaseTestCycleTaskImportUpdate):
     assignees = list(self.get_persons_for_role_name(
         self.query.first(), "Task Assignees"))
     self.assertFalse(assignees)
-    response = self.import_data(OrderedDict([
+    response = self.import_data(collections.OrderedDict([
         ("object_type", alias),
         ("Code*", self.instance.slug),
         ("Task Assignees*", self.assignee.email),
@@ -589,7 +619,7 @@ class TestCycleTaskImportUpdateAssignee(BaseTestCycleTaskImportUpdate):
     assignees = list(
         self.get_persons_for_role_name(self.query.first(), "Task Assignees"))
     self.assertFalse(assignees)
-    response = self.import_data(OrderedDict([
+    response = self.import_data(collections.OrderedDict([
         ("object_type", alias),
         ("Code*", self.instance.slug),
         ("Task Assignees*", self.assignee.email),
@@ -624,7 +654,7 @@ class TestCycleTaskImportComments(TestCase):
 
   def setUp(self):
     with ggrc_factories.single_commit():
-      self.task = factories.CycleTaskGroupObjectTaskFactory()
+      self.task = wf_factories.CycleTaskGroupObjectTaskFactory()
 
   @ddt.data(
       ('comment 1', 1),
@@ -638,7 +668,7 @@ class TestCycleTaskImportComments(TestCase):
         source_type=self.task.type,
         destination_type='Comment').count()
 
-    self.import_data(OrderedDict([
+    self.import_data(collections.OrderedDict([
         ("object_type", self.task.type),
         ("Code*", self.task.slug),
         ("Comments", comment)]))

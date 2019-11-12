@@ -155,6 +155,9 @@
               <p>
                 - Assignees will have read only permissions upon assessment completion.
               </p>
+              <p>
+                - Verification step will be skipped if only positive answers are given for the assessment.
+              </p>
             </div>
           </div>
         {{/if}}

@@ -123,8 +123,7 @@ class IssueTrackedWithUrl(IssueTracked):
       "issue_type": "Issue Type",
       "enabled": {
           "display_name": "Ticket Tracker Integration",
-          "description": "Turn on integration with Ticket tracker, "
-                         "On / Off options are possible",
+          "description": "Allowed values are:\nOn\nOff",
       },
   }
 
@@ -139,8 +138,7 @@ class IssueTrackedWithConfig(IssueTracked):
       "issue_type": "Issue Type",
       "enabled": {
           "display_name": "Ticket Tracker Integration",
-          "description": "Turn on integration with Ticket tracker, "
-                         "On / Off options are possible",
+          "description": "Allowed values are:\nOn\nOff",
       },
   }
 

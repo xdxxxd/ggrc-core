@@ -12,7 +12,7 @@ from lib.entities import entities_factory
 from lib.page import dashboard
 from lib.page.modal import unified_mapper
 from lib.page.widget import (generic_widget, object_modal, import_page,
-                             related_proposals, version_history)
+                             related_proposals, version_history, widget_base)
 from lib.service import (webui_service, rest_service, rest_facade,
                          admin_webui_service)
 from lib.utils import selenium_utils, ui_utils, string_utils
@@ -316,7 +316,7 @@ def get_available_templates_list():
   return page.open_download_template_modal().available_templates_list
 
 
-def edit_gca(selenium, old_ca_type, new_ca_type):
+def edit_gca(selenium, ca_type):
   """Create Global Custom attribute via rest api and edit it via web ui.
 
   Returns:
@@ -324,12 +324,12 @@ def edit_gca(selenium, old_ca_type, new_ca_type):
   """
   new_ca = rest_facade.create_gcad(definition_type=objects.get_singular(
       random.choice(objects.OBJS_SUPPORTING_MANDATORY_CA)),
-      attribute_type=old_ca_type, mandatory=True)
-  expected_ca = entities_factory.CustomAttributeDefinitionsFactory().create(
-      attribute_type=new_ca_type, definition_type=new_ca.definition_type,
-      helptext=element.Common.TITLE_EDITED_PART, mandatory=False)
-  if new_ca_type in (element.AdminWidgetCustomAttributes.TEXT,
-                     element.AdminWidgetCustomAttributes.RICH_TEXT):
+      attribute_type=ca_type, mandatory=True)
+  expected_ca = copy.deepcopy(new_ca)
+  expected_ca.update_attrs(helptext=element.Common.TITLE_EDITED_PART,
+                           mandatory=False)
+  if ca_type in (element.AdminWidgetCustomAttributes.TEXT,
+                 element.AdminWidgetCustomAttributes.RICH_TEXT):
     expected_ca.update_attrs(placeholder=element.Common.TITLE_EDITED_PART)
   actual_ca = admin_webui_service.CustomAttributeWebUiService(
       selenium).edit_custom_attribute(new_ca, expected_ca)
@@ -411,6 +411,21 @@ def export_objects(path_to_export_dir, obj_type, src_obj=None,
   widget = (ui_service.open_widget_of_mapped_objs(src_obj) if src_obj
             else ui_service.open_obj_dashboard_tab())
   return ui_service.exported_objs_via_tree_view(path_to_export_dir, widget)
+
+
+def soft_assert_gca_fields_disabled_for_editing(soft_assert, ca_type):
+  """Soft assert that following fields are disabled in 'Edit Custom Attribute
+  Definition' modal: 'Title', 'Attribute type', 'Possible values'.
+  """
+  modal = widget_base.EditCustomAttributeModal()
+  soft_assert.expect(not modal.title_field.enabled,
+                     "'Title' field should be disabled.")
+  soft_assert.expect(not modal.attribute_type_field.enabled,
+                     "'Attribute type' field should be disabled.")
+  if ca_type in (element.AdminWidgetCustomAttributes.MULTISELECT,
+                 element.AdminWidgetCustomAttributes.DROPDOWN):
+    soft_assert.expect(not modal.multi_choice_options_field.enabled,
+                       "'Possible values' field should be disabled.")
 
 
 def soft_assert_techenv_mapped_to_programs(

@@ -82,6 +82,19 @@
       }
     }
   }
+
+  .negative-response-warning {
+    margin-bottom: 24px;
+
+    ul {
+      li {
+        list-style-type: none;
+        font-weight: bold;
+        @extend %oneline;
+      }
+    }
+  }
+
   .reset-form {
     margin-bottom: 10px;
     margin-right: 4px;

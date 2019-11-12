@@ -103,6 +103,13 @@
               </div>
             </div>
 
+            <div class="row-fluid wrap-row">
+              <div class="span4">
+                <h6>Enable SOX 302 assessment workflow</h6>
+                <input type="checkbox" {{#if instance.sox_302_enabled}}checked{{/if}} disabled>
+              </div>
+            </div>
+
             {{#if instance.can_use_issue_tracker}}
               <div class="row-fluid wrap-row">
                 <div class="expanded-area">

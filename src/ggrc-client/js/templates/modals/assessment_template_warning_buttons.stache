@@ -1,0 +1,20 @@
+{{!
+    Copyright (C) 2019 Google Inc.
+    Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+}}
+
+<div class="row-fluid">
+  <div class="span6">
+    &nbsp;
+  </div>
+  <div class="span6">
+    <div class="confirm-buttons">
+      <a class="btn btn-small btn-white" data-dismiss="modal" href="javascript://">
+        Continue Editing
+      </a>
+      <a class="btn btn-small btn-green" data-toggle="confirm" href="javascript://">
+        Confirm
+      </a>
+    </div>
+  </div>
+</div>

@@ -11,19 +11,25 @@
     @extend %input-block-level;
   }
 
-  &__section {
-    &-add-field {
-      flex-grow: 2.7;
-    }
+  &__button-add-field {
+    flex-grow: 2;
+    margin-left: 20px;
+  }
+
+  &__options {
+    display: flex;
 
     &-values {
+      flex-grow: 0.4;
+      display: flex;
+      align-content: flex-start;
+      flex-wrap: wrap;
+
       input {
-        float: left;
-        width: 80%;
+        width: 70%;
       }
 
       i.fa {
-        float: left;
         margin: 6px 0 0 6px;
         opacity: 0.2;
         &:hover {

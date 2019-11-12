@@ -1,6 +1,7 @@
 # Copyright (C) 2019 Google Inc.
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 # pylint: disable=too-many-lines
+# pylint: disable=too-many-public-methods
 """Tests exported csv files"""
 from os.path import abspath, dirname, join
 
@@ -65,19 +66,55 @@ class TestExportEmptyTemplate(TestCase):
     self.assertIn("Title*", response.data)
     self.assertIn("Policy", response.data)
 
-  @ddt.data("Assessment", "Issue", "Person", "Audit", "Product")
-  def test_custom_attr_dd(self, model):
-    """Test if custom attribute Dropdown type has hint for {}."""
+  @ddt.data(
+      ("Assessment", "Dropdown"),
+      ("Assessment", "Multiselect"),
+      ("Issue", "Dropdown"),
+      ("Issue", "Multiselect"),
+      ("Person", "Dropdown"),
+      ("Person", "Multiselect"),
+      ("Audit", "Dropdown"),
+      ("Audit", "Multiselect"),
+      ("Product", "Dropdown"),
+      ("Product", "Multiselect"),
+  )
+  @ddt.unpack
+  def test_ca_dropdown_multiselect(self, model, attribute):
+    """Test if CAD {1} type has hint for {0}."""
     with factories.single_commit():
       multi_options = "option_1,option_2,option_3"
       factories.CustomAttributeDefinitionFactory(
           definition_type=model.lower(),
-          attribute_type="Dropdown",
+          attribute_type=attribute,
           multi_choice_options=multi_options,
       )
+
     data = {
         "export_to": "csv",
         "objects": [{"object_name": model, "fields": "all"}]
+    }
+    response = self.client.post("/_service/export_csv",
+                                data=dumps(data), headers=self.headers)
+    self.assertIn("Allowed values are:\n{}".format(
+        multi_options.replace(',', '\n')), response.data)
+
+  @ddt.data("Dropdown", "Multiselect")
+  def test_lca_multichoice_hint(self, attribute):
+    """Test if Local CAD {} has hint for Assessment ."""
+    with factories.single_commit():
+      assessment = factories.AssessmentFactory()
+      multi_options = "option_1,option_2,option_3"
+      factories.CustomAttributeDefinitionFactory(
+          definition_type="assessment",
+          title="LCAD ",
+          attribute_type=attribute,
+          definition_id=assessment.id,
+          multi_choice_options=multi_options,
+      )
+
+    data = {
+        "export_to": "csv",
+        "objects": [{"object_name": "Assessment", "fields": "all"}]
     }
     response = self.client.post("/_service/export_csv",
                                 data=dumps(data), headers=self.headers)
@@ -96,7 +133,6 @@ class TestExportEmptyTemplate(TestCase):
             {"object_name": "Contract", "fields": "all"},
         ],
     }
-
     response = self.client.post("/_service/export_csv",
                                 data=dumps(data), headers=self.headers)
     self.assertEqual(response.status_code, 200)
@@ -117,7 +153,6 @@ class TestExportEmptyTemplate(TestCase):
             {"object_name": object_name, "fields": "all"},
         ],
     }
-
     response = self.client.post("/_service/export_csv",
                                 data=dumps(data), headers=self.headers)
     self.assertEqual(response.status_code, 200)
@@ -138,7 +173,6 @@ class TestExportEmptyTemplate(TestCase):
     }
     response = self.client.post("/_service/export_csv",
                                 data=dumps(data), headers=self.headers)
-
     first_mapping_field_pos = response.data.find("map:")
 
     for field in self.TICKET_TRACKER_FIELDS:
@@ -417,6 +451,35 @@ class TestExportSingleObject(TestCase):
     self.assertIn(obj.title, response.data)
     self.assertIn("Review State", response.data)
     self.assertIn("Reviewers", response.data)
+
+  @ddt.data("Assessment", "AssessmentTemplate", "Audit", "Issue")
+  def test_tracker_integration_hint(self, model):
+    """Tests if {} attribute 'Ticket Tracker Integration' has hint expected"""
+    data = {
+        "export_to": "csv",
+        "objects": [
+            {"object_name": model, "fields": ["enabled"]},
+        ],
+    }
+    response = self.client.post("/_service/export_csv",
+                                data=dumps(data), headers=self.headers)
+    self.assertIn("Allowed values are:\nOn\nOff", response.data)
+
+  @ddt.data("Assessment", "AssessmentTemplate", "Audit", "Contract",
+            "Issue", "Program", "Regulation", "Objective", "Policy",
+            "Standard", "Threat", "Requirement")
+  def test_unified_hint_state(self, model):
+    """Tests if {} type attribute state has hint expected"""
+    data = {
+        "export_to": "csv",
+        "objects": [
+            {"object_name": model, "fields": ["title", "status"]},
+        ],
+    }
+    response = self.client.post("/_service/export_csv",
+                                data=dumps(data), headers=self.headers)
+    self.assertIn("Allowed values are:\n{}".format(
+        '\n'.join(inflector.get_model(model).VALID_STATES)), response.data)
 
   def test_and_export_query(self):
     """Test export query with AND clause."""

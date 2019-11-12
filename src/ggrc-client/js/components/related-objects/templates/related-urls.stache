@@ -14,7 +14,7 @@
                          instance:from="instance"
                          placeholder="Add optional description"
                          isEditIconDenied:from="isEditDenied"
-                         on:removeItem=removeUrl(%context)>
+                         on:removeItem="removeUrl({.})">
           <a class="item-edit-control__content__link"
              href="{{normalizeLink link}}"
              target="_blank"
