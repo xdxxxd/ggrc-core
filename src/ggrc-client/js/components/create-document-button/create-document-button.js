@@ -3,7 +3,6 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import makeArray from 'can-util/js/make-array/make-array';
 import canStache from 'can-stache';
 import canMap from 'can-map';
 import canComponent from 'can-component';
@@ -49,14 +48,14 @@ const viewModel = canMap.extend({
           }
         });
 
-        return $.when(
-          this.useExistingDocuments(existingDocuments),
-          this.createDocuments(newFiles)
-        ).then((existingDocs, newDocs) => {
-          return [...makeArray(existingDocs), ...makeArray(newDocs)];
-        });
+        return Promise.all([
+          ...Array.from(this.useExistingDocuments(existingDocuments)),
+          ...Array.from(this.createDocuments(newFiles))]);
       })
-      .then((documents) => this.refreshPermissionsAndMap(documents));
+      .then((documents) => this.refreshPermissionsAndMap(documents))
+      .catch(() => {
+        this.attr('parentInstance').dispatch(DOCUMENT_CREATE_FAILED);
+      });
   },
   checkDocumentsExist(files) {
     return ggrcPost('/api/document/documents_exist', {
@@ -72,31 +71,27 @@ const viewModel = canMap.extend({
     });
   },
   useExistingDocuments(documents) {
-    let dfd = $.Deferred();
-
     if (!documents.length) {
-      return dfd.resolve([]);
+      return Promise.resolve([]);
     }
 
-    this.showConfirm(documents)
-      .then(
-        () => this.makeAdmin(documents),
-        () => dfd.resolve([]))
-      .then(() => {
-        let docs = documents.map((doc) => new Document(doc.object));
-        dfd.resolve(docs);
-      });
-
-    return dfd;
+    return new Promise((resolve) => {
+      this.showConfirm(documents)
+        .then(() => this.makeAdmin(documents))
+        .then(() => {
+          let docs = documents.map((doc) => new Document(doc.object));
+          resolve(docs);
+        })
+        .catch(() => resolve([]));
+    });
   },
   createDocuments(files) {
     if (!files.length) {
-      return $.Deferred().resolve([]);
+      return Promise.resolve([]);
     }
 
     this.attr('parentInstance').dispatch(BEFORE_DOCUMENT_CREATE);
-
-    let dfdDocs = files.map((file) => {
+    return files.map((file) => {
       let instance = new Document({
         title: file.title,
         source_gdrive_id: file.id,
@@ -105,42 +100,35 @@ const viewModel = canMap.extend({
 
       return instance.save();
     });
-
-    return $.when(...dfdDocs)
-      .fail(() => {
-        this.attr('parentInstance').dispatch(DOCUMENT_CREATE_FAILED);
-      });
   },
   refreshPermissionsAndMap(documents) {
-    let dfd = $.Deferred().resolve();
+    let promise = Promise.resolve();
 
     if (documents.length) {
-      dfd = refreshPermissions();
+      promise = refreshPermissions();
     }
-
-    dfd.then(function () {
+    promise.then(() => {
       this.dispatch({
         ...MAP_OBJECTS,
         objects: documents,
       });
-    }.bind(this));
+    });
   },
   showConfirm(documents) {
-    let confirmation = $.Deferred();
-    let parentInstance = this.attr('parentInstance');
-    let docsCount = documents.length;
-    confirm({
-      modal_title: 'Warning',
-      modal_description: `${docsCount}
-        ${docsCount > 1 ? 'files are' : 'file is'}
-        already mapped to GGRC. </br></br>
-        Please proceed to map existing docs to
-        "${parentInstance.type} ${parentInstance.title}"`,
-      button_view: '/modals/confirm-cancel-buttons.stache',
-      modal_confirm: 'Proceed',
-    }, confirmation.resolve, confirmation.reject);
-
-    return confirmation;
+    return new Promise((resolve, reject) => {
+      let parentInstance = this.attr('parentInstance');
+      let docsCount = documents.length;
+      confirm({
+        modal_title: 'Warning',
+        modal_description: `${docsCount}
+          ${docsCount > 1 ? 'files are' : 'file is'}
+          already mapped to GGRC. </br></br>
+          Please proceed to map existing docs to
+          "${parentInstance.type} ${parentInstance.title}"`,
+        button_view: '/modals/confirm-cancel-buttons.stache',
+        modal_confirm: 'Proceed',
+      }, resolve, reject);
+    });
   },
 });
 
