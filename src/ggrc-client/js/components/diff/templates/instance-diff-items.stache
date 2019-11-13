@@ -12,7 +12,7 @@
       {{#currentVal}}
         <div>
           {{#isTextLarge .}}
-            <read-more text:from="."></read-more>
+            <read-more isLazyRender:from="isLazyRender" text:from="."></read-more>
           {{else}}
             {{{.}}}
           {{/isTextLarge}}
@@ -23,7 +23,7 @@
       {{#modifiedVal}}
         <div>
           {{#isTextLarge .}}
-            <read-more text:from="."></read-more>
+            <read-more isLazyRender:from="isLazyRender" text:from="."></read-more>
           {{else}}
             {{{.}}}
           {{/isTextLarge}}
