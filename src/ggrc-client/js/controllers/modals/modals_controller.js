@@ -36,7 +36,7 @@ import '../../components/autocomplete/autocomplete-component';
 import '../../components/external-data-autocomplete/external-data-autocomplete';
 import '../../components/person/person-data';
 import '../../components/rich-text/rich-text';
-import '../../components/modal-wrappers/checkbox-to-list';
+import '../../components/modal-wrappers/assessment-notifications';
 import '../../components/deferred-mapper';
 import '../../components/modal-wrappers/assessment-modal';
 import '../../components/assessment/map-button-using-assessment-type';
