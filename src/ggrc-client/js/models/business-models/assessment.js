@@ -43,6 +43,8 @@ export default Cacheable.extend({
     sox_302_enabled: false,
     send_by_default: true, // notifications when a comment is added
     recipients: 'Assignees,Creators,Verifiers', // user roles to be notified
+    _is_sox_restricted: false, // restrict assignee's permissions if enabled sox302
+    _readonly_fields: [], // readOnly attributes names to restrict permissions
   },
   statuses: ['Not Started', 'In Progress', 'In Review',
     'Verified', 'Completed', 'Deprecated', 'Rework Needed'],

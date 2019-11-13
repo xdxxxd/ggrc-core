@@ -27,9 +27,11 @@ class WithSOX302Flow(rest_handable.WithPutBeforeCommitHandable):
           "display_name": "SOX 302 assessment workflow",
           "description": (
               "Allowed values are:\n"
-              "YES (Verification step will be skipped if only positive "
+              "YES (- Verification step will be skipped if only positive "
               "answers are given for the assessment. Specify negative answers "
-              "at column 'Custom attributes')\n"
+              "at column 'Custom attributes'.\n"
+              "- Assignees will have read only permissions upon "
+              "assessment completion.)\n"
               "NO (Standard Assessment flow will be used)"
           ),
           "mandatory": False,
