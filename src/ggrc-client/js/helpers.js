@@ -681,15 +681,13 @@ canStache.registerHelper('isScopeModel', function (instance, options) {
 });
 
 /*
-  Given an object, it determines if it's a workflow, and if it's a recurring
-  workflow or not.
+  Given an object, it determines if it's a recurring workflow or not.
 
   @param object - the object we want to check
   */
-canStache.registerHelper('if_recurring_workflow', function (object, options) {
+canStache.registerHelper('if_recurring_workflow', (object, options) => {
   object = isFunction(object) ? object() : object;
-  if (object.type === 'Workflow' &&
-      ['day', 'week', 'month'].includes(object.unit)) {
+  if (['day', 'week', 'month'].includes(object.unit)) {
     return options.fn(this);
   }
   return options.inverse(this);
