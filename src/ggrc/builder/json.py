@@ -342,11 +342,6 @@ Result dispatch:
 
 def build_type_query(type_, result_spec):
   model = ggrc.models.get_model(type_)
-  if model is None:
-    logger.warning('get_model from %s is None', type_)
-    logger.warning('result_spec %s', result_spec)
-    return None, None
-
   mapper = model._sa_class_manager.mapper
   columns = []
   columns_indexes = {}
@@ -402,7 +397,6 @@ def build_type_query(type_, result_spec):
 
 
 def build_stub_union_query(queries):  # noqa: C901
-  logger.warning('Queries to build_stub_union_query: %s', queries)
   results = {}
   for (type_, conditions) in queries:
     if isinstance(conditions, (int, long, str, unicode)):
@@ -420,8 +414,11 @@ def build_stub_union_query(queries):  # noqa: C901
   type_column_indexes = {}
   type_queries = {}
   for (type_, result_spec) in results.items():
-    columns_indexes, query = build_type_query(type_, result_spec)
-    if columns_indexes is None or query is None:
+    try:
+      columns_indexes, query = build_type_query(type_, result_spec)
+    except AttributeError:
+      logger.info('type_ to build_type_query: %s', type_)
+      logger.info('result_spec to build_type_query: %s', result_spec)
       continue
     type_column_indexes[type_] = columns_indexes
     type_queries[type_] = query
@@ -518,7 +515,6 @@ def reify_representation(resource, results, type_columns):
 
 
 def publish_representation(resource):
-  logger.warning('Resource to publish_representation: %s', resource)
   queries = gather_queries(resource)
 
   if not queries:
