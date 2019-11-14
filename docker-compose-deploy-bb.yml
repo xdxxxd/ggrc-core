@@ -1,0 +1,14 @@
+# Copyright (C) 2019 Google Inc.
+# Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+
+version: "2"
+services:
+  cleandev:
+    build: 
+      context: .
+      dockerfile: Dockerfile-bb
+    volumes:
+     - ".:/vagrant"
+    environment:
+     - PYTHONDONTWRITEBYTECODE=true
+     - NODE_PATH=/vagrant-dev/node_modules/

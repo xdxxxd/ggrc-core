@@ -9,6 +9,7 @@ declare -r SCRIPTPATH=$( cd "$(dirname "$0")" ; pwd -P )
 
 declare -r DOCKERFILE_DEV="docker-compose.yml"
 declare -r DOCKERFILE_DEPLOY="docker-compose-deploy.yml"
+declare -r DOCKERFILE_DEPLOY_BB="docker-compose-deploy-bb.yml"
 
 cd "${SCRIPTPATH}/../"
 source "$SCRIPTPATH/util.sh"
@@ -31,6 +32,7 @@ Allowed ACTIONs:
 Allowed MODEs:
   dev             (default) Setup application container + db container
   deploy          Setup only application container
+  deploy_bb       Setup only application container FE + BE
 
 PROJECT parameter is cleaned and passed to "--project-name" parameter
 for docker-compose. Default is the current directory name.
@@ -48,7 +50,7 @@ main () {
   MODE="${2:-dev}"
   PROJECT="${3:-$DEFAULT_PROJECT}"
 
-  if [[ "$MODE" != "dev" && "$MODE" != "deploy" ]]; then
+  if [[ "$MODE" != "dev" && "$MODE" != "deploy" && "$MODE" != "deploy_bb" ]]; then
     fail_invalid_usage
   fi
 
@@ -69,6 +71,7 @@ mode_to_docker_compose_yml () {
   case "$MODE" in
     "dev") echo $DOCKERFILE_DEV;;
     "deploy") echo $DOCKERFILE_DEPLOY;;
+    "deploy_bb") echo $DOCKERFILE_DEPLOY_BB;;
   esac
 }
 
