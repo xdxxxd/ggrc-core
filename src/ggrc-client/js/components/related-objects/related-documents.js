@@ -136,22 +136,21 @@ export default canComponent.extend({
       return relationship.save();
     },
     createRelatedDocument: function (data) {
-      let self = this;
       let document = this.createDocument(data);
 
-      this.attr('documents').unshift(document);
       this.attr('isLoading', true);
 
       return this.saveDocument(document)
-        .then(this.createRelationship.bind(this))
-        .then(function () {
-          self.refreshRelatedDocuments();
+        .then((data) => {
+          this.attr('documents').unshift(data);
+          return this.createRelationship(data);
         })
-        .fail(function (err) {
+        .then(() => this.refreshTabCounts())
+        .fail((err) => {
           console.error(`Unable to create related document: ${err}`);
         })
-        .done(function () {
-          self.attr('isLoading', false);
+        .done(() => {
+          this.attr('isLoading', false);
         });
     },
     removeRelatedDocument: async function (document) {
