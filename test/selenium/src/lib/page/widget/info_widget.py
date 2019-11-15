@@ -1003,6 +1003,11 @@ class Risks(page_mixins.WithDisabledProposals,
     """Returns the text of risk type."""
     return self._simple_field("Risk Type").text
 
+  @property
+  def risk_owners(self):
+    """Returns Risk Owners page element."""
+    return self._related_people_list(roles.RISK_OWNERS, self._root)
+
 
 class Threat(InfoWidget):
   """Model for Threat object Info pages and Info panels."""
