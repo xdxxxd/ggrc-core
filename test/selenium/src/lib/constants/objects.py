@@ -177,5 +177,4 @@ def get_obj_type(obj_name):
 EXTERNAL_END_POINTS = [get_singular(x) for x
                        in DISABLED_OBJECTS + (EXTERNAL_CUSTOM_ATTRIBUTES,)]
 
-SINGULAR_TITLE_DISABLED_OBJS = [
-    get_singular(x, title=True) for x in DISABLED_OBJECTS]
+SINGULAR_DISABLED_OBJS = [get_singular(x) for x in DISABLED_OBJECTS]
