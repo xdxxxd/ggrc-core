@@ -1,0 +1,42 @@
+{{!
+    Copyright (C) 2019 Google Inc.
+    Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+}}
+
+<div class="ggrc-form-item__checkbox-item">
+  <label class="input--inline">
+    <input
+      type="checkbox"
+      name="send_by_default"
+      {{#if sendByDefault}}checked{{/if}}
+    />
+    Enable notifications on comments
+  </label>
+</div>
+<div class="ggrc-form-item__checkbox-item">
+  <label class="input--inline">
+    <input
+      type="checkbox" 
+      el:checked:bind="values.Creators"
+    />
+    Notify creators
+  </label>
+</div>
+<div class="ggrc-form-item__checkbox-item">
+  <label class="input--inline">
+    <input
+      type="checkbox"
+      el:checked:bind="values.Assignees"
+    />
+    Notify assignees
+  </label>
+</div>
+<div class="ggrc-form-item__checkbox-item">
+  <label class="input--inline">
+    <input
+      type="checkbox" 
+      el:checked:bind="values.Verifiers" 
+    />
+    Notify verifiers
+  </label>
+</div>
