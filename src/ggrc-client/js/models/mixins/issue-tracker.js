@@ -17,6 +17,10 @@ export default class IssueTracker extends Mixin {
   }
 
   beforeEnqueue() {
+    if (!GGRC.ISSUE_TRACKER_ENABLED) {
+      return;
+    }
+
     issueTrackerUtils.cleanUpBeforeSave(this);
   }
 
