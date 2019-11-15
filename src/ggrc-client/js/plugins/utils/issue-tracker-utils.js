@@ -33,11 +33,11 @@ const isIssueTrackerEnabled = (instance) => {
  * @param {can.Map} instance - instance of model
  */
 const cleanUpBeforeSave = (instance) => {
-  if (!GGRC.ISSUE_TRACKER_ENABLED) {
+  const issueTracker = instance.attr('issue_tracker');
+
+  if (!issueTracker) {
     return;
   }
-
-  const issueTracker = instance.attr('issue_tracker');
 
   if (!issueTracker.attr('enabled')) {
     issueTracker.attr({enabled: false}, true);
