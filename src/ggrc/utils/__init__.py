@@ -468,3 +468,28 @@ def is_deferred_loaded(obj):
     if is_deferred:
       return False
   return True
+
+
+def ordered_string_changed(history, separator=','):
+  """Check if string attr has been semantically modified.
+
+  The attribute is a {separator}-separated string, and the exact order of
+  the items in it does not matter, i.e. it is not considered a change.
+
+  Args:
+    history (sqlalchemy.orm.attributes.History): attribute value history
+    separator: value to split the string
+
+  Returns:
+    True if there was a (semantic) change, False otherwise
+  """
+  old_val = history.deleted[0] if history.deleted else ""
+  new_val = history.added[0] if history.added else ""
+
+  if old_val is None:
+    old_val = ""
+
+  if new_val is None:
+    new_val = ""
+
+  return sorted(old_val.split(separator)) != sorted(new_val.split(separator))

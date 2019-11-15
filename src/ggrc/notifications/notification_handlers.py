@@ -26,6 +26,7 @@ from werkzeug.exceptions import InternalServerError
 
 from ggrc import db
 from ggrc import notifications
+from ggrc import utils
 from ggrc.services import signals
 from ggrc import models
 from ggrc.utils import errors
@@ -264,7 +265,8 @@ def handle_assignable_modified(obj, event=None):  # noqa: ignore=C901
     if val.history.has_changes():
       # the exact order of recipients in the string does not matter, hence the
       # need for an extra check
-      if attr_name == u"recipients" and not _recipients_changed(val.history):
+      if attr_name == u"recipients" and \
+         not utils.ordered_string_changed(val.history):
         continue
       is_changed = True
       break
@@ -358,30 +360,6 @@ def _align_by_ids(items, items2):
       first = next(items)
     if id_two == min_id:
       second = next(items2)
-
-
-def _recipients_changed(history):
-  """Check if the recipients attribute has been semantically modified.
-
-  The recipients attribute is a comma-separated string, and the exact order of
-  the items in it does not matter, i.e. it is not considered a change.
-
-  Args:
-    history (sqlalchemy.orm.attributes.History): recipients' value history
-
-  Returns:
-    True if there was a (semantic) change, False otherwise
-  """
-  old_val = history.deleted[0] if history.deleted else ""
-  new_val = history.added[0] if history.added else ""
-
-  if old_val is None:
-    old_val = ""
-
-  if new_val is None:
-    new_val = ""
-
-  return sorted(old_val.split(",")) != sorted(new_val.split(","))
 
 
 def handle_assignable_created(objects):

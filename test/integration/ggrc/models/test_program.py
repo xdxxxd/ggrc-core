@@ -138,6 +138,28 @@ class TestProgramVersionHistory(TestCase):
         restored,
     )
 
+  def test_restore_review_status(self):
+    """Test empty restore from Version History
+    shouldn't restore review_status"""
+    factories.ReviewFactory(
+        status=all_models.Review.STATES.REVIEWED, reviewable=self.program
+    )
+
+    response = self.api.put(
+        self.program,
+        data={},
+    )
+
+    self.assert200(response)
+    self.program = self.refresh_object(
+        all_models.Program,
+        id_=self.program.id,
+    )
+    self.assertEqual(
+        self.program.review_status,
+        all_models.Review.STATES.REVIEWED
+    )
+
   def test_restore_cav_from_history(self):
     """Test CAV can be restored from Version History"""
 

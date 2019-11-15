@@ -31,6 +31,17 @@ from ggrc.models.mixins import with_comment_created
 from ggrc.notifications import add_notification
 
 
+def handle_recipients_attr(attr, changed):
+  """Add attr to changed if it was changed
+    Args:
+      attr: db.inspect().attr object
+      changed: set of changed attrs
+  """
+  history = attr.load_history()
+  if utils.ordered_string_changed(history):
+    changed.add(attr.key)
+
+
 class Reviewable(rest_handable.WithPutHandable,
                  rest_handable.WithRelationshipsHandable,
                  with_proposal_handable.WithProposalHandable,
@@ -138,12 +149,22 @@ class Reviewable(rest_handable.WithPutHandable,
   ATTRS_TO_IGNORE = {"review", "updated_at", "modified_by", "modified_by_id",
                      "slug", "_access_control_list", "folder"}
 
+  SPECIAL_ATTRS_HANDLERS = {
+      'recipients': handle_recipients_attr,
+  }
+
   def _update_status_on_attr(self):
     """Update review status when reviewable attrs are changed"""
     if (self.review and
             self.review.status != Review.STATES.UNREVIEWED):
-      changed = {a.key for a in db.inspect(self).attrs
-                 if a.history.has_changes()}
+      changed = set()
+      attrs = [attr for attr in db.inspect(self).attrs
+               if attr.history.has_changes()]
+      for attr in attrs:
+        if attr.key in self.SPECIAL_ATTRS_HANDLERS:
+          self.SPECIAL_ATTRS_HANDLERS[attr.key](attr, changed)
+        else:
+          changed.add(attr.key)
 
       if changed - self.ATTRS_TO_IGNORE:
         self._set_review_status_unreviewed()
