@@ -15,6 +15,7 @@ from ggrc import migrate
 from ggrc import settings
 from ggrc.models.maintenance import Maintenance
 from ggrc.models.maintenance import MigrationLog
+from ggrc.models.background_task import BackgroundTask
 
 from google.appengine.api import users
 from google.appengine.ext import deferred
@@ -36,7 +37,8 @@ def index():
   gae_user = users.get_current_user()
   if not (gae_user and gae_user.email() in settings.BOOTSTRAP_ADMIN_USERS):
     return "Unauthorized", 403
-  context = {'migration_status': 'Not started'}
+  context = {'migration_status': 'Not started',
+             'reindex_status': 'Not started'}
   if session.get('migration_started'):
     try:
       row = db.session.query(MigrationLog).order_by(
@@ -57,7 +59,41 @@ def index():
                        e.message):
         raise
 
+  context['reindex_status'] = set_latest_task_status('reindex')
+
   return render_template("maintenance/trigger.html", **context)
+
+
+def get_latest_task(bg_name):
+  """Returns the latest background task by given name"""
+  return BackgroundTask.query \
+                       .filter(BackgroundTask.name.contains(bg_name)) \
+                       .order_by('-id') \
+                       .first()
+
+
+def get_latest_task_status(bg_name):
+  """Returns status of the latest background task by given name"""
+  latest_task = get_latest_task(bg_name)
+
+  if latest_task:
+    return latest_task.status
+
+  return None
+
+
+def set_latest_task_status(bg_name):
+  """Returns status of the latest background task by given name to render"""
+  status = get_latest_task_status(bg_name)
+
+  if status == BackgroundTask.RUNNING_STATUS:
+    return 'In progress'
+  elif status == BackgroundTask.SUCCESS_STATUS:
+    return 'Finished'
+
+  # when there is no bg task with given name or status is
+  # BackgroundTask.PENDING_STATUS return 'Not started'
+  return 'Not started'
 
 
 def trigger_migration():
@@ -88,6 +124,23 @@ def trigger_migration():
   deferred.defer(migrate.migrate, row_id=mig_row_id, _queue='ggrc')
   session['migration_started'] = True
   return mig_row_id
+
+
+@maintenance_app.route('/maintenance/reindex', methods=['POST'])
+def run_reindex():
+  """Triggers a background task to run reindexing"""
+
+  if not get_latest_task_status('reindex') in (BackgroundTask.PENDING_STATUS,
+                                               BackgroundTask.RUNNING_STATUS):
+    from ggrc.models import background_task
+    background_task.create_task(
+        name="reindex",
+        url="/admin/reindex",
+        method="POST",
+    )
+    db.session.commit()
+
+  return redirect(url_for('index'))
 
 
 @maintenance_app.route('/maintenance/migrate', methods=['POST'])
