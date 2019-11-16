@@ -46,6 +46,7 @@ export default canComponent.extend({
     },
     _value: '',
     _options: [],
+    dropdownOptions: [],
     fieldId: null,
     isInlineMode: false,
     valueChanged(newValue) {
@@ -56,4 +57,13 @@ export default canComponent.extend({
       });
     },
   }),
+  events: {
+    // use dropdownOptions attr to prevent unnecessary
+    // update options from parent to child component
+    // after changing option checked state
+    inserted() {
+      const options = this.viewModel.attr('options');
+      this.viewModel.attr('dropdownOptions', options);
+    },
+  },
 });
