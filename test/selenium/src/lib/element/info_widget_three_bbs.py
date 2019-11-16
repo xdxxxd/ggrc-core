@@ -100,6 +100,10 @@ class ControlInfoWidgetThreeBbbs(InfoWidgetThreeBbbs):
   """3bbs element for Control info widget."""
 
 
+class RiskInfoWidgetThreeBbbs(InfoWidgetThreeBbbs):
+  """3bbs element for Risk info widget."""
+
+
 class PersonTreeItemThreeBbbs(InfoWidgetThreeBbbs):
   """3bbs element for Person tree item widget."""
 
