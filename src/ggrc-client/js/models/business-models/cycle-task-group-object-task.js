@@ -9,7 +9,7 @@ import moment from 'moment';
 import Cacheable from '../cacheable';
 import CycleTaskGroup from './cycle-task-group';
 import Workflow from './workflow';
-import {REFRESH_SUB_TREE} from '../../events/eventTypes';
+import {REFRESH_SUB_TREE} from '../../events/event-types';
 import {getPageType} from '../../plugins/utils/current-page-utils';
 import {getClosestWeekday} from '../../plugins/utils/date-utils';
 import IsOverdue from '../mixins/is-overdue';

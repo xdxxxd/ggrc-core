@@ -5,7 +5,7 @@
 
 import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../mapped-counter';
-import {REFRESH_MAPPED_COUNTER} from '../../../events/eventTypes';
+import {REFRESH_MAPPED_COUNTER} from '../../../events/event-types';
 
 describe('mapped-counter component', () => {
   let viewModel;

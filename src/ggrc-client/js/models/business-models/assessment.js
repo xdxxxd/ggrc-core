@@ -18,7 +18,7 @@ import AccessControlList from '../mixins/access-control-list';
 import RefetchHash from '../mixins/refetch-hash';
 import AssessmentIssueTracker from '../mixins/assessment-issue-tracker';
 import RelatedAssessmentsLoader from '../mixins/related-assessments-loader';
-import {REFRESH_MAPPING, REFRESHED} from '../../events/eventTypes';
+import {REFRESH_MAPPING, REFRESHED} from '../../events/event-types';
 
 export default Cacheable.extend({
   root_object: 'assessment',

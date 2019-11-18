@@ -65,7 +65,7 @@ import {
   REFRESH_MAPPING,
   REFRESH_RELATED,
   REFRESHED,
-} from '../../../events/eventTypes';
+} from '../../../events/event-types';
 import {isAllowedFor} from '../../../permission';
 import {
   getPageInstance,

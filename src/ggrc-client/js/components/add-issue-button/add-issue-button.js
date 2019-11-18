@@ -6,7 +6,7 @@
 import canStache from 'can-stache';
 import canMap from 'can-map';
 import canComponent from 'can-component';
-import {REFRESH_RELATED} from '../../events/eventTypes';
+import {REFRESH_RELATED} from '../../events/event-types';
 import template from './add-issue-button.stache';
 import {
   getPageInstance,

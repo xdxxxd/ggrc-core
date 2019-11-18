@@ -12,7 +12,7 @@ import * as QueryApiUtils from '../../../../plugins/utils/query-api-utils';
 import * as MapperUtils from '../../../../plugins/utils/mapper-utils';
 import * as NotifiersUtils from '../../../../plugins/utils/notifiers-utils';
 import * as ErrorUtils from '../../../../plugins/utils/errors-utils';
-import {OBJECTS_MAPPED_VIA_MAPPER} from '../../../../events/eventTypes';
+import {OBJECTS_MAPPED_VIA_MAPPER} from '../../../../events/event-types';
 
 describe('task-group-objects component', function () {
   let viewModel;

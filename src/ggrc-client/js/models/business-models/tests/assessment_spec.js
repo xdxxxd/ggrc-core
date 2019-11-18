@@ -12,7 +12,7 @@ import * as aclUtils from '../../../plugins/utils/acl-utils';
 import {makeFakeInstance} from '../../../../js_specs/spec-helpers';
 import Context from '../../service-models/context';
 import * as modelsUtils from '../../../plugins/utils/models-utils';
-import {REFRESH_MAPPING} from '../../../events/eventTypes';
+import {REFRESH_MAPPING} from '../../../events/event-types';
 import * as AjaxUtils from '../../../plugins/ajax_extensions';
 
 describe('Assessment model', function () {

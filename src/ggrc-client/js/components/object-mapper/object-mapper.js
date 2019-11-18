@@ -35,7 +35,7 @@ import {
   DEFERRED_MAP_OBJECTS,
   OBJECT_DESTROYED,
   UNMAP_DESTROYED_OBJECT,
-} from '../../events/eventTypes';
+} from '../../events/event-types';
 import {
   allowedToMap,
   shouldBeMappedExternally,

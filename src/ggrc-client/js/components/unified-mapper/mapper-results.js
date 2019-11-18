@@ -37,7 +37,7 @@ import Snapshot from '../../models/service-models/snapshot';
 import * as businessModels from '../../models/business-models';
 import QueryParser from '../../generated/ggrc-filter-query-parser';
 import {isMegaMapping as isMegaMappingUtil} from '../../plugins/utils/mega-object-utils';
-import {OBJECT_DESTROYED} from '../../events/eventTypes';
+import {OBJECT_DESTROYED} from '../../events/event-types';
 
 const DEFAULT_PAGE_SIZE = 10;
 

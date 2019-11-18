@@ -13,7 +13,7 @@ import * as WorkflowUtils from '../../../../plugins/utils/workflow-utils';
 import {
   DEFERRED_MAPPED_UNMAPPED,
   OBJECTS_MAPPED_VIA_MAPPER,
-} from '../../../../events/eventTypes';
+} from '../../../../events/event-types';
 
 describe('cycle-task-objects component', () => {
   let viewModel;

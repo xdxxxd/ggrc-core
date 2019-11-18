@@ -17,7 +17,7 @@ import {
   BEFORE_DOCUMENT_CREATE,
   DOCUMENT_CREATE_FAILED,
   MAP_OBJECTS,
-} from '../../events/eventTypes';
+} from '../../events/event-types';
 import {refreshPermissions} from '../../permission';
 import template from './create-document-button.stache';
 import Document from '../../models/business-models/document';

@@ -9,7 +9,7 @@ import {loadComments} from '../../plugins/utils/comments-utils';
 import {
   REFRESH_COMMENTS,
   REFRESH_MAPPED_COUNTER,
-} from '../../events/eventTypes';
+} from '../../events/event-types';
 import Relationship from '../../models/service-models/relationship';
 import Context from '../../models/service-models/context';
 

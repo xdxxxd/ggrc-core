@@ -9,7 +9,7 @@ import * as pickerUtils from '../../../plugins/utils/gdrive-picker-utils';
 import {
   BEFORE_DOCUMENT_CREATE,
   DOCUMENT_CREATE_FAILED,
-} from '../../../events/eventTypes';
+} from '../../../events/event-types';
 import Document from '../../../models/business-models/document';
 
 describe('create-document-button component', () => {

@@ -7,7 +7,7 @@ import loFind from 'lodash/find';
 import canStache from 'can-stache';
 import canMap from 'can-map';
 import canComponent from 'can-component';
-import {NAVIGATE_TO_TAB} from '../../events/eventTypes';
+import {NAVIGATE_TO_TAB} from '../../events/event-types';
 import './tab-panel';
 import './tab-link/tab-link';
 import '../questionnaire-link/questionnaire-link';

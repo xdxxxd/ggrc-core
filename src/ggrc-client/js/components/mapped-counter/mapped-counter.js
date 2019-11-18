@@ -11,7 +11,7 @@ import {
   batchRequests,
 } from '../../plugins/utils/query-api-utils';
 import {getMappingList} from '../../models/mappers/mappings';
-import {REFRESH_MAPPED_COUNTER} from '../../events/eventTypes';
+import {REFRESH_MAPPED_COUNTER} from '../../events/event-types';
 import template from './mapped-counter.stache';
 
 let titlesMap = {

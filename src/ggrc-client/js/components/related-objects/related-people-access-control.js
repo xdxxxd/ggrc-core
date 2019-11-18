@@ -10,7 +10,7 @@ import loFindIndex from 'lodash/findIndex';
 import loMap from 'lodash/map';
 import canMap from 'can-map';
 import canComponent from 'can-component';
-import {ROLES_CONFLICT} from '../../events/eventTypes';
+import {ROLES_CONFLICT} from '../../events/event-types';
 import {getRolesForType} from '../../plugins/utils/acl-utils';
 
 export default canComponent.extend({

@@ -13,7 +13,7 @@ import {
   RELATED_ITEMS_LOADED,
   REFRESH_MAPPING,
   REFRESH_RELATED,
-} from '../../../../events/eventTypes';
+} from '../../../../events/event-types';
 import * as queryApiUtils from '../../../../plugins/utils/query-api-utils';
 import * as commentsUtils from '../../../../plugins/utils/comments-utils';
 import * as aclUtils from '../../../../plugins/utils/acl-utils';

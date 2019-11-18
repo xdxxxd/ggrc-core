@@ -15,7 +15,7 @@ import {
   REFRESH_SUB_TREE,
   DEFERRED_MAP_OBJECTS,
   DEFERRED_MAPPED_UNMAPPED,
-} from '../../events/eventTypes';
+} from '../../events/event-types';
 import * as CurrentPageUtils from '../../plugins/utils/current-page-utils';
 
 describe('deferred-mapper component', function () {

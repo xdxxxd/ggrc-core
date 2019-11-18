@@ -7,7 +7,7 @@ import canStache from 'can-stache';
 import canMap from 'can-map';
 import canComponent from 'can-component';
 import {getModelInstance} from '../../plugins/utils/models-utils';
-import {REFRESH_PROPOSAL_DIFF} from '../../events/eventTypes';
+import {REFRESH_PROPOSAL_DIFF} from '../../events/event-types';
 import DiffBaseVM from './diff-base-vm';
 import {reify} from '../../plugins/utils/reify-utils';
 import template from './templates/instance-diff-items.stache';

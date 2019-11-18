@@ -12,7 +12,7 @@ import {hasPending as hasPendingUtil} from '../../plugins/ggrc_utils';
 import {
   PROPOSAL_CREATED,
   REFRESH_COMMENTS,
-} from '../../events/eventTypes';
+} from '../../events/event-types';
 import {getRole} from '../../plugins/utils/acl-utils';
 
 export default canComponent.extend({

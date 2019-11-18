@@ -12,7 +12,7 @@ import {
   isCommentRequired,
   isUrlRequired,
 } from '../../plugins/utils/ca-utils';
-import {VALIDATION_ERROR, RELATED_ITEMS_LOADED} from '../../events/eventTypes';
+import {VALIDATION_ERROR, RELATED_ITEMS_LOADED} from '../../events/event-types';
 import tracker from '../../tracker';
 import {isAllowedFor} from '../../permission';
 import isFunction from 'can-util/js/is-function/is-function';

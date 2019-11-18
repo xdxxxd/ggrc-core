@@ -17,7 +17,7 @@ import {
   DEFERRED_MAPPED_UNMAPPED,
   OBJECTS_MAPPED_VIA_MAPPER,
   OBJECT_DESTROYED,
-} from '../../../events/eventTypes';
+} from '../../../events/event-types';
 import {getRelevantMappingTypes} from '../../../plugins/utils/workflow-utils';
 import {notifier} from '../../../plugins/utils/notifiers-utils';
 import {getAjaxErrorInfo} from '../../../plugins/utils/errors-utils';
