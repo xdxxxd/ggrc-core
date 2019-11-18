@@ -234,6 +234,16 @@ describe('tree-status-filter component', () => {
         router.attr('widget', 'test1');
         viewModel.attr('disabled', false);
       });
+
+      it('when newStatuses is not defined', () => {
+        viewModel.attr('filterStates', [
+          {value: 'A', checked: true},
+          {value: 'B', checked: true},
+        ]);
+        newStatuses = null;
+        router.attr('widget', 'test1');
+        viewModel.attr('disabled', false);
+      });
     });
   });
 
