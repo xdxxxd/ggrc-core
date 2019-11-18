@@ -37,7 +37,7 @@ import {backendGdriveClient} from '../../plugins/ggrc-gapi-client';
 import './current-exports/current-exports';
 import {connectionLostNotifier} from './connection-lost-notifier';
 import router from '../../router';
-import QueryParser from '../../generated/ggrc_filter_query_parser';
+import QueryParser from '../../generated/ggrc-filter-query-parser';
 
 export default canComponent.extend({
   tag: 'csv-export',

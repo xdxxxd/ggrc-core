@@ -4,7 +4,7 @@
  */
 
 import loForEach from 'lodash/forEach';
-import QueryParser from '../../js/generated/ggrc_filter_query_parser';
+import QueryParser from '../../js/generated/ggrc-filter-query-parser';
 
 describe('QueryParser', function () {
   'use strict';

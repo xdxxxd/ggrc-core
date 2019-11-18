@@ -11,7 +11,7 @@ import * as WidgetsUtils from '../../utils/widgets-utils';
 import * as QueryAPI from '../../utils/query-api-utils';
 import * as Mappings from '../../../models/mappers/mappings';
 import * as WidgetList from '../../../modules/widget_list';
-import QueryParser from '../../../generated/ggrc_filter_query_parser';
+import QueryParser from '../../../generated/ggrc-filter-query-parser';
 
 describe('GGRC Utils Widgets', function () {
   describe('getWidgetList() method', function () {

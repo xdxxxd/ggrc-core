@@ -14,7 +14,7 @@ import Pagination from '../../base-objects/pagination';
 import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../mapper-results';
 import Program from '../../../models/business-models/program';
-import QueryParser from '../../../generated/ggrc_filter_query_parser';
+import QueryParser from '../../../generated/ggrc-filter-query-parser';
 
 describe('mapper-results component', function () {
   'use strict';

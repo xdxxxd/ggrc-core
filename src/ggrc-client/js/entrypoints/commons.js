@@ -24,7 +24,7 @@ import '../plugins/popover';
 import '../plugins/popover_template';
 import '../components/simple-modal/simple-modal';
 import '../helpers';
-import '../generated/ggrc_filter_query_parser';
+import '../generated/ggrc-filter-query-parser';
 
 // Models
 import '../models';
