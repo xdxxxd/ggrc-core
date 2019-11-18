@@ -6,12 +6,11 @@
 {{#instance}}
   <info-pane class="info-pane" instance:from="instance">
     <section class="info{{#if is_info_pin}} sticky-info-panel{{/if}}">
-      <div class="tier-content">
-          <general-page-header instance:from="instance"></general-page-header>
-
-          <tab-container>
-            <tab-panel panels:bind="panels" titleText:from="'Attributes'">
-              <inline-form-control instance:from="instance">
+      <inline-form-control instance:from="instance">
+        <div class="tier-content">
+            <general-page-header isSaving:from="isSaving" instance:from="instance"/>
+            <tab-container>
+              <tab-panel panels:bind="panels" titleText:from="'Attributes'">
                 <div class="info-pane__body">
                   <div class="info-pane__main-content {{^if isSnapshot}}info-pane__main-content-with-sidebar{{/if}}">
                     {{#if instance.issueCreated}}
@@ -196,15 +195,15 @@
                   </div>
                   {{/if}}
                 </div>
-              </inline-form-control>
-            </tab-panel>
-            {{^if isSnapshot}}
-              <tab-panel panels:bind="panels" titleText:from="'Change Log'">
-                <revision-log instance:from="instance" options:from="tabOptions"></revision-log>
               </tab-panel>
-            {{/if}}
-          </tab-container>
-      </div><!-- tier-content end -->
+              {{^if isSnapshot}}
+                <tab-panel panels:bind="panels" titleText:from="'Change Log'">
+                  <revision-log instance:from="instance" options:from="tabOptions"></revision-log>
+                </tab-panel>
+              {{/if}}
+            </tab-container>
+        </div><!-- tier-content end -->
+      </inline-form-control>
     </section>
 
     {{#if is_info_widget}}

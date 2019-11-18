@@ -28,4 +28,13 @@
           {{> /static/templates/base_objects/dropdown-menu.stache}}
         {{/is}}
      {{/if}}
+
+    <div class="form-status">
+        <loading-status
+            class="loading-status"
+            isLoading:from="isSaving"
+            loadingText:from="'Saving...'"
+            showSpinner:from="true">
+        </loading-status>
+    </div>
 </div>

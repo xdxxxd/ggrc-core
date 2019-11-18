@@ -16,7 +16,7 @@ export default canComponent.extend({
   viewModel: canMap.extend({
     deferredSave: null,
     instance: null,
-
+    isSaving: false,
     saveInlineForm: function (args) {
       let self = this;
 
@@ -33,10 +33,14 @@ export default canComponent.extend({
     buildDefaultDeferredSave() {
       const defaultDeferredSave = new DeferredTransaction(
         (resolve, reject) => {
+          this.attr('isSaving', true);
           this.attr('instance')
             .save()
             .done(resolve)
-            .fail(reject);
+            .fail(reject)
+            .always(() => {
+              this.attr('isSaving', false);
+            });
         },
         1000
       );
