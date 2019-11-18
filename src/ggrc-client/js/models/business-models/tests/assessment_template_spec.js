@@ -5,7 +5,7 @@
 
 import canList from 'can-list';
 import AssessmentTemplate from '../assessment-template';
-import {makeFakeInstance} from '../../../../js_specs/spec_helpers';
+import {makeFakeInstance} from '../../../../js_specs/spec-helpers';
 
 describe('AssessmentTemplate model', () => {
   let instance;

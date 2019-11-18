@@ -8,7 +8,7 @@ import Component from '../saved-search-list';
 import {
   getComponentVM,
   makeFakeInstance,
-} from '../../../../../js_specs/spec_helpers';
+} from '../../../../../js_specs/spec-helpers';
 import * as AdvancedSearchUtils
   from '../../../../plugins/utils/advanced-search-utils';
 import pubSub from '../../../../pub-sub';

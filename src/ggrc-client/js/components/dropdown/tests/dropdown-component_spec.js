@@ -5,7 +5,7 @@
 
 import loFilter from 'lodash/filter';
 import canStache from 'can-stache';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../dropdown-component';
 
 describe('dropdown component', function () {

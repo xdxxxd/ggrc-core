@@ -7,7 +7,7 @@ import canStache from 'can-stache';
 import canList from 'can-list';
 import canMap from 'can-map';
 import Component from './template-field';
-import {getComponentVM, spyProp} from '../../../../js_specs/spec_helpers';
+import {getComponentVM, spyProp} from '../../../../js_specs/spec-helpers';
 
 describe('template-field component', function () {
   let viewModel;

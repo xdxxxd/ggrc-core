@@ -4,7 +4,7 @@
 */
 
 import Component from '../create-document-button';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import * as pickerUtils from '../../../plugins/utils/gdrive-picker-utils';
 import {
   BEFORE_DOCUMENT_CREATE,

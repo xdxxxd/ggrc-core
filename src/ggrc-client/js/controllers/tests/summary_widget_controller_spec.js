@@ -7,7 +7,7 @@ import canMap from 'can-map';
 import Ctrl from '../summary_widget_controller';
 import * as WidgetsUtils from '../../plugins/utils/widgets-utils';
 import * as StateUtils from '../../plugins/utils/state-utils';
-import {makeFakeInstance} from '../../../js_specs/spec_helpers';
+import {makeFakeInstance} from '../../../js_specs/spec-helpers';
 import Relationship from '../../models/service-models/relationship';
 import Assessment from '../../models/business-models/assessment';
 

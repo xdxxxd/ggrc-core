@@ -7,7 +7,7 @@ import Component from '../modal-issue-tracker-fields';
 import {
   getComponentVM,
   makeFakeInstance,
-} from '../../../../js_specs/spec_helpers';
+} from '../../../../js_specs/spec-helpers';
 import Cacheable from '../../../models/cacheable';
 
 describe('modal-issue-tracker-fields component', () => {

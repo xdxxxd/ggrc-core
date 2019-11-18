@@ -6,7 +6,7 @@
 import canMap from 'can-map';
 import * as TreeViewUtils from '../../../plugins/utils/tree-view-utils';
 import * as AdvancedSearch from '../../../plugins/utils/advanced-search-utils';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../advanced-search-mapping-criteria';
 import * as Mappings from '../../../models/mappers/mappings';
 import Audit from '../../../models/business-models/audit';

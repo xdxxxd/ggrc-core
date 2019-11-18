@@ -7,7 +7,7 @@ import loCapitalize from 'lodash/capitalize';
 import canList from 'can-list';
 import canMap from 'can-map';
 import Component from '../assessment-info-pane';
-import {getComponentVM, makeFakeInstance} from '../../../../../js_specs/spec_helpers';
+import {getComponentVM, makeFakeInstance} from '../../../../../js_specs/spec-helpers';
 import tracker from '../../../../tracker';
 import {
   RELATED_ITEMS_LOADED,

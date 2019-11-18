@@ -4,7 +4,7 @@
 */
 
 import Component from '../notifications-menu-item';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import NotificationConfig from '../../../models/service-models/notification-config';
 import Context from '../../../models/service-models/context';
 

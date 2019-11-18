@@ -4,7 +4,7 @@
  */
 
 import Component from '../reusable-objects-item.js';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 
 describe('reusable-object-item component', () => {
   describe('events', () => {

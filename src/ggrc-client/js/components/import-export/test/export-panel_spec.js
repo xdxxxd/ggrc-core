@@ -6,7 +6,7 @@
 import loCloneDeep from 'lodash/cloneDeep';
 import canList from 'can-list';
 import Component from '../export-panel';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 
 describe('export-panel component', function () {
   let viewModel;

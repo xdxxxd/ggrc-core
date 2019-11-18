@@ -6,7 +6,7 @@
 import loIndexOf from 'lodash/indexOf';
 import canMap from 'can-map';
 import Component, * as Validations from './add-template-field';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 
 describe('add-template-field component', () => {
   describe('addField() method', () => {

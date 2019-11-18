@@ -4,8 +4,8 @@
 */
 
 import * as gDriveUtils from '../../../plugins/utils/gdrive-picker-utils';
-import {makeFakeInstance} from '../../../../js_specs/spec_helpers';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {makeFakeInstance} from '../../../../js_specs/spec-helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../attach-button';
 import Assessment from '../../../models/business-models/assessment';
 import pubSub from '../../../pub-sub';

@@ -5,7 +5,7 @@
 
 import canMap from 'can-map';
 import Component from './release-notes-menu-item';
-import {getComponentVM} from '../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../js_specs/spec-helpers';
 import PersonProfile from '../../models/service-models/person-profile';
 import {getFormattedUtcDate} from '../../plugins/utils/date-utils';
 

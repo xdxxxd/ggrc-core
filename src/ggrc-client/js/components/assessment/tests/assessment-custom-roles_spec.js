@@ -4,7 +4,7 @@
 */
 
 import Component from '../assessment-custom-roles';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import DeferredTransaction from '../../../plugins/utils/deferred-transaction-utils';
 
 describe('assessment-custom-roles component', () => {

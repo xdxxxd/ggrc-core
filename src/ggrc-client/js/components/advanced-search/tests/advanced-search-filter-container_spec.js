@@ -6,7 +6,7 @@
 import canList from 'can-list';
 import * as StateUtils from '../../../plugins/utils/state-utils';
 import * as AdvancedSearch from '../../../plugins/utils/advanced-search-utils';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../advanced-search-filter-container';
 
 describe('advanced-search-filter-container component', function () {

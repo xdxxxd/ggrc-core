@@ -5,7 +5,7 @@
 
 import * as AjaxExtensions from '../../../plugins/ajax_extensions';
 import canEvent from 'can-event';
-import {makeFakeInstance} from '../../../../js_specs/spec_helpers';
+import {makeFakeInstance} from '../../../../js_specs/spec-helpers';
 import Relationship from '../relationship';
 
 describe('Relationship model', function () {

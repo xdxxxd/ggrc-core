@@ -4,7 +4,7 @@
 */
 
 import Component from '../task-list';
-import {getComponentVM} from '../../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../../js_specs/spec-helpers';
 import * as Permission from '../../../../permission';
 import {REFRESH_RELATED} from '../../../../events/eventTypes';
 import TaskGroupTask from '../../../../models/business-models/task-group-task';

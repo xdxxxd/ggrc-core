@@ -3,7 +3,7 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from './download-template';
 import * as Utils from '../../../plugins/utils/import-export-utils';
 import {backendGdriveClient} from '../../../plugins/ggrc-gapi-client';

@@ -5,7 +5,7 @@
 
 import canList from 'can-list';
 import canMap from 'can-map';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component, {loadSavedSearch, filterParentItems} from '../tree-view-filter';
 import * as AdvancedSearch from '../../../plugins/utils/advanced-search-utils';
 import * as CurrentPageUtils from '../../../plugins/utils/current-page-utils';

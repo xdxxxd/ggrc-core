@@ -7,7 +7,7 @@ import Component from '../comment-data-provider';
 import {
   getComponentVM,
   makeFakeInstance,
-} from '../../../../js_specs/spec_helpers';
+} from '../../../../js_specs/spec-helpers';
 import * as CommentsUtils from '../../../plugins/utils/comments-utils';
 import Cacheable from '../../../models/cacheable';
 

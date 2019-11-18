@@ -6,7 +6,7 @@
 import {
   getComponentVM,
   makeFakeInstance,
-} from '../../../../js_specs/spec_helpers';
+} from '../../../../js_specs/spec-helpers';
 import Component from '../assessment-modal';
 import * as SnapshotUtils from '../../../plugins/utils/snapshot-utils';
 import Assessment from '../../../models/business-models/assessment';

@@ -4,7 +4,7 @@
 */
 
 import * as modelsUtils from '../../../plugins/utils/models-utils';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../assessment-object-type-dropdown';
 
 describe('assessment-object-type-dropdown component', function () {

@@ -6,7 +6,7 @@
 import {
   getComponentVM,
   spyProp,
-} from '../../../../js_specs/spec_helpers';
+} from '../../../../js_specs/spec-helpers';
 import Component from '../unmap-dropdown-item';
 import * as Mappings from '../../../models/mappers/mappings';
 import * as CurrentPageUtils from '../../../plugins/utils/current-page-utils';

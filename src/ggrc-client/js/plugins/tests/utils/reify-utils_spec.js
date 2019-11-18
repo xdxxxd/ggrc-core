@@ -8,7 +8,7 @@ import canList from 'can-list';
 import canMap from 'can-map';
 import * as ReifyUtils from '../../utils/reify-utils';
 import Audit from '../../../models/business-models/audit';
-import {makeFakeInstance} from '../../../../js_specs/spec_helpers';
+import {makeFakeInstance} from '../../../../js_specs/spec-helpers';
 
 describe('reify-utils', () => {
   describe('reify() method', () => {

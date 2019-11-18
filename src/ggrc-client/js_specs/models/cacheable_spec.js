@@ -12,7 +12,7 @@ import Cacheable from '../../js/models/cacheable';
 import {
   failAll,
   makeFakeModel,
-} from '../spec_helpers';
+} from '../spec-helpers';
 import CustomAttributeObject from '../../js/plugins/utils/custom-attribute/custom-attribute-object';
 import Mixin from '../../js/models/mixins/mixin';
 

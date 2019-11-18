@@ -5,7 +5,7 @@
 
 import loAttempt from 'lodash/attempt';
 import loIsError from 'lodash/isError';
-import {getComponentVM, makeFakeInstance} from '../../../../js_specs/spec_helpers';
+import {getComponentVM, makeFakeInstance} from '../../../../js_specs/spec-helpers';
 import Component from '../add-issue-button';
 import '../add-issue-button';
 import {REFRESH_RELATED} from '../../../events/eventTypes';

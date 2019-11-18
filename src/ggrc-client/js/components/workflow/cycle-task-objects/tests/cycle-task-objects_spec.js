@@ -5,7 +5,7 @@
 
 import canMap from 'can-map';
 import Component from '../cycle-task-objects';
-import {getComponentVM} from '../../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../../js_specs/spec-helpers';
 import * as QueryApiUtils from '../../../../plugins/utils/query-api-utils';
 import * as ErrorUtils from '../../../../plugins/utils/errors-utils';
 import * as NotifierUtils from '../../../../plugins/utils/notifiers-utils';

@@ -7,7 +7,7 @@ import makeArray from 'can-util/js/make-array/make-array';
 import {
   peopleWithRoleName,
 } from '../../plugins/utils/acl-utils';
-import {makeFakeInstance} from '../../../js_specs/spec_helpers';
+import {makeFakeInstance} from '../../../js_specs/spec-helpers';
 import Audit from '../../models/business-models/audit';
 import Policy from '../../models/business-models/policy';
 

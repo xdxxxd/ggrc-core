@@ -6,7 +6,7 @@
 import canList from 'can-list';
 import canMap from 'can-map';
 import Component from '../csv-export';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import router from '../../../router';
 import * as ModalsUtils from '../../../plugins/utils/modals';
 

@@ -7,7 +7,7 @@ import canMap from 'can-map';
 import InnerNavVM from '../inner-nav-vm';
 import {
   makeFakeInstance,
-} from '../../../../js_specs/spec_helpers';
+} from '../../../../js_specs/spec-helpers';
 import router, * as RouterUtils from '../../../router';
 import * as ObjectVersionsUtils
   from '../../../plugins/utils/object-versions-utils';

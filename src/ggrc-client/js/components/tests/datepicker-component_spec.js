@@ -5,7 +5,7 @@
 
 import * as Utils from '../../plugins/ggrc_utils';
 import {DATE_FORMAT} from '../../plugins/utils/date-utils';
-import {getComponentVM} from '../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../js_specs/spec-helpers';
 import Component from '../datepicker/datepicker-component';
 
 

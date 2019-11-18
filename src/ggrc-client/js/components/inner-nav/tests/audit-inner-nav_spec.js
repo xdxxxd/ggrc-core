@@ -5,7 +5,7 @@
 import Component from '../audit-inner-nav';
 import {
   getComponentVM,
-} from '../../../../js_specs/spec_helpers';
+} from '../../../../js_specs/spec-helpers';
 import * as DashboardUtils from '../../../plugins/utils/dashboards-utils';
 
 describe('audit-inner-nav component', () => {

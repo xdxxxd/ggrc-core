@@ -7,7 +7,7 @@ import * as ModalsUtils from '../../../plugins/utils/modals';
 import {
   makeFakeInstance,
   getComponentVM,
-} from '../../../../js_specs/spec_helpers';
+} from '../../../../js_specs/spec-helpers';
 import Component from '../info-pane/confirm-edit-action';
 import Assessment from '../../../models/business-models/assessment';
 

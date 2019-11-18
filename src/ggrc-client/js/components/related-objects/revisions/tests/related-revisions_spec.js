@@ -4,7 +4,7 @@
  */
 
 import Component from '../related-revisions';
-import {getComponentVM} from '../../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../../js_specs/spec-helpers';
 import Revision from '../../../../models/service-models/revision';
 import * as QueryAPI from '../../../../plugins/utils/query-api-utils';
 

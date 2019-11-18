@@ -6,7 +6,7 @@
 import tracker from '../../tracker';
 import * as WorkflowHelpers from '../../plugins/utils/workflow-utils';
 import Component from '../cycle-task-actions/cycle-task-actions';
-import {getComponentVM} from '../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../js_specs/spec-helpers';
 
 describe('cycle-task-actions component', function () {
   'use strict';

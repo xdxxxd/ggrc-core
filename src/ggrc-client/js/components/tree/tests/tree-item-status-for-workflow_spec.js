@@ -4,7 +4,7 @@
 */
 
 import Component from '../tree-item-status-for-workflow';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 
 describe('tree-item-status-for-workflow component', () => {
   let viewModel;

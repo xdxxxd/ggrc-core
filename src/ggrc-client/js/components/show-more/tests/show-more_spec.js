@@ -4,7 +4,7 @@
  */
 
 import canList from 'can-list';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../show-more';
 
 describe('show-more component', function () {

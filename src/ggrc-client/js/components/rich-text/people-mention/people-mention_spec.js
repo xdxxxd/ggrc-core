@@ -5,7 +5,7 @@
 
 import canMap from 'can-map';
 import component from './people-mention';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import {KEY_MAP} from '../../custom-autocomplete/autocomplete-input';
 
 describe('people-mention component', () => {

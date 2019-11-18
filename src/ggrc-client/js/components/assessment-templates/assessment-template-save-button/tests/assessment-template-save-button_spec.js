@@ -4,7 +4,7 @@
  */
 
 import Component from '../assessment-template-save-button';
-import {getComponentVM} from '../../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../../js_specs/spec-helpers';
 
 describe('assessment-template-save-button component', () => {
   let viewModel;

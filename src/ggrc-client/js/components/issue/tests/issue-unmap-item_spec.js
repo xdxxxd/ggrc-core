@@ -4,7 +4,7 @@
 */
 
 import canMap from 'can-map';
-import {getComponentVM, makeFakeInstance} from '../../../../js_specs/spec_helpers';
+import {getComponentVM, makeFakeInstance} from '../../../../js_specs/spec-helpers';
 import Component from '../issue-unmap-item';
 import * as QueryAPI from '../../../plugins/utils/query-api-utils';
 import * as CurrentPageUtils from '../../../plugins/utils/current-page-utils';

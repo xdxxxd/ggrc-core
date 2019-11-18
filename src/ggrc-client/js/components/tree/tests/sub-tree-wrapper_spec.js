@@ -5,7 +5,7 @@
 
 import Component from '../sub-tree-wrapper';
 import * as TreeViewUtils from '../../../plugins/utils/tree-view-utils';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 
 describe('sub-tree-wrapper component', function () {
   let vm;

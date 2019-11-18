@@ -8,7 +8,7 @@ import loFilter from 'lodash/filter';
 import canList from 'can-list';
 import canMap from 'can-map';
 import Component from '../deferred-mapper';
-import {getComponentVM} from '../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../js_specs/spec-helpers';
 import * as MapperUtils from '../../plugins/utils/mapper-utils';
 import {
   REFRESH_MAPPING,

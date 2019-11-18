@@ -10,7 +10,7 @@ import * as resolveConflict from '../../js/models/conflict-resolution/conflict-r
 import {
   failAll,
   makeFakeModel,
-} from '../spec_helpers';
+} from '../spec-helpers';
 
 describe('Cacheable conflict resolution', function () {
   let DummyModel;

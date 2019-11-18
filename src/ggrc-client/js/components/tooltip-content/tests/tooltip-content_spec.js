@@ -4,7 +4,7 @@
 */
 
 import Component from '../tooltip-content';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 
 describe('tooltip-content component', () => {
   let viewModel;

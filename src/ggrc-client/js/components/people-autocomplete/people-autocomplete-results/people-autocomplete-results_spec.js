@@ -5,7 +5,7 @@
 
 import loFindIndex from 'lodash/findIndex';
 import component from './people-autocomplete-results';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 
 describe('people-autocomplete-results component', () => {
   let viewModel;

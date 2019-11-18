@@ -4,7 +4,7 @@
  */
 
 import Component from '../unmap-button';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 
 describe('unmap-button component', function () {
   'use strict';

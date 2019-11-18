@@ -9,7 +9,7 @@ import * as CurrentPageUtils from '../../../../plugins/utils/current-page-utils'
 import {
   getComponentVM,
   spyProp,
-} from '../../../../../js_specs/spec_helpers';
+} from '../../../../../js_specs/spec-helpers';
 import * as Permission from '../../../../permission';
 
 describe('cycle-task-group-object-task component', () => {
