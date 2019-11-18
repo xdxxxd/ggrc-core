@@ -59,7 +59,7 @@ class TestSnapshotIndexing(SnapshotterBaseTestCase):
     }
 
   @ddt.data(
-      *(Types.all - Types.external)
+      *(snapshotter_rules.Types.all - snapshotter_rules.Types.external)
   )
   def test_create_indexing(self, model_name):
     """Test that creating objects results in full index"""
@@ -83,7 +83,7 @@ class TestSnapshotIndexing(SnapshotterBaseTestCase):
     self.assertEqual(records.count(), 1)
 
   @ddt.data(
-      *(Types.all - Types.external)
+      *(snapshotter_rules.Types.all - snapshotter_rules.Types.external)
   )
   def test_update_indexing(self, model_name):
     """Test that updating objects results in full index"""
@@ -202,7 +202,7 @@ class TestSnapshotIndexing(SnapshotterBaseTestCase):
     self.assertEqual(_title.count(), 1)
 
   @ddt.data(
-      *(Types.all - Types.external)
+      *(snapshotter_rules.Types.all - snapshotter_rules.Types.external)
   )
   def test_full_reindex(self, model_name):
     """Test full reindex of all snapshots"""
@@ -220,7 +220,7 @@ class TestSnapshotIndexing(SnapshotterBaseTestCase):
 
     self.assertEqual(records.count(), 1)
 
-    delete_records({s.id for s in snapshots})
+    snapshotter_indexer.delete_records({s.id for s in snapshots})
     records = get_records(audit, snapshots)
     self.assertEqual(records.count(), 0)
 
