@@ -4,7 +4,7 @@
  */
 
 import {bindXHRToButton} from '../../plugins/utils/modals';
-import ModalsController from './modals_controller';
+import ModalsController from './modals-controller';
 
 export default ModalsController.extend({
   defaults: {

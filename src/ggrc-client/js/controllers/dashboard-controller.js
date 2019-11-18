@@ -8,8 +8,8 @@ import {ggrcAjax} from '../plugins/ajax_extensions';
 import canStache from 'can-stache';
 import canMap from 'can-map';
 import canControl from 'can-control';
-import DashboardWidgets from './dashboard_widgets_controller';
-import InfoPin from './info_pin_controller';
+import DashboardWidgets from './dashboard-widgets-controller';
+import InfoPin from './info-pin-controller';
 import {
   isAdmin,
   getPageInstance,

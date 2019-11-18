@@ -24,9 +24,9 @@ import {
 } from '../plugins/utils/current-page-utils';
 import modalModels from '../models/modal-models';
 import {changeUrl} from '../router';
-import ModalsController from '../controllers/modals/modals_controller';
-import ArchiveModalControl from '../controllers/modals/archive_modal_controller';
-import DeleteModalControl from '../controllers/modals/delete_modal_controller';
+import ModalsController from '../controllers/modals/modals-controller';
+import ArchiveModalControl from '../controllers/modals/archive-modal-controller';
+import DeleteModalControl from '../controllers/modals/delete-modal-controller';
 
 let originalModalShow = $.fn.modal.Constructor.prototype.show;
 let originalModalHide = $.fn.modal.Constructor.prototype.hide;

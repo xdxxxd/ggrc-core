@@ -4,7 +4,7 @@
 */
 
 import canMap from 'can-map';
-import Ctrl from '../summary_widget_controller';
+import Ctrl from '../summary-widget-controller';
 import * as WidgetsUtils from '../../plugins/utils/widgets-utils';
 import * as StateUtils from '../../plugins/utils/state-utils';
 import {makeFakeInstance} from '../../../js_specs/spec-helpers';

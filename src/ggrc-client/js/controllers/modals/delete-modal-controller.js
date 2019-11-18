@@ -3,7 +3,7 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import ModalsController from './modals_controller';
+import ModalsController from './modals-controller';
 import pubSub from '../../pub-sub';
 import {bindXHRToButton} from '../../plugins/utils/modals';
 import {notifierXHR} from '../../plugins/utils/notifiers-utils';

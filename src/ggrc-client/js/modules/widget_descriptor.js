@@ -3,9 +3,9 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import SummaryWidgetController from '../controllers/summary_widget_controller';
-import DashboardWidget from '../controllers/dashboard_widget_controller';
-import InfoWidget from '../controllers/info_widget_controller';
+import SummaryWidgetController from '../controllers/summary-widget-controller';
+import DashboardWidget from '../controllers/dashboard-widget-controller';
+import InfoWidget from '../controllers/info-widget-controller';
 import {getWidgetConfig} from '../plugins/utils/widgets-utils';
 import Program from '../models/business-models/program';
 

@@ -49,7 +49,7 @@ export default canComponent.extend({
       this.showConfirm(saveButtonElement, invalidDefinitions);
     },
     saveInstance(saveButtonElement) {
-      // trigger submit event from modals_controller.js
+      // trigger submit event from modals-controller.js
       $(saveButtonElement).trigger('submit');
     },
     showConfirm(saveButtonElement, invalidDefinitions) {

@@ -10,7 +10,7 @@ import {
   widgetModules,
   initCounts,
 } from '../plugins/utils/widgets-utils';
-import InfoWidget from '../controllers/info_widget_controller';
+import InfoWidget from '../controllers/info-widget-controller';
 import WidgetList from '../modules/widget_list';
 import Cycle from '../models/business-models/cycle';
 import TaskGroup from '../models/business-models/task-group';

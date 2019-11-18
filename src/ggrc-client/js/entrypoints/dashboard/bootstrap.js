@@ -20,7 +20,7 @@ import routes from './routes';
 import '../../plugins/utils/it-enable/issue-tracker-enable';
 import {gapiClient} from '../../plugins/ggrc-gapi-client';
 import {saveRecentlyViewedObject} from '../../plugins/utils/recently-viewed-utils';
-import {PageObjectControl} from '../../controllers/dashboard_controller';
+import {PageObjectControl} from '../../controllers/dashboard-controller';
 
 const instance = getPageInstance();
 const location = window.location.pathname;

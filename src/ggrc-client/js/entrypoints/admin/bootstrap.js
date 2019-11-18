@@ -8,7 +8,7 @@ import canList from 'can-list';
 import {
   initWidgets,
 } from '../../plugins/utils/widgets-utils';
-import '../../controllers/dashboard_controller';
+import '../../controllers/dashboard-controller';
 import {RouterConfig} from '../../router';
 import routes from './routes';
 import {gapiClient} from '../../plugins/ggrc-gapi-client';
@@ -20,9 +20,9 @@ import AccessControlRole from '../../models/custom-roles/access-control-role';
 import Roleable from '../../models/custom-roles/roleable';
 import Person from '../../models/business-models/person';
 import WidgetList, {getWidgetListFor} from '../../modules/widget_list';
-import ListView from '../../controllers/tree/list_view_controller';
+import ListView from '../../controllers/tree/list-view-controller';
 import TreeViewControl from '../../controllers/tree/tree-view';
-import {DashboardControl} from '../../controllers/dashboard_controller';
+import {DashboardControl} from '../../controllers/dashboard-controller';
 
 const trimValue = (value) => (value || '').trim();
 

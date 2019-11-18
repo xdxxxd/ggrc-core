@@ -4,7 +4,7 @@
 */
 
 import canMap from 'can-map';
-import Ctrl from '../modals/archive_modal_controller';
+import Ctrl from '../modals/archive-modal-controller';
 import * as Helpers from '../../plugins/utils/modals';
 
 describe('ToggleArchive modal', function () {

@@ -47,7 +47,7 @@ export default canComponent.extend({
       };
 
       import(/* webpackChunkName: "modalsCtrls" */
-        '../../controllers/modals/modals_controller').then((module) => {
+        '../../controllers/modals/modals-controller').then((module) => {
         const ModalsController = module.default;
         const $target = $('<div class="modal hide"></div>');
         $target.modal();

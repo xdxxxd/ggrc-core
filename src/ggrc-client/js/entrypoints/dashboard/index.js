@@ -6,7 +6,7 @@
 import '../commons';
 
 // Controllers
-import '../../controllers/dashboard_controller';
+import '../../controllers/dashboard-controller';
 
 // Modules and Apps
 import '../../apps/business-objects';

@@ -9,7 +9,7 @@ import Cacheable from '../../models/cacheable';
 import {BUTTON_VIEW_SAVE_CANCEL} from '../../plugins/utils/modals';
 import {navigate} from '../../plugins/utils/current-page-utils';
 import Workflow from '../../models/business-models/workflow';
-import ModalsController from '../../controllers/modals/modals_controller';
+import ModalsController from '../../controllers/modals/modals-controller';
 
 let CloneWorkflow = Cacheable.extend({
   defaults: {

@@ -3,7 +3,7 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-import ModalsController from '../../controllers/modals/modals_controller';
+import ModalsController from '../../controllers/modals/modals-controller';
 
 /**
  * Utils methods for showing standart modals

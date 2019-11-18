@@ -9,7 +9,7 @@ import Cacheable from '../../models/cacheable';
 import {BUTTON_VIEW_SAVE_CANCEL} from '../../plugins/utils/modals';
 import {refreshTGRelatedItems} from '../../plugins/utils/workflow-utils';
 import TaskGroup from '../../models/business-models/task-group';
-import ModalsController from '../../controllers/modals/modals_controller';
+import ModalsController from '../../controllers/modals/modals-controller';
 
 let CloneTaskGroup = Cacheable.extend({
   defaults: {

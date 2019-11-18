@@ -4,7 +4,7 @@
 */
 
 import canMap from 'can-map';
-import ModalsController from '../modals/modals_controller';
+import ModalsController from '../modals/modals-controller';
 import * as NotifiersUtils from '../../plugins/utils/notifiers-utils';
 import Person from '../../models/business-models/person';
 import * as currentPageUtils from '../../plugins/utils/current-page-utils';

@@ -3,12 +3,12 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import Ctrl from '../info_pin_controller';
+import Ctrl from '../info-pin-controller';
 import {
   pinContentHiddenClass,
   pinContentMaximizedClass,
   pinContentMinimizedClass,
-} from '../info_pin_controller';
+} from '../info-pin-controller';
 
 describe('InfoPin Controller', function () {
   let ctrlInst;

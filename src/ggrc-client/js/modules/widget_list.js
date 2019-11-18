@@ -5,9 +5,9 @@
 
 import loMerge from 'lodash/merge';
 import loForEach from 'lodash/forEach';
-import SummaryWidgetController from '../controllers/summary_widget_controller';
-import DashboardWidget from '../controllers/dashboard_widget_controller';
-import InfoWidget from '../controllers/info_widget_controller';
+import SummaryWidgetController from '../controllers/summary-widget-controller';
+import DashboardWidget from '../controllers/dashboard-widget-controller';
+import InfoWidget from '../controllers/info-widget-controller';
 import {
   makeInfoWidget,
   makeSummaryWidget,
