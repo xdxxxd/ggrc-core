@@ -18,7 +18,7 @@ import {
   isAllObjects,
 } from '../plugins/utils/current-page-utils';
 import * as businessModels from '../models/business-models/index';
-import TreeViewConfig from '../apps/base_widgets';
+import TreeViewConfig from '../apps/base-widgets';
 
 const summaryWidgetViews = Object.freeze({
   audits: GGRC.templates_path + '/audits/summary.stache',

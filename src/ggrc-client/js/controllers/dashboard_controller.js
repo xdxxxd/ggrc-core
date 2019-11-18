@@ -16,7 +16,7 @@ import {
 } from '../plugins/utils/current-page-utils';
 import {getChildTreeDisplayList} from '../plugins/utils/display-prefs-utils';
 import {clear as clearLocalStorage} from '../plugins/utils/local-storage-utils';
-import TreeViewConfig from '../apps/base_widgets';
+import TreeViewConfig from '../apps/base-widgets';
 
 const DashboardControl = canControl.extend({
   defaults: {

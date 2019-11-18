@@ -10,7 +10,7 @@ import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../tree-item-extra-info';
 import CycleTaskGroupObjectTask from '../../../models/business-models/cycle-task-group-object-task';
 import * as businessModels from '../../../models/business-models';
-import TreeViewConfig from '../../../apps/base_widgets';
+import TreeViewConfig from '../../../apps/base-widgets';
 
 describe('tree-item-extra-info component', function () {
   let viewModel;

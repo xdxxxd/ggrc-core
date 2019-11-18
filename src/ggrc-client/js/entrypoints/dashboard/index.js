@@ -9,7 +9,7 @@ import '../commons';
 import '../../controllers/dashboard_controller';
 
 // Modules and Apps
-import '../../apps/business_objects';
+import '../../apps/business-objects';
 
 // Components
 import '../../components/spinner-component/spinner-component';

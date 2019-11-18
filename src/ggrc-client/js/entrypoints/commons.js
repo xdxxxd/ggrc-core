@@ -29,7 +29,7 @@ import '../generated/ggrc-filter-query-parser';
 // Models
 import '../models';
 
-import '../apps/base_widgets';
+import '../apps/base-widgets';
 
 import '../modules/widget_list';
 

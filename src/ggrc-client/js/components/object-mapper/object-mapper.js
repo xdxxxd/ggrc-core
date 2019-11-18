@@ -42,7 +42,7 @@ import {
 } from '../../models/mappers/mappings';
 import {mapObjects as mapObjectsUtil} from '../../plugins/utils/mapper-utils';
 import * as businessModels from '../../models/business-models';
-import TreeViewConfig from '../../apps/base_widgets';
+import TreeViewConfig from '../../apps/base-widgets';
 import {confirm} from '../../plugins/utils/modals';
 import {isMegaMapping} from '../../plugins/utils/mega-object-utils';
 import pubSub from '../../pub-sub';
