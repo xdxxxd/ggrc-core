@@ -36,9 +36,31 @@ def is_external_custom_attributable(_type):
                     external_customattributable.ExternalCustomAttributable)
 
 
-def random_str(length=8, prefix="", chars=None):
+def random_str(length=8, prefix="", chars=None, suppress_whitespace=True):
+  """Generate random string.
+
+  Args:
+    length: length of expected random string.
+    prefix: string prefix.
+    chars: set of chars for generating.
+    suppress_whitespace: suppress whitespace duplication.
+  Returns:
+    Prefix with random string.
+  """
   chars = chars or string.ascii_uppercase + string.digits + "  _.-"
-  return prefix + "".join(random.choice(chars) for _ in range(length))
+  random_string = ''
+  while len(random_string) < length:
+    random_char = random.choice(chars)
+    if suppress_whitespace:
+      is_second_whitespace = bool(
+          random_string and random_char == random_string[-1] == " ")
+      is_start_end_whitespace = bool(
+          random_char == " " and
+          (not random_string or len(random_string) + 1 == length))
+      if is_second_whitespace or is_start_end_whitespace:
+        continue
+    random_string += random_char
+  return prefix + random_string
 
 
 @contextmanager
