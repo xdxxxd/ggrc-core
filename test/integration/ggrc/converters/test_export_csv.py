@@ -8,7 +8,6 @@ from os.path import abspath, dirname, join
 import collections
 import ddt
 from flask.json import dumps
-
 from ggrc import utils
 from ggrc.converters import get_exportables
 from ggrc.models import inflector, all_models
@@ -52,6 +51,25 @@ class TestExportEmptyTemplate(TestCase):
     response = self.client.post("/_service/export_csv",
                                 data=dumps(data), headers=self.headers)
     self.assertIn("Allowed values are:\nTRUE\nFALSE", response.data)
+
+  def test_custom_attr_people(self):
+    """Test if LCA Map:Person type has hint for Assessment ."""
+    with factories.single_commit():
+      assessment = factories.AssessmentFactory()
+      factories.CustomAttributeDefinitionFactory(
+          definition_type="assessment",
+          title="Included LCAD",
+          attribute_type="Map:Person",
+          definition_id=assessment.id,
+      )
+    data = {
+        "export_to": "csv",
+        "objects": [{"object_name": "Assessment", "fields": "all"}]
+    }
+    response = self.client.post("/_service/export_csv",
+                                data=dumps(data), headers=self.headers)
+    self.assertIn("Included LCAD", response.data)
+    self.assertIn("Allowed values are emails", response.data)
 
   def test_basic_policy_template(self):
     """Tests for basic policy templates."""
@@ -164,7 +182,6 @@ class TestExportEmptyTemplate(TestCase):
   @ddt.data("Assessment", "Issue")
   def test_ticket_tracker_field_order(self, model):
     """Tests if Ticket Tracker fields come before mapped objects for {}."""
-
     data = {
         "export_to": "csv",
         "objects": [
@@ -181,7 +198,6 @@ class TestExportEmptyTemplate(TestCase):
   @ddt.data("Assessment", "Issue")
   def test_ticket_tracker_fields(self, model):
     """Tests if Ticket Tracker fields are in export file for {}"""
-
     data = {
         "export_to": "csv",
         "objects": [
@@ -197,7 +213,6 @@ class TestExportEmptyTemplate(TestCase):
   @ddt.data("Process", "System")
   def test_network_zone_tip(self, model):
     """Tests if Network Zone column has tip message in export file for {}"""
-
     data = {
         "export_to": "csv",
         "objects": [
@@ -723,7 +738,7 @@ class TestExportSingleObject(TestCase):
 
 @ddt.ddt
 class TestExportMultipleObjects(TestCase):
-
+  """Test case for export multiple objects"""
   def setUp(self):
     super(TestExportMultipleObjects, self).setUp()
     self.client.get("/login")

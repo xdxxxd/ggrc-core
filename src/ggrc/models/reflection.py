@@ -439,7 +439,6 @@ class AttributeInfo(object):
     else:
       custom_attributes = object_class.get_custom_attribute_definitions(fields)
     for attr in custom_attributes:
-
       description = attr.helptext or u""
       if attr.multi_choice_options:
         if description:
@@ -449,6 +448,8 @@ class AttributeInfo(object):
         )
       elif attr.attribute_type == attr.ValidTypes.CHECKBOX:
         description += u"Allowed values are:\nTRUE\nFALSE"
+      elif attr.ValidTypes.MAP in attr.attribute_type:
+        description += u"Allowed values are emails"
       if attr.definition_id:
         ca_type = cls.Type.OBJECT_CUSTOM
         attr_name = u"{}{}".format(
