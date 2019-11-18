@@ -727,6 +727,17 @@ canStache.registerHelper('isValidAttr',
   }
 );
 
+canStache.registerHelper('initDeferredData',
+  (instance, list) => (el) => {
+    $(el).data('deferred_to', {
+      // list must be a reference to update deffered_to.list data attribute
+      // on element if the list has changed
+      list: isFunction(list) ? list() : list,
+      instance: isFunction(instance) ? instance() : instance,
+    });
+  }
+);
+
 canStache.registerHelper('isArray', (items, options) => {
   items = isFunction(items) ? items() : items;
 

@@ -155,29 +155,26 @@
     <div class="ggrc-form-item">
       <div class="ggrc-form-item__row">
         <deferred-mapper class="width-100"
-                         instance:from="instance"
-                         mappedObjects:from="mappedObjects"
-                         useSnapshots:from="true">
+                        instance:from="instance"
+                        useSnapshots:from="true"
+                        on:vm:addMappings="addMappingObjects(scope.event)"
+                        on:vm:removeMappings="removeMappingObject(scope.event)">
           <label class="ggrc-form-item__label">
             Mapped Objects
           </label>
           <div class="modal-mapped-objects">
-            {{#each list}}
+            {{#each mappingsList}}
               <div class="modal-mapped-objects-item">
                 <div class="modal-mapped-objects-item__details">
-                  <object-list-item-updater targetInstance:from="{.}">
-                    {{#if instanceUpdated}}
-                      <business-object-list-item instance:from="instance">
-                        <div class="description">
-                          <read-more
-                            text:from="itemData.description"
-                            maxLinesNumber:from="1"
-                            handleMarkdown:from="instance.constructor.isChangeableExternally">
-                          </read-more>
-                        </div>
-                      </business-object-list-item>
-                    {{/if}}
-                  </object-list-item-updater>
+                  <business-object-list-item instance:from="{.}">
+                    <div class="description">
+                      <read-more
+                        text:from="itemData.description"
+                        maxLinesNumber:from="1"
+                        handleMarkdown:from="instance.constructor.isChangeableExternally">
+                      </read-more>
+                    </div>
+                  </business-object-list-item>
                 </div>
                 <div class="modal-mapped-objects-item__unmap">
                   {{#if new_object_form}}
@@ -192,10 +189,11 @@
           {{#is_allowed "read" instance.audit context="for"}}
             <div class="objective-selector">
               <map-button-using-assessment-type
-                {{canData "deferred_to"}}
                 instance:from="instance">
-                  <a class="btn btn-small btn-white assessment-map-btn"
+                  <a class="btn btn-small btn-white"
                     href="javascript://"
+                    {{initDeferredData instance mappingsList}}
+                    on:el:click="onMapObjectsClick(scope.element, scope.event)"
                     data-placement="left"
                     data-deferred="true"
                     data-is-new="{{new_object_form}}"

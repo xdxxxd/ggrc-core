@@ -45,8 +45,9 @@
       </select>
       <deferred-mapper
           instance:from="instance"
-          mappedObjects:from="mappedObjects"
           preMappedObjects:from="preMappedObjects"
+          on:vm:addMappings="addMappingObjects(scope.event)"
+          on:vm:removeMappings="removeMappingObject(scope.event)"
         >
         <div class="action-toolbar">
           <h6 class="action-toolbar__header">
@@ -54,7 +55,7 @@
           </h6>
           <spinner-component class="control-offset" toggle:from="isLoading"></spinner-component>
         </div>
-        {{#each list}}
+        {{#each mappingsList}}
           <div class="oneline">
             <a
               href="javascript://"
@@ -67,7 +68,7 @@
           </div>
         {{/each}}
         {{^if isLoading}}
-        {{^if list.length}}
+        {{^if mappingsList.length}}
           <span class="gray"><em>No mapped objects</em></span>
         {{/if}}
         {{/if}}
@@ -75,17 +76,17 @@
           <div style="clear:both">
             <br>
             {{^if_in instance.status "Finished,Verified"}}
-            <a class="btn btn-small btn-white"
-              href="javascript://"
-              {{canData "deferred_to"}}
-              data-placement="left"
-              data-toggle="unified-mapper"
-              data-deferred="true"
-              data-join-object-id="{{instance.id}}"
-              data-join-object-type="{{instance.constructor.model_singular}}"
-              tabindex="6">
-              Map Objects
-            </a>
+              <a class="btn btn-small btn-white"
+                href="javascript://"
+                {{initDeferredData instance mappingsList}}
+                data-placement="left"
+                data-toggle="unified-mapper"
+                data-deferred="true"
+                data-join-object-id="{{instance.id}}"
+                data-join-object-type="{{instance.constructor.model_singular}}"
+                tabindex="6">
+                Map Objects
+              </a>
             {{/if_in}}
           </div>
         </div>

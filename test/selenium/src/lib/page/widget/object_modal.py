@@ -210,7 +210,7 @@ class AssessmentModal(BaseObjectModal):
     objs = [entity.Representation.repr_dict_to_obj(obj)
             if isinstance(obj, dict) else obj for obj in objs]
     # Ordinary `click()` doesn't work in headless Chrome in this case
-    self._root.element(class_name="assessment-map-btn").js_click()
+    self._root.link(text="Map Objects").js_click()
     mapper = unified_mapper.AssessmentCreationMapperModal(self._driver)
     mapper.map_dest_objs(
         dest_objs_type=objs[0].type,
@@ -218,6 +218,8 @@ class AssessmentModal(BaseObjectModal):
 
   def get_mapped_snapshots_titles(self):
     """Gets titles of mapped snapshots."""
+    self._root.element(class_name="modal-mapped-objects").wait_until(
+        lambda e: e.text != "")
     els = self._root.elements(class_name="modal-mapped-objects-item")
     return [el.element(class_name="title").text for el in els]
 
