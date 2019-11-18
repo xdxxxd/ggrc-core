@@ -14,7 +14,7 @@ import pytest
 
 from lib import base, constants, url, users
 from lib.constants import element, messages, objects, roles
-from lib.entities import entities_factory
+from lib.entities import entities_factory, entity
 from lib.page import dashboard
 from lib.service import admin_webui_service, rest_facade, webui_facade
 from lib.utils import date_utils, selenium_utils, string_utils
@@ -348,23 +348,14 @@ class TestCAAdministration(base.Test):
                                 "multi_choice_options")
 
   @pytest.mark.parametrize(
-      'old_ca_type, new_ca_type',
-      [(element.AdminWidgetCustomAttributes.TEXT,
-        element.AdminWidgetCustomAttributes.RICH_TEXT),
-       (element.AdminWidgetCustomAttributes.TEXT,
-        element.AdminWidgetCustomAttributes.DATE),
-       (element.AdminWidgetCustomAttributes.TEXT,
-        element.AdminWidgetCustomAttributes.CHECKBOX),
-       (element.AdminWidgetCustomAttributes.TEXT,
-        element.AdminWidgetCustomAttributes.MULTISELECT),
-       (element.AdminWidgetCustomAttributes.TEXT,
-        element.AdminWidgetCustomAttributes.DROPDOWN),
-       (element.AdminWidgetCustomAttributes.RICH_TEXT,
-        element.AdminWidgetCustomAttributes.TEXT)]
-  )
-  def test_destructive_edit_global_ca(
-      self, old_ca_type, new_ca_type, selenium
-  ):
-    """Check that Global Custom Attributes can be edited."""
-    ca_data = webui_facade.edit_gca(selenium, old_ca_type, new_ca_type)
-    self.general_equal_assert(ca_data["expected_ca"], ca_data["actual_ca"])
+      'ca_type', element.AdminWidgetCustomAttributes.ALL_GCA_TYPES)
+  def test_destructive_edit_global_ca(self, ca_type, soft_assert, selenium):
+    """Check that Global Custom Attributes can be edited and 'Title',
+    'Attribute type' and 'Possible values' are disabled for editing."""
+    ca_data = webui_facade.edit_gca(selenium, ca_type)
+    webui_facade.soft_assert_gca_fields_disabled_for_editing(soft_assert,
+                                                             ca_type)
+    soft_assert.assert_expectations()
+    self.general_equal_assert(
+        ca_data["expected_ca"], ca_data["actual_ca"], 'modified_by',
+        *entity.Representation.tree_view_attrs_to_exclude)

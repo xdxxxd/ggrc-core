@@ -14,7 +14,7 @@ from selenium.webdriver.common import keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote import webelement
 
-from lib import constants, exception, mixin, environment, browsers
+from lib import constants, exception, mixin, environment, browsers, users
 from lib.constants import messages
 from lib.decorator import lazy_property
 from lib.entities import entity
@@ -801,7 +801,11 @@ class CommentsPanel(Element):
     self._root = self._browser.div(text="Responses/Comments").parent()
 
   @property
-  def input_txt(self):
+  def emails_dropdown(self):
+    return MentionEmailDropdown(self._root)
+
+  @property
+  def input_field(self):
     return self._root.element(class_name="ql-editor")
 
   @property
@@ -816,7 +820,8 @@ class CommentsPanel(Element):
   def scopes(self):
     """Return list of text comments in dictionary format where each of them
     contains items:
-    {'modified_by': person, 'created_at': datetime, 'description': text}.
+    {'modified_by': person, 'created_at': datetime, 'description': text,
+    'links': list}.
     """
     self._items = [
         CommentItem(self._driver, element) for element in
@@ -834,7 +839,8 @@ class CommentsPanel(Element):
         description = '\n'.join(splited_description)
       comments.append({"modified_by": item.author.text,
                        "created_at": item.datetime,
-                       "description": description})
+                       "description": description,
+                       "links": item.link_values_from_text})
     return comments
 
   @property
@@ -845,13 +851,29 @@ class CommentsPanel(Element):
   @property
   def is_input_empty(self):
     """Return 'True' if comments input field is empty, else 'False'."""
-    return not self.input_txt.text
+    return not self.input_field.text
+
+  def wait_until_dropdown_appears(self):
+    """Waits until dropdown appears."""
+    self.emails_dropdown.wait_until_appears()
+
+  def clear_input_field(self):
+    """Clears textfield."""
+    self.input_field.clear()
+
+  def fill_input_field(self, text):
+    """Type text to textfield"""
+    self.input_field.send_keys(text)
+
+  def click_add_button(self):
+    """Clicks Add button"""
+    self.add_btn.click()
 
   def add_comment(self, text):
     """Clear text from element and enter new text."""
-    self.input_txt.clear()
-    self.input_txt.send_keys(text)
-    self.add_btn.click()
+    self.clear_input_field()
+    self.fill_input_field(text)
+    self.click_add_button()
 
   def add_comments(self, comments):
     """Add text comments to input field."""
@@ -868,6 +890,13 @@ class CommentsPanel(Element):
         raise (messages.ExceptionsMessages.err_comments_count.format(
             count_of_comments, len(self.scopes)) + str(err))
     return self
+
+  def call_email_dropdown(self, first_symbol):
+    """Types mention first_symbol with letter which is common for all emails
+    and waits for dropdown with emails to appear."""
+    self.fill_input_field("{}{}".format(
+        first_symbol, users.DEFAULT_EMAIL_DOMAIN[0]))
+    self.wait_until_dropdown_appears()
 
 
 class CommentItem(Element):
@@ -892,6 +921,53 @@ class CommentItem(Element):
   def content(self):
     """Return content element of comment from comments item."""
     return Label(self.element, self._locators.CONTENT_CSS)
+
+  @property
+  def link_values_from_text(self):
+    """Returns link's href attribute values form the comment content."""
+    try:
+      return [el.get_attribute("href") for el in
+              self.content.element.find_elements_by_tag_name("a")]
+    except exceptions.NoSuchElementException:
+      return []
+
+
+class MentionEmailDropdown(object):
+  """Represents Email dropdown in comments panel"""
+  def __init__(self, comment_panel_root):
+    self._root = comment_panel_root.element(
+        tag_name='people-autocomplete-dropdown')
+
+  @property
+  def dropdown_presence_marker(self):
+    """Marker which exists when dropdown is present on the page."""
+    return self._root.element(class_name='shown')
+
+  @property
+  def is_present(self):
+    """Checks whether dropdown is present on the page."""
+    return self.dropdown_presence_marker.exist
+
+  @property
+  def items(self):
+    """Returns the list of items from dropdown."""
+    return self._root.lis()
+
+  @property
+  def number_of_items(self):
+    """Returns number of items in dropdown."""
+    return len(self.items) if self.is_present else 0
+
+  def wait_until_appears(self):
+    """Waits until dropdown appears."""
+    self.dropdown_presence_marker.wait_until(lambda marker: marker.exist)
+
+  def select_first_email(self):
+    """Selects first email from opened dropdown."""
+    item_to_choose = self.items[0]
+    email = item_to_choose.text
+    item_to_choose.click()
+    return email
 
 
 class ListCheckboxes(Component):

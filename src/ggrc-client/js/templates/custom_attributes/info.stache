@@ -29,12 +29,23 @@
               redirectionAttrName:from="externalName"
               isEditIconDenied:from="isEditIconDenied"
               on:setEditModeInline="setEditModeInline(scope.event)">
-                <div class="info-pane__section-title {{#if mandatory}}form-label form-label__extended{{/if}}">
-                  {{title}}
-                  {{#if mandatory}}
-                    <i class="fa fa-asterisk"></i>
-                  {{/if}}
-                </div>
+                <tooltip-content
+                  class="single-line"
+                  placement:from="'bottom'"
+                  content:from="title"
+                >
+                  <div class="{{#if mandatory}}form-label form-label__extended{{/if}}">
+                    <div
+                      class="info-pane__section-title"
+                      data-trim-target="true"
+                    > 
+                      {{title}}
+                    </div>
+                    {{#if mandatory}}
+                      <i class="fa fa-asterisk"></i>
+                    {{/if}}
+                  </div>
+                </tooltip-content>
             </base-inline-control-title>
             {{#if helptext}}
               <div class="ggrc-form-item__small-text">

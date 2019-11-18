@@ -4,15 +4,16 @@
 """Tests for workflow object exports."""
 
 from freezegun import freeze_time
-
+import ddt
 from flask.json import dumps
-from ggrc_workflows.models import Workflow
+from ggrc_workflows.models import TaskGroupTask, Workflow
 from integration.ggrc import TestCase
 from integration.ggrc.models import factories
 from integration.ggrc_workflows.generator import WorkflowsGenerator
 from integration.ggrc_workflows.models import factories as wf_factories
 
 
+@ddt.ddt
 class TestExportEmptyTemplate(TestCase):
 
   """Test empty export for all workflow object types."""
@@ -37,6 +38,19 @@ class TestExportEmptyTemplate(TestCase):
     self.assertEqual(response.status_code, 200)
     self.assertIn("Title*", response.data)
 
+  def test_unit_tip(self):
+    """Test Workflow's Unit column has hint correctly"""
+    data = {
+        "export_to": "csv",
+        "objects": [{"object_name": "Workflow", "fields": "all"}]
+    }
+
+    response = self.client.post("/_service/export_csv",
+                                data=dumps(data), headers=self.headers)
+    self.assertEqual(response.status_code, 200)
+    self.assertIn("Allowed values are:\n{}".format(
+        "\n".join(Workflow.VALID_UNITS)), response.data)
+
   def test_multiple_objects(self):
     """Test empty exports for all workflow object in one query."""
     data = [
@@ -60,6 +74,20 @@ class TestExportEmptyTemplate(TestCase):
     self.assertIn("Cycle,", response.data)
     self.assertIn("Cycle Task Group,", response.data)
     self.assertIn("Cycle Task,", response.data)
+
+  def test_tips_tg_task(self):
+    """Test if TaskGroupTask date attributes has hints correctly."""
+    data = {
+        "export_to": "csv",
+        "objects": [{"object_name": "TaskGroupTask", "fields": "all"}]
+    }
+
+    response = self.client.post("/_service/export_csv",
+                                data=dumps(data), headers=self.headers)
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(2, response.data.count(
+        "{}\nOnly working days are accepted".format(TaskGroupTask.DATE_HINT)))
+    self.assertEqual(4, response.data.count(TaskGroupTask.DATE_HINT))
 
 
 class TestExportMultipleObjects(TestCase):

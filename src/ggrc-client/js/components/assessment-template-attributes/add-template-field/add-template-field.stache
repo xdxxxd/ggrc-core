@@ -4,7 +4,7 @@
 }}
 
 <div class="add-template-field template-grid__row">
-  <div class="template-grid__row-item{{#if selected.invalidTitleError}} field-failure{{/if}}">
+  <div class="template-grid__row-item template-grid__row-item_attr-title{{#if selected.invalidTitleError}} field-failure{{/if}}">
     <input type="text" class="add-template-field__input"
           el:value:bind="selected.title"
           placeholder="Enter title">
@@ -21,23 +21,24 @@
     </select>
   </div>
 
-  <div class="template-grid__row-item template-grid__row-item_attr-values{{#selected.invalidValues}}
-              field-failure{{/selected.invalidValues}}
-              add-template-field__section-values">
-    {{#if isDisplayValues}}
-      <input type="text" class="add-template-field__input"
-            el:value:bind="selected.values"
-            placeholder="{{placeholder}}"/>
-        <i class="fa fa-question-circle" rel="tooltip" title="{{placeholder}}"></i>
-        {{#selected.invalidValues}}
-          <label class="warning">Cannot be blank</label>
-        {{/selected.invalidValues}}
-    {{else}}
-      N/A
-    {{/if}}
+  <div class="template-grid__row-item template-grid__row-item-options add-template-field__options">
+    <div class="template-grid__row-item add-template-field__options-values
+      {{#if selected.invalidValues}} field-failure{{/if}}">
+        {{#if isDisplayValues}}
+          <input type="text" class="add-template-field__input"
+                el:value:bind="selected.values"
+                placeholder="{{placeholder}}"/>
+            <i class="fa fa-question-circle" rel="tooltip" title="{{placeholder}}"></i>
+            {{#if selected.invalidValues}}
+              <label class="warning">Cannot be blank</label>
+            {{/if}}
+        {{else}}
+          N/A
+        {{/if}}
+    </div>
   </div>
 
-  <div class="template-grid__row-item add-template-field__section-add-field">
+  <div class="template-grid__row-item add-template-field__button-add-field">
     <div class="pull-right">
       <a on:el:click="addField()" class="btn btn-small btn-lightBlue">Add field</a>
     </div>

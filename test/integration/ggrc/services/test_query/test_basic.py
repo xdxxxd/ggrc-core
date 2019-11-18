@@ -8,10 +8,9 @@
 """Tests for /query api endpoint."""
 import random
 import unittest
-from datetime import datetime
+from datetime import datetime, date
 from operator import itemgetter
 import mock
-
 import ddt
 import freezegun
 from flask import json
@@ -39,21 +38,15 @@ DATE_FORMAT_RESPONSE = "%Y-%m-%d"
 class TestAdvancedQueryAPI(WithQueryApi, TestCase):
   """Basic tests for /query api."""
 
-  @classmethod
-  def setUpClass(cls):
-    """Set up test cases for all tests."""
-    TestCase.clear_data()
-    # This imported file could be simplified a bit to speed up testing.
-    cls.response = cls._import_file("data_for_export_testing.csv")
-
   def setUp(self):
+    super(TestAdvancedQueryAPI, self).setUp()
     self.client.get("/login")
     self.generator = generator.ObjectGenerator()
-    self._check_csv_response(self.response, {})
 
   def test_basic_query_eq(self):
     """Filter by = operator."""
     title = "Cat ipsum 1"
+    factories.ProgramFactory(title="Cat ipsum 1")
     programs = self._get_first_result_set(
         self._make_query_dict("Program", expression=["title", "=", title]),
         "Program",
@@ -66,13 +59,17 @@ class TestAdvancedQueryAPI(WithQueryApi, TestCase):
   def test_basic_query_in(self):
     """Filter by ~ operator."""
     title_pattern = "1"
+    with factories.single_commit():
+      for i in (1, 2, 10, 21, 5):
+        factories.ProgramFactory(title="Cat ipsum {}".format(i))
+
     programs = self._get_first_result_set(
         self._make_query_dict("Program",
                               expression=["title", "~", title_pattern]),
         "Program",
     )
 
-    self.assertEqual(programs["count"], 12)
+    self.assertEqual(programs["count"], 3)
     self.assertEqual(len(programs["values"]), programs["count"])
     self.assertTrue(all(title_pattern in program["title"]
                         for program in programs["values"]))
@@ -80,13 +77,17 @@ class TestAdvancedQueryAPI(WithQueryApi, TestCase):
   def test_basic_query_ne(self):
     """Filter by != operator."""
     title = "Cat ipsum 1"
+    with factories.single_commit():
+      for i in (1, 2, 10, 21, 5):
+        factories.ProgramFactory(title="Cat ipsum {}".format(i))
+
     programs = self._get_first_result_set(
         self._make_query_dict("Program",
                               expression=["title", "!=", title]),
         "Program",
     )
 
-    self.assertEqual(programs["count"], 22)
+    self.assertEqual(programs["count"], 4)
     self.assertEqual(len(programs["values"]), programs["count"])
     self.assertTrue(all(program["title"] != title
                         for program in programs["values"]))
@@ -94,28 +95,44 @@ class TestAdvancedQueryAPI(WithQueryApi, TestCase):
   def test_basic_query_not_in(self):
     """Filter by !~ operator."""
     title_pattern = "1"
+    with factories.single_commit():
+      for i in (1, 2, 10, 21, 5):
+        factories.ProgramFactory(title="Cat ipsum {}".format(i))
+
     programs = self._get_first_result_set(
         self._make_query_dict("Program",
                               expression=["title", "!~", title_pattern]),
         "Program",
     )
 
-    self.assertEqual(programs["count"], 11)
+    self.assertEqual(programs["count"], 2)
     self.assertEqual(len(programs["values"]), programs["count"])
     self.assertTrue(all(title_pattern not in program["title"]
                         for program in programs["values"]))
 
   def test_basic_query_lt(self):
     """Filter by < operator."""
-    date = datetime(2015, 5, 18)
+    expected_date = datetime(2015, 5, 18)
+    dates = [datetime(2015, 5, 16),
+             datetime(2015, 5, 17),
+             datetime(2015, 5, 18),
+             datetime(2015, 5, 19),
+             datetime(2015, 5, 20),
+             ]
+    with factories.single_commit():
+      for start_date in dates:
+        factories.ProgramFactory(start_date=start_date)
+
     programs = self._get_first_result_set(
         self._make_query_dict("Program",
                               expression=["effective date", "<",
-                                          date.strftime(DATE_FORMAT_REQUEST)]),
+                                          expected_date.strftime(
+                                              DATE_FORMAT_REQUEST)
+                                          ]),
         "Program",
     )
 
-    self.assertEqual(programs["count"], 9)
+    self.assertEqual(programs["count"], 2)
     self.assertEqual(len(programs["values"]), programs["count"])
     self.assertTrue(
         all(datetime.strptime(program["start_date"],
@@ -125,19 +142,30 @@ class TestAdvancedQueryAPI(WithQueryApi, TestCase):
 
   def test_basic_query_gt(self):
     """Filter by > operator."""
-    date = datetime(2015, 5, 18)
+    expected_date = datetime(2015, 5, 18)
+    dates = [datetime(2015, 5, 16),
+             datetime(2015, 5, 17),
+             datetime(2015, 5, 18),
+             datetime(2015, 5, 19),
+             datetime(2015, 5, 20),
+             ]
+    with factories.single_commit():
+      for start_date in dates:
+        factories.ProgramFactory(start_date=start_date)
     programs = self._get_first_result_set(
         self._make_query_dict("Program",
                               expression=["effective date", ">",
-                                          date.strftime(DATE_FORMAT_REQUEST)]),
+                                          expected_date.strftime(
+                                              DATE_FORMAT_REQUEST)
+                                          ]),
         "Program",
     )
 
-    self.assertEqual(programs["count"], 13)
+    self.assertEqual(programs["count"], 2)
     self.assertEqual(len(programs["values"]), programs["count"])
     self.assertTrue(
         all(datetime.strptime(program["start_date"],
-                              DATE_FORMAT_RESPONSE) > date
+                              DATE_FORMAT_RESPONSE) > expected_date
             for program in programs["values"]),
     )
 
@@ -154,17 +182,28 @@ class TestAdvancedQueryAPI(WithQueryApi, TestCase):
   # pylint: disable=invalid-name
   @ddt.data(
       ("effective date", ">", "05.18.2015"),
-      ("start_date", "=", "2017-06.12"),
-      ("start_date", "=", "2017-33.12"),
-      ("start_date", "=", "2017.06-33"),
-      ("start_date", "=", "2017/33.12"),
-      ("start_date", "=", "2017.06/33"),
+      ("start_date", "=", "2015-05.18"),
+      ("start_date", "=", "2015-33.18"),
+      ("start_date", "=", "2015.05-33"),
+      ("start_date", "=", "2015/05.18"),
+      ("start_date", "=", "2015.05/18"),
   )
   @ddt.unpack
-  def test_basic_query_incorrect_date_format(self, field, operation, date):
+  def test_basic_query_incorrect_date_format(self, field,
+                                             operation, incorrect_date):
     """Filtering should fail because of incorrect date input."""
+    dates = [datetime(2015, 5, 16),
+             datetime(2015, 5, 17),
+             datetime(2015, 5, 18),
+             datetime(2015, 5, 19),
+             datetime(2015, 5, 20),
+             ]
+    with factories.single_commit():
+      for dt in dates:
+        factories.ProgramFactory(start_date=dt)
+
     data = self._make_query_dict(
-        "Program", expression=[field, operation, date]
+        "Program", expression=[field, operation, incorrect_date]
     )
     response = self._post(data)
     self.assert400(response)
@@ -188,24 +227,36 @@ class TestAdvancedQueryAPI(WithQueryApi, TestCase):
   def test_basic_query_text_search(self):
     """Filter by fulltext search."""
     text_pattern = "ea"
-    data = self._make_query_dict("Regulation")
+
+    programs_data = [("Program_1_ea", "Notes", "Description"),
+                     ("Program_2", "Notes_ea", "Description"),
+                     ("Program_3", "Notes", "Description_ea"),
+                     ("Program_4", "Notes_ea", "Description sweat"),
+                     ("Program_5_ea", "Notes tea", "Description sweat"),
+                     ("Program_6", "Noteas", "Description"),
+                     ("Program_7", "Notes7", "Deascription7"),
+                     ]
+    with factories.single_commit():
+      for program in programs_data:
+        factories.ProgramFactory(title=program[0],
+                                 notes=program[1],
+                                 description=program[2])
+    data = self._make_query_dict("Program")
     data["filters"]["expression"] = {
         "op": {"name": "text_search"},
         "text": text_pattern,
     }
-    regulations = self._get_first_result_set(data, "Regulation")
+    programs = self._get_first_result_set(data, "Program")
 
-    self.assertEqual(regulations["count"], 21)
-    self.assertEqual(len(regulations["values"]), regulations["count"])
-    self.assertTrue(all((regulation["description"] and
-                         text_pattern in regulation["description"]) or
-                        (regulation["notes"] and
-                         text_pattern in regulation.get("notes", ""))
-                        for regulation in regulations["values"]))
+    self.assertEqual(programs["count"], 7)
+    self.assertEqual(len(programs["values"]), programs["count"])
 
   def test_basic_query_pagination(self):
     """Test basic query with pagination info."""
-    from_, to_ = 1, 12
+    with factories.single_commit():
+      for i in range(1, 6):
+        factories.ProgramFactory(title="Cat ipsum {}".format(i))
+    from_, to_ = 1, 5
     programs = self._get_first_result_set(
         self._make_query_dict("Program",
                               expression=["title", "~", "Cat ipsum"],
@@ -215,10 +266,13 @@ class TestAdvancedQueryAPI(WithQueryApi, TestCase):
     )
     self.assertEqual(programs["count"], to_ - from_)
     self.assertEqual(len(programs["values"]), programs["count"])
-    self.assertEqual(programs["total"], 23)
+    self.assertEqual(programs["total"], 5)
 
   def test_basic_query_total(self):
     """The value of "total" doesn't depend on "limit" parameter."""
+    with factories.single_commit():
+      for i in range(1, 6):
+        factories.ProgramFactory(title="Cat ipsum {}".format(i))
     programs_no_limit = self._get_first_result_set(
         self._make_query_dict("Program"),
         "Program",
@@ -251,6 +305,10 @@ class TestAdvancedQueryAPI(WithQueryApi, TestCase):
                        programs_no_limit["values"][from_:to_],
                        sort_sublists=True)
 
+    with factories.single_commit():
+      for i in range(1, 11):
+        factories.ProgramFactory(title="Cat ipsum {}".format(i))
+
     programs_no_limit = self._get_first_result_set(
         make_query_dict(),
         "Program",
@@ -258,50 +316,53 @@ class TestAdvancedQueryAPI(WithQueryApi, TestCase):
 
     self.assertEqual(programs_no_limit["count"], programs_no_limit["total"])
 
-    programs_0_10 = self._get_first_result_set(
-        make_query_dict(limit=[0, 10]),
+    programs_0_4 = self._get_first_result_set(
+        make_query_dict(limit=[0, 4]),
         "Program",
     )
 
-    check_counts_and_values(programs_0_10, from_=0, to_=10)
+    check_counts_and_values(programs_0_4, from_=0, to_=4)
 
-    programs_10_21 = self._get_first_result_set(
-        make_query_dict(limit=[10, 21]),
+    programs_4_8 = self._get_first_result_set(
+        make_query_dict(limit=[4, 8]),
         "Program",
     )
 
-    check_counts_and_values(programs_10_21, from_=10, to_=21)
+    check_counts_and_values(programs_4_8, from_=4, to_=8)
 
-    programs_10_top = self._get_first_result_set(
-        make_query_dict(limit=[10, programs_no_limit["total"] + 42]),
+    programs_4_top = self._get_first_result_set(
+        make_query_dict(limit=[4, programs_no_limit["total"] + 10]),
         "Program",
     )
 
-    check_counts_and_values(programs_10_top, from_=10, to_=None,
-                            count=programs_no_limit["total"] - 10)
+    check_counts_and_values(programs_4_top, from_=4, to_=None,
+                            count=programs_no_limit["total"] - 4)
 
     # check if a valid integer string representation gets casted
-    programs_10_21_str = self._get_first_result_set(
-        make_query_dict(limit=[10, "21"]),
+    programs_4_8_str = self._get_first_result_set(
+        make_query_dict(limit=[4, "8"]),
         "Program",
     )
-    programs_10_str_21 = self._get_first_result_set(
-        make_query_dict(limit=["10", 21]),
+    programs_4_str_8 = self._get_first_result_set(
+        make_query_dict(limit=["4", 8]),
         "Program",
     )
-    self._sort_sublists(programs_10_21_str["values"])
-    self._sort_sublists(programs_10_str_21["values"])
-    self._sort_sublists(programs_10_21["values"])
+    self._sort_sublists(programs_4_8_str["values"])
+    self._sort_sublists(programs_4_str_8["values"])
+    self._sort_sublists(programs_4_8["values"])
 
-    self.assertDictEqual(programs_10_21_str, programs_10_21)
-    self.assertDictEqual(programs_10_str_21, programs_10_21)
+    self.assertDictEqual(programs_4_8_str, programs_4_8)
+    self.assertDictEqual(programs_4_str_8, programs_4_8)
 
   def test_query_invalid_limit(self):
     """Invalid limit parameters are handled properly."""
+    with factories.single_commit():
+      for i in range(1, 6):
+        factories.ProgramFactory(title="Cat ipsum {}".format(i))
 
     # invalid "from"
     response = self._post(
-        self._make_query_dict("Program", limit=["invalid", 12]),
+        self._make_query_dict("Program", limit=["invalid", 3]),
     )
     self.assert400(response)
     self.assertEqual(response.json['message'],
@@ -317,7 +378,7 @@ class TestAdvancedQueryAPI(WithQueryApi, TestCase):
 
     # "from" >= "to"
     response = self._post(
-        self._make_query_dict("Program", limit=[12, 0]),
+        self._make_query_dict("Program", limit=[4, 0]),
     )
     self.assert400(response)
     self.assertEqual(response.json['message'],
@@ -325,7 +386,7 @@ class TestAdvancedQueryAPI(WithQueryApi, TestCase):
 
     # negative "from"
     response = self._post(
-        self._make_query_dict("Program", limit=[-2, 10]),
+        self._make_query_dict("Program", limit=[-2, 2]),
     )
     self.assert400(response)
     self.assertEqual(response.json['message'],
@@ -333,7 +394,7 @@ class TestAdvancedQueryAPI(WithQueryApi, TestCase):
 
     # negative "to"
     response = self._post(
-        self._make_query_dict("Program", limit=[2, -10]),
+        self._make_query_dict("Program", limit=[2, -1]),
     )
     self.assert400(response)
     self.assertEqual(response.json['message'],
@@ -345,6 +406,10 @@ class TestAdvancedQueryAPI(WithQueryApi, TestCase):
 
     def get_titles(programs):
       return [program["title"] for program in programs]
+
+    with factories.single_commit():
+      for i in (1, 12, 23, 9, 52, 28):
+        factories.ProgramFactory(title="Cat ipsum {}".format(i))
 
     programs_default = self._get_first_result_set(
         self._make_query_dict("Program",
@@ -376,6 +441,18 @@ class TestAdvancedQueryAPI(WithQueryApi, TestCase):
 
   def test_order_by_several_fields(self):
     """Results get sorted by two fields at once."""
+    regulations_data = [("reg-1", "notes1"),
+                        ("reg-2", "notes2"),
+                        ("reg-3", "notes3"),
+                        ("reg-4", "notes"),
+                        ("reg-5", "notes"),
+                        ("reg-6", "notes"),
+                        ]
+    with factories.single_commit():
+      for reg in regulations_data:
+        factories.RegulationFactory(title=reg[0],
+                                    notes=reg[1])
+
     regulations = self._get_first_result_set(
         self._make_query_dict("Regulation",
                               order_by=[{"name": "notes", "desc": True},
@@ -399,6 +476,12 @@ class TestAdvancedQueryAPI(WithQueryApi, TestCase):
 
   def test_order_by_related_titled(self):
     """Results get sorted by title of related Titled object."""
+    with factories.single_commit():
+      for i in ("b", "a", "f", "c", "d"):
+        program = factories.ProgramFactory(title="{}-program".format(i))
+        factories.AuditFactory(title="{}-audit".format(i),
+                               program=program)
+
     audits_title = self._get_first_result_set(
         self._make_query_dict("Audit",
                               order_by=[{"name": "program"}, {"name": "id"}]),
@@ -428,6 +511,13 @@ class TestAdvancedQueryAPI(WithQueryApi, TestCase):
   def test_query_order_by_owners(self):
     """Results get sorted by name or email of the (first) owner."""
     # TODO: the test data set lacks objects with several owners
+    with factories.single_commit():
+      for i in ("b", "a", "f", "c", "d"):
+        user = factories.PersonFactory(name="{}-admin".format(i),
+                                       email="{}-admin@example.com".format(i))
+        policy = factories.PolicyFactory(title="Policy {}".format(i))
+        policy.add_person_with_role_name(user, "Admin")
+
     policies_owner = self._get_first_result_set(
         self._make_query_dict("Policy",
                               order_by=[{"name": "Admin"}, {"name": "id"}]),
@@ -515,8 +605,15 @@ class TestAdvancedQueryAPI(WithQueryApi, TestCase):
 
   def test_query_related_people_for_program(self):
     """Test correct querying of the related people to Program"""
-    program_id = all_models.Program.query.filter_by(
-        title="Cat ipsum 1").one().id
+
+    with factories.single_commit():
+      test_pm = factories.PersonFactory(email="smotko@example.com")
+      test_pc = factories.PersonFactory(email="sec.con@example.com")
+      program = factories.ProgramFactory(title="Cat ipsum 1")
+      program.add_person_with_role_name(test_pm, "Program Managers")
+      program.add_person_with_role_name(test_pc, "Primary Contacts")
+      program_id = program.id
+
     query_filter = {
         "object_name": "Person",
         "filters": {
@@ -664,6 +761,10 @@ class TestAdvancedQueryAPI(WithQueryApi, TestCase):
 
   def test_query_count(self):
     """The value of "count" is same for "values" and "count" queries."""
+    with factories.single_commit():
+      for i in range(1, 6):
+        factories.ProgramFactory(title="Cat ipsum {}".format(i))
+
     programs_values = self._get_first_result_set(
         self._make_query_dict("Program", type_="values"),
         "Program",
@@ -710,6 +811,10 @@ class TestAdvancedQueryAPI(WithQueryApi, TestCase):
 
   def test_query_ids(self):
     """The ids are the same for "values" and "ids" queries."""
+    with factories.single_commit():
+      for i in range(1, 6):
+        factories.ProgramFactory(title="Cat ipsum {}".format(i))
+
     programs_values = self._get_first_result_set(
         self._make_query_dict("Program", type_="values"),
         "Program",
@@ -775,7 +880,13 @@ class TestAdvancedQueryAPI(WithQueryApi, TestCase):
                      sort_sublists=True)
 
   def test_is_empty_query_by_native_attrs(self):
-    """Filter by navive object attrs with 'is empty' operator."""
+    """Filter by native object attrs with 'is empty' operator."""
+    with factories.single_commit():
+      factories.ProgramFactory(title="Cat ipsum 1")
+      factories.ProgramFactory(title="Cat ipsum 2",
+                               notes="sample notes1")
+      factories.ProgramFactory(title="Cat ipsum 3",
+                               notes="sample notes2")
     programs = self._get_first_result_set(
         self._make_query_dict("Program",
                               expression=["notes", "is", "empty"]),
@@ -1027,12 +1138,12 @@ class TestQueryAssessmentCA(TestCase, WithQueryApi):
   # pylint: disable=invalid-name
   def test_ca_query_different_types_local_ca(self):
     """Filter by local CAs with same title and different types."""
-    date = datetime(2016, 10, 31)
+    expected_date = datetime(2016, 10, 31)
     assessments_date = self._get_first_result_set(
         self._make_query_dict(
             "Assessment",
             expression=["Date or arbitrary text", "=",
-                        date.strftime(DATE_FORMAT_REQUEST)],
+                        expected_date.strftime(DATE_FORMAT_REQUEST)],
         ),
         "Assessment", "values",
     )
@@ -1062,12 +1173,12 @@ class TestQueryAssessmentCA(TestCase, WithQueryApi):
     self.assertItemsEqual([asmt["title"] for asmt in assessments_mixed],
                           ["Assessment with text", "Assessment with date"])
 
-    date = datetime(2016, 11, 9)
+    expected_date = datetime(2016, 11, 9)
     assessments_mixed = self._get_first_result_set(
         self._make_query_dict(
             "Assessment",
             expression=["Date or text styled as date", "=",
-                        date.strftime(DATE_FORMAT_REQUEST)],
+                        expected_date.strftime(DATE_FORMAT_REQUEST)],
         ),
         "Assessment", "values",
     )
@@ -1176,12 +1287,25 @@ class TestQueryAssessmentByEvidenceURL(TestCase, WithQueryApi):
   """Test assessments filtering by Evidence and/or URL"""
   def setUp(self):
     super(TestQueryAssessmentByEvidenceURL, self).setUp()
-    response = self._import_file("assessment_full_no_warnings.csv")
-    self._check_csv_response(response, {})
     self.client.get("/login")
 
   def test_query_evidence_url(self):
     """Test assessments query filtered by Evidence"""
+    evidence_url1 = "http://i.imgur.com/Lppr347.jpg"
+    evidence_url2 = "http://i.imgur.com/Lppr447.jpg"
+
+    with factories.single_commit():
+      for i in range(1, 3):
+        assmt = factories.AssessmentFactory(
+            title="Assessment title {}".format(i))
+        evidence = factories.EvidenceUrlFactory(link=evidence_url1)
+        factories.RelationshipFactory(source=assmt, destination=evidence)
+      for i in range(3, 5):
+        assmt = factories.AssessmentFactory(
+            title="Assessment title {}".format(i))
+        evidence = factories.EvidenceUrlFactory(link=evidence_url2)
+        factories.RelationshipFactory(source=assmt, destination=evidence)
+
     assessments_by_evidence = self._get_first_result_set(
         self._make_query_dict(
             "Assessment",
@@ -1189,10 +1313,9 @@ class TestQueryAssessmentByEvidenceURL(TestCase, WithQueryApi):
         ),
         "Assessment", "values",
     )
-
     self.assertEqual(len(assessments_by_evidence), 2)
     self.assertItemsEqual([asmt["title"] for asmt in assessments_by_evidence],
-                          ["Assessment title 1", "Assessment title 3"])
+                          ["Assessment title 1", "Assessment title 2"])
 
     assessments_by_url = self._get_first_result_set(
         self._make_query_dict(
@@ -1202,11 +1325,13 @@ class TestQueryAssessmentByEvidenceURL(TestCase, WithQueryApi):
         "Assessment", "values",
     )
 
-    self.assertEqual(len(assessments_by_url), 3)
+    self.assertEqual(len(assessments_by_url), 4)
     self.assertItemsEqual([asmt["title"] for asmt in assessments_by_url],
                           ["Assessment title 1",
+                           "Assessment title 2",
                            "Assessment title 3",
-                           "Assessment title 4"])
+                           "Assessment title 4",
+                           ])
 
 
 class TestQueryWithCA(TestCase, WithQueryApi):
@@ -1215,7 +1340,6 @@ class TestQueryWithCA(TestCase, WithQueryApi):
   def setUp(self):
     super(TestQueryWithCA, self).setUp()
     self._generate_cad()
-    self.import_file("sorting_with_ca_setup.csv")
     self.client.get("/login")
 
   @staticmethod
@@ -1255,6 +1379,17 @@ class TestQueryWithCA(TestCase, WithQueryApi):
   def test_single_ca_sorting(self):
     """Results get sorted by single custom attribute field."""
 
+    ca_values = ("B", "A", "F", "A", "B")
+    ca_text = db.session.query(CAD).filter_by(title="CA text").one()
+    with factories.single_commit():
+      for i, ca_value in enumerate(ca_values):
+        pgm = factories.ProgramFactory(title="program {}".format(i))
+        factories.CustomAttributeValueFactory(
+            custom_attribute=ca_text,
+            attributable=pgm,
+            attribute_value=ca_value,
+        )
+
     programs = self._get_first_result_set(
         self._make_query_dict("Program",
                               order_by=[{"name": "title"}]),
@@ -1275,6 +1410,17 @@ class TestQueryWithCA(TestCase, WithQueryApi):
 
   def test_mixed_ca_sorting(self):
     """Test sorting by multiple fields with CAs."""
+
+    ca_values = ("B", "A", "F", "A", "B")
+    ca_text = db.session.query(CAD).filter_by(title="CA text").one()
+    with factories.single_commit():
+      for i, ca_value in enumerate(ca_values):
+        pgm = factories.ProgramFactory(title="program {}".format(i))
+        factories.CustomAttributeValueFactory(
+            custom_attribute=ca_text,
+            attributable=pgm,
+            attribute_value=ca_value,
+        )
 
     programs = self._get_first_result_set(
         self._make_query_dict("Program",
@@ -1298,6 +1444,24 @@ class TestQueryWithCA(TestCase, WithQueryApi):
 
   def test_multiple_ca_sorting(self):
     """Test sorting by multiple CA fields"""
+    ca_text_values = ("B", "A", "F", "A", "B")
+    ca_dp_values = ("one", "two", "four", "three", "five")
+    ca_text = db.session.query(CAD).filter_by(title="CA text").one()
+    ca_dropdown = db.session.query(CAD).filter_by(title="CA dropdown").one()
+    with factories.single_commit():
+      for i, (text_val, dp_val) in enumerate(zip(ca_text_values,
+                                                 ca_dp_values)):
+        program = factories.ProgramFactory(title="program {}".format(i))
+        factories.CustomAttributeValueFactory(
+            custom_attribute=ca_text,
+            attributable=program,
+            attribute_value=text_val,
+        )
+        factories.CustomAttributeValueFactory(
+            custom_attribute=ca_dropdown,
+            attributable=program,
+            attribute_value=dp_val,
+        )
 
     programs = self._get_first_result_set(
         self._make_query_dict("Program",
@@ -1311,46 +1475,118 @@ class TestQueryWithCA(TestCase, WithQueryApi):
 
   def test_ca_query_eq(self):
     """Test CA date fields filtering by = operator."""
-    date = datetime(2015, 5, 18)
+    ca_values = [date(2015, 5, 16),
+                 date(2015, 5, 17),
+                 date(2015, 5, 18),
+                 date(2015, 5, 19),
+                 date(2015, 5, 20),
+                 ]
+    expected_date = datetime(2015, 5, 18)
+    ca_date = db.session.query(CAD).filter_by(title="CA date").one()
+    with factories.single_commit():
+      for i, ca_value in enumerate(ca_values):
+        program = factories.ProgramFactory(title="program {}".format(i))
+        factories.CustomAttributeValueFactory(
+            custom_attribute=ca_date,
+            attributable=program,
+            attribute_value=ca_value,
+        )
+
     programs = self._get_first_result_set(
         self._make_query_dict("Program",
                               expression=["ca date", "=",
-                                          date.strftime(DATE_FORMAT_REQUEST)]),
+                                          expected_date.strftime(
+                                              DATE_FORMAT_REQUEST)
+                                          ]),
         "Program", "values",
     )
     titles = [prog["title"] for prog in programs]
-    self.assertItemsEqual(titles, ("F", "H", "J", "B", "D"))
-    self.assertEqual(len(programs), 5)
+    self.assertItemsEqual(titles, ("program 2",))
+    self.assertEqual(len(programs), 1)
 
   def test_ca_query_lt(self):
     """Test CA date fields filtering by < operator."""
-    date = datetime(2015, 5, 18)
+    ca_values = [date(2015, 5, 16),
+                 date(2015, 5, 17),
+                 date(2015, 5, 18),
+                 date(2015, 5, 19),
+                 date(2015, 5, 20),
+                 ]
+    expected_date = datetime(2015, 5, 18)
+    ca_date = db.session.query(CAD).filter_by(title="CA date").one()
+
+    with factories.single_commit():
+      for i, ca_value in enumerate(ca_values):
+        program = factories.ProgramFactory(title="program {}".format(i))
+        factories.CustomAttributeValueFactory(
+            custom_attribute=ca_date,
+            attributable=program,
+            attribute_value=ca_value,
+        )
+
     programs = self._get_first_result_set(
         self._make_query_dict("Program",
                               expression=["ca date", "<",
-                                          date.strftime(DATE_FORMAT_REQUEST)]),
+                                          expected_date.strftime(
+                                              DATE_FORMAT_REQUEST)
+                                          ]),
         "Program", "values",
     )
     titles = [prog["title"] for prog in programs]
-    self.assertItemsEqual(titles, ("G", "I"))
+    self.assertItemsEqual(titles, ("program 0", "program 1"))
     self.assertEqual(len(programs), 2)
 
   def test_ca_query_gt(self):
     """Test CA date fields filtering by > operator."""
-    date = datetime(2015, 5, 18)
+    ca_values = [date(2015, 5, 16),
+                 date(2015, 5, 17),
+                 date(2015, 5, 18),
+                 date(2015, 5, 19),
+                 date(2015, 5, 20),
+                 ]
+    expected_date = datetime(2015, 5, 18)
+    ca_date = db.session.query(CAD).filter_by(title="CA date").one()
+
+    with factories.single_commit():
+      for i, ca_value in enumerate(ca_values):
+        program = factories.ProgramFactory(title="program {}".format(i))
+        factories.CustomAttributeValueFactory(
+            custom_attribute=ca_date,
+            attributable=program,
+            attribute_value=ca_value,
+        )
+
     programs = self._get_first_result_set(
         self._make_query_dict("Program",
                               expression=["ca date", ">",
-                                          date.strftime(DATE_FORMAT_REQUEST)]),
+                                          expected_date.strftime(
+                                              DATE_FORMAT_REQUEST)
+                                          ]),
         "Program", "values",
     )
     titles = [prog["title"] for prog in programs]
-    self.assertItemsEqual(titles, ("A", "C", "E"))
-    self.assertEqual(len(programs), 3)
+    self.assertItemsEqual(titles, ("program 3", "program 4"))
+    self.assertEqual(len(programs), 2)
 
   # pylint: disable=invalid-name
   def test_ca_query_incorrect_date_format(self):
     """CA filtering should fail on incorrect date when CA title is unique."""
+    ca_values = [datetime(2015, 5, 16),
+                 datetime(2015, 5, 17),
+                 datetime(2015, 5, 18),
+                 datetime(2015, 5, 19),
+                 datetime(2015, 5, 20),
+                 ]
+    ca_date = db.session.query(CAD).filter_by(title="CA date").first()
+    with factories.single_commit():
+      for i, ca_value in enumerate(ca_values):
+        program = factories.ProgramFactory(title="program {}".format(i))
+        factories.CustomAttributeValueFactory(
+            custom_attribute=ca_date,
+            attributable=program,
+            attribute_value=ca_value,
+        )
+
     data = self._make_query_dict(
         "Program",
         expression=["ca date", ">", "05.18.2015"],
@@ -1368,13 +1604,6 @@ class TestQueryWithUnicode(TestCase, WithQueryApi):
   CAD_TITLE2 = u"CA текст" + "X" * 200
   # pylint: disable=anomalous-backslash-in-string
   CAD_TITLE3 = u"АС\ЫЦУМПА"  # definitely did not work
-
-  @classmethod
-  def setUpClass(cls):
-    """Set up test cases for all tests."""
-    TestCase.clear_data()
-    cls._generate_cad()
-    cls.response = cls._import_file("querying_with_unicode.csv")
 
   @classmethod
   def _generate_cad(cls):
@@ -1404,18 +1633,40 @@ class TestQueryWithUnicode(TestCase, WithQueryApi):
     return data
 
   def setUp(self):
+    super(TestQueryWithUnicode, self).setUp()
     self.client.get("/login")
-    self._check_csv_response(self.response, {})
+    self._generate_cad()
 
-  @ddt.data(
-      ("title", u"программа A"),
-      (CAD_TITLE3, u"Ы текст")
-  )
-  @ddt.unpack
-  def test_query(self, title, text):
-    """Test query by unicode value."""
+  # pylint: disable=invalid-name
+  def test_query_attr_with_unicode_value(self):
+    """Test query of basic attribute by unicode value."""
+    program_title = u"программа A"
+    factories.ProgramFactory(title=program_title)
     programs = self._get_first_result_set(
-        self._make_query_dict("Program", expression=[title, "=", text]),
+        self._make_query_dict("Program",
+                              expression=["title", "=", program_title]),
+        "Program",
+    )
+
+    self.assertEqual(programs["count"], 1)
+    self.assertEqual(len(programs["values"]), programs["count"])
+
+  # pylint: disable=invalid-name
+  def test_query_ca_with_unicode_value(self):
+    """Test query of custom attribute by unicode value."""
+
+    ca_text_value = u"Ы текст"
+    ca_title = self.CAD_TITLE3
+    ca_attr = db.session.query(CAD).filter_by(title=ca_title).first()
+    with factories.single_commit():
+      program = factories.ProgramFactory()
+      factories.CustomAttributeValueFactory(custom_attribute=ca_attr,
+                                            attributable=program,
+                                            attribute_value=ca_text_value)
+
+    programs = self._get_first_result_set(
+        self._make_query_dict("Program",
+                              expression=[ca_title, "=", ca_text_value]),
         "Program",
     )
 
@@ -1424,6 +1675,22 @@ class TestQueryWithUnicode(TestCase, WithQueryApi):
 
   def test_sorting_by_ca(self):
     """Test sorting by CA fields with unicode names."""
+    ca1_title = self.CAD_TITLE1
+    ca2_title = self.CAD_TITLE2
+    ca1_values = [u"три", u"один", u"три", u"один", u"четыре"]
+    ca2_values = [u"B текст", u"A текст", u"B текст", u"C текст", u"A текст"]
+    ca1 = db.session.query(CAD).filter_by(title=ca1_title).one()
+    ca2 = db.session.query(CAD).filter_by(title=ca2_title).one()
+    with factories.single_commit():
+      for i, (ca1_value, ca2_value) in enumerate(zip(ca1_values, ca2_values)):
+        program = factories.ProgramFactory(title="program {}".format(i))
+        factories.CustomAttributeValueFactory(custom_attribute=ca1,
+                                              attributable=program,
+                                              attribute_value=ca1_value)
+        factories.CustomAttributeValueFactory(custom_attribute=ca2,
+                                              attributable=program,
+                                              attribute_value=ca2_value)
+
     programs = self._flatten_cav(
         self._get_first_result_set(
             self._make_query_dict("Program",

@@ -303,86 +303,6 @@ def _merge_errors(create_errors, update_errors):
   return errors
 
 
-def _get_revisions_by_type(resource_type):
-  """Get all revision according the resource type
-
-  Args:
-    resource_type: Resource type of revision that yields further
-  Yields:
-    Revision that according the resource_type
-  """
-  query = models.Revision.query.filter(
-      models.Revision.resource_type == resource_type)
-
-  for chunk in ggrc_utils.generate_query_chunks(query):
-    for obj in chunk.all():
-      yield obj
-
-
-def _is_cad_definition_type(cad, object_type):
-  """Check if cad is right one by checking definition type
-
-  Args:
-    cad: CAD that we check
-    object_type: Type of object of cad which is expected
-  Return:
-    True if cad is exist and definition type of cad which is expected
-    else False
-  """
-  definition_type = ggrc_utils.underscore_from_camelcase(object_type)
-  return cad and cad.definition_type == definition_type
-
-
-def _refresh_cads_title(revision_id, revision_content):
-  # pylint: disable=protected-access
-  """Update cad title in revision
-
-  Args:
-    revision_id: Id of revision in table that will be updated
-    revision_content: Content of revision that will be refresh current content
-  """
-  models.Revision.query.filter(
-      models.Revision.id == revision_id).update(
-      {models.Revision._content: revision_content})
-
-
-def _get_modified_revision_content(cad, resource_type):
-  # pylint: disable=protected-access
-  """Modify revision cad json for updating the cad title for revisions
-
-  Args:
-    cad: A modified cad whose title rewrites to the revision
-  Yields:
-    Id of revision that will be updated with revision_content
-    revision content itself
-  """
-  cad_id, cad_title = cad.id, cad.title
-
-  for rev in _get_revisions_by_type(resource_type):
-    revision_content, revision_id = rev._content, rev.id
-    revision_cads = revision_content["custom_attribute_definitions"]
-
-    for revision_cad in revision_cads:
-      if revision_cad["id"] == cad_id:
-        revision_cad["title"] = cad_title
-        yield revision_id, revision_content
-        break
-
-
-def refresh_program_cads_title(cad):
-  """Refresh cads title in Program revisions when cad title is modified
-
-  Args:
-    cad: A modified cad
-  """
-  resource_type = "Program"
-
-  if _is_cad_definition_type(cad, resource_type):
-    for revision_id, revision_content in _get_modified_revision_content(
-            cad, resource_type):
-      _refresh_cads_title(revision_id, revision_content)
-
-
 @app.route("/_background_tasks/update_cad_related_objects", methods=["POST"])
 @background_task.queued_task
 @helpers.without_sqlalchemy_cache
@@ -400,8 +320,6 @@ def update_cad_related_objects(task):
   query = db.session.query(model
                            if task.parameters.get("need_revisions")
                            else model.id)
-  if event.action == "PUT":
-    refresh_program_cads_title(cad)
   objects_count = len(query.all())
   handled_objects = 0
   for chunk in ggrc_utils.generate_query_chunks(query):

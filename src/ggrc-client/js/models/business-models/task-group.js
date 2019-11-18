@@ -6,6 +6,7 @@
 import Cacheable from '../cacheable';
 import Contactable from '../mixins/contactable';
 import Stub from '../stub';
+import {refreshAll} from '../../models/refresh_queue';
 
 export default Cacheable.extend({
   root_object: 'task_group',
@@ -42,12 +43,12 @@ export default Cacheable.extend({
 
     this.bind('updated', function (ev, instance) {
       if (instance instanceof that) {
-        instance.refresh_all_force('workflow', 'context');
+        refreshAll(instance, ['workflow', 'context'], true);
       }
     });
     this.bind('destroyed', function (ev, inst) {
       if (inst instanceof that) {
-        inst.refresh_all_force('workflow', 'context');
+        refreshAll(inst, ['workflow', 'context'], true);
       }
     });
   },

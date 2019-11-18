@@ -64,6 +64,10 @@
   display: flex;
 
   &-item {
+    &-options {
+      flex-grow: 7;
+    }
+
     flex: 1 1;
     // By default, flex items won’t shrink below their minimum content size.
     // In order to have columns with equal sizes even if some cell contains
@@ -75,17 +79,36 @@
       margin-right: 20px;
     }
 
+    &_attr-title {
+      flex-grow: 2.5;
+    }
+
     &_attr-type {
-      flex-grow: 0.6;
+      flex-grow: 1.5;
     }
 
     &_attr-values {
-      flex-grow: 0.8;
+      flex-grow: 0.4;
     }
 
     &_checkbox {
-      flex-grow: 0.3;
+      flex-grow: 0.2;
       text-align: center;
+    }
+
+    &_mandatory-checkbox {
+      flex-grow: 0.8;
+      text-align: center;
+      margin-right: 10px;
+    }
+
+    &_negative-response {
+      display: flex;
+      flex-direction: row-reverse;
+    }
+
+    &_remove-item {
+      flex-grow: 1.2;
     }
   }
 }

@@ -4,7 +4,32 @@
 }}
 
 {{#is_allowed 'create' 'CycleTaskGroupObjectTask' context=null}}
-  {{^if_recurring_workflow parent_instance}}
+  {{#is(parent_instance.type, "Workflow")}}
+    {{^if_recurring_workflow parent_instance}}
+      {{#is(parent_instance.status, "Active")}}
+        <a
+          class="btn btn-small btn-darkBlue"
+          href="javascript://"
+          rel="tooltip"
+          data-placement="left"
+          data-original-title="Create Cycle Task for object"
+          data-object-plural="cycle_task_group_object_tasks"
+          data-modal-class="modal-wide" href="javascript://"
+          data-object-singular="CycleTaskGroupObjectTask"
+          data-toggle="modal-ajax-form"
+          data-modal-reset="reset"
+          data-object-params='{
+            "modal_title": "Create Cycle Task",
+            "workflow": {
+              "id": {{parent_instance.id}},
+              "type": "Workflow"
+              }
+            }'>
+          Create Task
+        </a>
+      {{/is}}
+    {{/if_recurring_workflow}}
+  {{else}}
     <a
       class="btn btn-small btn-darkBlue"
       href="javascript://"
@@ -18,20 +43,14 @@
       data-modal-reset="reset"
       data-object-params='{
         "modal_title": "Create Cycle Task"
-        {{^if_instance_of parent_instance 'Person|Workflow'}}
+        {{^is(parent_instance.type, "Person")}}
           , "pre_mapped_objects": [{
             "type": "{{ parent_instance.type }}",
             "id": {{ parent_instance.id }}
           }]
-        {{/if_instance_of}}
-        {{#is(parent_instance.type, "Workflow")}}
-          , "workflow": {
-              "id": {{parent_instance.id}},
-              "type": "Workflow"
-              }
         {{/is}}
         }'>
       Create
     </a>
-  {{/if_recurring_workflow}}
+  {{/is}}
 {{/is_allowed}}

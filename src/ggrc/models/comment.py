@@ -94,8 +94,9 @@ class Commentable(object):
       "comments": {
           "display_name": "Comments",
           "description": (
-              u'DELIMITER=";;" double semi-colon separated values. '
-              u'To mention person at the comment use the following format '
+              u'Multiple values are allowed.'
+              u' Delimiter is "double semi-colon separated values" (";;")".'
+              u' To mention person at the comment use the following format '
               u'<a href="mailto:some_user@example.com">'
               u'+some_user@example.com</a>.'
           ),

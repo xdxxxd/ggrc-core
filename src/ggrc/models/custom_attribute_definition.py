@@ -3,6 +3,7 @@
 
 """Custom attribute definition module"""
 
+import collections
 import re
 
 import flask
@@ -208,9 +209,11 @@ class CustomAttributeDefinition(CustomAttributeDefinitionBase):
   class MultiChoiceMandatoryFlags(object):
     """Enum representing flags in multi_choice_mandatory bitmaps."""
     # pylint: disable=too-few-public-methods
+    DEFAULT = 0b0
     COMMENT_REQUIRED = 0b001
     EVIDENCE_REQUIRED = 0b010
     URL_REQUIRED = 0b100
+    IS_NEGATIVE = 0b1000
 
   VALID_TYPES = {
       "Text": "Text",
@@ -239,8 +242,6 @@ class CustomAttributeDefinition(CustomAttributeDefinitionBase):
   _include_links = [
       'definition_type',
       'definition_id',
-      'attribute_type',
-      'multi_choice_options',
       'multi_choice_mandatory',
       'mandatory',
       'helptext',
@@ -252,6 +253,9 @@ class CustomAttributeDefinition(CustomAttributeDefinitionBase):
                            read=True,
                            create=False,
                            update=False),
+      reflection.Attribute("title", update=False),
+      reflection.Attribute("attribute_type", update=False),
+      reflection.Attribute("multi_choice_options", update=False),
       *_include_links)
 
   @property
@@ -270,6 +274,117 @@ class CustomAttributeDefinition(CustomAttributeDefinitionBase):
     else:
       self.definition_type = ''
     return setattr(self, self.definition_attr, value)
+
+  @property
+  def negative_options(self):
+    # type: () -> list
+    """Get list of negative options of this CAD.
+
+    Return list of negative options of CAD this property is called on. CAD
+    option is considered to be a negative one when it has appropriate bitmask
+    in `multi_choice_mandatory` field. This field stores bitmasks for each
+    option in comma-separated manner. It means that first bitmask is related to
+    first option in `multi_choice_options`, second bitmask to second option and
+    so on. Option is negative when binary AND of its bitmask and `IS_NEGATIVE`
+    from `MultiChoiceMandatoryFlags` enum evaluates to True.
+
+    Returns:
+      List of options that are marked as negative ones.
+    """
+    bitmasks = self.multi_choice_mandatory.split(",")
+    options = self.multi_choice_options.split(",")
+    return [
+        option for option, bitmask in zip(options, bitmasks)
+        if int(bitmask) & self.MultiChoiceMandatoryFlags.IS_NEGATIVE
+    ]
+
+  @staticmethod
+  def _is_negative_dropdown(cav, negative_options):
+    # type: (models.CustomAttributeValue, list) -> bool
+    """Check if passed CAV of `Dropdown` type is negative.
+
+    Check if passed CustomAttributeValue object contains value which should be
+    considered "negative" on current CustomAttributeDefinition. Note that for
+    correct resuls only CAV related to current CAD should be passed here and
+    current CAD should be of `Dropdown` type.
+
+    Args:
+      cav (models.CustomAttributeValue): CustomAttributeValue instance related
+        to current CustomAttributeDefinition.
+      negative_options (list): List of strings representing options that are
+        marked as "negative" for current CustomAttributeDefinition.
+
+    Returns:
+      Boolean flag indicating if CAV's value is negative.
+    """
+    return cav.attribute_value in negative_options
+
+  @staticmethod
+  def _is_negative_text(cav, negative_options):
+    # type: (models.CustomAttributeValue, list) -> bool
+    """Check if passed CAV of `Text` or `Rich Text` type is negative.
+
+    Check if passed CustomAttributeValue object contains value which should be
+    considered "negative" on current CustomAttributeDefinition. Note that for
+    correct resuls only CAV related to current CAD should be passed here and
+    current CAD should be of `Text` or `Rich Text` type.
+
+    Args:
+      cav (models.CustomAttributeValue): CustomAttributeValue instance related
+        to current CustomAttributeDefinition.
+      negative_options (list): List of strings representing options that are
+        marked as "negative" for current CustomAttributeDefinition.
+
+    Returns:
+      Boolean flag indicating if CAV's value is negative.
+    """
+    negative_options = [o.lower() for o in negative_options]
+    return "empty" in negative_options and not cav.attribute_value \
+        or "not empty" in negative_options and cav.attribute_value
+
+  @staticmethod
+  def _is_negative(cav, negative_options):  # pylint: disable=unused-argument
+    # type: (models.CustomAttributeValue, list) -> bool
+    """Check if passed CAV is negative.
+
+    Check if passed CustomAttributeValue object contains value which should be
+    considered "negative" on current CustomAttributeDefinition. Note that this
+    is a default implementation and it always returns `False`. For each CAD
+    type specific method should be implemented.
+
+    Args:
+      cav (models.CustomAttributeValue): CustomAttributeValue instance related
+        to current CustomAttributeDefinition.
+      negative_options (list): List of strings representing options that are
+        marked as "negative" for current CustomAttributeDefinition.
+
+    Returns:
+      Boolean flag indicating if CAV's value is negative.
+    """
+    return False
+
+  def is_value_negative(self, cav):
+    # type: (models.CustomAttributeValue) -> bool
+    """Check if passed CAV has value marked as negative on current CAD.
+
+    Check if passed CustomAttributeValue `cav` has value which is marked as a
+    negative one on the current CustomAttributeDefinition.
+
+    Args:
+      cav (models.CustomAttributeValue): CAV which value should be checked.
+
+    Returns:
+      Boolean flag indicating if CAV value is negative or not.
+    """
+    is_negative_validators = collections.defaultdict(lambda: self._is_negative)
+    is_negative_validators.update({
+        "Dropdown": self._is_negative_dropdown,
+        "Rich Text": self._is_negative_text,
+        "Text": self._is_negative_text,
+    })
+
+    is_negative_validator = is_negative_validators[self.attribute_type]
+    return is_negative_validator(cav, self.negative_options)
 
   def _clone(self, target):
     """Clone custom attribute definitions."""

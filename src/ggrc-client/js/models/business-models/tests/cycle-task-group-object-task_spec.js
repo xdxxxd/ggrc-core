@@ -7,6 +7,7 @@ import CycleTaskGroupObjectTask from '../cycle-task-group-object-task';
 import Workflow from '../workflow';
 import {makeFakeInstance} from '../../../../js_specs/spec_helpers';
 import * as ReifyUtils from '../../../plugins/utils/reify-utils';
+import * as RefreshQueue from '../../../models/refresh_queue';
 
 describe('CycleTaskGroupObjectTask model', function () {
   let fakeCTModelCreator;
@@ -118,7 +119,7 @@ describe('CycleTaskGroupObjectTask model', function () {
       let resolveChain = $.Deferred().resolve(cycles);
 
       spyOn(Workflow, 'findInCacheById').and.returnValue(workflow);
-      spyOn(workflow, 'refresh_all').and
+      spyOn(RefreshQueue, 'refreshAll').and
         .returnValue(resolveChain);
 
       instance.formPreload(true, {workflow: workflow});

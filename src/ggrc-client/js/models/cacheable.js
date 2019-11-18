@@ -25,7 +25,6 @@ import {
 import resolveConflict from './conflict-resolution/conflict-resolution';
 import PersistentNotifier from '../plugins/persistent-notifier';
 import enqueue from './save_queue';
-import {refreshAll} from './refresh_queue';
 import tracker from '../tracker';
 import {delayLeavingPageUntil} from '../plugins/utils/current-page-utils';
 import Stub from './stub';
@@ -779,15 +778,5 @@ export default canModel.extend({
     enqueue(this, this._super);
 
     return this._dfd;
-  },
-  refresh_all: function () {
-    let props = Array.prototype.slice.call(arguments, 0);
-
-    return refreshAll(this, props);
-  },
-  refresh_all_force: function () {
-    let props = Array.prototype.slice.call(arguments, 0);
-
-    return refreshAll(this, props, true);
   },
 });

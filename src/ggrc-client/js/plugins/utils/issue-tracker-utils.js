@@ -34,7 +34,8 @@ const isIssueTrackerEnabled = (instance) => {
  */
 const cleanUpBeforeSave = (instance) => {
   const issueTracker = instance.attr('issue_tracker');
-  if (!instance.attr('can_use_issue_tracker') || !issueTracker) {
+
+  if (!issueTracker) {
     return;
   }
 

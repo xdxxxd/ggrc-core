@@ -23,11 +23,12 @@ from ggrc.models import cache
 from ggrc.models.exceptions import StatusValidationError
 from ggrc.models.mixins import issue_tracker
 from ggrc.models.mixins import synchronizable
+from ggrc.models.mixins.with_custom_restrictions import WithCustomRestrictions
 from ggrc.models.mixins.with_readonly_access import WithReadOnlyAccess
 from ggrc.rbac import permissions
 from ggrc.services import signals
 from ggrc.snapshotter import create_snapshots
-from ggrc.utils import dump_attrs, benchmarks
+from ggrc.utils import dump_attrs, benchmarks, json_comparator
 
 from ggrc.models.reflection import AttributeInfo
 from ggrc.services.common import get_modified_objects
@@ -424,12 +425,37 @@ class ImportRowConverter(RowConverter):
 
     self.obj.issue_tracker_to_import['issue_tracker'] = self.issue_tracker
 
+  def _check_updating_readonly_fields(self):
+    """Check if trying to update fields with SOX restrictions"""
+    if self.is_new:
+      return
+
+    if isinstance(self.obj, WithCustomRestrictions):
+      if self.obj.is_sox_restricted:
+        ignored_names = list()
+        for attr_name, handler in self.attrs.items():
+          if attr_name in self.obj.readonly_fields and \
+              handler.value and \
+              not json_comparator.fields_equal(
+                  getattr(self.obj, attr_name, None),
+                  handler.value):
+            handler.ignore = True
+            ignored_names.append(attr_name)
+
+        if not ignored_names:
+          return
+
+        columns_str = ', '.join("'{}'".format(name)
+                                for name in sorted(ignored_names))
+        self.add_warning(errors.READONLY_ACCESS_WARNING, columns=columns_str)
+
   def process_row(self):
     """Parse, set, validate and commit data specified in self.row."""
     self._check_object_class()
     self._handle_raw_data()
     self._check_ignored_columns()
     self._check_mandatory_fields()
+    self._check_updating_readonly_fields()
     if self.ignore:
       db.session.rollback()
       return

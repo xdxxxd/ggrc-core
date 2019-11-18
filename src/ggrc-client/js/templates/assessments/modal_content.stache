@@ -93,36 +93,12 @@
 
     <div class="ggrc-form-item">
       <div class="ggrc-form-item__row ggrc-from-item__checkbox-list">
-        <checkbox-to-list property:from="recipients" instance:from="instance" class="flex-box">
-          <div class="ggrc-form-item__checkbox-item">
-            <label class="input--inline">
-                <input
-                  tabindex="4"
-                  type="checkbox"
-                  name="send_by_default"
-                  {{# send_by_default}}checked{{/send_by_default}}>
-                    Enable notifications on comments
-              </label>
-          </div>
-          <div class="ggrc-form-item__checkbox-item">
-            <label class="input--inline">
-              <input type="checkbox" el:checked:bind="values.Creators" tabindex="5">
-              Notify creators
-            </label>
-          </div>
-          <div class="ggrc-form-item__checkbox-item">
-            <label class="input--inline">
-              <input type="checkbox" el:checked:bind="values.Assignees" tabindex="6">
-              Notify assignees
-            </label>
-          </div>
-          <div class="ggrc-form-item__checkbox-item">
-            <label class="input--inline">
-              <input type="checkbox" el:checked:bind="values.Verifiers" tabindex="7">
-              Notify verifiers
-            </label>
-          </div>
-        </checkbox-to-list>
+        <assessment-notifications
+          sendByDefault:from="send_by_default"
+          instance:from="instance"
+          class="flex-box"
+        />
+
       </div>
     </div>
 
@@ -148,12 +124,26 @@
         </div>
       </div>
       {{#if assessmentTemplate}}
+        {{#if assessmentTemplate.sox_302_enabled}}
+          <div class="ggrc-form-item">
+            <div class="ggrc-form-item__row alert alert-nomargin">
+              This assessment template enables “302 assessment workflow”:
+              <p>
+                - Assignees will have read only permissions upon assessment completion.
+              </p>
+              <p>
+                - Verification step will be skipped if only positive answers are given for the assessment.
+              </p>
+            </div>
+          </div>
+        {{/if}}
         <div class="ggrc-form-item">
           <div class="ggrc-form-item__row">
               <label class="ggrc-form-item__label">
                 Custom Attributes
               </label>
               <assessment-template-attributes
+                instance:from="assessmentTemplate"
                 fields:from="assessmentTemplate.custom_attribute_definitions"
                 isLoading:from="isAttributesLoading"
                 editMode:from="false" />

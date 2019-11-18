@@ -10,6 +10,7 @@ from ggrc import db
 from ggrc import models
 from ggrc.converters import errors
 from ggrc.converters.handlers.handlers import MappingColumnHandler
+from ggrc.models.mixins.with_custom_restrictions import WithCustomRestrictions
 from ggrc.services import signals
 from ggrc.snapshotter.rules import Types
 from ggrc.utils import objects_cache
@@ -200,5 +201,12 @@ class SnapshotInstanceColumnHandler(MappingColumnHandler):
     if isinstance(self.row_converter.obj, models.Issue):
       self.disable_snapshot_map_to_issue(to_append_ids)
       return None
+    if isinstance(self.row_converter.obj, WithCustomRestrictions):
+      if "map: Snapshots" in self.row_converter.obj.mapping_restrictions():
+        if to_append_ids:
+          self.add_warning(errors.SOX_SNAPSHOT_MAP_WARNING,
+                           column_name=self.mapping_object.__name__,
+                           object=self.row_converter.obj.__class__.__name__)
+          return None
     self.is_valid_creation(to_append_ids)
     return items

@@ -255,10 +255,10 @@ class TestTaskGroupTaskImport(WorkflowTestCase):
         ("object_type", "Task Group Task"),
         ("code", ""),
         ("task type", "Rich Text"),
-        ("task group", self.task_group.slug),
-        ("summary", "Task group test task 1"),
-        ("start date", start_date),
-        ("end date", end_date),
+        ("task group code", self.task_group.slug),
+        ("task title", "Task group test task 1"),
+        ("task start date", start_date),
+        ("task due date", end_date),
         ("task assignees", self.person.email),
     ])
 
@@ -303,10 +303,10 @@ class TestTaskGroupTaskImport(WorkflowTestCase):
         ("object_type", "Task Group Task"),
         ("code", task_group_task_before.slug),
         ("task type", "Rich Text"),
-        ("task group", self.task_group.slug),
-        ("summary", "Task group test task 1"),
-        ("start date", start_date),
-        ("end date", end_date),
+        ("task group code", self.task_group.slug),
+        ("task title", "Task group test task 1"),
+        ("task start date", start_date),
+        ("task due date", end_date),
         ("task assignees", self.person.email),
     ])
 
@@ -330,18 +330,18 @@ class TestTaskGroupTaskImport(WorkflowTestCase):
   @ddt.data(
       ("", datetime.date(2018, 7, 21),
        {errors.MISSING_VALUE_ERROR.format(line=3,
-                                          column_name="Start Date"
+                                          column_name="Task Start Date"
                                           )}
        ),
       (datetime.date(2018, 7, 14), "",
        {errors.MISSING_VALUE_ERROR.format(line=3,
-                                          column_name="End Date")}
+                                          column_name="Task Due Date")}
        ),
       ("", "",
        {errors.MISSING_VALUE_ERROR.format(line=3,
-                                          column_name="Start Date"),
+                                          column_name="Task Start Date"),
         errors.MISSING_VALUE_ERROR.format(line=3,
-                                          column_name="End Date")}
+                                          column_name="Task Due Date")}
        ),
   )
   # pylint: disable=invalid-name
@@ -354,10 +354,10 @@ class TestTaskGroupTaskImport(WorkflowTestCase):
         ("object_type", "Task Group Task"),
         ("code", ""),
         ("task type", "Rich Text"),
-        ("task group", self.task_group.slug),
-        ("summary", "Task group test task 1"),
-        ("start date*", start_date),
-        ("end date*", end_date),
+        ("task group code", self.task_group.slug),
+        ("task title", "Task group test task 1"),
+        ("task start date*", start_date),
+        ("task due date*", end_date),
         ("task assignees", self.person.email),
     ])
     response = self.import_data(tgt_import_data)

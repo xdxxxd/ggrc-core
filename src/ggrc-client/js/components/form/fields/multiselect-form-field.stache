@@ -3,11 +3,11 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 }}
 
-<multiselect-dropdown options:from="options"
+<multiselect-dropdown options:from="dropdownOptions"
                       placeholder:from="'None'"
                       disabled:from="disabled"
                       selected:from="selected"
-                      on:selectedChanged="valueChanged(scope.event)"
+                      on:vm:selectedChanged="valueChanged(scope.event)"
                       isInlineMode:from="isInlineMode"
                       isHighlightable:from="false">
 </multiselect-dropdown>

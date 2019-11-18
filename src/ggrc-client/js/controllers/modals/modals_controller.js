@@ -36,7 +36,7 @@ import '../../components/autocomplete/autocomplete-component';
 import '../../components/external-data-autocomplete/external-data-autocomplete';
 import '../../components/person/person-data';
 import '../../components/rich-text/rich-text';
-import '../../components/modal-wrappers/checkbox-to-list';
+import '../../components/modal-wrappers/assessment-notifications';
 import '../../components/deferred-mapper';
 import '../../components/modal-wrappers/assessment-modal';
 import '../../components/assessment/map-button-using-assessment-type';
@@ -52,6 +52,7 @@ import '../../components/custom-attributes-modal/custom-attributes-modal';
 import '../../components/modal-autocomplete/modal-autocomplete';
 import '../../components/people-autocomplete-dropdown/people-autocomplete-dropdown';
 import '../../components/person-autocomplete-field/person-autocomplete-field';
+import '../../components/assessment-templates/assessment-template-save-button/assessment-template-save-button';
 import {
   bindXHRToButton,
   bindXHRToDisableElement,
@@ -76,6 +77,7 @@ import {
 } from '../../plugins/utils/models-utils';
 import {getUrlParams, changeHash} from '../../router';
 import {getPageInstance} from '../../plugins/utils/current-page-utils';
+import {refreshAll} from '../../models/refresh_queue';
 
 export default canControl.extend({
   defaults: {
@@ -234,7 +236,7 @@ export default canControl.extend({
           instance.load_custom_attribute_definitions &&
           instance.load_custom_attribute_definitions(),
           instance.custom_attribute_values ?
-            instance.refresh_all('custom_attribute_values') :
+            refreshAll(instance, ['custom_attribute_values']) :
             []
         );
       }
@@ -471,7 +473,10 @@ export default canControl.extend({
       this.triggerSave(el, ev);
     },
 
-  "{footerEl} a.btn[data-toggle='modal-submit'] click": function (el, ev) {
+  "{footerEl} a.btn[data-toggle='modal-submit'] submit": ' submit-form',
+  "{footerEl} a.btn[data-toggle='modal-submit'] click": ' submit-form',
+
+  ' submit-form': function (el, ev) {
     let options = this.options;
     let instance = options.attr('instance');
     let oldData = options.attr('oldData');

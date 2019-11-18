@@ -18,7 +18,7 @@
   <div class="filter-state__value">
     <multiselect-dropdown
             options:from="filterStates"
-            on:selectedChanged="statesChanged(scope.event)"
+            on:vm:dropdownClose="statesChanged(scope.event)"
             placeholder:from="'Filter by State'">
     </multiselect-dropdown>
   </div>

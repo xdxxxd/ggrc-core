@@ -345,7 +345,8 @@ class AttributeInfo(object):
             "attr_name": name,
             "mandatory": mandatory,
             "unique": False,
-            "description": u"List of people with '{}' role".format(name),
+            "description": u"Multiple values are allowed.\nDelimiter is"
+                           u" 'line break'.\nAllowed values are emails",
             "type": cls.Type.AC_ROLE,
         }
         for name, mandatory in flask.g.acl_role_names[object_class.__name__]
@@ -439,8 +440,7 @@ class AttributeInfo(object):
       custom_attributes = object_class.get_custom_attribute_definitions(fields)
     for attr in custom_attributes:
       description = attr.helptext or u""
-      if (attr.attribute_type == attr.ValidTypes.DROPDOWN and
-              attr.multi_choice_options):
+      if attr.multi_choice_options:
         if description:
           description += "\n\n"
         description += u"Allowed values are:\n{}".format(
@@ -448,6 +448,8 @@ class AttributeInfo(object):
         )
       elif attr.attribute_type == attr.ValidTypes.CHECKBOX:
         description += u"Allowed values are:\nTRUE\nFALSE"
+      elif attr.ValidTypes.MAP in attr.attribute_type:
+        description += u"Allowed values are emails"
       if attr.definition_id:
         ca_type = cls.Type.OBJECT_CUSTOM
         attr_name = u"{}{}".format(

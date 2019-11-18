@@ -101,6 +101,15 @@ class IssueTracked(object):
   def warnings(self):
     return self._warnings
 
+  def log_json(self):
+    """Serialize IssueTracker to JSON"""
+    tmp = super(IssueTracked, self).log_json()
+    if self.issue_tracker['enabled']:
+      tmp["issue_tracker"] = self.issue_tracker
+    else:
+      tmp["issue_tracker"] = {"enabled": False}
+    return tmp
+
 
 class IssueTrackedWithUrl(IssueTracked):
   """Class that identifies IssueTracked models that have url."""
@@ -114,8 +123,7 @@ class IssueTrackedWithUrl(IssueTracked):
       "issue_type": "Issue Type",
       "enabled": {
           "display_name": "Ticket Tracker Integration",
-          "description": "Turn on integration with Ticket tracker, "
-                         "On / Off options are possible",
+          "description": "Allowed values are:\nOn\nOff",
       },
   }
 
@@ -130,8 +138,7 @@ class IssueTrackedWithConfig(IssueTracked):
       "issue_type": "Issue Type",
       "enabled": {
           "display_name": "Ticket Tracker Integration",
-          "description": "Turn on integration with Ticket tracker, "
-                         "On / Off options are possible",
+          "description": "Allowed values are:\nOn\nOff",
       },
   }
 
