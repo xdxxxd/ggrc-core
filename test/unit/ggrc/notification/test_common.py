@@ -71,3 +71,19 @@ class TestSortComments(unittest.TestCase):
                     return_value=content):
       _, notif_data = common.get_daily_notifications()
       self.assertEqual(expected_data, notif_data)
+
+
+class TestSendMailLocally(unittest.TestCase):
+  """Test mail sending in local server"""
+
+  def test_send_mail_no_raises(self):
+    """Test check if send mail"""
+
+    user_email = "user@example.com"
+    subject = "Test subject"
+    body = "Test body"
+
+    try:
+      common.send_email(user_email, subject, body)
+    except AssertionError as error:
+      self.fail(error)
