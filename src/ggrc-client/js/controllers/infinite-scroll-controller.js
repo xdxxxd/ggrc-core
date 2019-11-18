@@ -4,7 +4,7 @@
 */
 
 import loDebounce from 'lodash/debounce';
-import {ggrcAjax} from '../plugins/ajax_extensions';
+import {ggrcAjax} from '../plugins/ajax-extensions';
 import canStache from 'can-stache';
 import canControl from 'can-control';
 const MOUSEENTER_THROTTLE = 300;

@@ -4,7 +4,7 @@
 */
 
 import loMap from 'lodash/map';
-import * as AjaxExtensions from '../plugins/ajax_extensions';
+import * as AjaxExtensions from '../plugins/ajax-extensions';
 import * as Permission from '../permission';
 import {makeFakeInstance} from '../../js_specs/spec-helpers';
 import UserRole from '../models/service-models/user-role';

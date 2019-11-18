@@ -4,7 +4,7 @@
 */
 
 import loSortBy from 'lodash/sortBy';
-import {ggrcAjax} from '../plugins/ajax_extensions';
+import {ggrcAjax} from '../plugins/ajax-extensions';
 import makeArray from 'can-util/js/make-array/make-array';
 import canStache from 'can-stache';
 import canList from 'can-list';

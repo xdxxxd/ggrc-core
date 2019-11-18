@@ -13,7 +13,7 @@ import Audit from '../../models/business-models/audit';
 import Stub from '../../models/stub';
 import tracker from '../../tracker';
 import * as businessModels from '../../models/business-models';
-import {ggrcGet} from '../ajax_extensions';
+import {ggrcGet} from '../ajax-extensions';
 
 /**
  * Util methods for work with Snapshots.

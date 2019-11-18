@@ -3,7 +3,7 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import {splitTrim, filteredMap} from '../../../plugins/ggrc_utils';
+import {splitTrim, filteredMap} from '../../../plugins/ggrc-utils';
 import loZip from 'lodash/zip';
 import loRange from 'lodash/range';
 import loFind from 'lodash/find';

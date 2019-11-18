@@ -3,8 +3,8 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import {filteredMap} from '../../js/plugins/ggrc_utils';
-import * as AjaxExtensions from '../../js/plugins/ajax_extensions';
+import {filteredMap} from '../../js/plugins/ggrc-utils';
+import * as AjaxExtensions from '../../js/plugins/ajax-extensions';
 import canModel from 'can-model';
 import canList from 'can-list';
 import canMap from 'can-map';

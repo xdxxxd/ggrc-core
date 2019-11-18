@@ -10,7 +10,7 @@ import {getComponentVM} from '../../../js_specs/spec-helpers';
 import {Snapshot} from '../../models/service-models';
 import * as ErrorsUtils from '../../plugins/utils/errors-utils';
 import * as ModalsUtils from '../../plugins/utils/modals';
-import * as AjaxUtils from '../../plugins/ajax_extensions';
+import * as AjaxUtils from '../../plugins/ajax-extensions';
 
 describe('delete-button component', () => {
   let vm;

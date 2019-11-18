@@ -3,12 +3,12 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import {filteredMap} from '../plugins/ggrc_utils';
+import {filteredMap} from '../plugins/ggrc-utils';
 import loDefer from 'lodash/defer';
 import loDebounce from 'lodash/debounce';
 import loIsNumber from 'lodash/isNumber';
 import loForEach from 'lodash/forEach';
-import {ggrcAjax} from '../plugins/ajax_extensions';
+import {ggrcAjax} from '../plugins/ajax-extensions';
 import canStache from 'can-stache';
 import canMap from 'can-map';
 import {

@@ -3,7 +3,7 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-import * as AjaxExtensions from '../../../plugins/ajax_extensions';
+import * as AjaxExtensions from '../../../plugins/ajax-extensions';
 import * as TreeViewUtils from '../../utils/tree-view-utils';
 import * as SnapshotUtils from '../../utils/snapshot-utils';
 import * as CurrentPageUtils from '../../utils/current-page-utils';

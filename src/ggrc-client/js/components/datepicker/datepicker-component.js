@@ -10,7 +10,7 @@ import canComponent from 'can-component';
 import {
   inViewport,
   isInnerClick,
-} from '../../plugins/ggrc_utils';
+} from '../../plugins/ggrc-utils';
 import {DATE_FORMAT} from '../../plugins/utils/date-utils';
 import template from './datepicker-component.stache';
 

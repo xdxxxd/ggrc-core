@@ -19,7 +19,7 @@ import {STATES_KEYS} from '../../../plugins/utils/state-utils';
 import loFindIndex from 'lodash/findIndex';
 import {request} from '../../../plugins/utils/request-utils';
 import {backendGdriveClient} from '../../../plugins/ggrc-gapi-client';
-import {ggrcPost} from '../../../plugins/ajax_extensions';
+import {ggrcPost} from '../../../plugins/ajax-extensions';
 import {trackStatus} from '../../../plugins/utils/background-task-utils';
 import {confirm} from '../../../plugins/utils/modals';
 import {
@@ -34,7 +34,7 @@ import {
 } from '../../../plugins/utils/ca-utils';
 import loSome from 'lodash/some';
 import loFind from 'lodash/find';
-import {getPlainText} from '../../../plugins/ggrc_utils';
+import {getPlainText} from '../../../plugins/ggrc-utils';
 import {
   create,
   setDefaultStatusConfig,

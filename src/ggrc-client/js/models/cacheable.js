@@ -4,7 +4,7 @@
 */
 
 import loFind from 'lodash/find';
-import {filteredMap} from '../plugins/ggrc_utils';
+import {filteredMap} from '../plugins/ggrc-utils';
 import loThrottle from 'lodash/throttle';
 import loIsEmpty from 'lodash/isEmpty';
 import loIsFunction from 'lodash/isFunction';
@@ -12,7 +12,7 @@ import loForEach from 'lodash/forEach';
 // Disabling some minor eslint rules until major refactoring
 /* eslint-disable no-console, id-length */
 
-import {ggrcAjax} from '../plugins/ajax_extensions';
+import {ggrcAjax} from '../plugins/ajax-extensions';
 import canBatch from 'can-event/batch/batch';
 import canModel from 'can-model';
 import canList from 'can-list';

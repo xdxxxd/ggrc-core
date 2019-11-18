@@ -7,7 +7,7 @@ import loCompact from 'lodash/compact';
 import loGroupBy from 'lodash/groupBy';
 import loIsNumber from 'lodash/isNumber';
 import loMap from 'lodash/map';
-import {ggrcAjax} from '../../plugins/ajax_extensions';
+import {ggrcAjax} from '../../plugins/ajax-extensions';
 import makeArray from 'can-util/js/make-array/make-array';
 import QueryParser from '../../generated/ggrc-filter-query-parser';
 import {

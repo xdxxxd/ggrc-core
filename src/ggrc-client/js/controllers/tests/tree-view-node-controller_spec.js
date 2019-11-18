@@ -4,7 +4,7 @@
 */
 
 import * as CanStacheUtils from 'can-stache';
-import * as AjaxExtensions from '../../plugins/ajax_extensions';
+import * as AjaxExtensions from '../../plugins/ajax-extensions';
 import canMap from 'can-map';
 import Ctrl from '../tree/tree-view-node';
 

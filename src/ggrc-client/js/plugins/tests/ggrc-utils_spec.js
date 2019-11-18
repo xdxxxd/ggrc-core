@@ -7,7 +7,7 @@ import {
   getTruncatedList,
   getOnlyAnchorTags,
   splitTrim,
-} from '../ggrc_utils';
+} from '../ggrc-utils';
 
 describe('getTruncatedList() util', () => {
   it('returns string which includes 5 lines without last line with count of ' +

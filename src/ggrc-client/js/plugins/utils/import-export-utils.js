@@ -4,7 +4,7 @@
 */
 
 import moment from 'moment';
-import {ggrcAjax} from '../ajax_extensions';
+import {ggrcAjax} from '../ajax-extensions';
 
 const currentUserId = GGRC.current_user.id;
 

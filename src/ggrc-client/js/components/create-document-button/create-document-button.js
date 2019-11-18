@@ -22,7 +22,7 @@ import {refreshPermissions} from '../../permission';
 import template from './create-document-button.stache';
 import Document from '../../models/business-models/document';
 import Context from '../../models/service-models/context';
-import {ggrcPost} from '../../plugins/ajax_extensions';
+import {ggrcPost} from '../../plugins/ajax-extensions';
 
 const viewModel = canMap.extend({
   parentInstance: null,

@@ -3,11 +3,11 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-import {exists, filteredMap} from '../../plugins/ggrc_utils';
+import {exists, filteredMap} from '../../plugins/ggrc-utils';
 import loIsFunction from 'lodash/isFunction';
 import loForEach from 'lodash/forEach';
 import loFilter from 'lodash/filter';
-import {ggrcAjax} from '../../plugins/ajax_extensions';
+import {ggrcAjax} from '../../plugins/ajax-extensions';
 import canModel from 'can-model';
 import canStache from 'can-stache';
 import canList from 'can-list';

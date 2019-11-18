@@ -9,8 +9,8 @@ import canComponent from 'can-component';
 import template from './templates/dashboard-workflows.stache';
 import isFunction from 'can-util/js/is-function/is-function';
 import {DATE_FORMAT, getFormattedLocalDate} from '../../plugins/utils/date-utils';
-import {getTruncatedList} from '../../plugins/ggrc_utils';
-import {ggrcGet} from '../../plugins/ajax_extensions';
+import {getTruncatedList} from '../../plugins/ggrc-utils';
+import {ggrcGet} from '../../plugins/ajax-extensions';
 
 const SHOWN_WORKFLOWS_COUNT = 5;
 

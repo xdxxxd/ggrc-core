@@ -3,7 +3,7 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-import {filteredMap} from '../plugins/ggrc_utils';
+import {filteredMap} from '../plugins/ggrc-utils';
 import loForEach from 'lodash/forEach';
 import canModel from 'can-model';
 import {reify} from '../plugins/utils/reify-utils';

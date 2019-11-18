@@ -3,7 +3,7 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import * as AjaxExtensions from '../ajax_extensions';
+import * as AjaxExtensions from '../ajax-extensions';
 import * as importExportUtils from '../utils/import-export-utils';
 
 const baseUrlPrefix = '/api/people/1';

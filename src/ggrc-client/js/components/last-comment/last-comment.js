@@ -12,7 +12,7 @@ import {peopleWithRoleName} from '../../plugins/utils/acl-utils.js';
 import {COMMENT_CREATED} from '../../events/event-types';
 import {formatDate} from '../../plugins/utils/date-utils';
 import Comment from '../../models/service-models/comment';
-import {getOnlyAnchorTags} from '../../plugins/ggrc_utils';
+import {getOnlyAnchorTags} from '../../plugins/ggrc-utils';
 
 export default canComponent.extend({
   tag: 'last-comment',

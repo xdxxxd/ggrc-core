@@ -3,7 +3,7 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import {filteredMap} from '../plugins/ggrc_utils';
+import {filteredMap} from '../plugins/ggrc-utils';
 import loDebounce from 'lodash/debounce';
 import loForEach from 'lodash/forEach';
 import canCompute from 'can-compute';

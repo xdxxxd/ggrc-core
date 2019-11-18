@@ -6,7 +6,7 @@
 import loIsNumber from 'lodash/isNumber';
 import loForEach from 'lodash/forEach';
 import loMap from 'lodash/map';
-import {ggrcAjax} from '../plugins/ajax_extensions';
+import {ggrcAjax} from '../plugins/ajax-extensions';
 import tracker from '../tracker';
 
 /*  SaveQueue

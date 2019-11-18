@@ -5,7 +5,7 @@
 
 import loIsEmpty from 'lodash/isEmpty';
 import loSome from 'lodash/some';
-import {ggrcAjax} from '../plugins/ajax_extensions';
+import {ggrcAjax} from '../plugins/ajax-extensions';
 import canStache from 'can-stache';
 import canControl from 'can-control';
 import '../components/info-pin-buttons/info-pin-buttons';

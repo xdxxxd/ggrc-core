@@ -3,7 +3,7 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import * as AjaxExtensions from '../../js/plugins/ajax_extensions';
+import * as AjaxExtensions from '../../js/plugins/ajax-extensions';
 import Cacheable from '../../js/models/cacheable';
 import * as resolveConflict from '../../js/models/conflict-resolution/conflict-resolution';
 

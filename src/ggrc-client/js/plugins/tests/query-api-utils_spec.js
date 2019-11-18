@@ -3,7 +3,7 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-import * as AjaxExtensions from '../../plugins/ajax_extensions';
+import * as AjaxExtensions from '../../plugins/ajax-extensions';
 import canMap from 'can-map';
 import * as QueryAPI from '../utils/query-api-utils';
 

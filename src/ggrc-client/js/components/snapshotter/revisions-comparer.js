@@ -8,7 +8,7 @@ import loReverse from 'lodash/reverse';
 import loDebounce from 'lodash/debounce';
 import loEach from 'lodash/each';
 import loIsEqual from 'lodash/isEqual';
-import {ggrcAjax} from '../../plugins/ajax_extensions';
+import {ggrcAjax} from '../../plugins/ajax-extensions';
 import makeArray from 'can-util/js/make-array/make-array';
 import canBatch from 'can-event/batch/batch';
 import canStache from 'can-stache';

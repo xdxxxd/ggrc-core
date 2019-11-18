@@ -4,7 +4,7 @@
 */
 
 import loForEach from 'lodash/forEach';
-import {ggrcAjax} from '../plugins/ajax_extensions';
+import {ggrcAjax} from '../plugins/ajax-extensions';
 import canStache from 'can-stache';
 import canMap from 'can-map';
 import canControl from 'can-control';

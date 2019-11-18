@@ -5,7 +5,7 @@
 
 import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../dashboard-workflows';
-import * as AjaxUtils from '../../../plugins/ajax_extensions';
+import * as AjaxUtils from '../../../plugins/ajax-extensions';
 
 describe('dashboard-workflows component', () => {
   let viewModel;

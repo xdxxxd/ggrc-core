@@ -6,7 +6,7 @@
 import loThrottle from 'lodash/throttle';
 import loIsFunction from 'lodash/isFunction';
 import loAssign from 'lodash/assign';
-import {ggrcAjax, ggrcGet} from '../../plugins/ajax_extensions';
+import {ggrcAjax, ggrcGet} from '../../plugins/ajax-extensions';
 import Cacheable from '../cacheable';
 import {prepareCustomAttributes} from '../../plugins/utils/ca-utils';
 import {getRole} from '../../plugins/utils/acl-utils';

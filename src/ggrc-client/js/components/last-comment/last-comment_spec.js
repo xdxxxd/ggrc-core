@@ -9,7 +9,7 @@ import * as Utils from '../../plugins/utils/acl-utils.js';
 import RefreshQueue from '../../models/refresh-queue';
 import {COMMENT_CREATED} from '../../events/event-types';
 import {formatDate} from '../../plugins/utils/date-utils';
-import * as GgrcUtils from '../../plugins/ggrc_utils';
+import * as GgrcUtils from '../../plugins/ggrc-utils';
 
 describe('last-comment component', () => {
   let vm;

@@ -4,7 +4,7 @@
 */
 
 import loIsNumber from 'lodash/isNumber';
-import {ggrcAjax, ggrcGet} from '../plugins/ajax_extensions';
+import {ggrcAjax, ggrcGet} from '../plugins/ajax-extensions';
 import canStache from 'can-stache';
 import canMap from 'can-map';
 import canControl from 'can-control';
@@ -19,7 +19,7 @@ import router from '../router';
 import {
   getDefaultStatesForModel,
 } from '../plugins/utils/state-utils';
-import {loadScript} from '../plugins/ggrc_utils';
+import {loadScript} from '../plugins/ggrc-utils';
 import Relationship from '../models/service-models/relationship';
 import Assessment from '../models/business-models/assessment';
 

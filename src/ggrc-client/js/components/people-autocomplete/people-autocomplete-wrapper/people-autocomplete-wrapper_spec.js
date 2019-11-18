@@ -6,7 +6,7 @@
 import canList from 'can-list';
 import component from './people-autocomplete-wrapper';
 import {getComponentVM} from '../../../../js_specs/spec-helpers';
-import * as AjaxUtils from '../../../plugins/ajax_extensions';
+import * as AjaxUtils from '../../../plugins/ajax-extensions';
 
 describe('people-autocomplete-wrapper component', () => {
   let vm;

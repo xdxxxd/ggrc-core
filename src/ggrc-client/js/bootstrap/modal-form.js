@@ -9,7 +9,7 @@ import loSome from 'lodash/some';
 import loIsFunction from 'lodash/isFunction';
 import loForEach from 'lodash/forEach';
 import {confirm} from '../plugins/utils/modals';
-import {hasPending as hasPendingUtil} from '../plugins/ggrc_utils';
+import {hasPending as hasPendingUtil} from '../plugins/ggrc-utils';
 import {navigate} from '../plugins/utils/current-page-utils';
 import {changeUrl} from '../router';
 import {trigger} from 'can-event';

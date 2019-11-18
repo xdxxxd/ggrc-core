@@ -5,7 +5,7 @@
 import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../external-data-provider';
 import * as NotifiersUtils from '../../../plugins/utils/notifiers-utils';
-import * as AjaxUtils from '../../../plugins/ajax_extensions';
+import * as AjaxUtils from '../../../plugins/ajax-extensions';
 
 describe('external-data-provider component', () => {
   let viewModel;

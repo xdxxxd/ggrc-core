@@ -15,7 +15,7 @@ import {
 import {handleAjaxError} from '../../plugins/utils/errors-utils';
 import {Snapshot} from '../../models/service-models';
 import {isSnapshotType} from '../../plugins/utils/snapshot-utils';
-import {ggrcGet} from '../../plugins/ajax_extensions';
+import {ggrcGet} from '../../plugins/ajax-extensions';
 
 export default canComponent.extend({
   tag: 'delete-button',
