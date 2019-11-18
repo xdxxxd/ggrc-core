@@ -100,8 +100,6 @@ export default canControl.extend({
   },
 }, {
   init: function () {
-    let userFetch;
-
     if (!(this.options instanceof canMap)) {
       this.options = new canMap(this.options);
     }
@@ -117,11 +115,20 @@ export default canControl.extend({
       return;
     }
 
+    const currentUser = Person.findInCacheById(GGRC.current_user.id);
+
+    this.fetchCurrentUser(currentUser)
+      .then(() => {
+        this.after_preload();
+      });
+  },
+  fetchCurrentUser(currentUser) {
     // Make sure that the current user object, if it exists, is fully
     // loaded before rendering the form, otherwise initial validation can
     // incorrectly fail for form fields whose values rely on current user's
     // attributes.
-    const currentUser = Person.findInCacheById(GGRC.current_user.id);
+
+    let userFetch;
 
     if (!currentUser) {
       userFetch = Person.findOne({id: GGRC.current_user.id});
@@ -135,10 +142,7 @@ export default canControl.extend({
       userFetch = new $.Deferred().resolve(currentUser);
     }
 
-    userFetch
-      .then(() => {
-        this.after_preload();
-      });
+    return userFetch;
   },
   after_preload: function (content) {
     if (this.wasDestroyed()) {
@@ -741,7 +745,6 @@ export default canControl.extend({
 
   new_instance: function (data) {
     let newInstance = this.prepareInstance();
-
     this.reset_form(newInstance, () => {
       if (this.wasDestroyed()) {
         return;
@@ -750,10 +753,11 @@ export default canControl.extend({
       let $form = $(this.element).find('form');
       $form.trigger('reset');
     }).done(() => {
-      $.when(this.options.attr('instance', newInstance))
-        .then(() => this.apply_object_params())
-        .then(() => this.serialize_form())
-        .then(() => this.options.attr('instance').backup());
+      this.options.attr('instance', newInstance);
+    }).then(() => {
+      this.apply_object_params();
+      this.serialize_form();
+      this.options.attr('instance').backup();
     });
 
     this.restore_ui_status();

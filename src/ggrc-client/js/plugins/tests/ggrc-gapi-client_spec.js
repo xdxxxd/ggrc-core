@@ -62,34 +62,33 @@ describe('backendGdriveClient', () => {
 
       describe('runs backend auth', () => {
         beforeEach(() => {
-          jasmine.clock().install();
-
           backendGdriveClient.runBackendAuth.and.callFake(() => {
             backendGdriveClient.authDfd = $.Deferred();
           });
         });
 
-        afterEach((done) => {
-          backendGdriveClient.withAuth(action);
-
-          jasmine.clock().tick(10);
-
-          expect(backendGdriveClient.runBackendAuth).toHaveBeenCalled();
-          done();
-
-          jasmine.clock().uninstall();
-        });
-
         it('if there was no auth dfd', () => {
           backendGdriveClient.authDfd = null;
+
+          backendGdriveClient.withAuth(action);
+
+          expect(backendGdriveClient.runBackendAuth).toHaveBeenCalled();
         });
 
         it('if there auth dfd was in resolved state', () => {
           backendGdriveClient.authDfd = $.Deferred().resolve();
+
+          backendGdriveClient.withAuth(action);
+
+          expect(backendGdriveClient.runBackendAuth).toHaveBeenCalled();
         });
 
         it('if there auth dfd was in rejected state', () => {
           backendGdriveClient.authDfd = $.Deferred().reject();
+
+          backendGdriveClient.withAuth(action);
+
+          expect(backendGdriveClient.runBackendAuth).toHaveBeenCalled();
         });
       });
 
