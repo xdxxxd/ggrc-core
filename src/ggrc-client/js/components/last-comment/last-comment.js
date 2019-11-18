@@ -7,7 +7,7 @@ import canStache from 'can-stache';
 import canMap from 'can-map';
 import canComponent from 'can-component';
 import template from './last-comment.stache';
-import RefreshQueue from '../../models/refresh_queue';
+import RefreshQueue from '../../models/refresh-queue';
 import {peopleWithRoleName} from '../../plugins/utils/acl-utils.js';
 import {COMMENT_CREATED} from '../../events/event-types';
 import {formatDate} from '../../plugins/utils/date-utils';

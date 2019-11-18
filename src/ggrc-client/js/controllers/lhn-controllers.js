@@ -13,7 +13,7 @@ import canMap from 'can-map';
 import canControl from 'can-control';
 import './infinite-scroll-controller';
 import tracker from '../tracker';
-import RefreshQueue from '../models/refresh_queue';
+import RefreshQueue from '../models/refresh-queue';
 import Cacheable from '../models/cacheable';
 import Search from '../models/service-models/search';
 import {

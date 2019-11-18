@@ -18,7 +18,7 @@ import CaUpdate from '../mixins/ca-update';
 import CycleTaskNotifications from '../mixins/notifications/cycle-task-notifications';
 import Stub from '../stub';
 import {reify} from '../../plugins/utils/reify-utils';
-import {refreshAll} from '../../models/refresh_queue';
+import {refreshAll} from '../../models/refresh-queue';
 
 function populateFromWorkflow(form, workflow) {
   if (!workflow || typeof workflow === 'string') {

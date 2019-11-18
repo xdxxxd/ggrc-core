@@ -10,7 +10,7 @@ import Cycle from '../../models/business-models/cycle';
 import Stub from '../../models/stub';
 import {changeHash} from '../../router';
 import {getMappingList} from '../../models/mappers/mappings';
-import {refreshAll} from '../../models/refresh_queue';
+import {refreshAll} from '../../models/refresh-queue';
 
 /**
  * A set of properties which describe minimum information

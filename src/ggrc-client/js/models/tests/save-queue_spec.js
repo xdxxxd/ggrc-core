@@ -3,7 +3,7 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import {_processSaveResponses} from '../save_queue';
+import {_processSaveResponses} from '../save-queue';
 
 describe('SaveQueue module', function () {
   'use strict';

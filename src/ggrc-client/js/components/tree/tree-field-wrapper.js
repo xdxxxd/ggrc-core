@@ -7,7 +7,7 @@ import loForEach from 'lodash/forEach';
 import makeArray from 'can-util/js/make-array/make-array';
 import canMap from 'can-map';
 import canComponent from 'can-component';
-import RefreshQueue from '../../models/refresh_queue';
+import RefreshQueue from '../../models/refresh-queue';
 
 const viewModel = canMap.extend({
   field: 'title',

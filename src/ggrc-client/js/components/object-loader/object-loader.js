@@ -5,7 +5,7 @@
 
 import canMap from 'can-map';
 import canComponent from 'can-component';
-import RefreshQueue from '../../models/refresh_queue';
+import RefreshQueue from '../../models/refresh-queue';
 import {reify, isReifiable} from '../../plugins/utils/reify-utils';
 
 export default canComponent.extend({

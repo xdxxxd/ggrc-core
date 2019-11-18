@@ -8,7 +8,7 @@ import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../revision-log';
 
 import * as NotifierUtils from '../../../plugins/utils/notifiers-utils';
-import RefreshQueue from '../../../models/refresh_queue';
+import RefreshQueue from '../../../models/refresh-queue';
 import Revision from '../../../models/service-models/revision';
 import Person from '../../../models/business-models/person';
 import Stub from '../../../models/stub';

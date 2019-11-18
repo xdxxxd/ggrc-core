@@ -15,7 +15,7 @@ import {
   buildRelevantIdsQuery,
   batchRequests,
 } from './utils/query-api-utils';
-import RefreshQueue from '../models/refresh_queue';
+import RefreshQueue from '../models/refresh-queue';
 import Search from '../models/service-models/search';
 import {getInstance} from '../plugins/utils/models-utils';
 import * as businessModels from '../models/business-models';

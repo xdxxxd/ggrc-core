@@ -76,7 +76,7 @@ import {
 } from '../../plugins/utils/models-utils';
 import {getUrlParams, changeHash} from '../../router';
 import {getPageInstance} from '../../plugins/utils/current-page-utils';
-import {refreshAll} from '../../models/refresh_queue';
+import {refreshAll} from '../../models/refresh-queue';
 
 export default canControl.extend({
   defaults: {

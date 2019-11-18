@@ -7,7 +7,7 @@ import CycleTaskGroupObjectTask from '../cycle-task-group-object-task';
 import Workflow from '../workflow';
 import {makeFakeInstance} from '../../../../js_specs/spec-helpers';
 import * as ReifyUtils from '../../../plugins/utils/reify-utils';
-import * as RefreshQueue from '../../../models/refresh_queue';
+import * as RefreshQueue from '../../../models/refresh-queue';
 
 describe('CycleTaskGroupObjectTask model', function () {
   let fakeCTModelCreator;

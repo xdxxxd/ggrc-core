@@ -6,7 +6,7 @@
 import Cacheable from '../cacheable';
 import Contactable from '../mixins/contactable';
 import Stub from '../stub';
-import {refreshAll} from '../../models/refresh_queue';
+import {refreshAll} from '../../models/refresh-queue';
 
 export default Cacheable.extend({
   root_object: 'task_group',

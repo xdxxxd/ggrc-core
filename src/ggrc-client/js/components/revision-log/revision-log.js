@@ -12,7 +12,7 @@ import canComponent from 'can-component';
 import '../tree-pagination/tree-pagination';
 import './revision-page';
 
-import RefreshQueue from '../../models/refresh_queue';
+import RefreshQueue from '../../models/refresh-queue';
 import template from './revision-log.stache';
 import tracker from '../../tracker';
 import Revision from '../../models/service-models/revision';

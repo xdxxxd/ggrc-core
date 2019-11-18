@@ -3,7 +3,7 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import './save_queue';
+import './save-queue';
 import './stub';
 
 import './business-models';
