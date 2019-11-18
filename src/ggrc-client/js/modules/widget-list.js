@@ -14,7 +14,7 @@ import {
   makeDashboardWidget,
   makeTreeView,
   createWidgetDescriptor,
-} from './widget_descriptor';
+} from './widget-descriptor';
 
 const modules = {};
 

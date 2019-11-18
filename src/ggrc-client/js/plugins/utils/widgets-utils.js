@@ -28,7 +28,7 @@ import {
   isMegaObjectRelated,
   getMegaObjectConfig,
 } from './mega-object-utils';
-import {getWidgetListFor} from '../../modules/widget_list';
+import {getWidgetListFor} from '../../modules/widget-list';
 import {
   getPageType,
   getPageInstance,

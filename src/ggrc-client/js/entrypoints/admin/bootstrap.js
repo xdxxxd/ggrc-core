@@ -19,7 +19,7 @@ import CustomAttributeDefinition from '../../models/custom-attributes/custom-att
 import AccessControlRole from '../../models/custom-roles/access-control-role';
 import Roleable from '../../models/custom-roles/roleable';
 import Person from '../../models/business-models/person';
-import WidgetList, {getWidgetListFor} from '../../modules/widget_list';
+import WidgetList, {getWidgetListFor} from '../../modules/widget-list';
 import ListView from '../../controllers/tree/list-view-controller';
 import TreeViewControl from '../../controllers/tree/tree-view';
 import {DashboardControl} from '../../controllers/dashboard-controller';

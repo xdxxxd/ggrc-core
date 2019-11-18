@@ -31,7 +31,7 @@ import '../models';
 
 import '../apps/base-widgets';
 
-import '../modules/widget_list';
+import '../modules/widget-list';
 
 import './user';
 

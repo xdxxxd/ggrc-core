@@ -10,7 +10,7 @@ import * as CurrentPageUtils from '../../utils/current-page-utils';
 import * as WidgetsUtils from '../../utils/widgets-utils';
 import * as QueryAPI from '../../utils/query-api-utils';
 import * as Mappings from '../../../models/mappers/mappings';
-import * as WidgetList from '../../../modules/widget_list';
+import * as WidgetList from '../../../modules/widget-list';
 import QueryParser from '../../../generated/ggrc-filter-query-parser';
 
 describe('GGRC Utils Widgets', function () {

@@ -11,7 +11,7 @@ import {
   initCounts,
 } from '../plugins/utils/widgets-utils';
 import InfoWidget from '../controllers/info-widget-controller';
-import WidgetList from '../modules/widget_list';
+import WidgetList from '../modules/widget-list';
 import Cycle from '../models/business-models/cycle';
 import TaskGroup from '../models/business-models/task-group';
 import Workflow from '../models/business-models/workflow';

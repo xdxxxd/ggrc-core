@@ -8,7 +8,7 @@ import canMap from 'can-map';
 import SummaryWidgetController from '../controllers/summary-widget-controller';
 import DashboardWidget from '../controllers/dashboard-widget-controller';
 import InfoWidget from '../controllers/info-widget-controller';
-import WidgetList from '../modules/widget_list';
+import WidgetList from '../modules/widget-list';
 import {isDashboardEnabled} from '../plugins/utils/dashboards-utils';
 import {getWidgetConfig} from '../plugins/utils/widgets-utils';
 import {widgetModules} from '../plugins/utils/widgets-utils';
