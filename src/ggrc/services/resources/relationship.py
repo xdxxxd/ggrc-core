@@ -86,14 +86,31 @@ class RelationshipResource(ggrc.services.common.Resource):
     return parent, child, is_snapshot
 
   def _get_model_instance(self, src=None):
-    """For Parent and Snapshottable src and dst, create an empty Snapshot."""
+    """For Parent and Snapshottable src and dst, create an empty Snapshot.
+    Args:
+      src: dict containing new object source.
+
+    Returns:
+      obj: An instance of current model.
+      needs_update: Flag shows if we need to update obj attributes.
+    """
+    needs_update = True
     _, _, is_snapshot = self._parse_snapshot_data(src)
 
     if is_snapshot:
-      obj = Snapshot()
-      db.session.add(obj)
-      return obj
-    return super(RelationshipResource, self)._get_model_instance(src)
+      snapshot = Snapshot()
+      db.session.add(snapshot)
+
+      return snapshot, needs_update
+
+    _relationship = self._get_relationship(src)
+
+    if _relationship:
+      needs_update = _relationship.is_external
+    else:
+      _relationship = relationship.Relationship()
+      db.session.add(_relationship)
+    return _relationship, needs_update
 
   def json_create(self, obj, src):
     """For Parent and Snapshottable src and dst, fill in the Snapshot obj."""
