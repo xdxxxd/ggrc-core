@@ -27,10 +27,10 @@ const viewModel = AssessmentsBulkUpdate.extend({
   async onVerifyClick() {
     this.attr('isVerifying', true);
     try {
-      const {task} = await request('/api/bulk_operations/verify', {
+      const {id} = await request('/api/bulk_operations/verify', {
         assessments_ids: this.getSelectedAssessmentsIds(),
       });
-      this.trackBackgroundTask(task);
+      this.trackBackgroundTask(id);
       this.closeModal();
     } catch (err) {
       this.handleBulkUpdateErrors();
