@@ -33,7 +33,7 @@
     Search
   </button>
 
-  <a id="page-help" class="popover-template" data-get-template="help/filters_helper_content" href="javascript://">
+  <a id="page-help" class="popover-template" data-get-template="help/filters-helper-content" href="javascript://">
     <i class="fa fa-question-circle"></i>
   </a>
 </div>
