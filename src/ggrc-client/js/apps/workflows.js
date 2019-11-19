@@ -116,7 +116,7 @@ WorkflowExtension.init_widgets_for_workflow_page = function () {
       model: Cycle,
       countsName: currentWidgetCountsName,
       additional_filter: currentWidgetFilter,
-      add_item_view: 'cycle_task_group_object_tasks/tree_add_item',
+      add_item_view: 'cycle_task_group_object_tasks/tree-add-item',
     },
   };
 

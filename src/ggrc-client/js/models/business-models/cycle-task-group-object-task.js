@@ -91,7 +91,7 @@ export default Cacheable.extend({
     cycle: Stub,
   },
   tree_view_options: {
-    add_item_view: 'cycle_task_group_object_tasks/tree_add_item',
+    add_item_view: 'cycle_task_group_object_tasks/tree-add-item',
     attr_list: [
       {
         attr_title: 'Task Title',
