@@ -35,7 +35,7 @@ export default canComponent.extend({
           instance.constructor.root_collection + '/object-cloner.stache',
         modal_confirm: 'Clone',
         skip_refresh: true,
-        button_view: GGRC.templates_path + '/modals/prompt_buttons.stache',
+        button_view: GGRC.templates_path + '/modals/prompt-buttons.stache',
       }, function () {
         let clonedInstance = instance.clone({
           cloneOptions: {

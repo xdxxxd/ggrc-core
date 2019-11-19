@@ -54,10 +54,10 @@ export default canComponent.extend({
     },
     showConfirm(saveButtonElement, invalidDefinitions) {
       const buttonView = `
-        ${GGRC.templates_path}/modals/assessment_template_warning_buttons.stache
+        ${GGRC.templates_path}/modals/assessment-template-warning_buttons.stache
       `;
       const contentView =
-        `${GGRC.templates_path}/modals/assessment_template_warning.stache`;
+        `${GGRC.templates_path}/modals/assessment-template-warning.stache`;
 
       confirm({
         modal_title: 'Warning!',

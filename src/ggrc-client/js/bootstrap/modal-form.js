@@ -212,7 +212,7 @@ $.extend(ModalForm.prototype, {
           ' to discard your changes?',
           modal_confirm: 'Continue Editing',
           button_view: GGRC.templates_path +
-            '/modals/discard_buttons.stache',
+            '/modals/discard-buttons.stache',
           skip_refresh: true,
         }, function () {
           trigger.call(instance, 'modal:dismiss');

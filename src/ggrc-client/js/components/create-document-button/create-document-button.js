@@ -137,7 +137,7 @@ const viewModel = canMap.extend({
         Please proceed to map existing docs to
         "${parentInstance.type} ${parentInstance.title}"`,
       button_view:
-        `${GGRC.templates_path}/modals/confirm_cancel_buttons.stache`,
+        `${GGRC.templates_path}/modals/confirm-cancel-buttons.stache`,
       modal_confirm: 'Proceed',
     }, confirmation.resolve, confirmation.reject);
 
