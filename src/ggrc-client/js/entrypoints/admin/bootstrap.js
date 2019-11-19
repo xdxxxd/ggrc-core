@@ -62,7 +62,7 @@ const adminListDescriptors = {
     header_view:
     // includes only the filter, not the column headers
       '/static/templates/people/filters.stache',
-    list_view: '/static/templates/people/object_list.stache',
+    list_view: '/static/templates/people/object-list.stache',
     fetch_post_process: sortByNameEmail,
   },
   roles: {

@@ -82,7 +82,7 @@
             </a>
             <div class="content">
               <ul class="mid-level">
-                {{{renderLive "dashboard/lhn-search" type="Person" title_plural="People" li_class="entities" template_view="people/search_result"}}}
+                {{{renderLive "dashboard/lhn-search" type="Person" title_plural="People" li_class="entities" template_view="people/search-result"}}}
               </ul>
             </div>
           </li>

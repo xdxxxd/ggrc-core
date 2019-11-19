@@ -22,7 +22,7 @@
         {{> /static/templates/snapshots/dropdown_menu.stache}}
       {{else}}
         {{#is(instance.type, "Person")}}
-          {{> /static/templates/people/dropdown_menu.stache}}
+          {{> /static/templates/people/dropdown-menu.stache}}
         {{else}}
           {{#is(instance.type, "Audit")}}
             {{> /static/templates/audits/dropdown-menu.stache}}
