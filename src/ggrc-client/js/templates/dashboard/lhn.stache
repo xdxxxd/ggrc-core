@@ -32,7 +32,7 @@
 
       <div class="lhs-nav">
         <ul class="top-level">
-          {{{renderLive "dashboard/lhn-search" type="Program" title_plural="Programs" template_view="programs/search_result"}}}
+          {{{renderLive "dashboard/lhn-search" type="Program" title_plural="Programs" template_view="programs/search-result"}}}
           {{{renderLive "dashboard/lhn-search" type="Workflow" title_plural="Workflows" template_view="workflows/search_result" tooltip_view="/workflows/extended_info.stache"}}}
           {{{renderLive "dashboard/lhn-search" type="Audit" title_plural="Audits" template_view="audits/search-result" tooltip_view="/audits/extended-info.stache"}}}
           {{{renderLive "dashboard/lhn-search" type="Assessment" title_plural="Assessments" tooltip_view="/assessments/assignable-extended-info.stache" actions="base_objects/empty"}}}
