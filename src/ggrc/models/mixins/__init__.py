@@ -443,6 +443,7 @@ class VerifiedDate(object):
       value = self.FINAL_STATE
     elif (value == self.FINAL_STATE and
           not self.verified_date and
+          not getattr(self, 'sox_302_enabled', False) and
           getattr(self, 'verifiers', [])):
       value = self.DONE_STATE
     elif (value not in self.END_STATES and
