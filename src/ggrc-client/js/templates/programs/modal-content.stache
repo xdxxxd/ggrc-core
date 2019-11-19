@@ -7,7 +7,7 @@
 {{#instance}}
 <form action="javascript://">
   <input type="hidden" name="kind" value="Directive" />
-  {{> /static/templates/base_objects/form_restore.stache}}
+  {{> /static/templates/base_objects/form-restore.stache}}
 
   <!-- Title Row -->
   <div class="row-fluid">

@@ -36,7 +36,7 @@
           {{{renderLive "dashboard/lhn-search" type="Workflow" title_plural="Workflows" template_view="workflows/search-result" tooltip_view="/workflows/extended-info.stache"}}}
           {{{renderLive "dashboard/lhn-search" type="Audit" title_plural="Audits" template_view="audits/search-result" tooltip_view="/audits/extended-info.stache"}}}
           {{{renderLive "dashboard/lhn-search" type="Assessment" title_plural="Assessments" tooltip_view="/assessments/assignable-extended-info.stache" actions="base_objects/empty"}}}
-          {{{renderLive "dashboard/lhn-search" type="Issue" title_plural="Issues" actions="base_objects/search_actions"}}}
+          {{{renderLive "dashboard/lhn-search" type="Issue" title_plural="Issues" actions="base_objects/search-actions"}}}
         </ul>
       </div>
 

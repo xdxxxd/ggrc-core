@@ -43,7 +43,7 @@ export default canComponent.extend({
         modal_title: 'Delete ' + model.title_singular,
         skip_refresh: true,
         content_view:
-          GGRC.templates_path + '/base_objects/confirm_delete.stache',
+          GGRC.templates_path + '/base_objects/confirm-delete.stache',
       };
 
       import(/* webpackChunkName: "modalsCtrls" */

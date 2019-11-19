@@ -22,7 +22,7 @@
               {{#is_allowed 'update' instance}}
                 <three-dots-menu>
                   {{^is(workflow.status, "Inactive")}}
-                    {{> /static/templates/base_objects/edit_object_link.stache}}
+                    {{> /static/templates/base_objects/edit-object-link.stache}}
                   {{/is}}
                   <li>
                     <task-group-clone taskGroup:from="instance">

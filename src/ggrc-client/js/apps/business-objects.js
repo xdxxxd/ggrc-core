@@ -72,7 +72,7 @@ Object.assign(CoreExtension, {
       widgetList.addWidget(object.constructor.model_singular, 'dashboard', {
         content_controller: DashboardWidget,
         instance: object,
-        widget_view: path + '/base_objects/dashboard_widget.stache',
+        widget_view: path + '/base_objects/dashboard-widget.stache',
       });
     }
     widgetList.addWidget(object.constructor.model_singular, 'info', {

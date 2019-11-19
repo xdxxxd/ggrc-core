@@ -200,7 +200,7 @@ new WidgetList('ggrc_admin', {
 new DashboardControl('#pageContent', {
   widget_descriptors: getWidgetListFor('admin'),
   menu_tree_spec: GGRC.admin_menu_spec,
-  header_view: `${GGRC.templates_path}/base_objects/page_header.stache`,
+  header_view: `${GGRC.templates_path}/base_objects/page-header.stache`,
   innernav_view: `${GGRC.templates_path}/base_objects/inner-nav.stache`,
   default_widgets: [
     'people', 'roles', 'events', 'custom_attributes', 'custom_roles',

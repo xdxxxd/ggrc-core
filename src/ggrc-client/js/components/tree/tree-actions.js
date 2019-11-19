@@ -39,7 +39,7 @@ export default canComponent.extend({
             ? false
             : this.attr('options').add_item_view ||
             this.attr('model').tree_view_options.add_item_view ||
-            'base_objects/tree_add_item';
+            'base_objects/tree-add-item';
         },
       },
       show3bbs: {

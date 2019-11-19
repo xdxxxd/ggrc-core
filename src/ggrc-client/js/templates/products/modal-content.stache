@@ -6,7 +6,7 @@
 <div class="hideable-holder">
 {{#instance}}
 <form action="javascript://">
-  {{> /static/templates/base_objects/form_restore.stache}}
+  {{> /static/templates/base_objects/form-restore.stache}}
 
   <div class="row-fluid">
     <div class="span6 {{#instance.computed_errors.title}}field-failure{{/instance.computed_errors.title}}">

@@ -15,7 +15,7 @@
                 {{> /static/templates/base_objects/object-review.stache}}
               {{/isScopeModel}}
               {{> /static/templates/base_objects/description.stache}}
-              {{> /static/templates/base_objects/test_plan.stache}}
+              {{> /static/templates/base_objects/test-plan.stache}}
               {{> /static/templates/base_objects/notes.stache}}
               {{> /static/templates/base_objects/contacts.stache}}
               {{> /static/templates/base_objects/reference-urls.stache}}

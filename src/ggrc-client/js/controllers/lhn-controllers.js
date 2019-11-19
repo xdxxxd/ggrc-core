@@ -361,8 +361,8 @@ const LhnControl = canControl.extend({}, {
 
 const LhnSearchControl = canControl.extend({
   defaults: {
-    list_view: 'base_objects/search_result',
-    actions_view: 'base_objects/search_actions',
+    list_view: 'base_objects/search-result',
+    actions_view: 'base_objects/search-actions',
     list_selector: 'ul.top-level > li, ul.mid-level > li',
     list_toggle_selector: 'li > a.list-toggle',
     model_attr_selector: null,

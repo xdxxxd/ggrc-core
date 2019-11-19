@@ -69,7 +69,7 @@ let handlers = {
       instance: instance,
       modal_title: 'Delete ' + $trigger.attr('data-object-singular'),
       content_view:
-        GGRC.templates_path + '/base_objects/confirm_delete.stache',
+        GGRC.templates_path + '/base_objects/confirm-delete.stache',
     };
 
     if (hasWarningType(instance)) {
@@ -264,7 +264,7 @@ let handlers = {
       instance: instance,
       modal_title: 'Archive ' + $trigger.attr('data-object-singular'),
       content_view: GGRC.templates_path +
-      '/base_objects/confirm_archive.stache',
+      '/base_objects/confirm-archive.stache',
     });
 
     $target.on('modal:success', function (e, data) {

@@ -66,7 +66,7 @@ const InfiniteScrollControl = canControl.extend({}, {
 
 const LhnTooltipsControl = canControl.extend({
   defaults: {
-    tooltip_view: GGRC.templates_path + '/base_objects/extended_info.stache',
+    tooltip_view: GGRC.templates_path + '/base_objects/extended-info.stache',
     trigger_selector: '.show-extended',
     fade_in_delay: 300,
     fade_out_delay: 300,
