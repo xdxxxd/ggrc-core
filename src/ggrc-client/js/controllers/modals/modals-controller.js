@@ -83,7 +83,7 @@ export default canControl.extend({
     preload_view: GGRC.templates_path + '/dashboard/modal_preload.stache',
     header_view: GGRC.templates_path + '/modals/modal_header.stache',
     custom_attributes_view:
-    GGRC.templates_path + '/custom_attributes/modal_content.stache',
+    GGRC.templates_path + '/custom_attributes/modal-content.stache',
     button_view: BUTTON_VIEW_DONE,
     model: null, // model class to use when finding or creating new
     instance: null, // model instance to use instead of finding/creating (e.g. for update)

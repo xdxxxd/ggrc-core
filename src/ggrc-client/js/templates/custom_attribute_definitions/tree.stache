@@ -33,7 +33,7 @@
           parentModel:from="instance"
           model:from="loadedModel"
           modalTitle:from="'Add Attribute to type {{instance.title_singular}}'"
-          contentViewPath:from="'/custom_attribute_definitions/modal_content.stache'"
+          contentViewPath:from="'/custom_attribute_definitions/modal-content.stache'"
         >
           <table class="table custom-attribute-definitions">
             <colgroup>

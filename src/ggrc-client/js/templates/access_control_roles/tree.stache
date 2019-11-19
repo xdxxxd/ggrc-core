@@ -32,7 +32,7 @@
           parentModel:from="instance"
           model:from="loadedModel"
           modalTitle:from="'Add Custom Role to type {{instance.title_singular}}'"
-          contentViewPath:from="'/access_control_roles/modal_content.stache'">
+          contentViewPath:from="'/access_control_roles/modal-content.stache'">
           <table class="table">
             <colgroup>
               <col style="width: 40%"/>

@@ -148,7 +148,7 @@ let handlers = {
     contentView = $trigger.data('template') ||
       GGRC.templates_path + '/' +
       $trigger.attr('data-object-plural') +
-      '/modal_content.stache';
+      '/modal-content.stache';
 
     $target
       .modal_form(option, $trigger);
