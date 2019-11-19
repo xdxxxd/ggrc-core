@@ -19,7 +19,7 @@
   <div class="details__wrapper">
     <div class="menu-button-container">
       {{#if instance.snapshot}}
-        {{> /static/templates/snapshots/dropdown_menu.stache}}
+        {{> /static/templates/snapshots/dropdown-menu.stache}}
       {{else}}
         {{#is(instance.type, "Person")}}
           {{> /static/templates/people/dropdown-menu.stache}}
