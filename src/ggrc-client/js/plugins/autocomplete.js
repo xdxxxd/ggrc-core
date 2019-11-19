@@ -216,11 +216,11 @@ $.widget('ggrc.autocomplete', $.ui.autocomplete, {
     if (!template) {
       if (
         model &&
-        GGRC.Templates[model.table_plural + '/autocomplete_result']
+        GGRC.Templates[model.table_plural + '/autocomplete-result']
       ) {
-        template = '/' + model.table_plural + '/autocomplete_result.stache';
+        template = '/' + model.table_plural + '/autocomplete-result.stache';
       } else {
-        template = '/base_objects/autocomplete_result.stache';
+        template = '/base_objects/autocomplete-result.stache';
       }
     }
 

@@ -160,7 +160,7 @@
                   placeholder="Select a Task Group"
                   type="text"
                   value="{{loadedObject.title}}"
-                  data-template="/cycle_task_groups/autocomplete_result.stache"
+                  data-template="/cycle_task_groups/autocomplete-result.stache"
                   tabindex="5">
             </modal-autocomplete>
             {{#instance.computed_errors.cycle_task_group}}

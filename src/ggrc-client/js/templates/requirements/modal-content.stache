@@ -34,7 +34,7 @@
             name="{{pathToField}}"
             data-lookup="Policy,Regulation,Standard,Contract"
             data-permission-type="update"
-            data-template="/directives/autocomplete_result.stache"
+            data-template="/directives/autocomplete-result.stache"
             placeholder="Choose Policy / Regulation / Standard / Contract"
             type="text">
         </modal-autocomplete>
