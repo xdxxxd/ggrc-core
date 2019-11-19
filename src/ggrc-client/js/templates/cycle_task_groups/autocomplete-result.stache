@@ -6,7 +6,7 @@
 {{#items}}
   <li class="ui-menu-item" {{canData 'ui-autocomplete-item'}}>
     <a href="javascript://" class='show-extended' {{canData 'model'}}
-      data-tooltip-view="/cycle_task_groups/extended_info.stache">
+      data-tooltip-view="/cycle_task_groups/extended-info.stache">
       {{title}}
     </a>
   </li>
