@@ -342,7 +342,7 @@ class TestWithReadOnlyAccessImport(TestCase):
 
     data = OrderedDict([
         ("object_type", "System"),
-        ("Code*", "CODE"),
+        ("Code*", ""),
         ("Admin", "user@example.com"),
         ("Assignee", "user@example.com"),
         ("Verifier", "user@example.com"),
@@ -361,7 +361,7 @@ class TestWithReadOnlyAccessImport(TestCase):
 
     data = OrderedDict([
         ("object_type", "System"),
-        ("Code*", "CODE"),
+        ("Code*", ""),
         ("Admin", "user@example.com"),
         ("Assignee", "user@example.com"),
         ("Verifier", "user@example.com"),
@@ -601,7 +601,7 @@ class TestWithReadOnlyAccessImport(TestCase):
 
     data = OrderedDict([
         ("object_type", "System"),
-        ("Code*", "CODE"),
+        ("Code*", ""),
         ("Admin", "user@example.com"),
         ("Assignee", "user@example.com"),
         ("Verifier", "user@example.com"),
@@ -654,7 +654,7 @@ class TestWithReadOnlyAccessImport(TestCase):
 
     data = OrderedDict([
         ("object_type", "System"),
-        ("Code*", "CODE"),
+        ("Code*", ""),
         ("Admin", "user@example.com"),
         ("Assignee", "user@example.com"),
         ("Verifier", "user@example.com"),
@@ -735,7 +735,7 @@ class TestWithReadOnlyAccessImport(TestCase):
 
     data = OrderedDict([
         ("object_type", "System"),
-        ("Code*", "CODE"),
+        ("Code*", ""),
         ("Admin", "user@example.com"),
         ("Assignee", "user@example.com"),
         ("Verifier", "user@example.com"),
@@ -747,7 +747,7 @@ class TestWithReadOnlyAccessImport(TestCase):
     response = self.import_data(data)
     self._check_csv_response(response, {})
 
-    obj = get_model("System").query.filter_by(slug="CODE").one()
+    obj = get_model("System").query.filter_by(title="b").one()
     rel_ids = list(o.id for o in obj.related_objects([rel_obj_type]))
 
     self.assertIn(rel_obj_id, rel_ids)
@@ -837,7 +837,7 @@ class TestWithReadOnlyAccessImport(TestCase):
 
     response = self.import_data(OrderedDict([
         ("object_type", "System"),
-        ("Code*", "System-1"),
+        ("Code*", ""),
         ("Admin", user.email),
         ("Assignee", user.email),
         ("Verifier", user.email),
@@ -858,7 +858,7 @@ class TestWithReadOnlyAccessImport(TestCase):
     } if role_name != "Administrator" else {}
     self._check_csv_response(response, expected_warning)
 
-    obj = all_models.System.query.filter_by(slug="System-1").first()
+    obj = all_models.System.query.filter_by(title="New System").first()
     self.assertEqual(obj.readonly, expected_readonly)
 
   @ddt.data(
