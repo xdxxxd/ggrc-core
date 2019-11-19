@@ -168,7 +168,7 @@ export default canControl.extend({
       modal_description: renderer(instance).textContent,
       modal_confirm: modalDetails.button,
       modal_title: modalDetails.title,
-      button_view: GGRC.templates_path + '/quick_form/confirm_buttons.stache',
+      button_view: GGRC.templates_path + '/quick_form/confirm-buttons.stache',
     }, confirmDfd.resolve);
     return confirmDfd;
   },
