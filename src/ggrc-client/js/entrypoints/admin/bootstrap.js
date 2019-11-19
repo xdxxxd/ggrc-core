@@ -104,7 +104,7 @@ const adminListDescriptors = {
     parent_instance: Roleable,
     model: Roleable,
     header_view:
-    GGRC.templates_path + '/access_control_roles/tree_header.stache',
+    GGRC.templates_path + '/access_control_roles/tree-header.stache',
     show_view:
     GGRC.templates_path + '/access_control_roles/tree.stache',
     sortable: false,
