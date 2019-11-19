@@ -579,6 +579,20 @@ class TestOther(TestMixinAutoStatusChangeableBase):
     assessment = self.refresh_object(assessment)
     self.assertEqual(from_status, assessment.status)
 
+  @ddt.data(models.Assessment.FINAL_STATE)
+  def test_status_change_when_verifier_exists(self, new_status):
+    """Assessment with Verifiers should update Status to In Review if we are
+    trying to set Completed state"""
+    with factories.single_commit():
+      assessment = factories.AssessmentFactory()
+      person = factories.PersonFactory()
+
+    self.modify_assignee(assessment, person.email, ["Verifiers"])
+    assessment = self.refresh_object(assessment)
+
+    self.change_status(assessment, new_status,
+                       expected_status=models.Assessment.DONE_STATE)
+
   @ddt.data(models.Assessment.DONE_STATE,
             models.Assessment.FINAL_STATE,
             models.Assessment.PROGRESS_STATE,
@@ -676,11 +690,6 @@ class TestOther(TestMixinAutoStatusChangeableBase):
       (
           "Assignees",
           models.Assessment.DONE_STATE,
-          models.Assessment.PROGRESS_STATE,
-      ),
-      (
-          "Verifiers",
-          models.Assessment.FINAL_STATE,
           models.Assessment.PROGRESS_STATE,
       ),
       (
