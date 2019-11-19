@@ -32,7 +32,7 @@ export default canComponent.extend({
         modal_title: scope.attr('modalTitle'),
         modal_description: scope.attr('modalDescription'),
         content_view: GGRC.templates_path + '/' +
-          instance.constructor.root_collection + '/object_cloner.stache',
+          instance.constructor.root_collection + '/object-cloner.stache',
         modal_confirm: 'Clone',
         skip_refresh: true,
         button_view: GGRC.templates_path + '/modals/prompt_buttons.stache',

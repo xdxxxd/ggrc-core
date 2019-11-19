@@ -25,7 +25,7 @@
           {{> /static/templates/people/dropdown_menu.stache}}
         {{else}}
           {{#is(instance.type, "Audit")}}
-            {{> /static/templates/audits/dropdown_menu.stache}}
+            {{> /static/templates/audits/dropdown-menu.stache}}
           {{else}}
             {{> /static/templates/base_objects/dropdown_menu.stache}}
           {{/is}}
