@@ -46,7 +46,7 @@ export default canComponent.extend({
       import(/* webpackChunkName: "modalsCtrls" */'../../controllers/modals')
         .then(() => {
           const contentView =
-            `${GGRC.templates_path}/task_groups/clone_modal_content.stache`;
+            `${GGRC.templates_path}/task_groups/clone-modal-content.stache`;
 
           new ModalsController($target, {
             modal_title: 'Clone Task Group',
