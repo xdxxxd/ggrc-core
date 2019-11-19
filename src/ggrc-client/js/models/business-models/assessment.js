@@ -58,7 +58,7 @@ export default Cacheable.extend({
     'Secondary Contacts': 5,
   },
   tree_view_options: {
-    add_item_view: 'assessments/tree_add_item',
+    add_item_view: 'assessments/tree-add-item',
     attr_list: [{
       attr_title: 'Title',
       attr_name: 'title',
