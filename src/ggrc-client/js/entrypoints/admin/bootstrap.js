@@ -84,7 +84,7 @@ const adminListDescriptors = {
     model: CustomAttributable,
     header_view:
     GGRC.templates_path +
-    '/custom_attribute_definitions/tree_header.stache',
+    '/custom_attribute_definitions/tree-header.stache',
     show_view:
     GGRC.templates_path + '/custom_attribute_definitions/tree.stache',
     sortable: false,
