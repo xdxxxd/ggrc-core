@@ -70,7 +70,7 @@ const adminListDescriptors = {
     extra_params: {scope__in: 'System,Admin,Private Program,Workflow'},
     object_category: 'governance',
     object_display: 'Roles',
-    list_view: '/static/templates/roles/object_list.stache',
+    list_view: '/static/templates/roles/object-list.stache',
     fetch_post_process: sortByNameEmail,
   },
   events: {
