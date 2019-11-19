@@ -77,7 +77,7 @@ const adminListDescriptors = {
     model: Event,
     object_category: 'governance',
     object_display: 'Events',
-    list_view: '/static/templates/events/object_list.stache',
+    list_view: '/static/templates/events/object-list.stache',
   },
   custom_attributes: {
     parent_instance: CustomAttributable,
