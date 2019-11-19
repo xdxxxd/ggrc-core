@@ -14,7 +14,7 @@ export default canControl.extend({
     widget_id: '',
     widget_name: '',
     widget_icon: '',
-    widget_view: '/static/templates/dashboard/object_widget.stache',
+    widget_view: '/static/templates/dashboard/object-widget.stache',
     widget_guard: null,
     widget_initial_content: '',
     show_filter: false,

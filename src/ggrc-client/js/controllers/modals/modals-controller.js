@@ -80,7 +80,7 @@ import {refreshAll} from '../../models/refresh-queue';
 
 export default canControl.extend({
   defaults: {
-    preload_view: GGRC.templates_path + '/dashboard/modal_preload.stache',
+    preload_view: GGRC.templates_path + '/dashboard/modal-preload.stache',
     header_view: GGRC.templates_path + '/modals/modal_header.stache',
     custom_attributes_view:
     GGRC.templates_path + '/custom_attributes/modal-content.stache',
