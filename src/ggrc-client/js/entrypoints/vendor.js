@@ -36,3 +36,19 @@ import 'can-validate-legacy/shims/validatejs';
 import 'can-jquery';
 import 'can-jquery/legacy';
 import 'can-map-define';
+
+// TEMPORARY STUB
+GGRC.assessments_workflows = [
+  {
+    value: 'STANDARD',
+    display_name: 'Standard flow',
+  },
+  {
+    value: 'SOX302',
+    display_name: 'SOX 302 flow',
+  },
+  {
+    value: 'MLV',
+    display_name: 'Multi-level verification flow',
+  },
+];
