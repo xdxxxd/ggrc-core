@@ -2,10 +2,11 @@
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 
 """Integration test for AutoStatusChangeable mixin"""
+import datetime
 
 import ddt
 
-from ggrc import models
+from ggrc import models, db
 from ggrc.access_control.role import get_custom_roles_for
 from integration.ggrc import generator
 from integration.ggrc.access_control import acl_helper
@@ -582,7 +583,7 @@ class TestOther(TestMixinAutoStatusChangeableBase):
   @ddt.data(models.Assessment.FINAL_STATE)
   def test_status_change_when_verifier_exists(self, new_status):
     """Assessment with Verifiers should update Status to In Review if we are
-    trying to set Completed state"""
+    trying to set {0} state"""
     with factories.single_commit():
       assessment = factories.AssessmentFactory()
       person = factories.PersonFactory()
@@ -694,6 +695,11 @@ class TestOther(TestMixinAutoStatusChangeableBase):
       ),
       (
           "Verifiers",
+          models.Assessment.FINAL_STATE,
+          models.Assessment.PROGRESS_STATE,
+      ),
+      (
+          "Verifiers",
           models.Assessment.DONE_STATE,
           models.Assessment.PROGRESS_STATE,
       ),
@@ -709,6 +715,10 @@ class TestOther(TestMixinAutoStatusChangeableBase):
     assessment = self.refresh_object(assessment)
     self.assertEqual(assessment.status, end_state)
 
+    if (acr_name == "Verifiers" and
+       start_state == models.Assessment.FINAL_STATE):
+      assessment.verified_date = datetime.datetime.utcnow()
+      db.session.commit()
     assessment = self.change_status(assessment, start_state)
     self.modify_assignee(assessment, person.email, [])
     assessment = self.refresh_object(assessment)

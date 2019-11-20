@@ -1219,6 +1219,26 @@ class TestAssessmentImport(TestCase):
         all_models.Assessment.query.get(assessment.id).status,
         all_models.Assessment.DONE_STATE)
 
+  def test_import_asmnt_state_with_verifiers_and_date(self):
+    """Assessment with Verifiers should update Status to In Review if we are
+    importing Completed state with filled Verified Date"""
+    with factories.single_commit():
+      assessment = factories.AssessmentFactory()
+      person = factories.PersonFactory()
+      factories.AccessControlPersonFactory(
+          ac_list=assessment.acr_name_acl_map["Verifiers"],
+          person=person,
+      )
+    self.import_data(collections.OrderedDict([
+        ("object_type", "Assessment"),
+        ("Code", assessment.slug),
+        ("Verified Date", "11/20/2019"),
+        ("State", all_models.Assessment.FINAL_STATE)
+    ]))
+    asmnt = all_models.Assessment.query.get(assessment.id)
+    self.assertEqual(asmnt.status, all_models.Assessment.FINAL_STATE)
+    self.assertEqual(asmnt.verified_date, datetime.datetime(2019, 11, 20))
+
   def test_assmt_with_multiselect_gca(self):
     """Import of assessment with multiselect CAD shouldn't add assmt.CAV"""
     assess_slug = "TestAssessment"
