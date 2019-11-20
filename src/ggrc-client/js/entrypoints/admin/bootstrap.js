@@ -8,7 +8,6 @@ import canList from 'can-list';
 import {
   initWidgets,
 } from '../../plugins/utils/widgets-utils';
-import '../../controllers/dashboard-controller';
 import {RouterConfig} from '../../router';
 import routes from './routes';
 import {gapiClient} from '../../plugins/ggrc-gapi-client';
