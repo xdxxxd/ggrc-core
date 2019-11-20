@@ -54,7 +54,7 @@ export default canComponent.extend({
     },
     showConfirm(saveButtonElement, invalidDefinitions) {
       const buttonView = `
-        ${GGRC.templates_path}/modals/assessment-template-warning_buttons.stache
+        ${GGRC.templates_path}/modals/assessment-template-warning-buttons.stache
       `;
       const contentView =
         `${GGRC.templates_path}/modals/assessment-template-warning.stache`;
