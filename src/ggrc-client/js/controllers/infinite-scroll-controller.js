@@ -4,7 +4,7 @@
 */
 
 import loDebounce from 'lodash/debounce';
-import {ggrcAjax} from '../plugins/ajax-extensions';
+import {loadTemplate} from '../plugins/ggrc-utils';
 import canStache from 'can-stache';
 import canControl from 'can-control';
 const MOUSEENTER_THROTTLE = 300;
@@ -154,25 +154,21 @@ const LhnTooltipsControl = canControl.extend({
     let tooltipView = this.get_tooltip_view(el);
     if (tooltipView) {
       this.fade_in_timeout = null;
-      ggrcAjax({
-        url: tooltipView,
-        dataType: 'text',
-      }).then((view) => {
-        let frag = canStache(view)({instance: instance});
-        let tooltipWidth = this.options.$extended.outerWidth();
-        let offset = el.parent().offset();
-        let elLeft = offset ? offset.left : 0;
-        let offsetLeft = elLeft - tooltipWidth > 0 ?
-          elLeft - tooltipWidth : elLeft + el.parent().width();
+      const view = loadTemplate(tooltipView);
+      let frag = canStache(view)({instance: instance});
+      let tooltipWidth = this.options.$extended.outerWidth();
+      let offset = el.parent().offset();
+      let elLeft = offset ? offset.left : 0;
+      let offsetLeft = elLeft - tooltipWidth > 0 ?
+        elLeft - tooltipWidth : elLeft + el.parent().width();
 
-        this.options.$extended
-          .html(frag)
-          .addClass('in')
-          .removeClass('hide')
-          .css({top: el.offset().top, left: offsetLeft})
-          .data('model', instance);
-        this.ensure_tooltip_visibility();
-      });
+      this.options.$extended
+        .html(frag)
+        .addClass('in')
+        .removeClass('hide')
+        .css({top: el.offset().top, left: offsetLeft})
+        .data('model', instance);
+      this.ensure_tooltip_visibility();
     }
   },
   on_tooltip_mouseenter: function () {

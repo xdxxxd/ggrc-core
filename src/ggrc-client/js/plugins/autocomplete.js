@@ -8,7 +8,7 @@ import loDefer from 'lodash/defer';
 import loDebounce from 'lodash/debounce';
 import loIsNumber from 'lodash/isNumber';
 import loForEach from 'lodash/forEach';
-import {ggrcAjax} from '../plugins/ajax-extensions';
+import {loadTemplate} from '../plugins/ggrc-utils';
 import canStache from 'can-stache';
 import canMap from 'can-map';
 import {
@@ -262,15 +262,11 @@ $.widget('ggrc.autocomplete', $.ui.autocomplete, {
       /* webpackChunkName: "infiniteScroll" */
       '../controllers/infinite-scroll-controller'
     ).then(() => {
-      ggrcAjax({
-        url: GGRC.templates_path + template,
-        dataType: 'text',
-      }).then((view) => {
-        let frag = canStache(view)(context);
-        $ul.html(frag);
-        new LhnTooltipsControl($ul);
-        new InfiniteScrollControl($ul);
-      });
+      const view = loadTemplate(GGRC.templates_path + template);
+      let frag = canStache(view)(context);
+      $ul.html(frag);
+      new LhnTooltipsControl($ul);
+      new InfiniteScrollControl($ul);
     });
   },
 });

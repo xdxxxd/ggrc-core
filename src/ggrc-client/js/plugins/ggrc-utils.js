@@ -220,6 +220,16 @@ function filteredMap(items, predicate) {
     .filter((item) => item !== null && item !== undefined);
 }
 
+
+function getTemplatePath(url) {
+  let match = url.match(/\/static\/(templates)\/(.*)\.stache/);
+  return match && match[2];
+}
+
+function loadTemplate(templateUrl) {
+  return GGRC.Templates[getTemplatePath(templateUrl)];
+}
+
 export {
   applyTypeFilter,
   isInnerClick,
@@ -233,4 +243,5 @@ export {
   exists,
   splitTrim,
   filteredMap,
+  loadTemplate,
 };

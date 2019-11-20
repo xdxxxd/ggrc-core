@@ -50,42 +50,6 @@ $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
   }
 });
 
-function getTemplatePath(url) {
-  let match = url.match(/\/static\/(templates)\/(.*)\.stache/);
-  return match && match[2];
-}
-
-// Check if the template is available in "GGRC.Templates", and if so,
-//   short-circuit the request.
-
-$.ajaxTransport('text', function (options, _originalOptions, _jqXHR) {
-  let templatePath = getTemplatePath(options.url);
-  let template = templatePath && GGRC.Templates[templatePath];
-  if (template) {
-    return {
-      send: function (headers, completeCallback) {
-        function done() {
-          if (template) {
-            completeCallback(200, 'success', {text: template});
-          }
-        }
-        if (options.async) {
-          // Use requestAnimationFrame where possible because we want
-          // these to run as quickly as possible but still release
-          // the thread.
-          (window.requestAnimationFrame || window.setTimeout)(done, 0);
-        } else {
-          done();
-        }
-      },
-
-      abort: function () {
-        template = null;
-      },
-    };
-  }
-});
-
 /**
  * Builds class name of two segments - prefix and computed value
  * @param  {String|computed} prefix class prefix

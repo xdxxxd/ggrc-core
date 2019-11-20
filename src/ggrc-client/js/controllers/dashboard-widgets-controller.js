@@ -3,7 +3,7 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import {ggrcAjax} from '../plugins/ajax-extensions';
+import {loadTemplate} from '../plugins/ggrc-utils';
 import canStache from 'can-stache';
 import canControl from 'can-control';
 import {getPageModel} from '../plugins/utils/current-page-utils';
@@ -49,13 +49,12 @@ export default canControl.extend({
       return this._prepare_deferred;
     }
 
-    this._prepare_deferred = $.when(this.options, ggrcAjax({
-      url: this.options.widget_view,
-      dataType: 'text',
-    })).then((ctx, view) => {
-      let frag = canStache(view[0])(ctx);
-      this.draw_widget(frag);
-    });
+    this._prepare_deferred = $.when(this.options)
+      .then((ctx) => {
+        const view = loadTemplate(this.options.widget_view);
+        let frag = canStache(view)(ctx);
+        this.draw_widget(frag);
+      });
 
     return this._prepare_deferred;
   },

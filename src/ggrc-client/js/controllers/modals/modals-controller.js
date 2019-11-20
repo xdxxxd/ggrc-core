@@ -3,11 +3,10 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-import {exists, filteredMap} from '../../plugins/ggrc-utils';
+import {exists, filteredMap, loadTemplate} from '../../plugins/ggrc-utils';
 import loIsFunction from 'lodash/isFunction';
 import loForEach from 'lodash/forEach';
 import loFilter from 'lodash/filter';
-import {ggrcAjax} from '../../plugins/ajax-extensions';
 import canModel from 'can-model';
 import canStache from 'can-stache';
 import canList from 'can-list';
@@ -104,13 +103,9 @@ export default canControl.extend({
     }
 
     if (!this.element.find('.modal-body').length) {
-      ggrcAjax({
-        url: this.options.preload_view,
-        dataType: 'text',
-      }).then((view) => {
-        let frag = canStache(view)();
-        this.after_preload(frag);
-      });
+      const view = loadTemplate(this.options.preload_view);
+      let frag = canStache(view)();
+      this.after_preload(frag);
       return;
     }
 
@@ -188,12 +183,13 @@ export default canControl.extend({
 
   fetch_templates: function (dfd) {
     return $.when(
-      ggrcAjax({url: this.options.content_view, dataType: 'text'}),
-      ggrcAjax({url: this.options.header_view, dataType: 'text'}),
-      ggrcAjax({url: this.options.button_view, dataType: 'text'}),
-      ggrcAjax({url: this.options.custom_attributes_view, dataType: 'text'}),
       dfd.then(() => this.options),
-    ).then((content, header, footer, customAttributes, context) => {
+    ).then((context) => {
+      const content = loadTemplate(this.options.content_view);
+      const header = loadTemplate(this.options.header_view);
+      const footer = loadTemplate(this.options.button_view);
+      const customAttributes =
+        loadTemplate(this.options.custom_attributes_view);
       this.draw(content, header, footer, customAttributes, context);
     });
   },

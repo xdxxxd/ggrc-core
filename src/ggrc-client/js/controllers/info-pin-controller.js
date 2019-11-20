@@ -5,7 +5,7 @@
 
 import loIsEmpty from 'lodash/isEmpty';
 import loSome from 'lodash/some';
-import {ggrcAjax} from '../plugins/ajax-extensions';
+import {loadTemplate} from '../plugins/ggrc-utils';
 import canStache from 'can-stache';
 import canControl from 'can-control';
 import '../components/info-pin-buttons/info-pin-buttons';
@@ -91,13 +91,9 @@ export default canControl.extend({
           },
         };
 
-        ggrcAjax({
-          url: view,
-          dataType: 'text',
-        }).then((view) => {
-          let frag = canStache(view)(context);
-          this.element.html(frag);
-        });
+        const template = loadTemplate(view);
+        let frag = canStache(template)(context);
+        this.element.html(frag);
       });
   },
   prepareView: function (opts, el, maximizedState) {

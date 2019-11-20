@@ -6,7 +6,7 @@
 import loReduce from 'lodash/reduce';
 import loForEach from 'lodash/forEach';
 import loMap from 'lodash/map';
-import {ggrcAjax} from '../../plugins/ajax-extensions';
+import {loadTemplate} from '../../plugins/ggrc-utils';
 import isEmptyObject from 'can-util/js/is-empty-object/is-empty-object';
 import canCompute from 'can-compute';
 import makeArray from 'can-util/js/make-array/make-array';
@@ -120,16 +120,15 @@ const TreeViewControl = TreeLoader.extend({
     let dfds = [];
     if (this.options.header_view && this.options.show_header) {
       dfds.push(
-        $.when(this.options, ggrcAjax({
-          url: this.options.header_view,
-          dataType: 'text',
-        })).then((ctx, view) => {
-          return canStache(view[0])(ctx);
-        }).then(
-          this._ifNotRemoved((frag) => {
-            this.element.before(frag);
-          })
-        )
+        $.when(this.options)
+          .then((ctx) => {
+            const view = loadTemplate(this.options.header_view);
+            return canStache(view)(ctx);
+          }).then(
+            this._ifNotRemoved((frag) => {
+              this.element.before(frag);
+            })
+          )
       );
     }
 

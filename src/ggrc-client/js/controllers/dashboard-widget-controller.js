@@ -3,7 +3,7 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import {ggrcAjax} from '../plugins/ajax-extensions';
+import {loadTemplate} from '../plugins/ggrc-utils';
 import canStache from 'can-stache';
 import canMap from 'can-map';
 import canControl from 'can-control';
@@ -35,13 +35,9 @@ export default canControl.extend({
         this.attr('activeDashboard', dashboard);
       },
     });
-    ggrcAjax({
-      url: options.widget_view,
-      dataType: 'text',
-    }).then((view) => {
-      let frag = canStache(view)(options.context);
-      $element.html(frag);
-    });
+    const view = loadTemplate(options.widget_view);
+    let frag = canStache(view)(options.context);
+    $element.html(frag);
     return 0;
   },
 });

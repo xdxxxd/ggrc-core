@@ -4,7 +4,7 @@
 */
 
 import loForEach from 'lodash/forEach';
-import {ggrcAjax} from '../plugins/ajax-extensions';
+import {loadTemplate} from '../plugins/ggrc-utils';
 import canStache from 'can-stache';
 import canMap from 'can-map';
 import canControl from 'can-control';
@@ -70,13 +70,9 @@ const DashboardControl = canControl.extend({
   init_page_header: function () {
     let $pageHeader = $('#page-header');
     if (this.options.header_view && $pageHeader.length) {
-      ggrcAjax({
-        url: this.options.header_view,
-        dataType: 'text',
-      }).then((view) => {
-        let frag = canStache(view)();
-        $pageHeader.html(frag);
-      });
+      const view = loadTemplate(this.options.header_view);
+      let frag = canStache(view)();
+      $pageHeader.html(frag);
     }
   },
 
@@ -90,14 +86,9 @@ const DashboardControl = canControl.extend({
         instance: pageInstance,
         showWidgetArea: this.showWidgetArea.bind(this),
       };
-      ggrcAjax({
-        url: this.options.innernav_view,
-        dataType: 'text',
-        async: false,
-      }).then((view) => {
-        let render = canStache(view);
-        $innernav.html(render(options));
-      });
+      const view = loadTemplate(this.options.innernav_view);
+      let render = canStache(view);
+      $innernav.html(render(options));
       return;
     }
   },

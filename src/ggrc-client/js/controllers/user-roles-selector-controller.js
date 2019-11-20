@@ -4,7 +4,7 @@
 */
 
 import loSortBy from 'lodash/sortBy';
-import {ggrcAjax} from '../plugins/ajax-extensions';
+import {loadTemplate} from '../plugins/ggrc-utils';
 import makeArray from 'can-util/js/make-array/make-array';
 import canStache from 'can-stache';
 import canList from 'can-list';
@@ -50,15 +50,11 @@ const userRolesModalSelector = canControl.extend({
   initView() {
     let deferred = $.Deferred();
 
-    ggrcAjax({
-      url: this.options.base_modal_view,
-      dataType: 'text',
-    }).then((view) => {
-      let frag = canStache(view)(this.context);
-      $(this.element).html(frag);
-      $(this.element).trigger('loaded');
-      deferred.resolve();
-    });
+    const view = loadTemplate(this.options.base_modal_view);
+    let frag = canStache(view)(this.context);
+    $(this.element).html(frag);
+    $(this.element).trigger('loaded');
+    deferred.resolve();
 
     this.on(); // Start listening for events
 

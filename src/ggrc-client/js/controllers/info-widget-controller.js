@@ -6,7 +6,7 @@
 import loDebounce from 'lodash/debounce';
 import loMap from 'lodash/map';
 import loFilter from 'lodash/filter';
-import {ggrcAjax} from '../plugins/ajax-extensions';
+import {loadTemplate} from '../plugins/ggrc-utils';
 import canStache from 'can-stache';
 import canMap from 'can-map';
 import canControl from 'can-control';
@@ -52,13 +52,9 @@ export default canControl.extend({
     });
     import(/* webpackChunkName: "modalsCtrls" */'./modals')
       .then(() => {
-        ggrcAjax({
-          url: this.get_widget_view(this.element),
-          dataType: 'text',
-        }).then((view) => {
-          let frag = canStache(view)(this.options.context);
-          this.element.html(frag);
-        });
+        const view = loadTemplate(this.get_widget_view(this.element));
+        let frag = canStache(view)(this.options.context);
+        this.element.html(frag);
       });
   },
 

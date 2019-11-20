@@ -4,7 +4,8 @@
 */
 
 import loIsNumber from 'lodash/isNumber';
-import {ggrcAjax, ggrcGet} from '../plugins/ajax-extensions';
+import {ggrcGet} from '../plugins/ajax-extensions';
+import {loadTemplate} from '../plugins/ggrc-utils';
 import canStache from 'can-stache';
 import canMap from 'can-map';
 import canControl from 'can-control';
@@ -76,14 +77,10 @@ export default canControl.extend({
       },
     });
 
-    ggrcAjax({
-      url: this.get_widget_view(this.element),
-      dataType: 'text',
-    }).then((view) => {
-      let frag = canStache(view)(this.options.context);
-      this.element.html(frag);
-      this.widget_shown();
-    });
+    const view = loadTemplate(this.get_widget_view(this.element));
+    let frag = canStache(view)(this.options.context);
+    this.element.html(frag);
+    this.widget_shown();
     return 0;
   },
   onRelationshipChange: function (model, ev, instance) {

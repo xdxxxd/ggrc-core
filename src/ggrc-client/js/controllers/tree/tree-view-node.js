@@ -7,7 +7,7 @@ import loDifference from 'lodash/difference';
 import loIsFunction from 'lodash/isFunction';
 import loForEach from 'lodash/forEach';
 import loMap from 'lodash/map';
-import {ggrcAjax} from '../../plugins/ajax-extensions';
+import {loadTemplate} from '../../plugins/ggrc-utils';
 import canStache from 'can-stache';
 import canList from 'can-list';
 import canMap from 'can-map';
@@ -100,11 +100,7 @@ export default canControl.extend({
     // the node's isActive state is not stored anywhere, thus we need to
     // determine it from the presemce of the corresponding CSS class
     let isActive = this.element.hasClass('active');
-
-    ggrcAjax({
-      url: this.options.show_view,
-      dataType: 'text',
-    }).then((view) => {
+    Promise.resolve(loadTemplate(this.options.show_view)).then((view) => {
       return canStache(view)(this.options);
     }).then(this._ifNotRemoved((frag) => {
       this.replace_element(frag);

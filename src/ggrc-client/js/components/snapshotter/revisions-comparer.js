@@ -8,7 +8,7 @@ import loReverse from 'lodash/reverse';
 import loDebounce from 'lodash/debounce';
 import loEach from 'lodash/each';
 import loIsEqual from 'lodash/isEqual';
-import {ggrcAjax} from '../../plugins/ajax-extensions';
+import {loadTemplate} from '../../plugins/ggrc-utils';
 import makeArray from 'can-util/js/make-array/make-array';
 import canBatch from 'can-event/batch/batch';
 import canStache from 'can-stache';
@@ -87,18 +87,15 @@ export default canComponent.extend({
                 confirmSelf.attr('rightRevisionData', rightRevisionData);
               }
 
-              ggrcAjax({
-                url: view, dataType: 'text',
-              }).then((view) => {
-                let render = canStache(view);
-                let fragLeft = render(revisions[0]);
-                let fragRight = render(revisions[1]);
+              const template = loadTemplate(view);
+              let render = canStache(template);
+              let fragLeft = render(revisions[0]);
+              let fragRight = render(revisions[1]);
 
-                fragLeft.appendChild(fragRight);
-                target.find('.modal-body').html(fragLeft);
+              fragLeft.appendChild(fragRight);
+              target.find('.modal-body').html(fragLeft);
 
-                that.highlightDifference(target, revisions);
-              });
+              that.highlightDifference(target, revisions);
             });
         },
       }, this.updateRevision.bind(this));
