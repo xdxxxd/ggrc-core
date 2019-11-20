@@ -593,3 +593,17 @@ def soft_assert_role_cannot_be_edited(soft_assert, obj, role):
   test_utils.wait_for(lambda: new_tab.url.endswith(url.Widget.INFO))
   soft_assert.expect(not role_field_element.add_person_text_field.exists,
                      "There should be no input field.")
+
+
+def check_mega_program_icon_in_unified_mapper(selenium, child_program,
+                                              parent_program):
+  """Performs assert that a mega program has a blue flag icon in unified mapper:
+  open a parent program tab -> click the Map btn -> assert blue flag is visible
+  """
+  program_mapper = (webui_service.ProgramsService(
+                    obj_name=objects.PROGRAM_PARENTS, driver=selenium)
+                    .get_unified_mapper(child_program))
+  parent_program_row = [program for program
+                        in program_mapper.tree_view.tree_view_items()
+                        if parent_program.title in program.text][0]
+  assert parent_program_row.mega_program_icon.exists

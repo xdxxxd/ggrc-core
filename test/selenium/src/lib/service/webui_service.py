@@ -180,7 +180,7 @@ class BaseWebUiService(base.WithBrowser):
     self._set_list_objs_scopes_repr_on_mapper_tree_view(src_obj)
     list_objs_scopes, mapping_statuses = (
         self._search_objs_via_tree_view(src_obj, dest_objs))
-    self._get_unified_mapper(src_obj).close()
+    self.get_unified_mapper(src_obj).close()
     for index in xrange(len(list_objs_scopes)):
       self.add_review_status_if_not_in_control_scope(list_objs_scopes[index])
     return self._create_list_objs(
@@ -256,7 +256,7 @@ class BaseWebUiService(base.WithBrowser):
     self.open_widget_of_mapped_objs(src_obj).tree_view.open_create()
     object_modal.get_modal_obj(obj.type, self._driver).submit_obj(obj)
 
-  def _get_unified_mapper(self, src_obj):
+  def get_unified_mapper(self, src_obj):
     """Open generic widget of mapped objects, open unified mapper modal from
     Tree View.
     Return MapObjectsModal"""
@@ -285,7 +285,7 @@ class BaseWebUiService(base.WithBrowser):
     And list of MappingStatusAttrs namedtuples for mapping representation.
     """
     dest_objs_titles = [dest_obj.title for dest_obj in dest_objs]
-    mapper = self._get_unified_mapper(src_obj)
+    mapper = self.get_unified_mapper(src_obj)
     return mapper.search_dest_objs(
         dest_objs_type=dest_objs[0].type.title(),
         dest_objs_titles=dest_objs_titles), mapper.get_mapping_statuses()
@@ -311,7 +311,7 @@ class BaseWebUiService(base.WithBrowser):
     scopes representation on Unified Mapper Tree View.
     """
     # pylint: disable=invalid-name
-    mapper = self._get_unified_mapper(src_obj)
+    mapper = self.get_unified_mapper(src_obj)
     mapper.tree_view.open_set_visible_fields().select_and_set_visible_fields()
 
   def get_list_objs_scopes_from_tree_view(self, src_obj):
@@ -799,8 +799,25 @@ class TechnologyEnvironmentService(BaseWebUiService):
 
 class ProgramsService(BaseWebUiService):
   """Class for Programs business layer's services objects."""
-  def __init__(self, driver=None):
-    super(ProgramsService, self).__init__(objects.PROGRAMS, driver)
+
+  def __init__(self, driver, obj_name=objects.PROGRAMS):
+    self._actual_obj_name = obj_name
+    self.obj_name = objects.PROGRAMS
+    super(ProgramsService, self).__init__(
+        obj_name=self.obj_name, driver=driver)
+    self.url_mapped_objs = (
+        "{src_obj_url}" +
+        url.Utils.get_widget_name_of_mapped_objs(self._actual_obj_name))
+
+  def open_widget_of_mapped_objs(self, src_obj):
+    """Navigates to URL of mapped Programs according to URL of
+    source object.
+    Returns: Programs widget class.
+    """
+    generic_widget_url = self.url_mapped_objs.format(src_obj_url=src_obj.url)
+    # todo fix freezing when navigate through tabs by URLs and using driver.get
+    selenium_utils.open_url(generic_widget_url, is_via_js=True)
+    return generic_widget.Programs(self._driver, self._actual_obj_name)
 
   def add_and_map_obj_widget(self, obj):
     """Adds widget of selected type and
