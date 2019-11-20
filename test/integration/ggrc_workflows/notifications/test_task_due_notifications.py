@@ -6,51 +6,25 @@
 """Integration tests for sending the notifications about WF tasks "due soon".
 """
 
-import functools
 from datetime import date, datetime, timedelta
-import sqlalchemy as sa
-
 from freezegun import freeze_time
 from mock import patch
-
 import ddt
 
+import sqlalchemy as sa
 from ggrc.models import all_models
 from ggrc.notifications import common
 
-from integration.ggrc import TestCase
 from integration.ggrc_workflows.generator import WorkflowsGenerator
 from integration.ggrc.access_control import acl_helper
 from integration.ggrc.api_helper import Api
 from integration.ggrc.generator import ObjectGenerator
+from integration.ggrc.notifications import TestNotifications
 
 
 @ddt.ddt
-class TestTaskDueNotifications(TestCase):
+class TestTaskDueNotifications(TestNotifications):
   """Test suite for task due soon/today notifications."""
-
-  # pylint: disable=invalid-name
-
-  def _fix_notification_init(self):
-    """Fix Notification object init function.
-
-    This is a fix needed for correct created_at field when using freezgun. By
-    default the created_at field is left empty and filed by database, which
-    uses system time and not the fake date set by freezugun plugin. This fix
-    makes sure that object created in freeze_time block has all dates set with
-    the correct date and time.
-    """
-    def init_decorator(init):
-      """"Adjust the value of the object's created_at attribute to now."""
-      @functools.wraps(init)
-      def new_init(self, *args, **kwargs):
-        init(self, *args, **kwargs)
-        if hasattr(self, "created_at"):
-          self.created_at = datetime.now()
-      return new_init
-
-    all_models.Notification.__init__ = init_decorator(
-        all_models.Notification.__init__)
 
   def setUp(self):
     super(TestTaskDueNotifications, self).setUp()
@@ -159,6 +133,7 @@ class TestTaskDueNotifications(TestCase):
   ):
     """Notifications already obsolete on creation date should not be created.
     """
+    # pylint: disable=invalid-name
     with freeze_time("2017-06-12 09:39:32"):
       tmp = self.one_time_workflow.copy()
       _, workflow = self.wf_generator.generate_workflow(tmp)

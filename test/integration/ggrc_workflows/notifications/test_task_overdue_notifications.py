@@ -7,10 +7,8 @@
 
 import unittest
 
-import functools
-
 from collections import OrderedDict
-from datetime import date, datetime
+from datetime import date
 from os.path import abspath, dirname, join
 
 from freezegun import freeze_time
@@ -21,42 +19,15 @@ from ggrc import db
 from ggrc.models import all_models
 from ggrc.notifications import common
 from ggrc_workflows.models import CycleTaskGroupObjectTask, Workflow
-
-from integration.ggrc import TestCase
-
 from integration.ggrc_workflows.generator import WorkflowsGenerator
 from integration.ggrc.access_control import acl_helper
 from integration.ggrc.api_helper import Api
 from integration.ggrc.generator import ObjectGenerator
-
-
-class TestTaskOverdueNotifications(TestCase):
-  """Base class for task overdue notifications test suite."""
-
-  def _fix_notification_init(self):
-    """Fix Notification object init function.
-
-    This is a fix needed for correct created_at field when using freezgun. By
-    default the created_at field is left empty and filed by database, which
-    uses system time and not the fake date set by freezugun plugin. This fix
-    makes sure that object created in freeze_time block has all dates set with
-    the correct date and time.
-    """
-    def init_decorator(init):
-      """"Adjust the value of the object's created_at attribute to now."""
-      @functools.wraps(init)
-      def new_init(self, *args, **kwargs):
-        init(self, *args, **kwargs)
-        if hasattr(self, "created_at"):
-          self.created_at = datetime.now()
-      return new_init
-
-    all_models.Notification.__init__ = init_decorator(
-        all_models.Notification.__init__)
+from integration.ggrc.notifications import TestNotifications
 
 
 @ddt.ddt
-class TestTaskOverdueNotificationsUsingAPI(TestTaskOverdueNotifications):
+class TestTaskOverdueNotificationsUsingAPI(TestNotifications):
   """Tests for overdue notifications when changing Tasks with an API."""
 
   # pylint: disable=invalid-name
@@ -331,7 +302,7 @@ class TestTaskOverdueNotificationsUsingAPI(TestTaskOverdueNotifications):
 
 
 @unittest.skip("unskip when import/export fixed for workflows")
-class TestTaskOverdueNotificationsUsingImports(TestTaskOverdueNotifications):
+class TestTaskOverdueNotificationsUsingImports(TestNotifications):
   """Tests for overdue notifications when changing Tasks via imports."""
 
   # pylint: disable=invalid-name
@@ -355,7 +326,7 @@ class TestTaskOverdueNotificationsUsingImports(TestTaskOverdueNotifications):
 
     workflow = Workflow.query.one()
     self.wf_generator.generate_cycle(workflow)
-    response, workflow = self.wf_generator.activate_workflow(workflow)
+    self.wf_generator.activate_workflow(workflow)
 
     user = all_models.Person.query.filter(
         all_models.Person.email == 'user1@ggrc.com').one()
