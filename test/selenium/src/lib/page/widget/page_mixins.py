@@ -5,6 +5,7 @@
 
 from lib import base
 from lib.element import page_elements
+from lib.page.widget import related_proposals
 from lib.utils import selenium_utils
 
 
@@ -56,11 +57,11 @@ class WithAssignFolder(base.WithBrowser):
         class_name="mapped-folder__add-button")
 
 
-class WithObjectReview(base.WithBrowser):
-  """A mixin for object reviews"""
+class WithDisabledObjectReview(base.WithBrowser):
+  """A mixin for disabled objects reviews."""
 
   def __init__(self, driver=None):
-    super(WithObjectReview, self).__init__(driver)
+    super(WithDisabledObjectReview, self).__init__(driver)
 
   @property
   def _review_root(self):
@@ -83,10 +84,6 @@ class WithObjectReview(base.WithBrowser):
     return self._browser.element(class_name="object-review__revert")
 
   @property
-  def review_status(self):
-    return self._review_root.element(class_name="state-value")
-
-  @property
   def object_review_txt(self):
     """Return page element with review message."""
     return self._review_root.element(
@@ -96,6 +93,39 @@ class WithObjectReview(base.WithBrowser):
   def reviewers(self):
     """Return page element with reviewers emails."""
     return self._related_people_list("Reviewers", self._review_root)
+
+  def get_object_review_txt(self):
+    """Return review message on info pane."""
+    return (self.object_review_txt.text if self.object_review_txt.exists
+            else None)
+
+  def get_reviewers_emails(self):
+    """Return reviewers emails if reviewers assigned."""
+    return (self.reviewers.get_people_emails()
+            if self.reviewers.exists() else None)
+
+  def get_review_dict(self):
+    """Return Review as dict."""
+    return {"status": self.review_status.capitalize(),
+            "reviewers": self.get_reviewers_emails(),
+            # Last 7 symbols are the UTC offset. Can not convert to UI
+            # format date due to %z directive doesn't work in Python 2.7.
+            "last_reviewed_by": self.get_object_review_txt()[:-7] if
+            self.get_object_review_txt() else None}
+
+  def has_review(self):
+    """Check if review section exists."""
+    return self._review_root.exists
+
+  @property
+  def review_status(self):
+    """Returns disabled object review status."""
+    return self._root.element(
+        class_name="state-value-dot review-status").text.title()
+
+
+class WithObjectReview(WithDisabledObjectReview):
+  """A mixin for active objects reviews."""
 
   def open_submit_for_review_popup(self):
     """Open submit for control popup by clicking on corresponding button."""
@@ -110,32 +140,10 @@ class WithObjectReview(base.WithBrowser):
     """Click 'Undo' button on floating message."""
     self.undo_button.click()
 
-  def get_object_review_txt(self):
-    """Return review message on info pane."""
-    return (self.object_review_txt.text if self.object_review_txt.exists
-            else None)
-
-  def get_reviewers_emails(self):
-    """Return reviewers emails if reviewers assigned."""
-    return (self.reviewers.get_people_emails()
-            if self.reviewers.exists() else None)
-
-  def get_review_dict(self):
-    """Return Review as dict."""
-    return {"status": self.get_review_state_txt(),
-            "reviewers": self.get_reviewers_emails(),
-            # Last 7 symbols are the UTC offset. Can not convert to UI
-            # format date due to %z directive doesn't work in Python 2.7.
-            "last_reviewed_by": self.get_object_review_txt()[:-7] if
-            self.get_object_review_txt() else None}
-
-  def has_review(self):
-    """Check if review section exists."""
-    return self._review_root.exists
-
-  def get_review_status(self):
-    """Get review status."""
-    return self.review_status.text.title()
+  @property
+  def review_status(self):
+    """Returns object review status."""
+    return self._review_root.element(class_name="state-value").text.title()
 
 
 class WithDisabledProposals(base.WithBrowser):
@@ -167,6 +175,12 @@ class WithProposals(WithDisabledProposals):
   def click_propose_changes(self):
     """Click on Propose Changes button."""
     self.propose_changes_btn.click()
+
+  def related_proposals(self):
+    """Open related proposals tab."""
+    self.tabs.ensure_tab(self.proposals_tab_or_link_name)
+    selenium_utils.wait_for_js_to_load(self._driver)
+    return related_proposals.RelatedProposals()
 
 
 class WithDisabledVersionHistory(base.WithBrowser):

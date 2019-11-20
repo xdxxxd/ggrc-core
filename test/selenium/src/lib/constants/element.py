@@ -379,6 +379,16 @@ class ControlModalSetVisibleFields(CommonModalSetVisibleFields):
       CONTROL_OPERATORS, ADMIN)
 
 
+class RiskModalSetVisibleFields(CommonModalSetVisibleFields):
+  """Common elements' labels and properties for Modal to Set visible
+ fields for Risks.
+ """
+  DEFAULT_SET_FIELDS = (
+      CommonModalSetVisibleFields.TITLE, CommonModalSetVisibleFields.CODE,
+      CommonModalSetVisibleFields.STATE,
+      CommonModalSetVisibleFields.LAST_UPDATED_BY)
+
+
 class ObjectiveModalSetVisibleFields(CommonModalSetVisibleFields):
   """Common elements' labels and properties for Modal to Set visible
  fields for Controls.
