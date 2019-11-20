@@ -19,7 +19,7 @@ import {STATES_KEYS} from '../../../plugins/utils/state-utils';
 import loFindIndex from 'lodash/findIndex';
 import {request} from '../../../plugins/utils/request-utils';
 import {backendGdriveClient} from '../../../plugins/ggrc-gapi-client';
-import {ggrcPost} from '../../../plugins/ajax_extensions';
+import {ggrcPost} from '../../../plugins/ajax-extensions';
 import {trackStatus} from '../../../plugins/utils/background-task-utils';
 import {confirm} from '../../../plugins/utils/modals';
 import {
@@ -34,7 +34,7 @@ import {
 } from '../../../plugins/utils/ca-utils';
 import loSome from 'lodash/some';
 import loFind from 'lodash/find';
-import {getPlainText} from '../../../plugins/ggrc_utils';
+import {getPlainText} from '../../../plugins/ggrc-utils';
 import {
   create,
   setDefaultStatusConfig,
@@ -152,7 +152,7 @@ const viewModel = ObjectOperationsBaseVM.extend({
         modal_description: 'Custom attributes list will be updated ' +
           'accordingly. All already added answers will be lost.',
         button_view:
-          `${GGRC.templates_path}/modals/confirm_cancel_buttons.stache`,
+          `${GGRC.templates_path}/modals/confirm-cancel-buttons.stache`,
         modal_confirm: 'Proceed',
       }, () => this.generateAttributes());
     } else {
@@ -515,7 +515,7 @@ const viewModel = ObjectOperationsBaseVM.extend({
         modal_description: 'You\'ve added new answers for custom attributes ' +
          'that will replace existing answers.',
         button_view:
-          `${GGRC.templates_path}/modals/confirm_cancel_buttons.stache`,
+          `${GGRC.templates_path}/modals/confirm-cancel-buttons.stache`,
         modal_confirm: 'Proceed',
       }, () => this.completeAssessments());
     } else {

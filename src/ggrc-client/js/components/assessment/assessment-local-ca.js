@@ -12,12 +12,12 @@ import {
   isCommentRequired,
   isUrlRequired,
 } from '../../plugins/utils/ca-utils';
-import {VALIDATION_ERROR, RELATED_ITEMS_LOADED} from '../../events/eventTypes';
+import {VALIDATION_ERROR, RELATED_ITEMS_LOADED} from '../../events/event-types';
 import tracker from '../../tracker';
 import {isAllowedFor} from '../../permission';
 import isFunction from 'can-util/js/is-function/is-function';
 import {getPageInstance} from '../../plugins/utils/current-page-utils';
-import {getPlainText} from '../../plugins/ggrc_utils';
+import {getPlainText} from '../../plugins/ggrc-utils';
 
 export default canComponent.extend({
   tag: 'assessment-local-ca',

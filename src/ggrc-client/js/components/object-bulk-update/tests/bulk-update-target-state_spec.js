@@ -4,7 +4,7 @@
  */
 
 import loForEach from 'lodash/forEach';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../bulk-update-target-state.js';
 
 let objectStateToWarningMap = {

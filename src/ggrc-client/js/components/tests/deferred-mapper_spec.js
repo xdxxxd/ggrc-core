@@ -8,14 +8,14 @@ import loFilter from 'lodash/filter';
 import canList from 'can-list';
 import canMap from 'can-map';
 import Component from '../deferred-mapper';
-import {getComponentVM} from '../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../js_specs/spec-helpers';
 import * as MapperUtils from '../../plugins/utils/mapper-utils';
 import {
   REFRESH_MAPPING,
   REFRESH_SUB_TREE,
   DEFERRED_MAP_OBJECTS,
   DEFERRED_MAPPED_UNMAPPED,
-} from '../../events/eventTypes';
+} from '../../events/event-types';
 import * as CurrentPageUtils from '../../plugins/utils/current-page-utils';
 
 describe('deferred-mapper component', function () {

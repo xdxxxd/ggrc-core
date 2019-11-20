@@ -4,7 +4,7 @@
 */
 
 import * as AdvancedSearch from '../../../plugins/utils/advanced-search-utils';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../advanced-search-mapping-group';
 
 describe('advanced-search-mapping-group component', function () {

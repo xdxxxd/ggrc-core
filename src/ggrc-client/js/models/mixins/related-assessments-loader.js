@@ -5,7 +5,7 @@
 
 import Mixin from './mixin';
 import {isSnapshot} from '../../plugins/utils/snapshot-utils';
-import {ggrcGet} from '../../plugins/ajax_extensions';
+import {ggrcGet} from '../../plugins/ajax-extensions';
 
 export default class RelatedAssessmentsLoader extends Mixin {
   /**

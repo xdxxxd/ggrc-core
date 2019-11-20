@@ -49,15 +49,15 @@ export default canComponent.extend({
       this.showConfirm(saveButtonElement, invalidDefinitions);
     },
     saveInstance(saveButtonElement) {
-      // trigger submit event from modals_controller.js
+      // trigger submit event from modals-controller.js
       $(saveButtonElement).trigger('submit');
     },
     showConfirm(saveButtonElement, invalidDefinitions) {
       const buttonView = `
-        ${GGRC.templates_path}/modals/assessment_template_warning_buttons.stache
+        ${GGRC.templates_path}/modals/assessment-template-warning-buttons.stache
       `;
       const contentView =
-        `${GGRC.templates_path}/modals/assessment_template_warning.stache`;
+        `${GGRC.templates_path}/modals/assessment-template-warning.stache`;
 
       confirm({
         modal_title: 'Warning!',

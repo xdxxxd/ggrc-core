@@ -9,7 +9,7 @@ import canComponent from 'can-component';
 import template from './templates/task-list.stache';
 import Pagination from '../../base-objects/pagination';
 import {isAllowedFor} from '../../../permission';
-import {REFRESH_RELATED} from '../../../events/eventTypes';
+import {REFRESH_RELATED} from '../../../events/event-types';
 import TaskGroupTask from '../../../models/business-models/task-group-task';
 
 const viewModel = canMap.extend({

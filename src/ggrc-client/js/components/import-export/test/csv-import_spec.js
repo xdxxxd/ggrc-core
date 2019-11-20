@@ -4,7 +4,7 @@
 */
 
 import Component from '../csv-import';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import * as ieUtils from '../../../plugins/utils/import-export-utils';
 import {
   jobStatuses,

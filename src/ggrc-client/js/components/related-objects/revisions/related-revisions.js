@@ -14,7 +14,7 @@ import {
   buildParam,
   batchRequests,
 } from '../../../plugins/utils/query-api-utils';
-import QueryParser from '../../../generated/ggrc_filter_query_parser';
+import QueryParser from '../../../generated/ggrc-filter-query-parser';
 
 export default canComponent.extend({
   tag: 'related-revisions',

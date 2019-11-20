@@ -8,7 +8,7 @@ import canMap from 'can-map';
 import canComponent from 'can-component';
 import template from './templates/tree-filter-input.stache';
 import router from '../../router';
-import QueryParser from '../../generated/ggrc_filter_query_parser';
+import QueryParser from '../../generated/ggrc-filter-query-parser';
 
 let viewModel = canMap.extend({
   define: {

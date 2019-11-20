@@ -5,7 +5,7 @@
 
 import canMap from 'can-map';
 import Component from '../related-urls';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import * as Permission from '../../../permission';
 import * as NotifiersUtils from '../../../plugins/utils/notifiers-utils';
 import * as UrlUtils from '../../../plugins/utils/url-utils';

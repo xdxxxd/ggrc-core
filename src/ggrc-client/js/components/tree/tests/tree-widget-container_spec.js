@@ -9,13 +9,13 @@ import canMap from 'can-map';
 import {
   makeFakeInstance,
   makeFakeModel,
-} from '../../../../js_specs/spec_helpers';
+} from '../../../../js_specs/spec-helpers';
 import * as TreeViewUtils from '../../../plugins/utils/tree-view-utils';
 import * as WidgetsUtils from '../../../plugins/utils/widgets-utils';
 import * as NotifierUtils from '../../../plugins/utils/notifiers-utils';
 import * as MegaObjectUtils from '../../../plugins/utils/mega-object-utils';
 import tracker from '../../../tracker';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../tree-widget-container';
 import Relationship from '../../../models/service-models/relationship';
 import exportMessage from '../templates/export-message.stache';

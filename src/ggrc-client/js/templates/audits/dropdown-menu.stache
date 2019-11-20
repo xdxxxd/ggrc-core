@@ -1,0 +1,133 @@
+{{!
+    Copyright (C) 2019 Google Inc.
+    Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+}}
+
+<three-dots-menu>
+  {{^if instance.archived}}
+    {{#is_allowed 'update' instance context='for'}}
+        <li>
+          <snapshot-scope-update instance:from="instance">
+            <a href="javascript://" on:el:click="upsertIt">
+              <i class="fa fa-refresh"></i>
+              Update objects to latest version</a>
+          </snapshot-scope-update>
+        </li>
+      {{> /static/templates/base_objects/edit-object-link.stache}}
+
+      <li>
+        <assessment-template-clone-button
+          objectType:from="'AssessmentTemplate'"
+          parentId:from="instance.id"
+          parentType:from="instance.constructor.model_singular">
+          <i class="fa fa-sliders"></i>
+          Define Assessment template
+        </assessment-template-clone-button>
+      </li>
+    {{/is_allowed}}
+  {{/if}}
+
+  {{#is_allowed 'update' program context='for'}}
+    {{#if instance.constructor.is_clonable}}
+      {{#is_allowed 'update' instance context='for'}}
+        <li>
+          <object-cloner instance:from="instance"
+                         modalTitle:from="'Clone {{ instance.type }}''"
+                         modalDescription:from="'Select all that you would like to clone as well?'">
+            <a href="javascript://" on:el:click="cloneObject">
+              <i class="fa fa-clone"></i>
+              Clone {{ instance.type }}
+            </a>
+          </object-cloner>
+        </li>
+      {{/is_allowed}}
+    {{/if}}
+  {{/is_allowed}}
+
+  <li>
+    {{#is_allowed 'create' 'CycleTaskGroupObjectTask' context=null}}
+      {{#is_allowed 'update' instance context='for'}}
+          <a
+            rel="tooltip"
+            data-placement="left"
+            data-original-title="Create Cycle Task for object"
+            data-object-plural="cycle_task_group_object_tasks"
+            data-modal-class="modal-wide" href="javascript://"
+            data-object-singular="CycleTaskGroupObjectTask"
+            data-toggle="modal-ajax-form"
+            data-modal-reset="reset"
+            data-object-params='{
+              "pre_mapped_objects": [{
+                "type": "{{ instance.type }}",
+                "id": {{ instance.id }}
+              }],
+              "modal_title": "Create New Task"}'>
+            <i class="fa fa-calendar-check-o"></i> Create task
+          </a>
+      {{/is_allowed}}
+    {{/is_allowed}}
+  </li>
+
+  <li>
+    <permalink-component instance:from="instance"/>
+  </li>
+
+  {{#if is_info_pin}}
+    <unmap-dropdown-item
+      page_instance:from="page_instance"
+      instance:from="instance"
+      options:from="options">
+    </unmap-dropdown-item>
+
+    {{#if instance.viewLink}}
+      <li>
+        <a href="{{instance.viewLink}}">
+          <i class="fa fa-long-arrow-right"></i>
+          Open {{instance.constructor.title_singular}}
+        </a>
+      </li>
+    {{/if}}
+  {{/if}}
+
+  <object-loader path:from="instance.program">
+    {{^if instance.archived}}
+      {{#if_helpers '\n #current_user_is_admin' '\n or #has_role' 'Program Managers' loadedObject}}
+        <li>
+          <a data-toggle="modal-ajax-archiveform"
+            data-object-plural="{{model.table_plural}}"
+            data-object-singular="{{model.model_singular}}"
+            data-modal-reset="reset" data-modal-class="modal"
+            data-object-id="{{instance.id}}" href="javascript://">
+            <i class="fa fa-archive"></i>
+              Archive Audit
+          </a>
+        </li>
+      {{/if_helpers}}
+    {{/if}}
+  </object-loader>
+  {{^if instance.archived}}
+    {{#is_allowed 'delete' instance}}
+        <li>
+          <a data-toggle="modal-ajax-deleteform"
+             data-object-plural="{{model.table_plural}}"
+             data-object-singular="{{model.model_singular}}"
+             data-modal-reset="reset" data-modal-class="modal"
+             data-object-id="{{instance.id}}" href="javascript://">
+            <i class="fa fa-trash"></i>
+            Delete
+          </a>
+        </li>
+    {{/is_allowed}}
+  {{/if}}
+
+  {{#if instance.archived}}
+    {{#current_user_is_admin}}
+        <li>
+           <unarchive-link instance:from="instance" notify:from="true">
+               <i class="fa fa-archive"></i>
+               Unarchive Audit
+           </unarchive-link>
+        </li>
+    {{/current_user_is_admin}}
+  {{/if}}
+</three-dots-menu>

@@ -4,7 +4,7 @@
 */
 
 import Component from '../generate-issues-in-bulk-button';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import * as notifierUtils from '../../../plugins/utils/notifiers-utils';
 import * as errorsUtils from '../../../plugins/utils/errors-utils';
 import * as Permission from '../../../permission';

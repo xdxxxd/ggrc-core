@@ -7,7 +7,7 @@ import * as SnapshotUtils from '../../../../plugins/utils/snapshot-utils';
 import * as QueryAPI from '../../../../plugins/utils/query-api-utils';
 import * as NotifiersUtils from '../../../../plugins/utils/notifiers-utils';
 import Component from '../assessment-mapped-controls';
-import {getComponentVM} from '../../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../../js_specs/spec-helpers';
 
 describe('assessment-mapped-controls component', () => {
   let viewModel;

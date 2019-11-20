@@ -10,8 +10,8 @@ import {
   widgetModules,
   initCounts,
 } from '../plugins/utils/widgets-utils';
-import InfoWidget from '../controllers/info_widget_controller';
-import WidgetList from '../modules/widget_list';
+import InfoWidget from '../controllers/info-widget-controller';
+import WidgetList from '../modules/widget-list';
 import Cycle from '../models/business-models/cycle';
 import TaskGroup from '../models/business-models/task-group';
 import Workflow from '../models/business-models/workflow';
@@ -116,7 +116,7 @@ WorkflowExtension.init_widgets_for_workflow_page = function () {
       model: Cycle,
       countsName: currentWidgetCountsName,
       additional_filter: currentWidgetFilter,
-      add_item_view: 'cycle_task_group_object_tasks/tree_add_item',
+      add_item_view: 'cycle_task_group_object_tasks/tree-add-item',
     },
   };
 

@@ -5,7 +5,7 @@
 
 import canList from 'can-list';
 import canMap from 'can-map';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../dropdown-wrapper';
 
 describe('dropdown-wrapper component', () => {

@@ -6,7 +6,7 @@
 import Cacheable from '../cacheable';
 import Contactable from '../mixins/contactable';
 import Stub from '../stub';
-import {refreshAll} from '../../models/refresh_queue';
+import {refreshAll} from '../../models/refresh-queue';
 
 export default Cacheable.extend({
   root_object: 'task_group',
@@ -25,7 +25,7 @@ export default Cacheable.extend({
   },
 
   tree_view_options: {
-    add_item_view: 'task_groups/tree_add_item',
+    add_item_view: 'task_groups/tree-add-item',
     attr_list: [
       {attr_title: 'Title', attr_name: 'title'},
       {attr_title: 'Assignee', attr_name: 'assignee',

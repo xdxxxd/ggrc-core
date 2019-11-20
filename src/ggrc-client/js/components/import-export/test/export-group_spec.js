@@ -4,7 +4,7 @@
 */
 
 import Component from '../export-group';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 
 describe('export-group component', function () {
   describe('events', function () {

@@ -7,7 +7,7 @@ import canStache from 'can-stache';
 import canMap from 'can-map';
 import canComponent from 'can-component';
 import template from './templates/apply-decline-proposal.stache';
-import {REFRESH_RELATED} from '../../events/eventTypes';
+import {REFRESH_RELATED} from '../../events/event-types';
 import {formatDate} from '../../plugins/utils/date-utils';
 import Proposal from '../../models/service-models/proposal';
 

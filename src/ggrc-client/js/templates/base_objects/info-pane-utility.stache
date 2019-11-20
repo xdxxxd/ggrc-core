@@ -20,12 +20,12 @@
                                      extraBtnCss:from="'btn-small'">
     </show-related-assessments-button>
     {{#if instance.snapshot}}
-        {{> /static/templates/snapshots/dropdown_menu.stache}}
+        {{> /static/templates/snapshots/dropdown-menu.stache}}
     {{else}}
         {{#is(instance.type, "Audit")}}
-          {{> /static/templates/audits/dropdown_menu.stache}}
+          {{> /static/templates/audits/dropdown-menu.stache}}
         {{else}}
-          {{> /static/templates/base_objects/dropdown_menu.stache}}
+          {{> /static/templates/base_objects/dropdown-menu.stache}}
         {{/is}}
      {{/if}}
 </div>

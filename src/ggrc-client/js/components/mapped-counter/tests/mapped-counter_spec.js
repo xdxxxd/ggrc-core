@@ -3,9 +3,9 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../mapped-counter';
-import {REFRESH_MAPPED_COUNTER} from '../../../events/eventTypes';
+import {REFRESH_MAPPED_COUNTER} from '../../../events/event-types';
 
 describe('mapped-counter component', () => {
   let viewModel;

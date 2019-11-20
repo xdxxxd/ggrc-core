@@ -8,7 +8,6 @@ import canList from 'can-list';
 import {
   initWidgets,
 } from '../../plugins/utils/widgets-utils';
-import '../../controllers/dashboard_controller';
 import {RouterConfig} from '../../router';
 import routes from './routes';
 import {gapiClient} from '../../plugins/ggrc-gapi-client';
@@ -19,10 +18,10 @@ import CustomAttributeDefinition from '../../models/custom-attributes/custom-att
 import AccessControlRole from '../../models/custom-roles/access-control-role';
 import Roleable from '../../models/custom-roles/roleable';
 import Person from '../../models/business-models/person';
-import WidgetList, {getWidgetListFor} from '../../modules/widget_list';
-import ListView from '../../controllers/tree/list_view_controller';
+import WidgetList, {getWidgetListFor} from '../../modules/widget-list';
+import ListView from '../../controllers/tree/list-view-controller';
 import TreeViewControl from '../../controllers/tree/tree-view';
-import {DashboardControl} from '../../controllers/dashboard_controller';
+import {DashboardControl} from '../../controllers/dashboard-controller';
 
 const trimValue = (value) => (value || '').trim();
 
@@ -62,7 +61,7 @@ const adminListDescriptors = {
     header_view:
     // includes only the filter, not the column headers
       '/static/templates/people/filters.stache',
-    list_view: '/static/templates/people/object_list.stache',
+    list_view: '/static/templates/people/object-list.stache',
     fetch_post_process: sortByNameEmail,
   },
   roles: {
@@ -70,21 +69,21 @@ const adminListDescriptors = {
     extra_params: {scope__in: 'System,Admin,Private Program,Workflow'},
     object_category: 'governance',
     object_display: 'Roles',
-    list_view: '/static/templates/roles/object_list.stache',
+    list_view: '/static/templates/roles/object-list.stache',
     fetch_post_process: sortByNameEmail,
   },
   events: {
     model: Event,
     object_category: 'governance',
     object_display: 'Events',
-    list_view: '/static/templates/events/object_list.stache',
+    list_view: '/static/templates/events/object-list.stache',
   },
   custom_attributes: {
     parent_instance: CustomAttributable,
     model: CustomAttributable,
     header_view:
     GGRC.templates_path +
-    '/custom_attribute_definitions/tree_header.stache',
+    '/custom_attribute_definitions/tree-header.stache',
     show_view:
     GGRC.templates_path + '/custom_attribute_definitions/tree.stache',
     sortable: false,
@@ -104,7 +103,7 @@ const adminListDescriptors = {
     parent_instance: Roleable,
     model: Roleable,
     header_view:
-    GGRC.templates_path + '/access_control_roles/tree_header.stache',
+    GGRC.templates_path + '/access_control_roles/tree-header.stache',
     show_view:
     GGRC.templates_path + '/access_control_roles/tree.stache',
     sortable: false,
@@ -200,7 +199,7 @@ new WidgetList('ggrc_admin', {
 new DashboardControl('#pageContent', {
   widget_descriptors: getWidgetListFor('admin'),
   menu_tree_spec: GGRC.admin_menu_spec,
-  header_view: `${GGRC.templates_path}/base_objects/page_header.stache`,
+  header_view: `${GGRC.templates_path}/base_objects/page-header.stache`,
   innernav_view: `${GGRC.templates_path}/base_objects/inner-nav.stache`,
   default_widgets: [
     'people', 'roles', 'events', 'custom_attributes', 'custom_roles',

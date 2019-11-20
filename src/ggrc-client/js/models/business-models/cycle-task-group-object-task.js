@@ -9,7 +9,7 @@ import moment from 'moment';
 import Cacheable from '../cacheable';
 import CycleTaskGroup from './cycle-task-group';
 import Workflow from './workflow';
-import {REFRESH_SUB_TREE} from '../../events/eventTypes';
+import {REFRESH_SUB_TREE} from '../../events/event-types';
 import {getPageType} from '../../plugins/utils/current-page-utils';
 import {getClosestWeekday} from '../../plugins/utils/date-utils';
 import IsOverdue from '../mixins/is-overdue';
@@ -18,7 +18,7 @@ import CaUpdate from '../mixins/ca-update';
 import CycleTaskNotifications from '../mixins/notifications/cycle-task-notifications';
 import Stub from '../stub';
 import {reify} from '../../plugins/utils/reify-utils';
-import {refreshAll} from '../../models/refresh_queue';
+import {refreshAll} from '../../models/refresh-queue';
 
 function populateFromWorkflow(form, workflow) {
   if (!workflow || typeof workflow === 'string') {
@@ -91,7 +91,7 @@ export default Cacheable.extend({
     cycle: Stub,
   },
   tree_view_options: {
-    add_item_view: 'cycle_task_group_object_tasks/tree_add_item',
+    add_item_view: 'cycle_task_group_object_tasks/tree-add-item',
     attr_list: [
       {
         attr_title: 'Task Title',

@@ -48,7 +48,7 @@ export default Cacheable.extend({
       'Issues', 'Assessments', 'Evidence'],
   },
   tree_view_options: {
-    add_item_view: 'audits/tree_add_item',
+    add_item_view: 'audits/tree-add-item',
     attr_list: [{
       attr_title: 'Title',
       attr_name: 'title',

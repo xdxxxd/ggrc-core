@@ -9,7 +9,7 @@ import * as helpers from '../../../plugins/utils/workflow-utils';
 import * as CurrentPageUtils from '../../../plugins/utils/current-page-utils';
 import * as WidgetsUtils from '../../../plugins/utils/widgets-utils';
 import {countsMap as workflowCountsMap} from '../../../apps/workflows';
-import * as RefreshQueue from '../../../models/refresh_queue';
+import * as RefreshQueue from '../../../models/refresh-queue';
 
 describe('workflow-start-cycle component', () => {
   let events;

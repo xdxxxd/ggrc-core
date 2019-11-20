@@ -5,7 +5,7 @@
 
 import canEvent from 'can-event';
 import updateService from '../../../plugins/utils/bulk-update-service';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../bulk-update-button';
 import * as NotifiersUtils from '../../../plugins/utils/notifiers-utils';
 

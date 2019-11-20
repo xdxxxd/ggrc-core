@@ -6,7 +6,7 @@
 import loThrottle from 'lodash/throttle';
 import loIsFunction from 'lodash/isFunction';
 import loAssign from 'lodash/assign';
-import {ggrcAjax, ggrcGet} from '../../plugins/ajax_extensions';
+import {ggrcAjax, ggrcGet} from '../../plugins/ajax-extensions';
 import Cacheable from '../cacheable';
 import {prepareCustomAttributes} from '../../plugins/utils/ca-utils';
 import {getRole} from '../../plugins/utils/acl-utils';
@@ -18,7 +18,7 @@ import AccessControlList from '../mixins/access-control-list';
 import RefetchHash from '../mixins/refetch-hash';
 import AssessmentIssueTracker from '../mixins/assessment-issue-tracker';
 import RelatedAssessmentsLoader from '../mixins/related-assessments-loader';
-import {REFRESH_MAPPING, REFRESHED} from '../../events/eventTypes';
+import {REFRESH_MAPPING, REFRESHED} from '../../events/event-types';
 
 export default Cacheable.extend({
   root_object: 'assessment',
@@ -58,7 +58,7 @@ export default Cacheable.extend({
     'Secondary Contacts': 5,
   },
   tree_view_options: {
-    add_item_view: 'assessments/tree_add_item',
+    add_item_view: 'assessments/tree-add-item',
     attr_list: [{
       attr_title: 'Title',
       attr_name: 'title',

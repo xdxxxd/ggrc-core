@@ -4,7 +4,7 @@
  */
 
 import canMap from 'can-map';
-import {getComponentVM} from '../../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../../js_specs/spec-helpers';
 import Component from '../task-group-objects';
 import * as Stub from '../../../../models/stub';
 import * as Mappings from '../../../../models/mappers/mappings';
@@ -12,7 +12,7 @@ import * as QueryApiUtils from '../../../../plugins/utils/query-api-utils';
 import * as MapperUtils from '../../../../plugins/utils/mapper-utils';
 import * as NotifiersUtils from '../../../../plugins/utils/notifiers-utils';
 import * as ErrorUtils from '../../../../plugins/utils/errors-utils';
-import {OBJECTS_MAPPED_VIA_MAPPER} from '../../../../events/eventTypes';
+import {OBJECTS_MAPPED_VIA_MAPPER} from '../../../../events/event-types';
 
 describe('task-group-objects component', function () {
   let viewModel;

@@ -32,11 +32,11 @@
 
       <div class="lhs-nav">
         <ul class="top-level">
-          {{{renderLive "dashboard/lhn_search" type="Program" title_plural="Programs" template_view="programs/search_result"}}}
-          {{{renderLive "dashboard/lhn_search" type="Workflow" title_plural="Workflows" template_view="workflows/search_result" tooltip_view="/workflows/extended_info.stache"}}}
-          {{{renderLive "dashboard/lhn_search" type="Audit" title_plural="Audits" template_view="audits/search_result" tooltip_view="/audits/extended_info.stache"}}}
-          {{{renderLive "dashboard/lhn_search" type="Assessment" title_plural="Assessments" tooltip_view="/assessments/assignable_extended_info.stache" actions="base_objects/empty"}}}
-          {{{renderLive "dashboard/lhn_search" type="Issue" title_plural="Issues" actions="base_objects/search_actions"}}}
+          {{{renderLive "dashboard/lhn-search" type="Program" title_plural="Programs" template_view="programs/search-result"}}}
+          {{{renderLive "dashboard/lhn-search" type="Workflow" title_plural="Workflows" template_view="workflows/search-result" tooltip_view="/workflows/extended-info.stache"}}}
+          {{{renderLive "dashboard/lhn-search" type="Audit" title_plural="Audits" template_view="audits/search-result" tooltip_view="/audits/extended-info.stache"}}}
+          {{{renderLive "dashboard/lhn-search" type="Assessment" title_plural="Assessments" tooltip_view="/assessments/assignable-extended-info.stache" actions="base_objects/empty"}}}
+          {{{renderLive "dashboard/lhn-search" type="Issue" title_plural="Issues" actions="base_objects/search-actions"}}}
         </ul>
       </div>
 
@@ -53,11 +53,11 @@
             </a>
             <div class="content">
               <ul class="mid-level">
-                {{{renderLive "dashboard/lhn_search" type="Contract" title_plural="Contracts" li_class="governance"}}}
-                {{{renderLive "dashboard/lhn_search" type="Policy" title_plural="Policies" li_class="governance"}}}
-                {{{renderLive "dashboard/lhn_search" type="Regulation" title_plural="Regulations" li_class="governance"}}}
-                {{{renderLive "dashboard/lhn_search" type="Requirement" title_plural="Requirements" li_class="governance"}}}
-                {{{renderLive "dashboard/lhn_search" type="Standard" title_plural="Standards" li_class="governance"}}}
+                {{{renderLive "dashboard/lhn-search" type="Contract" title_plural="Contracts" li_class="governance"}}}
+                {{{renderLive "dashboard/lhn-search" type="Policy" title_plural="Policies" li_class="governance"}}}
+                {{{renderLive "dashboard/lhn-search" type="Regulation" title_plural="Regulations" li_class="governance"}}}
+                {{{renderLive "dashboard/lhn-search" type="Requirement" title_plural="Requirements" li_class="governance"}}}
+                {{{renderLive "dashboard/lhn-search" type="Standard" title_plural="Standards" li_class="governance"}}}
               </ul>
             </div>
           </li>
@@ -69,8 +69,8 @@
             </a>
             <div class="content">
               <ul class="mid-level">
-                {{{renderLive "dashboard/lhn_search" type="Control" title_plural="Controls" li_class="controls"}}}
-                {{{renderLive "dashboard/lhn_search" type="Objective" title_plural="Objectives" li_class="objectives"}}}
+                {{{renderLive "dashboard/lhn-search" type="Control" title_plural="Controls" li_class="controls"}}}
+                {{{renderLive "dashboard/lhn-search" type="Objective" title_plural="Objectives" li_class="objectives"}}}
               </ul>
             </div>
           </li>
@@ -82,7 +82,7 @@
             </a>
             <div class="content">
               <ul class="mid-level">
-                {{{renderLive "dashboard/lhn_search" type="Person" title_plural="People" li_class="entities" template_view="people/search_result"}}}
+                {{{renderLive "dashboard/lhn-search" type="Person" title_plural="People" li_class="entities" template_view="people/search-result"}}}
               </ul>
             </div>
           </li>
@@ -94,26 +94,26 @@
             </a>
             <div class="content">
               <ul class="mid-level">
-                {{{renderLive "dashboard/lhn_search" type="AccessGroup" title_plural="Access Groups" li_class="business"}}}
-                {{{renderLive "dashboard/lhn_search" type="AccountBalance" title_plural="Account Balances" li_class="business"}}}
-                {{{renderLive "dashboard/lhn_search" type="DataAsset" title_plural="Data Assets" li_class="business"}}}
-                {{{renderLive "dashboard/lhn_search" type="Facility" title_plural="Facilities" li_class="business"}}}
-                {{{renderLive "dashboard/lhn_search" type="KeyReport" title_plural="Key Reports" li_class="business"}}}
-                {{{renderLive "dashboard/lhn_search" type="Market" title_plural="Markets" li_class="business"}}}
-                {{{renderLive "dashboard/lhn_search" type="Metric" title_plural="Metrics" li_class="business"}}}
-                {{{renderLive "dashboard/lhn_search" type="OrgGroup" title_plural="Org Groups" li_class="business"}}}
-                {{{renderLive "dashboard/lhn_search" type="Process" title_plural="Processes" li_class="business"}}}
-                {{{renderLive "dashboard/lhn_search" type="Product" title_plural="Products" li_class="business"}}}
-                {{{renderLive "dashboard/lhn_search" type="ProductGroup" title_plural="Product Groups" li_class="business"}}}
-                {{{renderLive "dashboard/lhn_search" type="Project" title_plural="Projects" li_class="business"}}}
-                {{{renderLive "dashboard/lhn_search" type="System" title_plural="Systems" li_class="business"}}}
-                {{{renderLive "dashboard/lhn_search" type="TechnologyEnvironment" title_plural="Technology Environments" li_class="business"}}}
-                {{{renderLive "dashboard/lhn_search" type="Vendor" title_plural="Vendors" li_class="business"}}}
+                {{{renderLive "dashboard/lhn-search" type="AccessGroup" title_plural="Access Groups" li_class="business"}}}
+                {{{renderLive "dashboard/lhn-search" type="AccountBalance" title_plural="Account Balances" li_class="business"}}}
+                {{{renderLive "dashboard/lhn-search" type="DataAsset" title_plural="Data Assets" li_class="business"}}}
+                {{{renderLive "dashboard/lhn-search" type="Facility" title_plural="Facilities" li_class="business"}}}
+                {{{renderLive "dashboard/lhn-search" type="KeyReport" title_plural="Key Reports" li_class="business"}}}
+                {{{renderLive "dashboard/lhn-search" type="Market" title_plural="Markets" li_class="business"}}}
+                {{{renderLive "dashboard/lhn-search" type="Metric" title_plural="Metrics" li_class="business"}}}
+                {{{renderLive "dashboard/lhn-search" type="OrgGroup" title_plural="Org Groups" li_class="business"}}}
+                {{{renderLive "dashboard/lhn-search" type="Process" title_plural="Processes" li_class="business"}}}
+                {{{renderLive "dashboard/lhn-search" type="Product" title_plural="Products" li_class="business"}}}
+                {{{renderLive "dashboard/lhn-search" type="ProductGroup" title_plural="Product Groups" li_class="business"}}}
+                {{{renderLive "dashboard/lhn-search" type="Project" title_plural="Projects" li_class="business"}}}
+                {{{renderLive "dashboard/lhn-search" type="System" title_plural="Systems" li_class="business"}}}
+                {{{renderLive "dashboard/lhn-search" type="TechnologyEnvironment" title_plural="Technology Environments" li_class="business"}}}
+                {{{renderLive "dashboard/lhn-search" type="Vendor" title_plural="Vendors" li_class="business"}}}
               </ul>
             </div>
           </li>
 
-          {{> /static/templates/dashboard/lhn_risks.stache}}
+          {{> /static/templates/dashboard/lhn-risks.stache}}
         </ul>
       </div>
 

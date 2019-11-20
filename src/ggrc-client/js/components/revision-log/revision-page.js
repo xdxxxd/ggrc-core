@@ -3,7 +3,7 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-import {exists, splitTrim} from '../../plugins/ggrc_utils';
+import {exists, splitTrim} from '../../plugins/ggrc-utils';
 import loCompact from 'lodash/compact';
 import loMapValues from 'lodash/mapValues';
 import loGroupBy from 'lodash/groupBy';

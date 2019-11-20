@@ -8,7 +8,7 @@ import {generateCycle} from '../../plugins/utils/workflow-utils';
 import {getPageInstance} from '../../plugins/utils/current-page-utils';
 import {initCounts} from '../../plugins/utils/widgets-utils';
 import {countsMap as workflowCountsMap} from '../../apps/workflows';
-import {refreshAll} from '../../models/refresh_queue';
+import {refreshAll} from '../../models/refresh-queue';
 
 export default canComponent.extend({
   tag: 'workflow-start-cycle',

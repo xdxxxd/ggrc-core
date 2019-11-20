@@ -24,7 +24,7 @@ import tracker from '../../tracker';
 import Evidence from '../../models/business-models/evidence';
 import Context from '../../models/service-models/context';
 import * as businessModels from '../../models/business-models';
-import {REFRESH_RELATED} from '../../events/eventTypes';
+import {REFRESH_RELATED} from '../../events/event-types';
 
 const defaultOrderBy = [
   {field: 'finished_date', direction: 'desc'},

@@ -8,7 +8,7 @@ import * as workflowHelpers from '../../utils/workflow-utils';
 import * as Mappings from '../../../models/mappers/mappings';
 import {
   makeFakeInstance,
-} from '../../../../js_specs/spec_helpers';
+} from '../../../../js_specs/spec-helpers';
 import Workflow from '../../../models/business-models/workflow';
 import Context from '../../../models/service-models/context';
 

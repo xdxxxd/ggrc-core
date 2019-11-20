@@ -4,12 +4,12 @@
 */
 
 import canMap from 'can-map';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../workflow-activate';
 import * as helpers from '../../../plugins/utils/workflow-utils';
 import * as Permission from '../../../permission';
 import * as WidgetsUtils from '../../../plugins/utils/widgets-utils';
-import * as RefreshQueue from '../../../models/refresh_queue';
+import * as RefreshQueue from '../../../models/refresh-queue';
 import {countsMap as workflowCountsMap} from '../../../apps/workflows';
 
 describe('workflow-activate component', function () {

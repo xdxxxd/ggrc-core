@@ -3,9 +3,9 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-import * as AjaxExtensions from '../../../plugins/ajax_extensions';
+import * as AjaxExtensions from '../../../plugins/ajax-extensions';
 import canEvent from 'can-event';
-import {makeFakeInstance} from '../../../../js_specs/spec_helpers';
+import {makeFakeInstance} from '../../../../js_specs/spec-helpers';
 import Relationship from '../relationship';
 
 describe('Relationship model', function () {

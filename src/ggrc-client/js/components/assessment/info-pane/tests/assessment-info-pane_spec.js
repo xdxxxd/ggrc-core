@@ -7,13 +7,13 @@ import loCapitalize from 'lodash/capitalize';
 import canList from 'can-list';
 import canMap from 'can-map';
 import Component from '../assessment-info-pane';
-import {getComponentVM, makeFakeInstance} from '../../../../../js_specs/spec_helpers';
+import {getComponentVM, makeFakeInstance} from '../../../../../js_specs/spec-helpers';
 import tracker from '../../../../tracker';
 import {
   RELATED_ITEMS_LOADED,
   REFRESH_MAPPING,
   REFRESH_RELATED,
-} from '../../../../events/eventTypes';
+} from '../../../../events/event-types';
 import * as queryApiUtils from '../../../../plugins/utils/query-api-utils';
 import * as commentsUtils from '../../../../plugins/utils/comments-utils';
 import * as aclUtils from '../../../../plugins/utils/acl-utils';

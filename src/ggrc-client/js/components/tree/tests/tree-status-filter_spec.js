@@ -7,7 +7,7 @@ import canList from 'can-list';
 import Component from '../tree-status-filter';
 import * as StateUtils from '../../../plugins/utils/state-utils';
 import router from '../../../router';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import * as DisplayPrefs from '../../../plugins/utils/display-prefs-utils';
 
 describe('tree-status-filter component', () => {

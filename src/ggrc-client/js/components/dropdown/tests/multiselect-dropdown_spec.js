@@ -5,7 +5,7 @@
 
 import canMap from 'can-map';
 import canEvent from 'can-event';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../multiselect-dropdown';
 
 describe('multiselect-dropdown component', function () {

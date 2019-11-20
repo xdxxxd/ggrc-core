@@ -9,7 +9,7 @@ import canStache from 'can-stache';
 import canMap from 'can-map';
 import canComponent from 'can-component';
 import template from './templates/dropdown-wrap-text.stache';
-import {isInnerClick, filteredMap} from '../../plugins/ggrc_utils';
+import {isInnerClick, filteredMap} from '../../plugins/ggrc-utils';
 
 const DefaultNoValueLabel = '--';
 

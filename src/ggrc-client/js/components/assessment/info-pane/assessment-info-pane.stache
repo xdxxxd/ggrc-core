@@ -414,7 +414,7 @@
                     </assessment-inline-item>
                 </div>
                 <div class="ggrc-form-item">
-                    {{> /static/templates/assessments/dates_list.stache}}
+                    {{> /static/templates/assessments/dates-list.stache}}
                 </div>
                 <div class="ggrc-form-item ggrc-form-item--row">
                     <assessment-inline-item

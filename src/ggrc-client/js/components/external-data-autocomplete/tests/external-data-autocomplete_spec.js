@@ -4,7 +4,7 @@
  */
 
 import canMap from 'can-map';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../external-data-autocomplete';
 import * as businessModels from '../../../models/business-models';
 import * as ReifyUtils from '../../../plugins/utils/reify-utils';

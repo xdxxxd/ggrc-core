@@ -12,7 +12,7 @@ import {
   ADD_RELATED,
   RELATED_REFRESHED,
   RELATED_ADDED,
-} from '../../events/eventTypes';
+} from '../../events/event-types';
 import {
   batchRequests,
 } from '../../plugins/utils/query-api-utils';

@@ -5,7 +5,7 @@
 
 import loKeyBy from 'lodash/keyBy';
 import {gapiClient} from '../ggrc-gapi-client';
-import {getPickerElement} from '../ggrc_utils';
+import {getPickerElement} from '../ggrc-utils';
 
 export const GDRIVE_PICKER_ERR_CANCEL = 'GDRIVE_PICKER_ERR_CANCEL';
 

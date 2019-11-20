@@ -7,7 +7,7 @@ import canMap from 'can-map';
 import Component from '../related-assessments';
 import {
   getComponentVM,
-} from '../../../../js_specs/spec_helpers';
+} from '../../../../js_specs/spec-helpers';
 import * as caUtils from '../../../plugins/utils/ca-utils';
 import * as businessModels from '../../../models/business-models';
 

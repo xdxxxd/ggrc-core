@@ -6,7 +6,7 @@
 import ViewModel from '../custom-roles-vm';
 import Program from '../../../models/business-models/program';
 import Assessment from '../../../models/business-models/assessment';
-import {makeFakeInstance} from '../../../../js_specs/spec_helpers';
+import {makeFakeInstance} from '../../../../js_specs/spec-helpers';
 
 describe('custom-roles view model', () => {
   let vm;

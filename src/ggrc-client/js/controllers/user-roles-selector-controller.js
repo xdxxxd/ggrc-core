@@ -4,7 +4,7 @@
 */
 
 import loSortBy from 'lodash/sortBy';
-import {ggrcAjax} from '../plugins/ajax_extensions';
+import {ggrcAjax} from '../plugins/ajax-extensions';
 import makeArray from 'can-util/js/make-array/make-array';
 import canStache from 'can-stache';
 import canList from 'can-list';
@@ -18,9 +18,9 @@ import UserRole from '../models/service-models/user-role';
 const userRolesModalSelector = canControl.extend({
   defaults: {
     base_modal_view:
-      GGRC.templates_path + '/people_roles/base_modal.stache',
-    option_column_view: 'people_roles/option_column',
-    object_detail_view: 'people_roles/object_detail',
+      GGRC.templates_path + '/people_roles/base-modal.stache',
+    option_column_view: 'people_roles/option-column',
+    object_detail_view: 'people_roles/object-detail',
 
     personId: null,
   },

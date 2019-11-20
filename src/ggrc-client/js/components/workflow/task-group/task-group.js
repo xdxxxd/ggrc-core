@@ -12,7 +12,7 @@ import '../task-list/task-list';
 import '../task-group-objects/task-group-objects';
 import template from './templates/task-group.stache';
 import {isAllowedFor} from '../../../permission';
-import {refreshAll} from '../../../models/refresh_queue';
+import {refreshAll} from '../../../models/refresh-queue';
 
 const viewModel = canMap.extend({
   define: {

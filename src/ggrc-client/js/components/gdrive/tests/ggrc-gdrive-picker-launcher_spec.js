@@ -6,7 +6,7 @@
 import * as pickerUtils from '../../../plugins/utils/gdrive-picker-utils';
 import * as NotifiersUtils from '../../../plugins/utils/notifiers-utils';
 import tracker from '../../../tracker';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../ggrc-gdrive-picker-launcher';
 
 describe('ggrc-gdrive-picker-launcher', function () {

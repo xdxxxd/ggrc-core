@@ -5,7 +5,7 @@
 
 import * as SnapshotUtils from '../../../plugins/utils/snapshot-utils';
 import * as Permission from '../../../permission';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../related-people-access-control-group';
 
 describe('related-people-access-control-group component', () => {

@@ -14,7 +14,7 @@ import {
 } from '../../plugins/utils/widgets-utils';
 import {refreshPermissions} from '../../permission';
 import {countsMap as workflowCountsMap} from '../../apps/workflows';
-import {refreshAll} from '../../models/refresh_queue';
+import {refreshAll} from '../../models/refresh-queue';
 
 const viewModel = canMap.extend({
   instance: {},

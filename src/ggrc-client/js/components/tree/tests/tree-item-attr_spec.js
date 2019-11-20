@@ -5,7 +5,7 @@
 
 import canMap from 'can-map';
 import Component from '../tree-item-attr';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import * as MarkdownUtils from '../../../plugins/utils/markdown-utils';
 
 describe('tree-item-attr component', () => {

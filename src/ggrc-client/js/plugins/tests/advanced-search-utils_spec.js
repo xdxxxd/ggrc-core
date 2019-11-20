@@ -6,7 +6,7 @@
 import canMap from 'can-map';
 import * as AdvancedSearch from '../../plugins/utils/advanced-search-utils';
 import * as StateUtils from '../../plugins/utils/state-utils';
-import QueryParser from '../../generated/ggrc_filter_query_parser';
+import QueryParser from '../../generated/ggrc-filter-query-parser';
 import loEndsWith from 'lodash/endsWith';
 
 describe('AdvancedSearch', () => {

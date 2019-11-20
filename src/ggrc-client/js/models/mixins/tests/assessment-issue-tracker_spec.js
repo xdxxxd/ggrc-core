@@ -5,7 +5,7 @@
 
 import canMap from 'can-map';
 import * as issueTrackerUtils from '../../../plugins/utils/issue-tracker-utils';
-import {makeFakeInstance} from '../../../../js_specs/spec_helpers';
+import {makeFakeInstance} from '../../../../js_specs/spec-helpers';
 import * as CurrentPageUtils from '../../../plugins/utils/current-page-utils';
 import AssessmentIssueTracker from '../assessment-issue-tracker';
 import Assessment from '../../business-models/assessment';

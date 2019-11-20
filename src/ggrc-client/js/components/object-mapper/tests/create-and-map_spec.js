@@ -7,7 +7,7 @@ import Component from '../create-and-map';
 import {
   getComponentVM,
   makeFakeInstance,
-} from '../../../../js_specs/spec_helpers';
+} from '../../../../js_specs/spec-helpers';
 import SnapshotableModel from '../../../models/business-models/control';
 import NotSnapshotableModel from '../../../models/business-models/issue';
 import AuditScopeModel from '../../../models/business-models/assessment';

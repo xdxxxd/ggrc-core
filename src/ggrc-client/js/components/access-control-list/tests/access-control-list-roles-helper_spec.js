@@ -6,7 +6,7 @@
 import {
   makeFakeModel,
   getComponentVM,
-} from '../../../../js_specs/spec_helpers';
+} from '../../../../js_specs/spec-helpers';
 import * as aclUtils from '../../../plugins/utils/acl-utils';
 import Component from '../access-control-list-roles-helper';
 import Cacheable from '../../../models/cacheable';

@@ -10,7 +10,7 @@ import canComponent from 'can-component';
 import makeArray from 'can-util/js/make-array/make-array';
 import template from './templates/tree-view-filter.stache';
 import {hasFilter} from '../../plugins/utils/state-utils';
-import QueryParser from '../../generated/ggrc_filter_query_parser';
+import QueryParser from '../../generated/ggrc-filter-query-parser';
 import * as AdvancedSearch from '../../plugins/utils/advanced-search-utils';
 import SavedSearch from '../../models/service-models/saved-search';
 import {notifier} from '../../plugins/utils/notifiers-utils';

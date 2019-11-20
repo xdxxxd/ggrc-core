@@ -7,7 +7,7 @@ import canList from 'can-list';
 import {
   getComponentVM,
   makeFakeInstance,
-} from '../../../../js_specs/spec_helpers';
+} from '../../../../js_specs/spec-helpers';
 import Component from './people-list';
 import AssessmentTemplate from '../../../models/business-models/assessment-template';
 

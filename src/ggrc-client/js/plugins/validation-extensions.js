@@ -3,7 +3,7 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import {splitTrim} from '../plugins/ggrc_utils';
+import {splitTrim} from '../plugins/ggrc-utils';
 import loCompact from 'lodash/compact';
 import loIsArray from 'lodash/isArray';
 import loUniq from 'lodash/uniq';

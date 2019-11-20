@@ -4,7 +4,7 @@
  */
 
 import Component from '../tree-header';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 
 describe('tree-header component', function () {
   'use strict';

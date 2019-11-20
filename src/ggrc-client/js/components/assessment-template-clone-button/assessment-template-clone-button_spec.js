@@ -4,7 +4,7 @@
 */
 
 import Component from './assessment-template-clone-button';
-import {getComponentVM} from '../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../js_specs/spec-helpers';
 import router from '../../router';
 import * as CurrentPageUtils from '../../plugins/utils/current-page-utils';
 

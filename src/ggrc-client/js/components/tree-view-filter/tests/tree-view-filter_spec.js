@@ -5,12 +5,12 @@
 
 import canList from 'can-list';
 import canMap from 'can-map';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component, {loadSavedSearch, filterParentItems} from '../tree-view-filter';
 import * as AdvancedSearch from '../../../plugins/utils/advanced-search-utils';
 import * as CurrentPageUtils from '../../../plugins/utils/current-page-utils';
 import * as StateUtils from '../../../plugins/utils/state-utils';
-import QueryParser from '../../../generated/ggrc_filter_query_parser';
+import QueryParser from '../../../generated/ggrc-filter-query-parser';
 import SavedSearch from '../../../models/service-models/saved-search';
 import * as QueryApiUtils from '../../../plugins/utils/query-api-utils';
 import Control from '../../../models/business-models/control';

@@ -75,7 +75,7 @@ export default Cacheable.extend({
       attr_name: 'sox_302_enabled',
       order: 72,
     }],
-    add_item_view: 'assessment_templates/tree_add_item',
+    add_item_view: 'assessment_templates/tree-add-item',
   },
 }, {
   define: {

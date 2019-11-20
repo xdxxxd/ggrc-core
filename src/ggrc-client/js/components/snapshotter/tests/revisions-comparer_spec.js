@@ -8,7 +8,7 @@ import canMap from 'can-map';
 import * as caUtils from '../../../plugins/utils/ca-utils';
 import Component from '../revisions-comparer';
 import Revision from '../../../models/service-models/revision';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Control from '../../../models/business-models/control';
 
 describe('revisions-comparer component', function () {

@@ -5,7 +5,7 @@
 
 import Component from '../people-list-info';
 import PersonProfile from '../../../models/service-models/person-profile';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 
 describe('people-list-info component', () => {
   let viewModel;

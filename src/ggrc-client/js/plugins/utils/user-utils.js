@@ -7,7 +7,7 @@ import loUniq from 'lodash/uniq';
 import loForEach from 'lodash/forEach';
 import Person from '../../models/business-models/person';
 import PersonProfile from '../../models/service-models/person-profile';
-import RefreshQueue from '../../models/refresh_queue';
+import RefreshQueue from '../../models/refresh-queue';
 import {getPageInstance} from './current-page-utils';
 import {notifier} from './notifiers-utils';
 

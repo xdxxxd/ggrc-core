@@ -34,7 +34,7 @@ import {
   backendGdriveClient,
   gapiClient,
 } from '../../plugins/ggrc-gapi-client';
-import {getPickerElement} from '../../plugins/ggrc_utils';
+import {getPickerElement} from '../../plugins/ggrc-utils';
 import {getImportUrl} from '../../plugins/utils/ggrcq-utils';
 import errorTemplate from './templates/import-error.stache';
 import {notifier} from '../../plugins/utils/notifiers-utils';

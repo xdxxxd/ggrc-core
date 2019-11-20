@@ -8,7 +8,7 @@ import canStache from 'can-stache';
 import canMap from 'can-map';
 import canComponent from 'can-component';
 import template from './templates/task-group-objects.stache';
-import {OBJECTS_MAPPED_VIA_MAPPER} from '../../../events/eventTypes';
+import {OBJECTS_MAPPED_VIA_MAPPER} from '../../../events/event-types';
 import {unmapObjects} from '../../../plugins/utils/mapper-utils';
 import {notifier} from '../../../plugins/utils/notifiers-utils';
 import {

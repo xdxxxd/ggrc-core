@@ -35,14 +35,14 @@ import {
   DEFERRED_MAP_OBJECTS,
   OBJECT_DESTROYED,
   UNMAP_DESTROYED_OBJECT,
-} from '../../events/eventTypes';
+} from '../../events/event-types';
 import {
   allowedToMap,
   shouldBeMappedExternally,
 } from '../../models/mappers/mappings';
 import {mapObjects as mapObjectsUtil} from '../../plugins/utils/mapper-utils';
 import * as businessModels from '../../models/business-models';
-import TreeViewConfig from '../../apps/base_widgets';
+import TreeViewConfig from '../../apps/base-widgets';
 import {confirm} from '../../plugins/utils/modals';
 import {isMegaMapping} from '../../plugins/utils/mega-object-utils';
 import pubSub from '../../pub-sub';
@@ -348,7 +348,7 @@ export default canComponent.extend({
           ' to proceed?',
         modal_confirm: 'Proceed',
         button_view:
-          `${GGRC.templates_path}/modals/confirm_cancel_buttons.stache`,
+          `${GGRC.templates_path}/modals/confirm-cancel-buttons.stache`,
       }, () => {
         this.viewModel.attr('is_saving', true);
         this.mapObjects(selectedObjects, true,

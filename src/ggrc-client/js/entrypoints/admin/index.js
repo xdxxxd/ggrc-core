@@ -6,7 +6,7 @@
 import '../commons';
 
 // Modules and Apps
-import '../../apps/business_objects';
+import '../../apps/business-objects';
 
 // Components
 import '../../components/related-objects/related-urls';

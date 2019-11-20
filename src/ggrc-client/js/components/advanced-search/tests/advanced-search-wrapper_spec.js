@@ -3,7 +3,7 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../advanced-search-wrapper';
 import * as AdvancedSearch from '../../../plugins/utils/advanced-search-utils';
 import * as StateUtils from '../../../plugins/utils/state-utils';

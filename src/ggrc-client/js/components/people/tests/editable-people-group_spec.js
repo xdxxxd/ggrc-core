@@ -4,7 +4,7 @@
 */
 
 import Component from '../editable-people-group';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 
 describe('editable-people-group', function () {
   'use strict';

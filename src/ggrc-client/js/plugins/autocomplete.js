@@ -3,19 +3,19 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import {filteredMap} from '../plugins/ggrc_utils';
+import {filteredMap} from '../plugins/ggrc-utils';
 import loDefer from 'lodash/defer';
 import loDebounce from 'lodash/debounce';
 import loIsNumber from 'lodash/isNumber';
 import loForEach from 'lodash/forEach';
-import {ggrcAjax} from '../plugins/ajax_extensions';
+import {ggrcAjax} from '../plugins/ajax-extensions';
 import canStache from 'can-stache';
 import canMap from 'can-map';
 import {
   buildRelevantIdsQuery,
   batchRequests,
 } from './utils/query-api-utils';
-import RefreshQueue from '../models/refresh_queue';
+import RefreshQueue from '../models/refresh-queue';
 import Search from '../models/service-models/search';
 import {getInstance} from '../plugins/utils/models-utils';
 import * as businessModels from '../models/business-models';
@@ -216,11 +216,11 @@ $.widget('ggrc.autocomplete', $.ui.autocomplete, {
     if (!template) {
       if (
         model &&
-        GGRC.Templates[model.table_plural + '/autocomplete_result']
+        GGRC.Templates[model.table_plural + '/autocomplete-result']
       ) {
-        template = '/' + model.table_plural + '/autocomplete_result.stache';
+        template = '/' + model.table_plural + '/autocomplete-result.stache';
       } else {
-        template = '/base_objects/autocomplete_result.stache';
+        template = '/base_objects/autocomplete-result.stache';
       }
     }
 

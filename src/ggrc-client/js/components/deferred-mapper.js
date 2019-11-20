@@ -15,7 +15,7 @@ import {
   DEFERRED_MAP_OBJECTS,
   DEFERRED_MAPPED_UNMAPPED,
   UNMAP_DESTROYED_OBJECT,
-} from '../events/eventTypes';
+} from '../events/event-types';
 import {getPageInstance} from '../plugins/utils/current-page-utils';
 
 export default canComponent.extend({

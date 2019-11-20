@@ -12,7 +12,7 @@ import canComponent from 'can-component';
 import '../tree-pagination/tree-pagination';
 import './revision-page';
 
-import RefreshQueue from '../../models/refresh_queue';
+import RefreshQueue from '../../models/refresh-queue';
 import template from './revision-log.stache';
 import tracker from '../../tracker';
 import Revision from '../../models/service-models/revision';
@@ -23,7 +23,7 @@ import {
   buildParam,
   batchRequests,
 } from '../../plugins/utils/query-api-utils';
-import QueryParser from '../../generated/ggrc_filter_query_parser';
+import QueryParser from '../../generated/ggrc-filter-query-parser';
 import Pagination from '../base-objects/pagination';
 import Person from '../../models/business-models/person';
 import {notifier} from '../../plugins/utils/notifiers-utils';

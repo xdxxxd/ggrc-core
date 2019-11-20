@@ -3,10 +3,10 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import {exists} from './plugins/ggrc_utils';
+import {exists} from './plugins/ggrc-utils';
 import loToArray from 'lodash/toArray';
 import loReduce from 'lodash/reduce';
-import {ggrcAjax} from './plugins/ajax_extensions';
+import {ggrcAjax} from './plugins/ajax-extensions';
 import canCompute from 'can-compute';
 import './plugins/utils/current-page-utils'; // fixes a cyclic dependency and should be fixed in a proper way
 import Stub from '../js/models/stub';

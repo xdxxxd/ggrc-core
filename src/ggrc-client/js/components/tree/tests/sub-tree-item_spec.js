@@ -4,7 +4,7 @@
 */
 
 import Component from '../sub-tree-item';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import CycleTaskGroupObjectTask from '../../../models/business-models/cycle-task-group-object-task';
 import {trigger} from 'can-event';
 

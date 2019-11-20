@@ -8,7 +8,7 @@ import loReverse from 'lodash/reverse';
 import loDebounce from 'lodash/debounce';
 import loEach from 'lodash/each';
 import loIsEqual from 'lodash/isEqual';
-import {ggrcAjax} from '../../plugins/ajax_extensions';
+import {ggrcAjax} from '../../plugins/ajax-extensions';
 import makeArray from 'can-util/js/make-array/make-array';
 import canBatch from 'can-event/batch/batch';
 import canStache from 'can-stache';
@@ -59,7 +59,7 @@ export default canComponent.extend({
         modal_title: this.attr('modalTitle'),
         modal_description: 'Loading...',
         header_view: GGRC.templates_path +
-                      '/modals/modal_compare_header.stache',
+                      '/modals/modal-compare-header.stache',
         modal_confirm: this.attr('modalConfirm'),
         skip_refresh: true,
         extraCssClass: 'compare-modal',

@@ -15,7 +15,7 @@ import {
 import {handleAjaxError} from '../../plugins/utils/errors-utils';
 import {Snapshot} from '../../models/service-models';
 import {isSnapshotType} from '../../plugins/utils/snapshot-utils';
-import {ggrcGet} from '../../plugins/ajax_extensions';
+import {ggrcGet} from '../../plugins/ajax-extensions';
 
 export default canComponent.extend({
   tag: 'delete-button',
@@ -37,17 +37,17 @@ export default canComponent.extend({
       const model = instance.constructor;
       const modalSettings = {
         button_view:
-          GGRC.templates_path + '/modals/delete_cancel_buttons.stache',
+          GGRC.templates_path + '/modals/delete-cancel-buttons.stache',
         model,
         instance,
         modal_title: 'Delete ' + model.title_singular,
         skip_refresh: true,
         content_view:
-          GGRC.templates_path + '/base_objects/confirm_delete.stache',
+          GGRC.templates_path + '/base_objects/confirm-delete.stache',
       };
 
       import(/* webpackChunkName: "modalsCtrls" */
-        '../../controllers/modals/modals_controller').then((module) => {
+        '../../controllers/modals/modals-controller').then((module) => {
         const ModalsController = module.default;
         const $target = $('<div class="modal hide"></div>');
         $target.modal();

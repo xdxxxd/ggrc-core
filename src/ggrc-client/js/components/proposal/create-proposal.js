@@ -8,11 +8,11 @@ import canMap from 'can-map';
 import canComponent from 'can-component';
 import Proposal from '../../models/service-models/proposal';
 import template from './templates/create-proposal.stache';
-import {hasPending as hasPendingUtil} from '../../plugins/ggrc_utils';
+import {hasPending as hasPendingUtil} from '../../plugins/ggrc-utils';
 import {
   PROPOSAL_CREATED,
   REFRESH_COMMENTS,
-} from '../../events/eventTypes';
+} from '../../events/event-types';
 import {getRole} from '../../plugins/utils/acl-utils';
 
 export default canComponent.extend({

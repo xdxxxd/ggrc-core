@@ -17,12 +17,12 @@ import {
   BEFORE_DOCUMENT_CREATE,
   DOCUMENT_CREATE_FAILED,
   MAP_OBJECTS,
-} from '../../events/eventTypes';
+} from '../../events/event-types';
 import {refreshPermissions} from '../../permission';
 import template from './create-document-button.stache';
 import Document from '../../models/business-models/document';
 import Context from '../../models/service-models/context';
-import {ggrcPost} from '../../plugins/ajax_extensions';
+import {ggrcPost} from '../../plugins/ajax-extensions';
 
 const viewModel = canMap.extend({
   parentInstance: null,
@@ -137,7 +137,7 @@ const viewModel = canMap.extend({
         Please proceed to map existing docs to
         "${parentInstance.type} ${parentInstance.title}"`,
       button_view:
-        `${GGRC.templates_path}/modals/confirm_cancel_buttons.stache`,
+        `${GGRC.templates_path}/modals/confirm-cancel-buttons.stache`,
       modal_confirm: 'Proceed',
     }, confirmation.resolve, confirmation.reject);
 

@@ -152,7 +152,7 @@ let viewModel = canMap.extend({
   handleLHNOpening() {
     if (!this.attr('isOpenLhnTriggered')) {
       this.attr('isOpenLhnTriggered', true);
-      import(/* webpackChunkName: "lhn" */'../../controllers/lhn_controllers')
+      import(/* webpackChunkName: "lhn" */'../../controllers/lhn-controllers')
         .then((module) => {
           new module.LhnControl('#lhn');
         }).catch((err) => {

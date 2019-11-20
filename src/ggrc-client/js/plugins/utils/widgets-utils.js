@@ -28,12 +28,12 @@ import {
   isMegaObjectRelated,
   getMegaObjectConfig,
 } from './mega-object-utils';
-import {getWidgetListFor} from '../../modules/widget_list';
+import {getWidgetListFor} from '../../modules/widget-list';
 import {
   getPageType,
   getPageInstance,
 } from './current-page-utils';
-import QueryParser from '../../generated/ggrc_filter_query_parser';
+import QueryParser from '../../generated/ggrc-filter-query-parser';
 import Person from '../../models/business-models/person';
 
 let widgetsCounts = new canMap({});

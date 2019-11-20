@@ -7,7 +7,7 @@ import canMap from 'can-map';
 import canComponent from 'can-component';
 import canStache from 'can-stache';
 import template from './assessment-notifications.stache';
-import {splitTrim} from '../../plugins/ggrc_utils';
+import {splitTrim} from '../../plugins/ggrc-utils';
 
 export default canComponent.extend({
   tag: 'assessment-notifications',

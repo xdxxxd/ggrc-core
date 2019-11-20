@@ -5,7 +5,7 @@
 */
 
 /*
-Script used to generate ggrc_filter_query_parser.js
+Script used to generate ggrc-filter-query-parser.js
 
 -- updating dev environment by running:
 
@@ -32,7 +32,7 @@ let ggrcParser;
 let parserGrammar = '/vagrant/src/parser/parser.pegjs';
 let parserTemplateFile = '/vagrant/src/parser/parser_template.js';
 let ggrcParserFolder = '/vagrant/src/ggrc-client/js/generated/';
-let ggrcParserJsFile = 'ggrc_filter_query_parser.js';
+let ggrcParserJsFile = 'ggrc-filter-query-parser.js';
 let peg = require('pegjs');
 let fs = require('fs');
 let mkdirp = require('mkdirp');

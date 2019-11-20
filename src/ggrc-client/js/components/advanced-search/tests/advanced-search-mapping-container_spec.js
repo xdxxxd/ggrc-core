@@ -5,7 +5,7 @@
 
 import canList from 'can-list';
 import * as AdvancedSearch from '../../../plugins/utils/advanced-search-utils';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../advanced-search-mapping-container';
 
 describe('advanced-search-mapping-container component', function () {

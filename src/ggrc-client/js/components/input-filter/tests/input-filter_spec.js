@@ -4,7 +4,7 @@
  */
 
 import Component from '../input-filter';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 
 describe('input-filter component', () => {
   let viewModel;

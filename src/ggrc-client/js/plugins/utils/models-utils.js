@@ -6,7 +6,7 @@
 import loForEach from 'lodash/forEach';
 import loSortBy from 'lodash/sortBy';
 import {notifier} from './notifiers-utils';
-import RefreshQueue from '../../models/refresh_queue';
+import RefreshQueue from '../../models/refresh-queue';
 import * as businessModels from '../../models/business-models';
 import * as serviceModels from '../../models/service-models';
 import allModels from '../../models/all-models';

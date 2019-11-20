@@ -6,7 +6,7 @@
 import canStache from 'can-stache';
 import canMap from 'can-map';
 import canComponent from 'can-component';
-import {ROLES_CONFLICT} from '../../events/eventTypes';
+import {ROLES_CONFLICT} from '../../events/event-types';
 import './assessment-custom-roles';
 import '../custom-roles/custom-roles-modal';
 import template from './templates/assessment-people.stache';

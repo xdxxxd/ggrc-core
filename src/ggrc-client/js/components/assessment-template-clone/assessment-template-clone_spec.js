@@ -6,7 +6,7 @@
 import loMap from 'lodash/map';
 import canMap from 'can-map';
 import Component from './assessment-template-clone';
-import * as AjaxUtils from '../../plugins/ajax_extensions';
+import * as AjaxUtils from '../../plugins/ajax-extensions';
 
 describe('assessment-template-clone component', () => {
   let events;

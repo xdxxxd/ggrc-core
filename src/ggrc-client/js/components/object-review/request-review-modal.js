@@ -11,7 +11,7 @@ import {
   createReviewInstance,
   saveReview,
 } from '../../plugins/utils/object-review-utils';
-import {REFRESH_COMMENTS} from '../../events/eventTypes';
+import {REFRESH_COMMENTS} from '../../events/event-types';
 
 export default canComponent.extend({
   tag: 'request-review-modal',

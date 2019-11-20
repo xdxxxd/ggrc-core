@@ -15,7 +15,7 @@ import {
   scopingObjects,
   externalDirectiveObjects,
 } from '../../plugins/models-types-collections';
-import {makeFakeInstance} from '../../../js_specs/spec_helpers';
+import {makeFakeInstance} from '../../../js_specs/spec-helpers';
 import Cacheable from '../../models/cacheable';
 import Control from '../../models/business-models/control';
 import Risk from '../../models/business-models/risk';

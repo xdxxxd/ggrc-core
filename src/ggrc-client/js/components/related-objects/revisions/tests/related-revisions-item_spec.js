@@ -5,7 +5,7 @@
 
 import canMap from 'can-map';
 import Component from '../related-revisions-item';
-import {getComponentVM} from '../../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../../js_specs/spec-helpers';
 import * as Utils from '../../../../plugins/utils/user-utils';
 
 describe('RelatedRevisionsItem component', () => {

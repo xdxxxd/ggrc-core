@@ -7,7 +7,7 @@ import * as ModalsUtils from '../../../plugins/utils/modals';
 import {
   makeFakeInstance,
   getComponentVM,
-} from '../../../../js_specs/spec_helpers';
+} from '../../../../js_specs/spec-helpers';
 import Component from '../info-pane/confirm-edit-action';
 import Assessment from '../../../models/business-models/assessment';
 
@@ -92,7 +92,7 @@ describe('confirm-edit-action component', function () {
         modal_description: 'You are about to move Assessment from "' +
           'In Review' +
           '" to "In Progress" - are you sure about that?',
-        button_view: GGRC.templates_path + '/modals/prompt_buttons.stache',
+        button_view: GGRC.templates_path + '/modals/prompt-buttons.stache',
       }, jasmine.any(Function), jasmine.any(Function));
     });
 

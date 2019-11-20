@@ -37,7 +37,7 @@ import {backendGdriveClient} from '../../plugins/ggrc-gapi-client';
 import './current-exports/current-exports';
 import {connectionLostNotifier} from './connection-lost-notifier';
 import router from '../../router';
-import QueryParser from '../../generated/ggrc_filter_query_parser';
+import QueryParser from '../../generated/ggrc-filter-query-parser';
 
 export default canComponent.extend({
   tag: 'csv-export',
@@ -138,7 +138,7 @@ export default canComponent.extend({
               modal_description: `GDrive file is generated successfully.
                Click button below to view the file.`,
               gDriveLink: link,
-              button_view: `${GGRC.templates_path}/modals/open_sheet.stache`,
+              button_view: `${GGRC.templates_path}/modals/open-sheet.stache`,
             }, () => {
               this.deleteJob(id);
             }, () => {

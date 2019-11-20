@@ -5,7 +5,7 @@
 
 import canComponent from 'can-component';
 import baseAutocompleteWrapper from '../../custom-autocomplete/autocomplete-wrapper';
-import {ggrcGet} from '../../../plugins/ajax_extensions';
+import {ggrcGet} from '../../../plugins/ajax-extensions';
 
 export default canComponent.extend({
   tag: 'people-autocomplete-wrapper',

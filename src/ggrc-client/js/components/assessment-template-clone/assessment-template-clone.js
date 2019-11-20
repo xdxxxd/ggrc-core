@@ -15,7 +15,7 @@ import '../../components/collapsible-panel/collapsible-panel';
 import ObjectOperationsBaseVM from '../view-models/object-operations-base-vm';
 import template from './assessment-template-clone.stache';
 import {getPageInstance} from '../../plugins/utils/current-page-utils';
-import {ggrcPost} from '../../plugins/ajax_extensions';
+import {ggrcPost} from '../../plugins/ajax-extensions';
 
 export default canComponent.extend({
   tag: 'assessment-template-clone',

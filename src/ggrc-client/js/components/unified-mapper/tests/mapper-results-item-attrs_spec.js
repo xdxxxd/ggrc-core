@@ -4,7 +4,7 @@
 */
 
 import makeArray from 'can-util/js/make-array/make-array';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../mapper-results-item-attrs';
 
 

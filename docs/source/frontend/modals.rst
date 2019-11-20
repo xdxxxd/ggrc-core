@@ -31,7 +31,7 @@ Modals
 Each modal can have its own controller that handles actions performed by
 the modals
 
-``modals_controller.js``:
+``modals-controller.js``:
 -------------------------
 
 -  shows the spinner
