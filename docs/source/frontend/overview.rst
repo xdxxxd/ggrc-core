@@ -59,7 +59,7 @@ Widgets (tabs)
 ~~~~~~~~~~~~~~
 
 Which widgets (or tabs) are shown on the object page is defined in
-``business_objects.js``.
+``business-objects.js``.
 This is where we state which controller or component should be used
 for each tab:
 
@@ -293,11 +293,11 @@ the UI is created.
     Defined per-widget in InfoWidget controller as the
    ``widget_view`` option, and specified using ``WidgetList``
    definitions.
--  ``extended_info.stache`` - Defines the content of an object’s
+-  ``extended-info.stache`` - Defines the content of an object’s
    tooltip/popover in the LHN lists.  Specified as the ``tooltip_view``
    parameter when rendering
    :src:`ggrc-client/js/templates/dashboard/lhn.stache`.
--  ``modal_content.stache`` - Defines the view for modal “create” or
+-  ``modal-content.stache`` - Defines the view for modal “create” or
    “edit” form functionality.  For most objects, this path is
    automatically generated using the ``data-template`` or
    ``data-object-plural`` attributes of the invoking element (see
@@ -420,10 +420,10 @@ following files:
 
 -  ``ggrc-client/js/bootstrap/modal-ajax.js``
 -  ``ggrc-client/js/bootstrap/modal-form.js``
--  ``ggrc-client/js/controllers/modals/modals_controller.js``
+-  ``ggrc-client/js/controllers/modals/modals-controller.js``
 
 The view for a modal is defined in
-``/src/ggrc-client/js/templates/<class_name>/modal_content.stache``.
+``/src/ggrc-client/js/templates/<class_name>/modal-content.stache``.
 
 More about modals in `modals.md <modals.md>`_.
 
