@@ -41,6 +41,7 @@ import {
   isStandardFlow,
   isSox302Flow,
   isMultiLevelFlow,
+  getFlowDisplayName,
 } from './plugins/utils/verification-flow-utils';
 
 // Chrome likes to cache AJAX requests for templates.
@@ -815,5 +816,12 @@ canStache.registerHelper('is_ML_verification_flow',
     return isMultiLevelFlow(instance)
       ? options.fn(options.context)
       : options.inverse(options.context);
+  }
+);
+
+canStache.registerHelper('get_verification_flow_name',
+  (instance) => {
+    instance = isFunction(instance) ? instance(): instance;
+    return getFlowDisplayName(instance);
   }
 );
