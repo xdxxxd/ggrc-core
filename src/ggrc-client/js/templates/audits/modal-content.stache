@@ -6,7 +6,7 @@
 <div class="hideable-holder">
   {{#instance}}
   <form action="javascript://">
-    {{> /static/templates/base_objects/form-restore.stache}}
+    {{> base_objects/form-restore.stache}}
 
     {{#if new_object_form}}
     {{^if object_params.program}}

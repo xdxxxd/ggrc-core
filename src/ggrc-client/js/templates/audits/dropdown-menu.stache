@@ -13,7 +13,7 @@
               Update objects to latest version</a>
           </snapshot-scope-update>
         </li>
-      {{> /static/templates/base_objects/edit-object-link.stache}}
+      {{> base_objects/edit-object-link.stache}}
 
       <li>
         <assessment-template-clone-button

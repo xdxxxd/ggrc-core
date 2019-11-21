@@ -7,7 +7,7 @@
   <spinner-component toggle:from="isLoading" class="spinner-wrapper active"></spinner-component>
   <inline-form-control instance:from="instance" deferredSave:from="deferredSave">
     <div class="tier-content">
-      {{> /static/templates/assessments/header.stache}}
+      {{> assessments/header.stache}}
       <tab-container
         instance:from="instance">
           <tab-panel panels:bind="panels" titleText:from="'Assessment'">
@@ -414,7 +414,7 @@
                     </assessment-inline-item>
                 </div>
                 <div class="ggrc-form-item">
-                    {{> /static/templates/assessments/dates-list.stache}}
+                    {{> assessments/dates-list.stache}}
                 </div>
                 <div class="ggrc-form-item ggrc-form-item--row">
                     <assessment-inline-item

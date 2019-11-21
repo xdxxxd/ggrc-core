@@ -7,7 +7,7 @@
 {{#instance}}
 <form action="javascript://">
   <input type="hidden" name="kind" value="Directive" />
-  {{> /static/templates/base_objects/form-restore.stache}}
+  {{> base_objects/form-restore.stache}}
 
   <!-- Title Row -->
   <div class="row-fluid">
@@ -88,7 +88,7 @@
     {{^if isProposal}}
       <div class="span6 hide-wrap hidable">
         <div class="row-fluid inner-hide">
-          {{> /static/templates/base_objects/modal-content-reference-urls.stache}}
+          {{> base_objects/modal-content-reference-urls.stache}}
         </div>
       </div>
     {{/if}}

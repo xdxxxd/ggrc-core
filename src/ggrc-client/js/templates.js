@@ -20,6 +20,6 @@ templates.keys().forEach((key) => {
 
   GGRC.Templates[newKey] = templates(key);
 
-  let id = key.replace('./', `${GGRC.templates_path}/`);
+  let id = key.replace('./', '');
   canStache.registerPartial(id, templates(key));
 });

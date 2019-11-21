@@ -106,7 +106,7 @@
         </div>
       </div>
       {{^if isAttributesDisabled}}
-        {{> /static/templates/custom_attributes/info.stache}}
+        {{> custom_attributes/info.stache}}
       {{/if}}
     </div>
   </div>

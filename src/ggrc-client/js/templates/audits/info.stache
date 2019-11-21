@@ -34,7 +34,7 @@
                 </info-pin-buttons>
               {{/if}}
 
-              {{> /static/templates/base_objects/info-pane-utility.stache}}
+              {{> base_objects/info-pane-utility.stache}}
             </div>
           </div>
         {{/instance}}
@@ -188,7 +188,7 @@
               {{/if}}
             </div><!-- hidden-fields-area end -->
           </div><!-- custom-attr-wrap end -->
-          {{> /static/templates/custom_attributes/info.stache}}
+          {{> custom_attributes/info.stache}}
         </tab-panel>
         <tab-panel panels:bind="panels" titleText:from="'Change Log'">
             <revision-log instance:from="instance" options:from="tabOptions"></revision-log>

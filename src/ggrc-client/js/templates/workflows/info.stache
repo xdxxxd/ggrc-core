@@ -126,7 +126,7 @@
           </div>
         </div>
 
-        {{> /static/templates/base_objects/contacts.stache}}
+        {{> base_objects/contacts.stache}}
 
         <div class="row-fluid wrap-row">
           <div class="span6">
@@ -170,7 +170,7 @@
         </div>
         <div class="row-fluid">
           <div class="span12">
-            {{> /static/templates/custom_attributes/info.stache}}
+            {{> custom_attributes/info.stache}}
           </div>
         </div>
       </tab-panel>

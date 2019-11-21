@@ -37,7 +37,7 @@
 
       <div class="mapped-object-info__attributes">
         {{#add_to_current_scope instance=this editMode=false}}
-          {{> /static/templates/custom_attributes/info.stache}}
+          {{> custom_attributes/info.stache}}
         {{/add_to_current_scope}}
       </div>
     </div>

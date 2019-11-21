@@ -36,7 +36,7 @@
           items:from="items"
           isLoading:from="isLoading"
           listType:from="'GRID'">
-            {{> /static/templates/task_group_tasks/task-group-subtree.stache}}
+            {{> task_group_tasks/task-group-subtree.stache}}
         </object-list>
       </div>
     </div>

@@ -5,7 +5,7 @@
 
 {{#instance}}
   {{#if_helpers '\n #is_dashboard_or_all' '\n and #if' is_info_widget}}
-    {{> /static/templates/dashboard/info/info.stache}}
+    {{> dashboard/info/info.stache}}
   {{else}}
     <section class="info{{#if is_info_pin}} sticky-info-panel{{/if}}">
       <div class="tier-content">
@@ -47,7 +47,7 @@
                                   onClose:from="@onClose">
                 </info-pin-buttons>
                 <div class="info-pane-utility">
-                  {{> /static/templates/people/dropdown-menu.stache}}
+                  {{> people/dropdown-menu.stache}}
                 </div>
               {{/if}}
             </div>
@@ -78,7 +78,7 @@
                 </span>
               </div>
             </div>
-            {{> /static/templates/custom_attributes/info.stache}}
+            {{> custom_attributes/info.stache}}
           </tab-panel>
           <tab-panel panels:bind="panels" titleText:from="'Change Log'">
             <revision-log instance:from="instance" options:from="tabOptions"></revision-log>
