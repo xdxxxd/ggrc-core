@@ -7,6 +7,21 @@ from ggrc.extensions import get_extension_modules
 from ggrc.models import all_models
 
 
+def get_jobs_to_register(name):
+  """Get cron job handlers defined in `converters` package.
+
+  Get cron job handlers defined in `converters` package as `name`.
+
+  Args:
+    name (str): A name of job handlers to get.
+
+  Returns:
+    A list containing job handlers of provided name.
+  """
+  from ggrc.converters import cron_jobs
+  return getattr(cron_jobs, name, [])
+
+
 def get_shared_unique_rules():
   """ get rules for all cross checks betveen classes
 
