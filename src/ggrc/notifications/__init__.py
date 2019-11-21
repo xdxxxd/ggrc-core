@@ -6,14 +6,13 @@
 This module is used for coordinating email notifications.
 """
 import datetime
+import logging
 
-from ggrc import extensions, db
+from ggrc import extensions
+from ggrc import db
+from ggrc import login
+from ggrc import settings
 
-# changes of some of the attributes are not considered as a modification of
-# the obj itself, e.g. metadata not editable by the end user, or changes
-# covered by other event types such as "comment created"
-# pylint: disable=invalid-name
-from ggrc.login import get_current_user_id
 
 IGNORE_ATTRS = frozenset((
     u"_notifications", u"comments", u"context", u"context_id", u"created_at",
@@ -26,10 +25,48 @@ IGNORE_ATTRS = frozenset((
 ))
 
 
+logger = logging.getLogger(__name__)
+
+
 def register_notification_listeners():
+  """Register notification listeners.
+
+  Notification listeners will be registered only if `NOTIFICATIONS_ENABLED`
+  flag in settings is set to `True` value.
+  """
+  if not settings.NOTIFICATIONS_ENABLED:
+    logger.warning("Could not register notification listeners. Notifications "
+                   "are disabled. Use `NOTIFICATIONS_ENABLED` setting to "
+                   "enable notifications.")
+    return
+
   listeners = extensions.get_module_contributions("NOTIFICATION_LISTENERS")
   for listener in listeners:
     listener()
+
+
+def get_jobs_to_register(name):
+  """Get cron job handlers defined in `notifications` package.
+
+  Get cron job handlers defined in `notifications` package as `name`. Note
+  that handlers will be returned only if `NOTIFICATIONS_ENABLED` flag in
+  settings is set to `True` value.
+
+  Args:
+    name (str): A name of job handlers to get.
+
+  Returns:
+    A list containing job handlers of provided name.
+  """
+  if not settings.NOTIFICATIONS_ENABLED:
+    logger.warning("Could not get `%s` job handlers. Notifications "
+                   "are disabled. Use `NOTIFICATIONS_ENABLED` setting to "
+                   "enable notifications.",
+                   name)
+    return []
+
+  from ggrc.notifications import cron_jobs
+  return getattr(cron_jobs, name, [])
 
 
 def _get_value(cav, _type):
@@ -94,5 +131,5 @@ def add_notification(obj, notif_type_name):
       send_on=datetime.datetime.utcnow(),
       notification_type_id=notif_type_id,
       runner=all_models.Notification.RUNNER_FAST,
-      modified_by_id=get_current_user_id()
+      modified_by_id=login.get_current_user_id()
   ))

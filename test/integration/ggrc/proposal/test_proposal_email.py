@@ -83,18 +83,18 @@ class TestProposalEmail(TestCase):
           agenda="agenda 2")
     self.assertIsNone(proposal_1.proposed_notified_datetime)
     self.assertIsNone(proposal_2.proposed_notified_datetime)
-    with mock.patch("google.appengine.api.mail.send_mail") as mailer_mock:
+    with mock.patch("ggrc.notifications.common.send_email") as send_email_mock:
       with mock.patch.object(fast_digest.DIGEST_TMPL,
                              "render") as bodybuilder_mock:
         fast_digest.send_notification()
     self.assertIsNotNone(proposal_1.proposed_notified_datetime)
     self.assertIsNotNone(proposal_2.proposed_notified_datetime)
     self.assertEqual(2, len(bodybuilder_mock.call_args_list))
-    self.assertEqual(2, len(mailer_mock.call_args_list))
+    self.assertEqual(2, len(send_email_mock.call_args_list))
     # email to each required person
     self.assertListEqual(
         sorted([person_1.email, person_3.email]),
-        sorted([a[1]["to"] for a in mailer_mock.call_args_list]))
+        sorted([a[1]["user_email"] for a in send_email_mock.call_args_list]))
     # no matter how many roles each proposal should be otified
     # only once for that person
     self.assertListEqual(
@@ -132,14 +132,14 @@ class TestProposalEmail(TestCase):
           },
           agenda="agenda 1")
     self.assertIsNone(proposal_1.proposed_notified_datetime)
-    with mock.patch("google.appengine.api.mail.send_mail") as mailer_mock:
+    with mock.patch("ggrc.notifications.common.send_email") as send_email_mock:
       with mock.patch.object(fast_digest.DIGEST_TMPL,
                              "render") as bodybuilder_mock:
         fast_digest.send_notification()
     self.assertIsNotNone(proposal_1.proposed_notified_datetime)
     self.assertEqual(1, len(bodybuilder_mock.call_args_list))
-    self.assertEqual(1, len(mailer_mock.call_args_list))
+    self.assertEqual(1, len(send_email_mock.call_args_list))
     # email to each required person
     self.assertEqual(
         [person_1.email],
-        [a[1]["to"] for a in mailer_mock.call_args_list])
+        [a[1]["user_email"] for a in send_email_mock.call_args_list])
