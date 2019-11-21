@@ -6,16 +6,18 @@
 <div class="ggrc-form-item">
   <div class="ggrc-form-item__multiple-row">
     <issue-tracker-switcher
+      isEditIconDenied:from="isEditIconDenied"
       setIssueTitle:from="true"
       on:issueTrackerSwitcherChanged="saveInlineForm(scope.event)"
       instance:from="instance">
       <ticket-id-checker
+        isEditIconDenied:from="isEditIconDenied"
         instance:from="instance"
         issueTrackerEnabled:from="instance.issue_tracker.enabled"
         on:valueChange="inlineDropdownValueChange(scope.event)">
         <inline-edit-control
           on:inlineSave="checkTicketId(scope.event)"
-          isEditIconDenied:from="isRestricted"
+          isEditIconDenied:from="isEditIconDenied"
           dropdownOptions:from="instance.constructor.issue_tracker_enable_options"
           instance:from="instance"
           value:from="issueTrackerEnabled"

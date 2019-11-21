@@ -59,5 +59,6 @@ export default canComponent.extend({
     instance: {},
     note: '',
     linkingNote: '',
+    isEditIconDenied: false,
   }),
 });
