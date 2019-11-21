@@ -383,5 +383,5 @@ def filter_by_text(elements, text):
   #   browser.elements(cls=cls, text=text)
   # has O(N) complexity where N is the number of elements with class `cls`
   for element in elements:
-    if element.text.upper() == text or element.text == text:
+    if element.text.lower() == text.lower():
       return element
