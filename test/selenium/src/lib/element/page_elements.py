@@ -590,3 +590,23 @@ class MultiselectDropdown(object):
   def select_all(self):
     """Selects all options by selecting 'Select all' option."""
     self.set_option_status("Select All")
+
+
+class CollapsiblePanel(object):
+  """Base class for collapsible panels."""
+
+  def __init__(self, root):
+    self._root = root
+
+  @property
+  def is_expanded(self):
+    """Returns whether section is expanded or not."""
+    return "is-expanded" in self._root.div(class_name="body-inner").classes
+
+  def expand(self):
+    """Expand section if it is not expanded already.
+    Returns: CollapsiblePanel instance."""
+    if not self.is_expanded:
+      self._root.span().click()
+      self._root.wait_until(lambda x: self.is_expanded)
+    return self

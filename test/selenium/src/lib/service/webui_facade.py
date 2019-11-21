@@ -536,3 +536,46 @@ def soft_assert_verified_state_after_bulk_verify(page, src_obj, soft_assert):
       all([asmt.status == object_states.COMPLETED and asmt.verified is True
            for asmt in asmts_from_ui]),
       "All assessments should be verified and have 'Completed' state.")
+
+
+def soft_assert_bulk_verify_filter_ui_elements(modal, soft_assert):
+  """Checks that filter section of bulk verify modal has 'Reset to Default'
+  button, exactly 2 states options: 'Select all', 'In Review', and default
+  filter for current user as a verifier."""
+  filter_section_element = modal.filter_section.expand()
+  soft_assert.expect(
+      filter_section_element.reset_to_default_button.exists,
+      "'Reset to Default' button should be displayed in filter section.")
+  soft_assert.expect(
+      filter_section_element.get_state_filter_options() == [
+          'Select All', 'In Review'],
+      "Filter should contain exactly 2 options: 'Select All', 'In Review'.")
+  expected_filters = [{"attr_name": "Verifiers", "compare_op": "Contains",
+                       "value": users.current_user().email}]
+  soft_assert.expect(
+      filter_section_element.get_filters_dicts() == expected_filters,
+      "Modal should contain default filter for current user as a verifier.")
+
+
+def soft_assert_bulk_verify_filter_functionality(page, modal, exp_asmt,
+                                                 soft_assert):
+  """Checks that filter functionality on bulk verify modal works correctly
+  comparing assessment from modal with the expected one.
+  Depending on opened page this method either soft asserts that 'Filter by
+  Mapping' section contains title of opened audit or set mapping filter with
+  provided audit and apply it."""
+  filter_section_element = modal.filter_section.expand()
+  if not isinstance(page, dashboard.MyAssessments):
+    soft_assert.expect(
+        filter_section_element.get_mapped_to_audit_filter() == exp_asmt.audit,
+        "'Filter by Mapping' section should contain title of opened audit.")
+  else:
+    filter_section_element.add_mapping_filter(
+        objects.get_singular(objects.AUDITS, title=True),
+        element.Common.TITLE, exp_asmt.audit)
+  filter_section_element.apply()
+  base.Test.general_equal_soft_assert(
+      soft_assert, [exp_asmt],
+      webui_service.AssessmentsService().get_objs_from_bulk_update_modal(
+          modal, with_second_tier_info=True),
+      *exp_asmt.bulk_update_modal_tree_view_attrs_to_exclude)

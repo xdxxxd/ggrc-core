@@ -3,6 +3,8 @@
 """Models for bulk update modals."""
 import re
 from lib import base
+from lib.constants import objects, value_aliases
+from lib.element import page_elements
 
 
 class BaseBulkUpdateModal(base.Modal):
@@ -44,28 +46,173 @@ class BulkVerifyModal(BaseBulkUpdateModal):
     self.verify_button.click()
 
 
-class FilterSection(object):
+class FilterSection(page_elements.CollapsiblePanel):
   """Represents collapsible filter section."""
-  # pylint: disable=too-few-public-methods
 
   def __init__(self, parent_element):
     self._root = parent_element.element(
         tag_name="collapsible-panel", text=re.compile("FILTER"))
 
+  def get_state_filter_options(self):
+    """Returns options list from state filter."""
+    self._root.element(
+        class_name="multiselect-dropdown__input-container").click()
+    return [i.text for i in self._root.element(
+        class_name="multiselect-dropdown__list").labels()]
+
+  def click_add_attribute_btn(self):
+    """Clicks 'Add Attribute' button.'"""
+    self._root.button(text="Add Attribute").click()
+
+  def _set_filter(self, container, attr_name, value, operator, compare_op):
+    """Set filter fields according to passed parameters."""
+    # pylint: disable=too-many-arguments
+    operator_element = container.parent().elements(
+        class_name="filter-operator")[-1].select()
+    if operator and operator_element.exists:
+      operator_element.select(operator)
+    dropdown = container.element(class_name="autocomplete-dropdown")
+    dropdown.input().click()
+    dropdown.element(value=attr_name).click()
+    container.selects()[-1].select(compare_op)
+    container.inputs()[-1].send_keys(value)
+
+  def get_filters_dicts(self):
+    """Returns settings of the filter in a list of dicts format:
+    [{"attr_name": ..., "compare_op": ..., "value": ...}]."""
+    filters_list = []
+    for i in self._root.elements(class_name="filter-container__attribute"):
+      filters_list.append({"attr_name": i.element(
+          class_name="autocomplete-dropdown").input().value,
+          "compare_op": i.selects()[-1].text,
+          "value": i.inputs()[-1].value})
+    return filters_list
+
+  def add_attribute_filter(self, attr_name, value, operator=None,
+                           compare_op=value_aliases.EQUAL_OP):
+    """Add attribute filter according to passed parameters."""
+    self.click_add_attribute_btn()
+    self._set_filter(
+        self._root.elements(class_name="filter-container__attribute")[-1],
+        attr_name, value, operator, compare_op)
+
+  def add_mapping_filter(self, obj_type, attr_name, value, operator=None,
+                         compare_op=value_aliases.EQUAL_OP):
+    """Add mapping filter attribute according to passed parameters."""
+    # pylint: disable=too-many-arguments
+    self._root.button(text="Add Mapping Filter").click()
+    container = self._root.elements(
+        class_name="mapping-container__criteria")[-1]
+    container.select().select(obj_type)
+    self._set_filter(container, attr_name, value, operator, compare_op)
+
+  def apply(self):
+    """Clicks Apply button to apply filtering according to settings."""
+    self._root.button(text="Apply").click()
+
   @property
-  def is_expanded(self):
-    """Returns whether section is expanded or not."""
-    return "is-expanded" in self._root.div(class_name="body-inner").classes
+  def reset_to_default_button(self):
+    return self._root.button(text="Reset to Defaults")
+
+  def get_mapped_to_audit_filter(self):
+    """Get title of audit from 'MAPPED TO AUDIT' default filter of
+    'Filter by Mapping' section."""
+    return self._root.div(
+        class_name="advanced-search__parent-filter").span().text
 
 
-class SelectAssessmentsToVerifySection(object):
+class SelectAssessmentsToVerifySection(page_elements.CollapsiblePanel):
   """Represents 'Select assessments' section."""
-  # pylint: disable=too-few-public-methods
 
   def __init__(self, parent_element):
     self._root = parent_element.element(
         tag_name="collapsible-panel", text=re.compile("SELECT ASSESSMENTS"))
 
   def click_select_all(self):
-    """Clicks 'Select All' link to select all assessments."""
+    """Clicks 'Select All' button to select all assessments."""
     self._root.button(text="All").click()
+
+  def get_objs_scopes(self, with_second_tier_info=False):
+    """Get list of scopes (dicts) of assessments which are displayed on
+    Tree View according to current set of visible fields.
+
+    Returns:
+      list of scopes.
+    """
+    tree = base.BulkUpdateTreeView(obj_name=objects.ASSESSMENTS)
+    tree.wait_loading_after_actions()
+    tree.open_set_visible_fields().select_and_set_visible_fields()
+    scopes = tree.get_list_members_as_list_scopes()
+    if with_second_tier_info:
+      for scope in scopes:
+        scope.update(AssessmentTreeViewItem(self._root.element(
+            tag_name="tree-item-attr", text=scope["TITLE"]).parent(
+            tag_name="mapper-results-item")).assessment_info)
+    return scopes
+
+
+class AssessmentTreeViewItem(object):
+  """Class represents Assessment item from Select Assessments section of
+  Bulk update modal."""
+
+  def __init__(self, parent_element):
+    self._root = parent_element
+    self.mapped_control_section = self._root.element(
+        tag_name="collapsible-panel", text="Mapped Controls")
+    self.evidence_urls_section = self._root.element(
+        tag_name="collapsible-panel", text="Evidence and Custom Attributes")
+    self.comments_section = self._root.element(
+        tag_name="collapsible-panel", text=re.compile("Comments"))
+
+  def expand(self):
+    """Expands assessment item."""
+    if "expanded" not in self._root.div().classes:
+      self._root.div(class_name="item-wrapper").click()
+
+  def _get_mapped_controls_titles(self):
+    """Expands 'Mapped Controls' subsection and returns mapped controls
+    snapshots titles list."""
+    page_elements.CollapsiblePanel(self.mapped_control_section).expand()
+    # wait until mapped control or empty message element appeared
+    self._root.wait_until(lambda x: any(
+        [x.element(class_name="mapped-snapshot-item").present,
+         x.element(class_name="object-list__item-empty").present]))
+    return [i.element(class_name="title").text for i in self._root.elements(
+        class_name="mapped-snapshot-item")]
+
+  def _get_evidence_urls(self):
+    """Expands 'Evidence and Custom Attributes' subsection and returns list of
+    evidence urls.
+
+    Returns:
+      list of urls.
+    """
+    page_elements.CollapsiblePanel(self.evidence_urls_section).expand()
+    return [i.text for i in self._root.element(
+        class_name="evidence-objects__wrapper-item",
+        text=re.compile("EVIDENCE URL")).links()]
+
+  def _get_comments(self):
+    """Expands comments subsection and returns comments items from it.
+
+    Returns:
+      comment in dictionary format.
+    """
+    page_elements.CollapsiblePanel(self.comments_section).expand()
+    # wait until comments or empty message element appeared
+    self.comments_section.wait_until(
+        lambda x: any([x.element(tag_name="mapped-comments").present,
+                       x.span(class_name="empty-message").present]))
+    return [base.CommentItem(i).scope for i in self.comments_section.elements(
+        class_name="comment-object-item")]
+
+  @property
+  def assessment_info(self):
+    """Expands second tier of assessment item.
+
+    Returns:
+      dict with keys 'comments', 'evidence_urls' and 'mapped_objects'."""
+    self.expand()
+    return {"mapped_objects": self._get_mapped_controls_titles(),
+            "evidence_urls": self._get_evidence_urls(),
+            "comments": self._get_comments()}
