@@ -4,29 +4,29 @@
 */
 
 module.exports = function(html) {
-  let linkRegexp = /<a href="(.*)">(.*)<\/a>/g;
-  let linkMatches = [];
+  let headerRegexp = /<h2>(.*)<\/h2>/g;
+  let headerMatches = [];
   let result;
 
   // find all links
-  while ((result = linkRegexp.exec(html)) !== null) {
-    linkMatches.push(result);
+  while ((result = headerRegexp.exec(html)) !== null) {
+    headerMatches.push(result);
   }
 
-  linkMatches.forEach((match, index) => {
+  headerMatches.forEach((match, index) => {
     let hash = (Date.now() * Math.random()).toFixed();
-    let innerText = match[2];
-    let headerStr = `<h3>${innerText}<\/h3>`;
-    let linkStr = `<a href="${match[1]}">${innerText}<\/a>`;
+    let innerText = match[1];
+    let anchorStr = `<h3>${innerText}<\/h3>`;
+    let headerStr = `<h2>${innerText}<\/h2>`;
 
-    if (html.indexOf(headerStr) > -1) {
-      // set hash as id for header
-      html = html.replace(headerStr,
+    if (html.indexOf(anchorStr) > -1) {
+      // set hash as id for anchor header
+      html = html.replace(anchorStr,
         `<h3 id="${hash}">${innerText}<\/h3>`);
 
-      // set hash as href for link
-      html = html.replace(linkStr,
-        `<a href="#${hash}">${innerText}<\/a>`);
+      // replace h2 header by link with hash
+      html = html.replace(headerStr,
+        `<p><a href="#${hash}">${innerText}<\/a></p>`);
     }
   });
 

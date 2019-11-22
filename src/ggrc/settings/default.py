@@ -59,7 +59,7 @@ except ImportError:
 # for more info) and if the version name were to exceed 30 characters, all
 # deployments would go to the same GAE app version. Please take that into
 # consideration when modifying this string.
-VERSION = "2.20.0-Pumpkin" + BUILD_NUMBER
+VERSION = "2.21.0-Pumpkin" + BUILD_NUMBER
 
 # Migration owner
 MIGRATOR = os.environ.get(
@@ -133,6 +133,10 @@ EMAIL_BULK_SYNC_EXCEPTION = JINJA2.get_template(
 )
 EMAIL_MENTIONED_PERSON = JINJA2.get_template(
     "notifications/email_mentioned.html"
+)
+
+EMAIL_BULK_COMPLETE = JINJA2.get_template(
+    "notifications/bulk_complete.html"
 )
 
 USE_APP_ENGINE_ASSETS_SUBDOMAIN = False

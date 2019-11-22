@@ -16,6 +16,7 @@ from ggrc.cache import utils as cache_utils
 from ggrc.cache.utils import clear_memcache
 from ggrc.converters import base_block
 from ggrc.converters import get_exportables
+from ggrc.converters import get_importables
 from ggrc.converters import import_helper
 from ggrc.converters import snapshot_block
 from ggrc.fulltext import get_indexer
@@ -80,6 +81,7 @@ class BaseConverter(object):
 
 
 class ImportConverter(BaseConverter):
+  # pylint:disable=too-many-instance-attributes
   """Import Converter.
 
   This class contains and handles all block converters and makes sure that
@@ -98,17 +100,24 @@ class ImportConverter(BaseConverter):
       "status",
   ]
 
-  def __init__(self, ie_job, dry_run=True, csv_data=None):
+  def __init__(self, ie_job, dry_run=True, csv_data=None, bulk_import=False):
     self.user = login.get_current_user()
     self.dry_run = dry_run
     self.csv_data = csv_data or []
+    self._bulk_import = bulk_import
     self.indexer = get_indexer()
     self.comment_created_notif_type = all_models.NotificationType.query. \
         filter_by(name="comment_created").one().id
     super(ImportConverter, self).__init__(ie_job)
+    self.exportable.update(get_importables())
+    self.bulk_import = bulk_import
+    self.failed_slugs = []
 
   def get_info(self):
     return self.response_data
+
+  def is_bulk_import(self):
+    return self._bulk_import
 
   def initialize_block_converters(self):
     """Initialize block converters."""

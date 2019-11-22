@@ -3,10 +3,14 @@
 
 """Tests import of comments."""
 
+from collections import OrderedDict
+
 import ddt
 
 from integration.ggrc import TestCase
-from ggrc.models import Assessment
+from integration.ggrc import api_helper
+from integration.ggrc.models import factories
+from ggrc.models import Assessment, Comment
 
 
 @ddt.ddt
@@ -42,3 +46,54 @@ class TestCommentsImport(TestCase):
       assignee_roles = comment.assignee_type
       self.assertIn("Assignees", assignee_roles)
       self.assertIn("Creators", assignee_roles)
+
+
+class TestLCACommentsImport(TestCase):
+  """Test import LCA comments"""
+
+  def setUp(self):
+    """Set up audit and cad for test cases."""
+    super(TestLCACommentsImport, self).setUp()
+    self.api = api_helper.Api()
+    with factories.single_commit():
+      self.audit = factories.AuditFactory()
+      self.asmt = factories.AssessmentFactory(
+          audit=self.audit,
+          context=self.audit.context,
+          status="In Progress",
+      )
+      factories.RelationshipFactory(
+          source=self.audit,
+          destination=self.asmt,
+      )
+
+  def test_custom_comment_import(self):
+    """Test success import LCA comment for Dropdown CAD"""
+    with factories.single_commit():
+      cad = factories.CustomAttributeDefinitionFactory(
+          attribute_type="Dropdown",
+          definition_type="assessment",
+          definition_id=self.asmt.id,
+          multi_choice_options="comment_required",
+          multi_choice_mandatory="1,2,3",
+          mandatory=True,
+      )
+      factories.CustomAttributeValueFactory(
+          custom_attribute=cad,
+          attributable=self.asmt,
+          attribute_value="comment_required",
+      )
+    self.assertEqual(self.asmt.status, "In Progress")
+    response = self.import_data(OrderedDict([
+        ("object_type", "LCA Comment"),
+        ("description", "test description"),
+        ("custom_attribute_definition", cad.id),
+    ]))
+    self._check_csv_response(response, {})
+    response = self.api.put(self.asmt, {
+        "status": "Completed",
+    })
+    self.assertEqual(response.status_code, 200)
+    new_comment = Comment.query.first()
+    self.assertEqual(new_comment.description, "test description")
+    self.assertEqual(new_comment.custom_attribute_definition_id, cad.id)

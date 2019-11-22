@@ -190,6 +190,16 @@ class BaseRestService(object):
     return [self.client.delete_object(href=obj.href) for
             obj in help_utils.convert_to_list(objs)]
 
+  def update_acl(self, obj, role_name, role_id, people, rewrite_acl=False):
+    """Update or rewrite access control list of existing object via REST API.
+     Returns: updated object."""
+    # pylint: disable=too-many-arguments
+    factory.get_cls_entity_factory(objects.get_plural(obj.type)).set_acl(
+        obj, role_name, people, role_id, is_add_rest_attrs=True,
+        rewrite_acl=rewrite_acl)
+    self.update_obj(obj, access_control_list=obj.access_control_list)
+    return obj
+
 
 class HelpRestService(object):
   """Help class for interaction with business layer's services objects."""

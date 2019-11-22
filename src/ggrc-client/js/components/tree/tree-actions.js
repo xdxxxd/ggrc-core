@@ -9,6 +9,8 @@ import canMap from 'can-map';
 import canComponent from 'can-component';
 import '../three-dots-menu/three-dots-menu';
 import '../change-request-link/change-request-link';
+import '../assessment/assessments-bulk-complete-button/assessments-bulk-complete-button';
+import '../assessment/assessment-tree-actions/assessment-tree-actions';
 import {
   isMyAssessments,
   isMyWork,
@@ -58,9 +60,8 @@ export default canComponent.extend({
             || this.attr('options.objectVersion'));
         },
       },
-      showGenerateAssessments: {
-        type: Boolean,
-        get: function () {
+      isAssessmentOnAudit: {
+        get() {
           let parentInstance = this.attr('parentInstance');
           let model = this.attr('model');
 
@@ -116,6 +117,9 @@ export default canComponent.extend({
         get() {
           return this.attr('showedItems').length;
         },
+      },
+      showBulkComplete: {
+        value: false,
       },
     },
     parentInstance: null,

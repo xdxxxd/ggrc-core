@@ -57,7 +57,7 @@ class EntitiesFactory(object):
         people_list = attrs[acr_name]
       else:
         people_list = default_list
-      self._set_acl(obj, acr_name, people_list, role_id, is_add_rest_attrs)
+      self.set_acl(obj, acr_name, people_list, role_id, is_add_rest_attrs)
     return obj
 
   def _set_attrs(self, is_add_rest_attrs=False, **attrs):
@@ -95,15 +95,19 @@ class EntitiesFactory(object):
         mail_name=StringMethods.random_uuid(), domain=domain))
 
   @staticmethod
-  def _set_acl(obj, acr_name, person_list, role_id, is_add_rest_attrs):
-    """To be invoked in `create` method to set `access_control_list`
-    and `acr_name` attributes.
+  def set_acl(obj, acr_name, person_list, role_id, is_add_rest_attrs,
+              rewrite_acl=False):
+    """Sets `access_control_list` and `acr_name` attributes, optionally
+    rewrites roles in 'access_control_list'.
     """
     if not hasattr(obj, "access_control_list"):
       obj.access_control_list = []
     attrs_to_set = {
         acr_name: PeopleFactory.extract_people_emails(person_list)
     }
+    if rewrite_acl:
+      obj.access_control_list = [
+          i for i in obj.access_control_list if i['ac_role_id'] != role_id]
     if is_add_rest_attrs:
       attrs_to_set["access_control_list"] = (
           obj.access_control_list +
