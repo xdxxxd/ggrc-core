@@ -38,18 +38,6 @@ import {
 } from './plugins/utils/date-utils';
 import {validateAttr, isValidAttr} from './plugins/utils/validation-utils';
 
-// Chrome likes to cache AJAX requests for templates.
-let templateUrls = {};
-$.ajaxPrefilter(function (options, originalOptions, jqXHR) {
-  if (/\.templates$/.test(options.url)) {
-    if (templateUrls[options.url]) {
-      options.url = templateUrls[options.url];
-    } else {
-      templateUrls[options.url] = options.url += '?r=' + Math.random();
-    }
-  }
-});
-
 /**
  * Builds class name of two segments - prefix and computed value
  * @param  {String|computed} prefix class prefix
