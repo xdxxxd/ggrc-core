@@ -3,8 +3,7 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import {loadTemplate} from '../plugins/ggrc-utils';
-import canStache from 'can-stache';
+import {getFragment} from '../plugins/ggrc-utils';
 import canControl from 'can-control';
 import {getPageModel} from '../plugins/utils/current-page-utils';
 
@@ -51,8 +50,7 @@ export default canControl.extend({
 
     this._prepare_deferred = $.when(this.options)
       .then((ctx) => {
-        const view = loadTemplate(this.options.widget_view);
-        let frag = canStache(view)(ctx);
+        let frag = getFragment(this.options.widget_view, ctx);
         this.draw_widget(frag);
       });
 

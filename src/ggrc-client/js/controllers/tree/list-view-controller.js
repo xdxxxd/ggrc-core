@@ -3,9 +3,8 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import {loadTemplate} from '../../plugins/ggrc-utils';
+import {getFragment} from '../../plugins/ggrc-utils';
 import canCompute from 'can-compute';
-import canStache from 'can-stache';
 import canList from 'can-list';
 import canMap from 'can-map';
 import TreeLoader from './tree-loader';
@@ -71,8 +70,7 @@ export default TreeLoader.extend({
     if (this.options.header_view) {
       $.when(this.context)
         .then((ctx) => {
-          const view = loadTemplate(this.options.header_view);
-          let frag = canStache(view)(ctx);
+          let frag = getFragment(this.options.header_view, ctx);
           if (this.element) {
             this.element.prepend(frag);
           }
@@ -172,8 +170,7 @@ export default TreeLoader.extend({
   },
 
   init_view: function () {
-    const view = loadTemplate(this.options.list_view);
-    let frag = canStache(view)(this.context);
+    let frag = getFragment(this.options.list_view, this.context);
     this.element.find('.spinner, .tree-structure').hide();
     this.element.append(frag).trigger('loaded');
     this.options.state.attr('loading', false);

@@ -4,8 +4,7 @@
 */
 
 import loForEach from 'lodash/forEach';
-import {loadTemplate} from '../plugins/ggrc-utils';
-import canStache from 'can-stache';
+import {getFragment} from '../plugins/ggrc-utils';
 import canMap from 'can-map';
 import canControl from 'can-control';
 import DashboardWidgets from './dashboard-widgets-controller';
@@ -70,8 +69,7 @@ const DashboardControl = canControl.extend({
   init_page_header: function () {
     let $pageHeader = $('#page-header');
     if (this.options.header_view && $pageHeader.length) {
-      const view = loadTemplate(this.options.header_view);
-      let frag = canStache(view)();
+      let frag = getFragment(this.options.header_view);
       $pageHeader.html(frag);
     }
   },
@@ -86,9 +84,8 @@ const DashboardControl = canControl.extend({
         instance: pageInstance,
         showWidgetArea: this.showWidgetArea.bind(this),
       };
-      const view = loadTemplate(this.options.innernav_view);
-      let render = canStache(view);
-      $innernav.html(render(options));
+      let fragment = getFragment(this.options.innernav_view, options);
+      $innernav.html(fragment);
       return;
     }
   },

@@ -5,7 +5,7 @@
 
 import loIsEmpty from 'lodash/isEmpty';
 import loSome from 'lodash/some';
-import {loadTemplate} from '../plugins/ggrc-utils';
+import {getFragment} from '../plugins/ggrc-utils';
 import canStache from 'can-stache';
 import canControl from 'can-control';
 import '../components/info-pin-buttons/info-pin-buttons';
@@ -91,8 +91,7 @@ export default canControl.extend({
           },
         };
 
-        const template = loadTemplate(view);
-        let frag = canStache(template)(context);
+        let frag = getFragment(view, context);
         this.element.html(frag);
       });
   },

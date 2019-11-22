@@ -4,9 +4,8 @@
 */
 
 import loSortBy from 'lodash/sortBy';
-import {loadTemplate} from '../plugins/ggrc-utils';
+import {getFragment} from '../plugins/ggrc-utils';
 import makeArray from 'can-util/js/make-array/make-array';
-import canStache from 'can-stache';
 import canList from 'can-list';
 import canMap from 'can-map';
 import canControl from 'can-control';
@@ -49,8 +48,7 @@ const userRolesModalSelector = canControl.extend({
   initView() {
     let deferred = $.Deferred();
 
-    const view = loadTemplate(this.options.base_modal_view);
-    let frag = canStache(view)(this.context);
+    let frag = getFragment(this.options.base_modal_view, this.context);
     $(this.element).html(frag);
     $(this.element).trigger('loaded');
     deferred.resolve();

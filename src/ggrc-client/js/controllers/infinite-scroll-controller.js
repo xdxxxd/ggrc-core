@@ -4,8 +4,7 @@
 */
 
 import loDebounce from 'lodash/debounce';
-import {loadTemplate} from '../plugins/ggrc-utils';
-import canStache from 'can-stache';
+import {getFragment} from '../plugins/ggrc-utils';
 import canControl from 'can-control';
 const MOUSEENTER_THROTTLE = 300;
 
@@ -154,8 +153,7 @@ const LhnTooltipsControl = canControl.extend({
     let tooltipView = this.get_tooltip_view(el);
     if (tooltipView) {
       this.fade_in_timeout = null;
-      const view = loadTemplate(tooltipView);
-      let frag = canStache(view)({instance: instance});
+      let frag = getFragment(tooltipView, {instance: instance});
       let tooltipWidth = this.options.$extended.outerWidth();
       let offset = el.parent().offset();
       let elLeft = offset ? offset.left : 0;

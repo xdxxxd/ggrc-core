@@ -5,8 +5,7 @@
 
 import loIsNumber from 'lodash/isNumber';
 import {ggrcGet} from '../plugins/ajax-extensions';
-import {loadTemplate} from '../plugins/ggrc-utils';
-import canStache from 'can-stache';
+import {getFragment} from '../plugins/ggrc-utils';
 import canMap from 'can-map';
 import canControl from 'can-control';
 import '../components/add-object-button/add-object-button';
@@ -76,8 +75,8 @@ export default canControl.extend({
       },
     });
 
-    const view = loadTemplate(this.get_widget_view(this.element));
-    let frag = canStache(view)(this.options.context);
+    let frag = getFragment(this.get_widget_view(this.element),
+      this.options.context);
     this.element.html(frag);
     this.widget_shown();
     return 0;

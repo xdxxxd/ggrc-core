@@ -8,7 +8,7 @@ import loReverse from 'lodash/reverse';
 import loDebounce from 'lodash/debounce';
 import loEach from 'lodash/each';
 import loIsEqual from 'lodash/isEqual';
-import {loadTemplate} from '../../plugins/ggrc-utils';
+import {getView} from '../../plugins/ggrc-utils';
 import makeArray from 'can-util/js/make-array/make-array';
 import canBatch from 'can-event/batch/batch';
 import canStache from 'can-stache';
@@ -86,7 +86,7 @@ export default canComponent.extend({
                 confirmSelf.attr('rightRevisionData', rightRevisionData);
               }
 
-              const template = loadTemplate(view);
+              const template = getView(view);
               let render = canStache(template);
               let fragLeft = render(revisions[0]);
               let fragRight = render(revisions[1]);

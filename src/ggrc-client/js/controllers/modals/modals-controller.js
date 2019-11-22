@@ -3,7 +3,7 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-import {exists, filteredMap, loadTemplate} from '../../plugins/ggrc-utils';
+import {exists, filteredMap, getView, getFragment} from '../../plugins/ggrc-utils';
 import loIsFunction from 'lodash/isFunction';
 import loForEach from 'lodash/forEach';
 import loFilter from 'lodash/filter';
@@ -103,8 +103,7 @@ export default canControl.extend({
     }
 
     if (!this.element.find('.modal-body').length) {
-      const view = loadTemplate(this.options.preload_view);
-      let frag = canStache(view)();
+      let frag = getFragment(this.options.preload_view);
       this.after_preload(frag);
       return;
     }
@@ -185,11 +184,11 @@ export default canControl.extend({
     return $.when(
       dfd.then(() => this.options),
     ).then((context) => {
-      const content = loadTemplate(this.options.content_view);
-      const header = loadTemplate(this.options.header_view);
-      const footer = loadTemplate(this.options.button_view);
+      const content = getView(this.options.content_view);
+      const header = getView(this.options.header_view);
+      const footer = getView(this.options.button_view);
       const customAttributes =
-        loadTemplate(this.options.custom_attributes_view);
+        getView(this.options.custom_attributes_view);
       this.draw(content, header, footer, customAttributes, context);
     });
   },

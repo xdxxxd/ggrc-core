@@ -3,8 +3,7 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import {loadTemplate} from '../plugins/ggrc-utils';
-import canStache from 'can-stache';
+import {getFragment} from '../plugins/ggrc-utils';
 import canMap from 'can-map';
 import canControl from 'can-control';
 import {getDashboards} from '../plugins/utils/dashboards-utils';
@@ -35,8 +34,7 @@ export default canControl.extend({
         this.attr('activeDashboard', dashboard);
       },
     });
-    const view = loadTemplate(options.widget_view);
-    let frag = canStache(view)(options.context);
+    let frag = getFragment(options.widget_view, options.context);
     $element.html(frag);
     return 0;
   },
