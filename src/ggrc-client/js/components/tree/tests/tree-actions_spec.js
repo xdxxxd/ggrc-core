@@ -9,7 +9,7 @@ import * as SnapshotUtils from '../../../plugins/utils/snapshot-utils';
 import * as AclUtils from '../../../plugins/utils/acl-utils';
 import * as CurrentPageUtils from '../../../plugins/utils/current-page-utils';
 import * as Permission from '../../../permission';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 
 describe('tree-actions component', () => {
   let vm;
@@ -51,6 +51,11 @@ describe('tree-actions component', () => {
           });
           expect(vm.attr('addItem')).toBe(expectedData);
         });
+    });
+
+    it('if _is_sox_restricted is true returns false', () => {
+      vm.attr('parentInstance', {_is_sox_restricted: true});
+      expect(vm.attr('addItem')).toBe(false);
     });
   });
 

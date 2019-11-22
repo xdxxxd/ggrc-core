@@ -6,7 +6,7 @@
 import canStache from 'can-stache';
 import canMap from 'can-map';
 import canComponent from 'can-component';
-import {NAVIGATE_TO_TAB} from '../../events/eventTypes';
+import {NAVIGATE_TO_TAB} from '../../events/event-types';
 import '../person/person-data';
 import '../spinner-component/spinner-component';
 import template from './comment-list-item.stache';

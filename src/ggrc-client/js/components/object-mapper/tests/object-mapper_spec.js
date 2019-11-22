@@ -5,12 +5,12 @@
 
 import canMap from 'can-map';
 import * as SnapshotUtils from '../../../plugins/utils/snapshot-utils';
-import RefreshQueue from '../../../models/refresh_queue';
+import RefreshQueue from '../../../models/refresh-queue';
 import * as CurrentPageUtils from '../../../plugins/utils/current-page-utils';
 import Component from '../object-mapper';
 import Program from '../../../models/business-models/program';
 import * as modelsUtils from '../../../plugins/utils/models-utils';
-import {DEFERRED_MAP_OBJECTS, UNMAP_DESTROYED_OBJECT} from '../../../events/eventTypes';
+import {DEFERRED_MAP_OBJECTS, UNMAP_DESTROYED_OBJECT} from '../../../events/event-types';
 import * as Mappings from '../../../models/mappers/mappings';
 
 describe('object-mapper component', function () {

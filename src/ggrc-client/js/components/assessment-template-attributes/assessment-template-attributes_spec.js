@@ -6,7 +6,7 @@
 import loMap from 'lodash/map';
 import canMap from 'can-map';
 import Component from './assessment-template-attributes';
-import {getComponentVM} from '../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../js_specs/spec-helpers';
 
 describe('assessment-template-attributes component', function () {
   describe('fieldRemoved() method', function () {

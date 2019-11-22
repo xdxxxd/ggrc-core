@@ -4,11 +4,12 @@
 */
 
 import canMap from 'can-map';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../workflow-activate';
 import * as helpers from '../../../plugins/utils/workflow-utils';
 import * as Permission from '../../../permission';
 import * as WidgetsUtils from '../../../plugins/utils/widgets-utils';
+import * as RefreshQueue from '../../../models/refresh-queue';
 import {countsMap as workflowCountsMap} from '../../../apps/workflows';
 
 describe('workflow-activate component', function () {
@@ -47,11 +48,11 @@ describe('workflow-activate component', function () {
 
     beforeEach(function () {
       workflow = new canMap();
-      workflow.refresh_all = jasmine.createSpy('refresh_all');
       spyOn(viewModel, 'initWorkflow');
       spyOn(Permission, 'refreshPermissions');
       spyOn(viewModel, 'updateActiveCycleCounts');
       spyOn(helpers, 'redirectToCycle');
+      spyOn(RefreshQueue, 'refreshAll');
     });
 
     it('should be in waiting state while refresh is in progress',
@@ -93,8 +94,8 @@ describe('workflow-activate component', function () {
     it('should try to refresh TGT after updating counts for active cycles',
       async function (done) {
         await viewModel.repeatOnHandler(workflow);
-        expect(workflow.refresh_all)
-          .toHaveBeenCalledWith('task_groups', 'task_group_tasks');
+        expect(RefreshQueue.refreshAll)
+          .toHaveBeenCalledWith(workflow, ['task_groups', 'task_group_tasks']);
         done();
       });
 
@@ -142,7 +143,7 @@ describe('workflow-activate component', function () {
     });
 
     it('should restore button when TG refresh fails', async function (done) {
-      workflow.refresh_all.and.returnValue(Promise.reject());
+      RefreshQueue.refreshAll.and.returnValue(Promise.reject());
       try {
         await viewModel.repeatOnHandler(workflow);
       } catch (err) {

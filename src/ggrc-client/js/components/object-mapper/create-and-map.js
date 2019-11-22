@@ -9,7 +9,7 @@ import canComponent from 'can-component';
 import template from './create-and-map.stache';
 import {
   MAP_OBJECTS,
-} from '../../events/eventTypes';
+} from '../../events/event-types';
 import {
   isAuditScopeModel,
   isSnapshotModel,

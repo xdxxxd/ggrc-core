@@ -5,7 +5,7 @@
 
 import {
   makeFakeModel,
-} from '../../../../js_specs/spec_helpers';
+} from '../../../../js_specs/spec-helpers';
 import * as snapshotUtils from '../../../plugins/utils/snapshot-utils';
 import Cacheable from '../../cacheable';
 import AccessControlList from '../../../models/mixins/access-control-list';

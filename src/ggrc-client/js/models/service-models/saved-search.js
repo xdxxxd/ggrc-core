@@ -4,7 +4,7 @@
 */
 
 import canModel from 'can-model';
-import {ggrcAjax} from '../../plugins/ajax_extensions';
+import {ggrcAjax} from '../../plugins/ajax-extensions';
 
 export default canModel.extend({
   root_object: 'saved_search',

@@ -48,7 +48,7 @@ import {
   getTreeViewHeaders,
   setTreeViewHeaders,
 } from './display-prefs-utils';
-import TreeViewConfig from '../../apps/base_widgets';
+import TreeViewConfig from '../../apps/base-widgets';
 
 /**
 * TreeView-specific utils.

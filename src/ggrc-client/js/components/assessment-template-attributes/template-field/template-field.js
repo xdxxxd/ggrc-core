@@ -3,18 +3,24 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import {splitTrim, filteredMap} from '../../../plugins/ggrc_utils';
+import {splitTrim, filteredMap} from '../../../plugins/ggrc-utils';
 import loZip from 'lodash/zip';
 import loRange from 'lodash/range';
 import loFind from 'lodash/find';
 import canStache from 'can-stache';
 import canMap from 'can-map';
+import canBatch from 'can-event/batch/batch';
 import canComponent from 'can-component';
 import {
   ddValidationValueToMap,
   ddValidationMapToValue,
 } from '../../../plugins/utils/ca-utils';
 import template from './template-field.stache';
+
+const TEXT_FIELDS = [
+  'Text',
+  'Rich Text',
+];
 
 /*
  * Template field
@@ -27,8 +33,26 @@ export default canComponent.extend({
   leakScope: true,
   viewModel: canMap.extend({
     types: [],
+    attrs: [],
+    instance: {},
     editMode: true,
     field: null,
+    define: {
+      isDropdownOrMultiselect: {
+        get() {
+          const fieldType = this.attr('field.attribute_type');
+          return fieldType === 'Dropdown' || fieldType === 'Multiselect';
+        },
+      },
+      isTextFieldOptionsVisible: {
+        get() {
+          const isTextField =
+            TEXT_FIELDS.includes(this.attr('field.attribute_type'));
+          return isTextField &&
+            this.attr('instance.sox_302_enabled');
+        },
+      },
+    },
     /*
      * Removes `field` from `fields`
      */
@@ -86,6 +110,17 @@ export default canComponent.extend({
     normalizeMandatory: function (attrs) {
       return filteredMap(attrs, ddValidationMapToValue).join(',');
     },
+    initTextFieldOptions() {
+      // the field has already options
+      if (this.attr('field.multi_choice_options')) {
+        return;
+      }
+
+      canBatch.start();
+      this.attr('field.multi_choice_options', 'Not empty,Empty');
+      this.attr('field.multi_choice_mandatory', '0,0');
+      canBatch.stop();
+    },
   }),
   events: {
     /**
@@ -93,24 +128,41 @@ export default canComponent.extend({
      *
      * @param {Object} element - the (unwrapped) DOM element that triggered
      *   creating the component instance
-     * @param {Object} options - the component instantiation options
      */
-    init: function (element, options) {
-      const field = this.viewModel.attr('field');
-      const denormalized = this.viewModel.denormalizeMandatory(field);
-      const types = this.viewModel.attr('types');
+    init(element) {
+      const vm = this.viewModel;
+
+      if (vm.attr('isTextFieldOptionsVisible')) {
+        vm.initTextFieldOptions();
+      }
+
+      const field = vm.attr('field');
+      const denormalized = vm.denormalizeMandatory(field);
+      const types = vm.attr('types');
       const item = loFind(types, function (obj) {
         return obj.type === field.attr('attribute_type');
       });
-      this.viewModel.field.attr('attribute_name', item.name);
-      this.viewModel.attr('attrs', denormalized);
+      field.attr('attribute_name', item.name);
 
-      this.viewModel.attr('$rootEl', $(element));
+      vm.attr('attrs').replace(denormalized);
+      vm.attr('$rootEl', $(element));
     },
-    '{attrs} change': function () {
+    '{attrs} change'() {
       const attrs = this.viewModel.attr('attrs');
       const normalized = this.viewModel.normalizeMandatory(attrs);
       this.viewModel.field.attr('multi_choice_mandatory', normalized);
+    },
+    '{viewModel.instance} sox_302_enabled'() {
+      const vm = this.viewModel;
+      if (!vm.attr('isTextFieldOptionsVisible')) {
+        return;
+      }
+
+      vm.initTextFieldOptions();
+
+      const field = vm.attr('field');
+      const denormalized = vm.denormalizeMandatory(field);
+      vm.attr('attrs').replace(denormalized);
     },
   },
 });

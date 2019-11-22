@@ -9,6 +9,7 @@ import * as helpers from '../../../plugins/utils/workflow-utils';
 import * as CurrentPageUtils from '../../../plugins/utils/current-page-utils';
 import * as WidgetsUtils from '../../../plugins/utils/widgets-utils';
 import {countsMap as workflowCountsMap} from '../../../apps/workflows';
+import * as RefreshQueue from '../../../models/refresh-queue';
 
 describe('workflow-start-cycle component', () => {
   let events;
@@ -25,7 +26,6 @@ describe('workflow-start-cycle component', () => {
     beforeEach(() => {
       handler = events.click;
       workflow = new canMap({
-        refresh_all: jasmine.createSpy('refresh_all'),
         type: 'Type',
         id: 'ID',
       });
@@ -34,6 +34,7 @@ describe('workflow-start-cycle component', () => {
       spyOn(CurrentPageUtils, 'getPageInstance').and.returnValue(workflow);
       spyOn(WidgetsUtils, 'initCounts');
       spyOn(helpers, 'generateCycle').and.returnValue(generateDfd);
+      spyOn(RefreshQueue, 'refreshAll');
     });
 
     it('should update TaskGroups when cycle was generated', async () => {
@@ -55,8 +56,8 @@ describe('workflow-start-cycle component', () => {
       await handler();
 
       expect(helpers.generateCycle).toHaveBeenCalled();
-      expect(workflow.refresh_all)
-        .toHaveBeenCalledWith('task_groups', 'task_group_tasks');
+      expect(RefreshQueue.refreshAll)
+        .toHaveBeenCalledWith(workflow, ['task_groups', 'task_group_tasks']);
     });
 
     it('shouldn\'t update TaskGroups when cycle wasn\'t generated',
@@ -67,7 +68,7 @@ describe('workflow-start-cycle component', () => {
           await handler();
         } catch (e) {
           expect(helpers.generateCycle).toHaveBeenCalled();
-          expect(workflow.refresh_all).not.toHaveBeenCalled();
+          expect(RefreshQueue.refreshAll).not.toHaveBeenCalled();
         }
       });
   });

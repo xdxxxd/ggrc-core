@@ -15,7 +15,7 @@ import template from './required-info-modal.stache';
 import {uploadFiles} from '../../plugins/utils/gdrive-picker-utils';
 import {notifier} from '../../plugins/utils/notifiers-utils';
 import {isConnectionLost} from '../../plugins/utils/errors-utils';
-import {getPlainText} from '../../plugins/ggrc_utils';
+import {getPlainText} from '../../plugins/ggrc-utils';
 
 const viewModel = canMap.extend({
   define: {

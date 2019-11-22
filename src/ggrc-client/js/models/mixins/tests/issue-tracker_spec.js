@@ -4,7 +4,7 @@
 */
 
 import * as issueTrackerUtils from '../../../plugins/utils/issue-tracker-utils';
-import {makeFakeInstance} from '../../../../js_specs/spec_helpers';
+import {makeFakeInstance} from '../../../../js_specs/spec-helpers';
 import Cacheable from '../../cacheable';
 import IssueTracker from '../issue-tracker';
 

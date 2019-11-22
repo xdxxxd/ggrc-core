@@ -5,7 +5,7 @@
 
 import canMap from 'can-map';
 import Component from '../cycle-task-modal';
-import {getComponentVM} from '../../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../../js_specs/spec-helpers';
 import * as QueryApiUtils from '../../../../plugins/utils/query-api-utils';
 import * as businessModels from '../../../../models/business-models';
 import * as NotifierUtils from '../../../../plugins/utils/notifiers-utils';
@@ -46,7 +46,7 @@ describe('cycle-task-modal component', () => {
       expect(QueryApiUtils.loadObjectsByTypes).toHaveBeenCalledWith(
         instance,
         ['Type 1', 'Type 2', 'Type 3'],
-        ['id', 'type', 'title'],
+        ['id', 'type', 'title', 'viewLink'],
       );
     });
   });
@@ -108,7 +108,7 @@ describe('cycle-task-modal component', () => {
 
   describe('viewModel\'s init() method', () => {
     beforeEach(() => {
-      spyOn(viewModel, 'loadPreMappedObjects');
+      spyOn(viewModel, 'loadPreMappedObjects').and.returnValue([]);
       spyOn(viewModel, 'loadMappedObjects')
         .and.returnValue(new Promise(() => {}));
     });
@@ -150,6 +150,16 @@ describe('cycle-task-modal component', () => {
         expect(viewModel.attr('preMappedObjects').serialize())
           .toEqual(fakePreMappedObjects);
       });
+
+      it('assigns pre-mapped objects to mappingsList field', () => {
+        const mappingsList = [{id: 12345, type: 'SomeType'}];
+        viewModel.attr('mappingsList', mappingsList);
+
+        viewModel.init();
+
+        expect(viewModel.attr('mappingsList').serialize())
+          .toEqual([...mappingsList, ...fakePreMappedObjects]);
+      });
     });
 
     it('doesn\'t load mapped objects if create modal is opened', () => {
@@ -179,7 +189,7 @@ describe('cycle-task-modal component', () => {
         viewModel.loadMappedObjects.and.returnValue([]);
       });
 
-      it('assigns loaded mapped objects to mappedObjects field',
+      it('assigns loaded mapped objects to mappingsList field',
         async () => {
           const fakeLoadedObjects = [
             {
@@ -193,7 +203,7 @@ describe('cycle-task-modal component', () => {
               data: 'Fake data 2',
             },
           ];
-          viewModel.attr('mappedObjects', []);
+          viewModel.attr('mappingsList', []);
           viewModel.loadMappedObjects.and.returnValue([
             {
               id: 123,
@@ -209,7 +219,7 @@ describe('cycle-task-modal component', () => {
 
           await viewModel.init();
 
-          expect(viewModel.attr('mappedObjects').serialize())
+          expect(viewModel.attr('mappingsList').serialize())
             .toEqual(fakeLoadedObjects);
         });
 
@@ -236,9 +246,8 @@ describe('cycle-task-modal component', () => {
         );
 
         spyOn(NotifierUtils, 'notifier');
-        spyOn(ErrorUtils, 'getAjaxErrorInfo').and.callFake(
-          (xhr) => ({details: xhr.data})
-        );
+        spyOn(ErrorUtils, 'getAjaxErrorInfo').withArgs(fakeXHR)
+          .and.returnValue({details: fakeXHR.data});
       });
 
       it('notifies the user about the issue with loading process',

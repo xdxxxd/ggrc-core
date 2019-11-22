@@ -211,3 +211,13 @@ class TestMyWorkPage(base.Test):
     webui_facade.soft_assert_no_modals_present(object_modal.ControlModal(),
                                                soft_assert)
     soft_assert.assert_expectations()
+
+  @pytest.mark.parametrize("obj_name", objects.DISABLED_OBJECTS)
+  def test_cannot_create_disabled_obj_from_dashboard(self, obj_name,
+                                                     soft_assert, selenium):
+    """Confirm that no modal present after starting disabled object
+    creation from dashboard."""
+    obj_modal = webui_facade.open_create_obj_modal(
+        obj_type=objects.get_singular(obj_name, title=True))
+    webui_facade.soft_assert_no_modals_present(obj_modal, soft_assert)
+    soft_assert.assert_expectations()

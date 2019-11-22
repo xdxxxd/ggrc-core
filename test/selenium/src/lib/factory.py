@@ -76,19 +76,14 @@ def get_cls_widget(object_name, is_info=False, is_admin=False):
   """
   from lib.page import dashboard
   from lib.page.widget import generic_widget, info_widget
-  base_cls = None
   if is_info:
-    if object_name not in objects.ALL_SNAPSHOTABLE_OBJS:
-      base_cls = info_widget.InfoWidget
-    elif object_name in objects.ALL_SNAPSHOTABLE_OBJS:
-      base_cls = info_widget.InfoWidget
-    elif object_name == objects.PEOPLE:
-      base_cls = info_widget.base.Widget
+    base_cls = info_widget.ReadOnlyInfoWidget
   elif is_admin:
     base_cls = dashboard.AdminDashboard
   else:
     base_cls = generic_widget.Widget
-  return _factory(cls_name=object_name, parent_cls=base_cls)
+  return _factory(cls_name=object_name, parent_cls=base_cls,
+                  search_nested_subclasses=True)
 
 
 def get_cls_entity_factory(object_name):

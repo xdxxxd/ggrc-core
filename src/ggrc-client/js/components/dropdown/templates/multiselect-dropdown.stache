@@ -7,39 +7,30 @@
   <!-- HACK: using of tabindex can set styles on focus -->
   {{^if isInlineMode}}
     <div tabindex="-1" class="multiselect-dropdown__input-container {{#disabled}}disabled{{/disabled}}" on:el:click="openDropdown()">
-      <input
-        type="text"
-        readonly="readonly"
-        class="multiselect-dropdown__input {{#if isHighlightable}}highlightable{{/if}} {{#if isHighlighted}}dropdown-focus{{/if}}"
-        placeholder="{{placeholder}}"
-        value="{{_displayValue}}"
-        size="{{_inputSize}}"
-        {{#disabled}}disabled{{/disabled}}/>
-      <span class="multiselect-dropdown__icon">
-        <i class="fa fa-caret-down"></i>
-      </span>
+        <input
+          type="text"
+          readonly="readonly"
+          class="multiselect-dropdown__input {{#if isHighlightable}}highlightable{{/if}} {{#if isHighlighted}}dropdown-focus{{/if}}"
+          placeholder="{{placeholder}}"
+          value="{{_displayValue}}"
+          size="{{_inputSize}}"
+          {{#disabled}}disabled{{/disabled}}/>
+        <span class="multiselect-dropdown__icon">
+          <i class="fa fa-caret-down"></i>
+        </span>
     </div>
   {{/if}}
   {{#if isOpenOrInline}}
   <div class="multiselect-dropdown__body-wrapper">
-    <div class="dropdown-menu dropdown-menu-form multiselect-dropdown__body {{#if isInlineMode}}inline{{/if}}" 
-         on:el:click="dropdownBodyClick(scope.event)">
+    <div class="dropdown-menu dropdown-menu-form multiselect-dropdown__body {{#if isInlineMode}}inline{{/if}}"
+        on:el:click="dropdownBodyClick(scope.event)">
       <ul class="multiselect-dropdown__list">
-        <li class="multiselect-dropdown__element">
-          <label class="multiselect-dropdown__label">
-            <input type="checkbox"
-              el:checked:bind="_selectedAll"
-              on:el:click="selectAll()"
-              class="multiselect-dropdown__checkbox"/>
-            Select all
-          </label>
-        </li>
-        {{#options}}
-        <li class="multiselect-dropdown__element">
+        {{#visibleOptions}}
+        <li class="multiselect-dropdown__element {{#if highlighted}}active{{/if}}">
           <label class="multiselect-dropdown__label">
             <input type="checkbox"
               el:checked:bind="checked"
-              on:el:click="optionChange(.)"
+              on:el:click="visibleOptionChange(.)"
               value="{{value}}"
               id="{{firstnonempty id ''}}"
               class="multiselect-dropdown__checkbox {{firstnonempty cssClass ''}}"
@@ -47,7 +38,7 @@
             {{value}}
           </label>
         </li>
-        {{/options}}
+        {{/visibleOptions}}
       </ul>
     </div>
   </div>

@@ -8,7 +8,7 @@ import tracker from '../../tracker';
 import CaUpdate from '../mixins/ca-update';
 import Stub from '../stub';
 import {loadPersonProfile} from '../../plugins/utils/user-utils';
-import {ggrcGet} from '../../plugins/ajax_extensions';
+import {ggrcGet} from '../../plugins/ajax-extensions';
 
 export default Cacheable.extend({
   root_object: 'person',

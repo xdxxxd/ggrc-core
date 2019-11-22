@@ -11,6 +11,7 @@ import {
   warning,
   BUTTON_VIEW_SAVE_CANCEL_DELETE,
   BUTTON_CREATE_PROPOSAL,
+  ASSESSMENT_TEMPLATE_FOOTER,
 } from '../plugins/utils/modals';
 import {
   hasWarningType,
@@ -23,12 +24,24 @@ import {
 } from '../plugins/utils/current-page-utils';
 import modalModels from '../models/modal-models';
 import {changeUrl} from '../router';
-import ModalsController from '../controllers/modals/modals_controller';
-import ArchiveModalControl from '../controllers/modals/archive_modal_controller';
-import DeleteModalControl from '../controllers/modals/delete_modal_controller';
+import ModalsController from '../controllers/modals/modals-controller';
+import ArchiveModalControl from '../controllers/modals/archive-modal-controller';
+import DeleteModalControl from '../controllers/modals/delete-modal-controller';
 
 let originalModalShow = $.fn.modal.Constructor.prototype.show;
 let originalModalHide = $.fn.modal.Constructor.prototype.hide;
+
+const getButtonView = (modelName, isProposal) => {
+  if (isProposal) {
+    return BUTTON_CREATE_PROPOSAL;
+  }
+
+  if (modelName === 'AssessmentTemplate') {
+    return ASSESSMENT_TEMPLATE_FOOTER;
+  }
+
+  return BUTTON_VIEW_SAVE_CANCEL_DELETE;
+};
 
 let handlers = {
   modal: function ($target, $trigger, option) {
@@ -51,12 +64,12 @@ let handlers = {
       skip_refresh: true,
       new_object_form: false,
       button_view:
-        GGRC.templates_path + '/modals/delete_cancel_buttons.stache',
+        GGRC.templates_path + '/modals/delete-cancel-buttons.stache',
       model: model,
       instance: instance,
       modal_title: 'Delete ' + $trigger.attr('data-object-singular'),
       content_view:
-        GGRC.templates_path + '/base_objects/confirm_delete.stache',
+        GGRC.templates_path + '/base_objects/confirm-delete.stache',
     };
 
     if (hasWarningType(instance)) {
@@ -109,6 +122,7 @@ let handlers = {
     let instance;
     let modalTitle;
     let contentView;
+    const modelName = $trigger.attr('data-object-singular');
 
     if ($trigger.attr('data-object-id') === 'page') {
       instance = getPageInstance();
@@ -125,7 +139,7 @@ let handlers = {
       (instance ? 'Edit ' : 'New ') +
       ($trigger.attr('data-object-singular-override') ||
       model.title_singular ||
-      $trigger.attr('data-object-singular'));
+      modelName);
 
     if (isProposal) {
       modalTitle = `Proposal for ${model.title_singular}`;
@@ -134,7 +148,7 @@ let handlers = {
     contentView = $trigger.data('template') ||
       GGRC.templates_path + '/' +
       $trigger.attr('data-object-plural') +
-      '/modal_content.stache';
+      '/modal-content.stache';
 
     $target
       .modal_form(option, $trigger);
@@ -143,9 +157,7 @@ let handlers = {
       new_object_form: !$trigger.attr('data-object-id'),
       object_params: objectParams,
       extendNewInstance,
-      button_view: isProposal ?
-        BUTTON_CREATE_PROPOSAL :
-        BUTTON_VIEW_SAVE_CANCEL_DELETE,
+      button_view: getButtonView(modelName, isProposal),
       model: model,
       oldData: {
         status: instance && instance.status, // status before changing
@@ -247,12 +259,12 @@ let handlers = {
       $trigger: $trigger,
       new_object_form: false,
       button_view: GGRC.templates_path +
-      '/modals/archive_cancel_buttons.stache',
+      '/modals/archive-cancel-buttons.stache',
       model: model,
       instance: instance,
       modal_title: 'Archive ' + $trigger.attr('data-object-singular'),
       content_view: GGRC.templates_path +
-      '/base_objects/confirm_archive.stache',
+      '/base_objects/confirm-archive.stache',
     });
 
     $target.on('modal:success', function (e, data) {

@@ -52,10 +52,6 @@
     padding: 2px 0 2px 5px;
     font-size: 12px;
     user-select: none;
-
-    &:hover {
-      color: white;
-    }
   }
 
   input[type="checkbox"].multiselect-dropdown__checkbox {
@@ -93,8 +89,12 @@
     }
 
     &__element {
-      &:hover {
+      &.active {
         background-color: $dropdown-element-hover;
+
+        label {
+          color: white;
+        }
       }
     }
 

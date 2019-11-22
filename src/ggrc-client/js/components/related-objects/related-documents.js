@@ -16,7 +16,7 @@ import {initCounts} from '../../plugins/utils/widgets-utils';
 import {
   REFRESH_MAPPING,
   DESTINATION_UNMAPPED,
-} from '../../events/eventTypes';
+} from '../../events/event-types';
 import pubSub from '../../pub-sub';
 import Relationship from '../../models/service-models/relationship';
 import Context from '../../models/service-models/context';

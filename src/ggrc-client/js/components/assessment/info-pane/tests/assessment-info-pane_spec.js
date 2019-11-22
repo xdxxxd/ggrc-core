@@ -7,13 +7,13 @@ import loCapitalize from 'lodash/capitalize';
 import canList from 'can-list';
 import canMap from 'can-map';
 import Component from '../assessment-info-pane';
-import {getComponentVM, makeFakeInstance} from '../../../../../js_specs/spec_helpers';
+import {getComponentVM, makeFakeInstance} from '../../../../../js_specs/spec-helpers';
 import tracker from '../../../../tracker';
 import {
   RELATED_ITEMS_LOADED,
   REFRESH_MAPPING,
   REFRESH_RELATED,
-} from '../../../../events/eventTypes';
+} from '../../../../events/event-types';
 import * as queryApiUtils from '../../../../plugins/utils/query-api-utils';
 import * as commentsUtils from '../../../../plugins/utils/comments-utils';
 import * as aclUtils from '../../../../plugins/utils/acl-utils';
@@ -283,6 +283,73 @@ describe('assessment-info-pane component', () => {
       });
   });
 
+  describe('isRestricted get() method', () => {
+    beforeEach(() => {
+      spyOn(Permission, 'isAllowedFor');
+      vm.attr('instance', {});
+    });
+
+    it('returns true if isEditDenied is set to true', () => {
+      Permission.isAllowedFor.and.returnValue(false);
+      const result = vm.attr('isRestricted');
+      expect(result).toBe(true);
+    });
+
+    it('returns true if isEditDenied and ' +
+      '_is_sox_restricted are set to true', () => {
+      vm.attr('instance', {_is_sox_restricted: true});
+      Permission.isAllowedFor.and.returnValue(true);
+      const result = vm.attr('isRestricted');
+      expect(result).toBe(true);
+    });
+
+    it('returns false if isEditDenied and ' +
+    'instance._is_sox_restricted are set to false', () => {
+      vm.attr('instance', {_is_sox_restricted: false});
+      Permission.isAllowedFor.and.returnValue(true);
+      const result = vm.attr('isRestricted');
+      expect(result).toBe(false);
+    });
+
+    it('returns true if instance._is_sox_restricted is set to true ' +
+    ' isEditDenied is set to false ', () => {
+      vm.attr('instance', {_is_sox_restricted: true});
+      Permission.isAllowedFor.and.returnValue(true);
+      const result = vm.attr('isRestricted');
+      expect(result).toBe(true);
+    });
+  });
+
+  describe('isSemiRestrictedOnStatus get() method', () => {
+    beforeEach(() => {
+      spyOn(Permission, 'isAllowedFor');
+      vm.attr('instance', {});
+    });
+
+    it('returns true if isEditDenied is set to true', () => {
+      Permission.isAllowedFor.and.returnValue(false);
+      vm.attr('instance', {_is_sox_restricted: false, status: 'In Progress'});
+      const result = vm.attr('isSemiRestrictedOnStatus');
+      expect(result).toBe(true);
+    });
+
+    it('returns true if instance._is_sox_restricted is set to true ' +
+    'and status is "Completed"', () => {
+      Permission.isAllowedFor.and.returnValue(true);
+      vm.attr('instance', {_is_sox_restricted: true, status: 'Completed'});
+      const result = vm.attr('isSemiRestrictedOnStatus');
+      expect(result).toBe(true);
+    });
+
+    it('returns false if instance._is_sox_restricted is set to true ' +
+    'and status is "In Progress"', () => {
+      Permission.isAllowedFor.and.returnValue(true);
+      vm.attr('instance', {_is_sox_restricted: true, status: 'In Progress'});
+      const result = vm.attr('isSemiRestrictedOnStatus');
+      expect(result).toBe(false);
+    });
+  });
+
   describe('isInfoPaneSaving get() method', () => {
     it('returns false if related items are updating', function () {
       vm.attr('isUpdatingRelatedItems', true);
@@ -334,6 +401,38 @@ describe('assessment-info-pane component', () => {
       const obj = {state: 'In Progress', undo: false};
       vm.setInProgressState();
       expect(vm.onStateChange).toHaveBeenCalledWith(obj);
+    });
+  });
+
+  describe('isReadOnlyAttribute() method', () => {
+    beforeEach(() => {
+      spyOn(Permission, 'isAllowedFor');
+      vm.attr('instance', {archived: false});
+      vm.attr('instance._readonly_fields', []);
+    });
+
+    it('returns true if isEditDenied is set to true', () => {
+      Permission.isAllowedFor.and.returnValue(false);
+      const result = vm.isReadOnlyAttribute();
+      expect(result).toBe(true);
+    });
+
+    it('returns true if propName is included ' +
+    'to readOnlyAttributes list', () => {
+      Permission.isAllowedFor.and.returnValue(true);
+      const propName = 'title';
+      vm.attr('instance._readonly_fields', [propName]);
+      const result = vm.isReadOnlyAttribute(propName);
+      expect(result).toBe(true);
+    });
+
+    it('returns false if propName is not included ' +
+    'to readOnlyAttributes list', () => {
+      Permission.isAllowedFor.and.returnValue(true);
+      const propName = 'title';
+      vm.attr('instance._readonly_fields', ['description']);
+      const result = vm.isReadOnlyAttribute(propName);
+      expect(result).toBe(false);
     });
   });
 

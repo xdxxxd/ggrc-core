@@ -6,7 +6,7 @@
 import {
   getComponentVM,
   spyProp,
-} from '../../../../js_specs/spec_helpers';
+} from '../../../../js_specs/spec-helpers';
 import Component from '../unmap-dropdown-item';
 import * as Mappings from '../../../models/mappers/mappings';
 import * as CurrentPageUtils from '../../../plugins/utils/current-page-utils';
@@ -216,6 +216,37 @@ describe('unmap-dropdown-item component', function () {
         viewModel.attr('instance.archived', true);
 
         expect(viewModel.attr('isAllowedToUnmap')).toBe(true);
+      });
+
+      it('returns false when _is_sox_restricted of ' +
+      'parent instance is true', () => {
+        Mappings.allowedToUnmap.and.returnValue(true);
+        CurrentPageUtils.isAllObjects.and.returnValue(false);
+        CurrentPageUtils.isMyWork.and.returnValue(false);
+        viewModel.attr('options.isDirectlyRelated', true);
+        spyProp(viewModel, 'denyIssueUnmap').and.returnValue(false);
+        viewModel.attr('page_instance.type', 'Assessment');
+        viewModel.attr('instance.type', 'Snapshot');
+        viewModel.attr('instance.archived', false);
+
+        viewModel.attr('page_instance._is_sox_restricted', true);
+
+        expect(viewModel.attr('isAllowedToUnmap')).toBe(false);
+      });
+
+      it('returns false when _is_sox_restricted of instance is true', () => {
+        Mappings.allowedToUnmap.and.returnValue(true);
+        CurrentPageUtils.isAllObjects.and.returnValue(false);
+        CurrentPageUtils.isMyWork.and.returnValue(false);
+        viewModel.attr('options.isDirectlyRelated', true);
+        spyProp(viewModel, 'denyIssueUnmap').and.returnValue(false);
+        viewModel.attr('page_instance.type', 'Assessment');
+        viewModel.attr('instance.type', 'Snapshot');
+        viewModel.attr('instance.archived', false);
+
+        viewModel.attr('instance._is_sox_restricted', true);
+
+        expect(viewModel.attr('isAllowedToUnmap')).toBe(false);
       });
     });
   });

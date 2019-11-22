@@ -108,7 +108,7 @@ class TaskGroupTask(roleable.Roleable,
     other correctness is checked with 'before_insert' hook
     """
     if value is None:
-      return
+      return None
     if isinstance(value, datetime.datetime):
       value = value.date()
     if value < datetime.date(100, 1, 1):
@@ -126,31 +126,29 @@ class TaskGroupTask(roleable.Roleable,
       reflection.Attribute('view_start_date', update=False, create=False),
       reflection.Attribute('view_end_date', update=False, create=False),
   )
+  DATE_HINT = "Allowed value is date in one of formats listed" \
+              " below:\nYYYY-MM-DD\nMM/DD/YYYY."
   _sanitize_html = []
   _aliases = {
-      "title": "Summary",
+      "title": "Task Title",
       "description": {
           "display_name": "Task Description",
           "handler_key": "task_description",
       },
       "start_date": {
-          "display_name": "Start Date",
+          "display_name": "Task Start Date",
           "mandatory": True,
-          "description": (
-              "Enter the task start date\nin the following format:\n"
-              "'mm/dd/yyyy'"
-          ),
+          "description": "{}\nOnly working days are accepted".format(
+              DATE_HINT),
       },
       "end_date": {
-          "display_name": "End Date",
+          "display_name": "Task Due Date",
           "mandatory": True,
-          "description": (
-              "Enter the task end date\nin the following format:\n"
-              "'mm/dd/yyyy'"
-          ),
+          "description": "{}\nOnly working days are accepted".format(
+              DATE_HINT),
       },
       "task_group": {
-          "display_name": "Task Group",
+          "display_name": "Task Group Code",
           "mandatory": True,
           "filter_by": "_filter_by_task_group",
       },
@@ -159,6 +157,16 @@ class TaskGroupTask(roleable.Roleable,
           "mandatory": True,
           "description": ("Accepted values are:"
                           "\n'Rich Text'\n'Checkbox'"),
+      },
+      "updated_at": {
+          "display_name": "Last Updated Date",
+          "mandatory": False,
+          "description": DATE_HINT
+      },
+      "created_at": {
+          "display_name": "Created Date",
+          "mandatory": False,
+          "description": DATE_HINT
       }
   }
 
@@ -177,6 +185,7 @@ class TaskGroupTask(roleable.Roleable,
   def _get_view_date(self, date):
     if date and self.task_group and self.task_group.workflow:
       return self.task_group.workflow.calc_next_adjusted_date(date)
+    return None
 
   @simple_property
   def view_start_date(self):

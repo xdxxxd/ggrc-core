@@ -13,7 +13,7 @@ import {
 } from '../../plugins/utils/user-utils';
 import template from './templates/tree-item-attr.stache';
 import {convertMarkdownToHtml} from '../../plugins/utils/markdown-utils';
-import {getOnlyAnchorTags} from '../../plugins/ggrc_utils';
+import {getOnlyAnchorTags} from '../../plugins/ggrc-utils';
 
 // attribute names considered "default" and representing a date
 const DATE_ATTRS = new Set([

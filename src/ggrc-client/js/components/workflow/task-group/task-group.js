@@ -12,6 +12,7 @@ import '../task-list/task-list';
 import '../task-group-objects/task-group-objects';
 import template from './templates/task-group.stache';
 import {isAllowedFor} from '../../../permission';
+import {refreshAll} from '../../../models/refresh-queue';
 
 const viewModel = canMap.extend({
   define: {
@@ -28,7 +29,7 @@ const viewModel = canMap.extend({
   workflow: null,
   async loadWorkflow() {
     const instance = this.attr('instance');
-    const workflow = await instance.refresh_all('workflow');
+    const workflow = await refreshAll(instance, ['workflow']);
     this.attr('workflow', workflow);
   },
 });

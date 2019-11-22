@@ -69,3 +69,10 @@ def to_basic_rest_obj(obj):
 def default_context():
   """Returns default value for `context`."""
   return {"id": None}
+
+
+def administrator_context():
+  """Returns `context` value for `Administrator` role."""
+  # Passing context with id:0 is necessary for the proper permissions
+  # assignment for 'Administrator' role.
+  return {"id": 0}

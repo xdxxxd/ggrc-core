@@ -27,7 +27,7 @@ const viewModel = canMap.extend({
 
     const {'default': ModalsController} = await import(
       /* webpackChunkName: "modalsCtrls" */
-      '../../controllers/modals/modals_controller'
+      '../../controllers/modals/modals-controller'
     );
 
     new ModalsController($target, {

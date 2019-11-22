@@ -3,7 +3,7 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-import {exists, splitTrim} from '../../plugins/ggrc_utils';
+import {exists, splitTrim} from '../../plugins/ggrc-utils';
 import loCompact from 'lodash/compact';
 import loMapValues from 'lodash/mapValues';
 import loGroupBy from 'lodash/groupBy';
@@ -28,7 +28,6 @@ import canMap from 'can-map';
 import canComponent from 'can-component';
 import './revision-log-data';
 import {getRolesForType} from '../../plugins/utils/acl-utils';
-import RefreshQueue from '../../models/refresh_queue';
 import template from './revision-page.stache';
 import Person from '../../models/business-models/person';
 import Stub from '../../models/stub';
@@ -68,15 +67,11 @@ export default canComponent.extend({
       },
     },
     instance: null,
-    personLoadingDfd: null,
     changeHistory: [],
     isLoading: false,
     computeChanges() {
       // calculate history of role changes
       let revisions = this.attr('revisions');
-
-      // load not cached people
-      this._loadACLPeople(revisions.object);
 
       // combine all the changes and sort them by date descending
       let changeHistory = [
@@ -89,32 +84,6 @@ export default canComponent.extend({
       changeHistory = loReverse(changeHistory);
 
       this.attr('changeHistory', changeHistory);
-    },
-    /**
-     * Load to cache people from access control list
-     *
-     * @param {Object} revisions - list of revisions
-     */
-    _loadACLPeople: function (revisions) {
-      const refreshQueue = new RefreshQueue();
-
-      revisions.forEach((revision) => {
-        if (!revision.content || !revision.content.access_control_list) {
-          return;
-        }
-
-        revision.content.access_control_list.forEach((aclItem) => {
-          if (!Person.findInCacheById(aclItem.person.id)) {
-            refreshQueue.enqueue(aclItem.person);
-          }
-        });
-      });
-
-      if (refreshQueue.objects.length) {
-        this.attr('personLoadingDfd', refreshQueue.trigger());
-      } else {
-        this.attr('personLoadingDfd', $.Deferred().resolve());
-      }
     },
     /**
      * Compute the the history of object changes from a list of Revisions.
@@ -277,7 +246,6 @@ export default canComponent.extend({
      *  - fieldName: the name of the changed custom role
      *  - origVal: the attribute's original value
      *  - newVal: the attribute's new (modified) value
-     *  - isLoading: the flag describing load state of people from access_control_list
      *  - isRole: the flag describing that diff related to access_control_list
      */
     _accessControlListDiff: function (rev1, rev2) {
@@ -307,15 +275,11 @@ export default canComponent.extend({
             fieldName: role.name,
             origVal: [],
             newVal: [],
-            isLoading: true,
             isRole: true,
           });
 
-          this.attr('personLoadingDfd').then(() => {
-            roleDiff.attr('origVal', this._buildPeopleEmails(rev1people));
-            roleDiff.attr('newVal', this._buildPeopleEmails(rev2people));
-            roleDiff.attr('isLoading', false);
-          });
+          roleDiff.attr('origVal', this._buildPeopleEmails(rev1people));
+          roleDiff.attr('newVal', this._buildPeopleEmails(rev2people));
 
           diff.push(roleDiff);
         }

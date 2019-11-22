@@ -8,6 +8,7 @@ import datetime
 
 import freezegun
 import ddt
+import mock
 
 from ggrc import db
 from ggrc.models import all_models
@@ -387,6 +388,45 @@ class TestAssessment(TestAssessmentBase):
         # Mapped Assignee roles should be created for all snapshots, not only
         # for control that related to assessment
         self.assert_propagated_role(role, person_email, snapshot)
+
+  def test_assessment_when_get_model_work_correct(self):
+    """Test get_model return right result in build_type_query for json"""
+    with factories.single_commit():
+      audit = factories.AuditFactory()
+
+    response = self.api.post(all_models.Assessment, {
+        "assessment": {
+            "title": "Assessment",
+            "context": None,
+            "audit": {
+                "id": audit.id,
+                "type": "Audit"
+            }
+        }
+    })
+
+    self.assert201(response)
+
+  def test_assessment_when_get_model_none(self):
+    """Test get_model return None in build_type_query for json"""
+    with factories.single_commit():
+      audit = factories.AuditFactory()
+
+    with mock.patch('ggrc.models.get_model', return_value=None):
+      response = self.api.post(all_models.Assessment, {
+          "assessment": {
+              "title": "Assessment",
+              "context": None,
+              "status": "In Progress",
+              "modified_by_id": None,
+              "audit": {
+                  "id": audit.id,
+                  "type": "Audit"
+              }
+          }
+      })
+
+    self.assert201(response)
 
 
 @ddt.ddt

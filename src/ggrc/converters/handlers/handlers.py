@@ -17,6 +17,7 @@ from ggrc.converters import get_exportables, errors
 from ggrc.login import get_current_user
 from ggrc.models import all_models
 from ggrc.models.exceptions import ValidationError
+from ggrc.models.mixins.with_custom_restrictions import WithCustomRestrictions
 from ggrc.models.reflection import AttributeInfo
 from ggrc.rbac import permissions
 
@@ -231,6 +232,7 @@ class DeleteColumnHandler(ColumnHandler):
 
 
 class StatusColumnHandler(ColumnHandler):
+  """Handle for Status attribute."""
 
   def __init__(self, row_converter, key, **options):
     self.key = key
@@ -490,6 +492,7 @@ class NullableDateColumnHandler(DateColumnHandler):
 
 
 class EmailColumnHandler(ColumnHandler):
+  """Handler for Email attribute."""
 
   def parse_item(self):
     """ emails are case insensitive """
@@ -571,6 +574,14 @@ class MappingColumnHandler(ColumnHandler):
               slug=slug,
           )
           continue
+        if isinstance(self.row_converter.obj, WithCustomRestrictions):
+          if self.row_converter.obj.is_mapping_restricted(obj):
+            self.add_warning(
+                errors.MAPPING_PERMISSION_ERROR,
+                object_type=class_._inflector.human_singular.title(),
+                slug=slug,
+            )
+            continue
         objects.append(obj)
       elif slug in self.new_slugs and not self.dry_run:
         objects.append(self.new_slugs[slug])

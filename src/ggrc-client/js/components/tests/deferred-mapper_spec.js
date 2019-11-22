@@ -8,17 +8,15 @@ import loFilter from 'lodash/filter';
 import canList from 'can-list';
 import canMap from 'can-map';
 import Component from '../deferred-mapper';
-import {getComponentVM} from '../../../js_specs/spec_helpers';
-import * as ReifyUtils from '../../plugins/utils/reify-utils';
+import {getComponentVM} from '../../../js_specs/spec-helpers';
 import * as MapperUtils from '../../plugins/utils/mapper-utils';
 import {
   REFRESH_MAPPING,
   REFRESH_SUB_TREE,
   DEFERRED_MAP_OBJECTS,
   DEFERRED_MAPPED_UNMAPPED,
-} from '../../events/eventTypes';
+} from '../../events/event-types';
 import * as CurrentPageUtils from '../../plugins/utils/current-page-utils';
-import * as SnapshotUtils from '../../plugins/utils/snapshot-utils';
 
 describe('deferred-mapper component', function () {
   let vm;
@@ -51,7 +49,6 @@ describe('deferred-mapper component', function () {
     beforeEach(() => {
       objects = new canList([1, 2, 3]);
       spyOn(vm, 'addMappings');
-      spyOn(vm, 'updateListWith');
     });
 
     it('sets new objects', () => {
@@ -67,50 +64,10 @@ describe('deferred-mapper component', function () {
       expect(vm.addMappings).toHaveBeenCalledWith(objects);
     });
 
-    it('calls updateListWith with objects', () => {
-      vm.attr('preMappedObjects', objects);
-
-      expect(vm.updateListWith).toHaveBeenCalledWith(objects);
-    });
-
     it('does not call addMappings if objects are empty', () => {
       vm.attr('preMappedObjects', []);
 
       expect(vm.addMappings).not.toHaveBeenCalledWith(objects);
-    });
-
-    it('does not call updateListWith if objects are empty', () => {
-      vm.attr('preMappedObjects', []);
-
-      expect(vm.updateListWith).not.toHaveBeenCalledWith(objects);
-    });
-  });
-
-  describe('setter of "mappedObjects"', () => {
-    let objects;
-
-    beforeEach(() => {
-      objects = new canList([1, 2, 3]);
-      spyOn(vm, 'updateListWith');
-    });
-
-    it('sets new objects', () => {
-      vm.attr('mappedObjects', []);
-      vm.attr('mappedObjects', objects);
-
-      expect(vm.attr('mappedObjects')).toEqual(objects);
-    });
-
-    it('calls updateListWith with objects', () => {
-      vm.attr('mappedObjects', objects);
-
-      expect(vm.updateListWith).toHaveBeenCalledWith(objects);
-    });
-
-    it('does not call updateListWith if objects are empty', () => {
-      vm.attr('mappedObjects', []);
-
-      expect(vm.updateListWith).not.toHaveBeenCalledWith(objects);
     });
   });
 
@@ -374,8 +331,6 @@ describe('deferred-mapper component', function () {
       ];
       vm.attr('instance', {});
       vm.attr('instance._pendingJoins', originalPendings);
-
-      spyOn(vm, 'addListItem');
     });
 
     it('adds map pending for object ' +
@@ -417,17 +372,6 @@ describe('deferred-mapper component', function () {
 
       expect(vm.attr('instance._pendingJoins').serialize()).toEqual(expected);
     });
-
-    it('calls addListItem for all objects', () => {
-      const objectsToAdd = [{id: 3, type: 'type1'}, {id: 4, type: 'type1'}];
-      const objectsToRemove = [{id: 2, type: 'type1'}];
-
-      vm.addMappings(objectsToAdd.concat(objectsToRemove));
-
-      objectsToAdd.concat(objectsToRemove).forEach((obj) => {
-        expect(vm.addListItem).toHaveBeenCalledWith(obj);
-      });
-    });
   });
 
   describe('removeMappings(obj) method', () => {
@@ -446,7 +390,6 @@ describe('deferred-mapper component', function () {
       ];
       vm.attr('instance', {});
       vm.attr('instance._pendingJoins', originalPendings);
-      vm.attr('list', [{id: 1, type: 'type1'}]);
     });
 
     it('adds unmap pending for object ' +
@@ -475,81 +418,16 @@ describe('deferred-mapper component', function () {
       expect(vm.attr('instance._pendingJoins').serialize()).toEqual(expected);
     });
 
-    it('removes object from "list"', () => {
+    it('dispatches "removeMappings" event with removed mapped object', () => {
       let obj = {id: 1, type: 'type1'};
-
-      let expected = vm.attr('list').serialize()
-        .filter(({id, type}) => !(id === obj.id && type === obj.type));
+      spyOn(vm, 'dispatch');
 
       vm.removeMappings(obj);
 
-      expect(vm.attr('list').serialize()).toEqual(expected);
-    });
-  });
-
-  describe('addListItem(item) method', () => {
-    let isSnapshotTypeSpy;
-
-    beforeEach(() => {
-      isSnapshotTypeSpy = spyOn(SnapshotUtils, 'isSnapshotType');
-    });
-
-    it('pushes reified "item" into "list" if "item" is not of snapshot type',
-      () => {
-        let reifiedItem = {id: 1};
-        let item = new canMap({});
-
-        isSnapshotTypeSpy.and.returnValue(false);
-        spyOn(ReifyUtils, 'isReifiable').and.returnValue(true);
-        spyOn(ReifyUtils, 'reify').and.returnValue(reifiedItem);
-
-        vm.attr('list', []);
-
-        vm.addListItem(item);
-
-        expect(vm.attr('list').serialize()).toEqual([reifiedItem]);
+      expect(vm.dispatch).toHaveBeenCalledWith({
+        type: 'removeMappings',
+        object: obj,
       });
-
-    it('pushes specified "item" into "list" if "item" is of snapshot type',
-      () => {
-        isSnapshotTypeSpy.and.returnValue(true);
-        let snapshotObject = {
-          title: 'title',
-          description: 'description',
-          originalLink: 'originalLink',
-        };
-        let item = {snapshotObject};
-        vm.attr('list', []);
-
-        vm.addListItem(new canMap(item));
-
-        let expected = jasmine.objectContaining({
-          title: snapshotObject.title,
-          description: snapshotObject.description,
-          viewLink: snapshotObject.originalLink,
-        });
-        expect(vm.attr('list').serialize()).toEqual([expected]);
-      });
-  });
-
-  describe('updateListWith(objects) method', () => {
-    it('assigns empty array to "list" if no "objects" was passed', () => {
-      vm.attr('list', [1, 2, 3]);
-
-      vm.updateListWith();
-
-      expect(vm.attr('list').serialize()).toEqual([]);
-    });
-
-    it('calls addListItem for each passed object', () => {
-      spyOn(vm, 'addListItem');
-      vm.attr('list', [1, 2, 3]);
-      const objects = [4, 5, 6];
-
-      vm.updateListWith(objects);
-
-      objects.forEach((obj) =>
-        expect(vm.addListItem).toHaveBeenCalledWith(obj));
     });
   });
 
@@ -582,16 +460,28 @@ describe('deferred-mapper component', function () {
   });
 
   describe('"{instance} ${DEFERRED_MAP_OBJECTS.type}" event handler', () => {
-    it('calls addMappings of viewModel for passed objects', () => {
-      const handler = events[`{instance} ${DEFERRED_MAP_OBJECTS.type}`].bind({
+    let handler;
+    let objects;
+
+    beforeEach(() => {
+      handler = events[`{instance} ${DEFERRED_MAP_OBJECTS.type}`].bind({
         viewModel: vm,
       });
+      objects = [1, 2, 3];
       spyOn(vm, 'addMappings');
-      const objects = [1, 2, 3];
+      spyOn(vm, 'dispatch');
+    });
 
+    it('calls addMappings of viewModel for passed objects', () => {
       handler({}, {objects});
 
       expect(vm.addMappings).toHaveBeenCalledWith(objects);
+    });
+
+    it('dispatches "addMappings" event with new mapped objects', () => {
+      handler({}, {objects});
+
+      expect(vm.dispatch).toHaveBeenCalledWith({type: 'addMappings', objects});
     });
   });
 

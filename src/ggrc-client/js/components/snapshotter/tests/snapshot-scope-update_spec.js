@@ -7,7 +7,7 @@ import canMap from 'can-map';
 import * as ModalsUtils from '../../../plugins/utils/modals';
 import * as WidgetsUtils from '../../../plugins/utils/widgets-utils';
 import * as NotifiersUtils from '../../../plugins/utils/notifiers-utils';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../snapshot-scope-update';
 import pubSub from '../../../pub-sub';
 

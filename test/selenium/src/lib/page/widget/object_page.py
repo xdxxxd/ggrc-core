@@ -5,6 +5,7 @@ import re
 
 from lib import base, environment, url
 from lib.element import tab_element
+from lib.page import dashboard
 from lib.utils import selenium_utils
 
 
@@ -58,3 +59,12 @@ class ObjectPage(base.WithBrowser):
     """Returns url fragment of the current page."""
     current_url = self._browser.url
     return current_url.split("#!")[1]
+
+  def click_add_tab_btn(self):
+    """Clicks 'Add Tab' button."""
+    self._browser.element(data_test_id="button_widget_add_2c925d94").click()
+    return dashboard.CreateObjectDropdown()
+
+  def get_hidden_items_from_add_tab(self):
+    """Returns all hidden items from 'Add Tab' dropdown."""
+    return self.click_add_tab_btn().get_all_hidden_items()

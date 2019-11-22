@@ -4,12 +4,12 @@
 */
 
 import Component from './last-comment';
-import {getComponentVM} from '../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../js_specs/spec-helpers';
 import * as Utils from '../../plugins/utils/acl-utils.js';
-import RefreshQueue from '../../models/refresh_queue';
-import {COMMENT_CREATED} from '../../events/eventTypes';
+import RefreshQueue from '../../models/refresh-queue';
+import {COMMENT_CREATED} from '../../events/event-types';
 import {formatDate} from '../../plugins/utils/date-utils';
-import * as GgrcUtils from '../../plugins/ggrc_utils';
+import * as GgrcUtils from '../../plugins/ggrc-utils';
 
 describe('last-comment component', () => {
   let vm;

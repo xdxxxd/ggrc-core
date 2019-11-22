@@ -8,7 +8,7 @@ import Component from '../tree-item-actions';
 import {
   getComponentVM,
   makeFakeInstance,
-} from '../../../../js_specs/spec_helpers';
+} from '../../../../js_specs/spec-helpers';
 import * as Permission from '../../../permission';
 import * as SnapshotUtils from '../../../plugins/utils/snapshot-utils';
 import * as Mapper from '../../../models/mappers/mappings';

@@ -7,7 +7,7 @@ import loFind from 'lodash/find';
 import canStache from 'can-stache';
 import canMap from 'can-map';
 import canComponent from 'can-component';
-import {SWITCH_TO_ERROR_PANEL, SHOW_INVALID_FIELD} from '../../events/eventTypes';
+import {SWITCH_TO_ERROR_PANEL, SHOW_INVALID_FIELD} from '../../events/event-types';
 import template from './object-state-toolbar.stache';
 
 /**

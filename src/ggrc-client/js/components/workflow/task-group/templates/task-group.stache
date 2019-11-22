@@ -22,7 +22,7 @@
               {{#is_allowed 'update' instance}}
                 <three-dots-menu>
                   {{^is(workflow.status, "Inactive")}}
-                    {{> /static/templates/base_objects/edit_object_link.stache}}
+                    {{> /static/templates/base_objects/edit-object-link.stache}}
                   {{/is}}
                   <li>
                     <task-group-clone taskGroup:from="instance">
@@ -40,7 +40,7 @@
       </div>
 
       <div class="pane-content">
-        {{> /static/templates/task_groups/tier2_content.stache}}
+        {{> /static/templates/task_groups/tier2-content.stache}}
         <div class="info-pane__section">
           <task-group-objects taskGroup:from="instance"
                               canEdit:from="canEdit"

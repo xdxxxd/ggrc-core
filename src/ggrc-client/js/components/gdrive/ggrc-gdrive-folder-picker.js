@@ -3,7 +3,7 @@
  * Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-import {ggrcAjax} from '../../plugins/ajax_extensions';
+import {ggrcAjax} from '../../plugins/ajax-extensions';
 import canStache from 'can-stache';
 import canMap from 'can-map';
 import canComponent from 'can-component';

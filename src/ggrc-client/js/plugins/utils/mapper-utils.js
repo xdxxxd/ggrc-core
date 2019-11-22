@@ -4,7 +4,7 @@
 */
 
 import loMap from 'lodash/map';
-import RefreshQueue from '../../models/refresh_queue';
+import RefreshQueue from '../../models/refresh-queue';
 import {backendGdriveClient} from '../ggrc-gapi-client';
 import Relationship from '../../models/service-models/relationship';
 

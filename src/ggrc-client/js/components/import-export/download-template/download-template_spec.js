@@ -3,7 +3,7 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from './download-template';
 import * as Utils from '../../../plugins/utils/import-export-utils';
 import {backendGdriveClient} from '../../../plugins/ggrc-gapi-client';
@@ -217,6 +217,77 @@ describe('download-template component', () => {
       }]);
 
       vm.removeTemplate(1);
+      expect(vm.updateDuplicatesAfterRemove).toHaveBeenCalled();
+    });
+  });
+
+  describe('eraseTemplate() method', () => {
+    it('should replace existing template by empty template', () => {
+      vm.attr('templates', [{
+        id: 1,
+        value: 'template',
+        isDuplicate: false,
+      },
+      {
+        id: 2,
+        value: 'template2',
+        isDuplicate: false,
+      },
+      {
+        id: 3,
+        value: 'template3',
+        isDuplicate: false,
+      }]);
+
+      vm.eraseTemplate(0);
+
+      const templates = vm.attr('templates');
+
+      expect(templates.length).toBe(3);
+      expect(templates[0].serialize()).toEqual({
+        id: null,
+        value: null,
+        isDuplicate: false,
+      });
+    });
+
+    it('should do nothing if template is empty', () => {
+      spyOn(vm, 'updateDuplicatesAfterRemove');
+      vm.attr('templates', [{
+        id: null,
+        value: 'template',
+        isDuplicate: false,
+      },
+      {
+        id: 2,
+        value: 'template2',
+        isDuplicate: false,
+      },
+      {
+        id: 3,
+        value: 'template3',
+        isDuplicate: false,
+      }]);
+
+      vm.eraseTemplate(0);
+
+      const templates = vm.attr('templates');
+
+      expect(templates[0].value).toBe('template');
+      expect(vm.updateDuplicatesAfterRemove).not.toHaveBeenCalled();
+    });
+
+    it('should call recalculation of duplicates', () => {
+      spyOn(vm, 'updateDuplicatesAfterRemove');
+      vm.attr('templates', [{
+        id: 1,
+      }, {
+        id: 2,
+      }, {
+        id: 3,
+      }]);
+
+      vm.eraseTemplate(0);
       expect(vm.updateDuplicatesAfterRemove).toHaveBeenCalled();
     });
   });

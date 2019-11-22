@@ -106,12 +106,10 @@ export default canComponent.extend({
 
     trigger_upload_parent: function (scope, el) {
       // upload files with a parent folder (audits and workflows)
-      let that = this;
       let parentFolderDfd;
       let folderId;
-      let stopFn = () => {};
 
-      if (that.instance.attr('_transient.folder')) {
+      if (this.instance.attr('_transient.folder')) {
         parentFolderDfd = $.when(
           [{instance: this.instance.attr('_transient.folder')}]
         );
@@ -123,44 +121,45 @@ export default canComponent.extend({
       bindXHRToButton(parentFolderDfd, el);
 
       return parentFolderDfd
-        .done(function (parentFolder) {
-          that.attr('isUploading', true);
-          return uploadFiles({
-            parentId: parentFolder.id,
-          })
-            .then((files) => {
-              let filesCount = files && files.length ? files.length : 0;
-              stopFn = tracker.start(scope.instance.type,
-                tracker.USER_JOURNEY_KEYS.ATTACHMENTS,
-                tracker.USER_ACTIONS.ADD_ATTACHMENT_TO_FOLDER(filesCount));
-              return files;
-            })
-            .then(function (files) {
-              return that.createDocumentModel(files);
-            })
-            .then(stopFn)
-            .always(() => {
-              that.attr('isUploading', false);
-              that.dispatch('finish');
-            })
-            .fail(function () {
-              // This case happens when user have no access to write in audit folder
-              let error = loLast(arguments);
-
-              stopFn(true);
-              if (error && error.code === 403) {
-                notifier('error', messages[403]);
-              } else if ( error && error.type !== GDRIVE_PICKER_ERR_CANCEL ) {
-                notifier('error', error && error.message);
-              }
-              that.dispatch('finish');
-              that.attr('isUploading', false);
-            });
-        })
-        .fail(function () {
-          el.trigger('ajax:flash', {
+        .done((parentFolder) => this.uploadParentHelper(parentFolder, scope))
+        .fail(() => {
+          $(el).trigger('ajax:flash', {
             warning: 'Can\'t upload: No GDrive folder found',
           });
+        });
+    },
+
+    uploadParentHelper(parentFolder, scope) {
+      let stopFn = () => {};
+      this.attr('isUploading', true);
+      return uploadFiles({
+        parentId: parentFolder.id,
+      })
+        .then((files) => {
+          let filesCount = files && files.length ? files.length : 0;
+
+          stopFn = tracker.start(scope.instance.type,
+            tracker.USER_JOURNEY_KEYS.ATTACHMENTS,
+            tracker.USER_ACTIONS.ADD_ATTACHMENT_TO_FOLDER(filesCount));
+          return files;
+        })
+        .then((files) => {
+          return this.createDocumentModel(files);
+        })
+        .then(stopFn)
+        .fail((...args) => {
+          // This case happens when user have no access to write in audit folder
+          let error = loLast(args);
+
+          stopFn(true);
+          if (error && error.code === 403) {
+            notifier('error', messages[403]);
+          } else if (error && error.type !== GDRIVE_PICKER_ERR_CANCEL) {
+            notifier('error', error && error.message);
+          }
+        })
+        .always(() => {
+          this.attr('isUploading', false);
         });
     },
 

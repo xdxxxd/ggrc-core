@@ -65,7 +65,7 @@ import {
   REFRESH_MAPPING,
   REFRESH_RELATED,
   REFRESHED,
-} from '../../../events/eventTypes';
+} from '../../../events/event-types';
 import {isAllowedFor} from '../../../permission';
 import {
   getPageInstance,
@@ -80,6 +80,8 @@ import Evidence from '../../../models/business-models/evidence';
 import * as businessModels from '../../../models/business-models';
 import {getAjaxErrorInfo} from '../../../plugins/utils/errors-utils';
 
+const SEMI_RESTRICTED_STATUSES = ['Deprecated', 'Completed'];
+
 /**
  * Assessment Specific Info Pane View Component
  */
@@ -90,7 +92,7 @@ export default canComponent.extend({
   viewModel: canMap.extend({
     define: {
       verifiers: {
-        get: function () {
+        get() {
           let acl = this.attr('instance.access_control_list');
           let verifierRoleId = this.attr('_verifierRoleId');
           let verifiers;
@@ -120,7 +122,7 @@ export default canComponent.extend({
         },
       },
       showProcedureSection: {
-        get: function () {
+        get() {
           return this.instance.attr('test_plan') ||
             this.instance.attr('issue_tracker.issue_url');
         },
@@ -133,19 +135,19 @@ export default canComponent.extend({
         Value: canList,
       },
       assessmentTypeNameSingular: {
-        get: function () {
+        get() {
           let type = this.attr('instance.assessment_type');
           return businessModels[type].title_singular;
         },
       },
       assessmentTypeNamePlural: {
-        get: function () {
+        get() {
           let type = this.attr('instance.assessment_type');
           return businessModels[type].title_plural;
         },
       },
       assessmentTypeObjects: {
-        get: function () {
+        get() {
           let self = this;
           return this.attr('mappedSnapshots')
             .filter(function (item) {
@@ -155,7 +157,7 @@ export default canComponent.extend({
         },
       },
       relatedInformation: {
-        get: function () {
+        get() {
           let self = this;
           return this.attr('mappedSnapshots')
             .filter(function (item) {
@@ -175,7 +177,7 @@ export default canComponent.extend({
       },
       editMode: {
         type: 'boolean',
-        get: function () {
+        get() {
           if (this.attr('instance.archived')) {
             return false;
           }
@@ -194,25 +196,45 @@ export default canComponent.extend({
             .constructor.editModeStatuses;
           return editModeStatuses.includes(instanceStatus);
         },
-        set: function () {
+        set() {
           this.onStateChange({state: 'In Progress', undo: false});
         },
       },
       isEditDenied: {
-        get: function () {
+        get() {
           return !isAllowedFor('update', this.attr('instance')) ||
             this.attr('instance.archived');
         },
       },
       isAllowedToMap: {
-        get: function () {
+        get() {
           let audit = this.attr('instance.audit');
           return !!audit && isAllowedFor('read', audit);
         },
       },
+      isRestricted: {
+        get() {
+          return this.attr('isEditDenied')
+            || this.attr('instance._is_sox_restricted');
+        },
+      },
+      isSemiRestrictedOnStatus: {
+        get() {
+          const isSemiRestrictedStatus = SEMI_RESTRICTED_STATUSES
+            .includes(this.attr('instance.status'))
+            && this.attr('instance._is_sox_restricted');
+
+          return this.attr('isEditDenied') || isSemiRestrictedStatus;
+        },
+      },
+      isReuseNeeded: {
+        get() {
+          return !this.attr('isSemiRestrictedOnStatus');
+        },
+      },
       instance: {},
       isInfoPaneSaving: {
-        get: function () {
+        get() {
           if (this.attr('isUpdatingRelatedItems') ||
             this.attr('isLoadingComments')) {
             return false;
@@ -224,6 +246,11 @@ export default canComponent.extend({
             this.attr('isUpdatingUrls') ||
             this.attr('isUpdatingComments') ||
             this.attr('isAssessmentSaving');
+        },
+      },
+      noItemsText: {
+        get() {
+          return this.attr('isSemiRestrictedOnStatus') ? 'None' : '';
         },
       },
     },
@@ -239,7 +266,6 @@ export default canComponent.extend({
     isAssessmentSaving: false,
     onStateChangeDfd: {},
     formState: {},
-    noItemsText: '',
     currentState: '',
     previousStatus: undefined,
     initialState: 'Not Started',
@@ -261,6 +287,12 @@ export default canComponent.extend({
     },
     setInProgressState: function () {
       this.onStateChange({state: 'In Progress', undo: false});
+    },
+    isReadOnlyAttribute: function (propName) {
+      const readOnlyAttributes = this.attr('instance._readonly_fields');
+      const isEditDenied = this.attr('isEditDenied');
+      const isReadOnly = [...readOnlyAttributes].includes(propName);
+      return isReadOnly || isEditDenied;
     },
     getQuery: function (type, sortObj, additionalFilter) {
       let relevantFilters = [{

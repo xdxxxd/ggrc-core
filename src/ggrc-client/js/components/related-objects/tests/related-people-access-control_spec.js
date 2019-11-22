@@ -4,7 +4,7 @@
  */
 
 import Component from '../related-people-access-control';
-import {getComponentVM, makeFakeInstance} from '../../../../js_specs/spec_helpers';
+import {getComponentVM, makeFakeInstance} from '../../../../js_specs/spec-helpers';
 import * as aclUtils from '../../../plugins/utils/acl-utils';
 import Control from '../../../models/business-models/control';
 

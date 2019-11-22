@@ -6,8 +6,8 @@
 import '../assessment-template-attributes/assessment-template-attributes';
 import '../assessment-templates/assessment-templates-dropdown/assessment-templates-dropdown';
 import '../spinner-component/spinner-component';
-import canMap from 'can-map';
 import canComponent from 'can-component';
+import MappingOperationsVM from '../view-models/mapping-operations-vm';
 import {
   toObject,
   extendSnapshot,
@@ -19,7 +19,7 @@ import {getAjaxErrorInfo} from '../../plugins/utils/errors-utils';
 export default canComponent.extend({
   tag: 'assessment-modal',
   leakScope: true,
-  viewModel: canMap.extend({
+  viewModel: MappingOperationsVM.extend({
     define: {
       /**
        * Indicates the situation, when the user chooses some assessment
@@ -38,9 +38,10 @@ export default canComponent.extend({
     },
     instance: null,
     isNewInstance: false,
-    mappedObjects: [],
+    mappingsList: [],
     assessmentTemplate: null,
     isAttributesLoading: false,
+    fields: ['id', 'type', 'child_type', 'revision', 'title', 'name', 'email'],
     loadData() {
       return this.attr('instance').getRelatedObjects()
         .then((data) => {
@@ -49,7 +50,7 @@ export default canComponent.extend({
             return extendSnapshot(snapshot, snapshotObject);
           });
 
-          this.attr('mappedObjects', snapshots);
+          this.attr('mappingsList').replace(snapshots);
         });
     },
     async setAssessmentTemplate(templateId) {
@@ -63,7 +64,10 @@ export default canComponent.extend({
       try {
         const [loadedTemplate] = await loadObjectsByStubs(
           [templateStub],
-          ['custom_attribute_definitions']
+          [
+            'custom_attribute_definitions',
+            'sox_302_enabled',
+          ]
         );
 
         instance.attr('template', templateStub);

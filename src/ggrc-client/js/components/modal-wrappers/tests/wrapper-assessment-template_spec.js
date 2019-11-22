@@ -6,7 +6,7 @@
 import {
   getComponentVM,
   makeFakeInstance,
-} from '../../../../js_specs/spec_helpers';
+} from '../../../../js_specs/spec-helpers';
 import Component from '../wrapper-assessment-template';
 import AssessmentTemplate from '../../../models/business-models/assessment-template';
 

@@ -8,6 +8,7 @@ import {generateCycle} from '../../plugins/utils/workflow-utils';
 import {getPageInstance} from '../../plugins/utils/current-page-utils';
 import {initCounts} from '../../plugins/utils/widgets-utils';
 import {countsMap as workflowCountsMap} from '../../apps/workflows';
+import {refreshAll} from '../../models/refresh-queue';
 
 export default canComponent.extend({
   tag: 'workflow-start-cycle',
@@ -19,7 +20,7 @@ export default canComponent.extend({
       await initCounts(
         [workflowCountsMap.activeCycles],
         workflow.type, workflow.id);
-      return workflow.refresh_all('task_groups', 'task_group_tasks');
+      return refreshAll(workflow, ['task_groups', 'task_group_tasks']);
     },
   },
   leakScope: true,

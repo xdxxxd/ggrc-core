@@ -13,7 +13,7 @@ import {
   RELATED_REFRESHED,
   RELATED_ADDED,
   ADD_RELATED,
-} from '../../../events/eventTypes';
+} from '../../../events/event-types';
 
 
 export default canComponent.extend({

@@ -10,3 +10,6 @@ BATCH_COUNT = 2
 
 # number of try operations
 TRY_COUNT = 2
+
+# max number of items in emails dropdown
+MAX_EMAILS_IN_DROPDOWN = 10

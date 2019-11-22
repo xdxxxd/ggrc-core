@@ -46,7 +46,7 @@ export default class AutoStatusChangeable extends Mixin {
       confirm({
         modal_description: DESCRIPTION,
         modal_title: TITLE,
-        button_view: GGRC.templates_path + '/gdrive/confirm_buttons.stache',
+        button_view: GGRC.templates_path + '/gdrive/confirm-buttons.stache',
       }, confirmation.resolve, confirmation.reject);
     }
 

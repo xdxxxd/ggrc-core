@@ -5,7 +5,7 @@
 
 import canMap from 'can-map';
 import Component from '../ca-object-modal-content';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import * as Utils from '../../../plugins/utils/comments-utils';
 
 describe('ca-object-modal-content component', () => {

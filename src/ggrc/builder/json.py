@@ -396,7 +396,7 @@ def build_type_query(type_, result_spec):
   return columns_indexes, query
 
 
-def build_stub_union_query(queries):
+def build_stub_union_query(queries):  # noqa: C901
   results = {}
   for (type_, conditions) in queries:
     if isinstance(conditions, (int, long, str, unicode)):
@@ -414,7 +414,12 @@ def build_stub_union_query(queries):
   type_column_indexes = {}
   type_queries = {}
   for (type_, result_spec) in results.items():
-    columns_indexes, query = build_type_query(type_, result_spec)
+    try:
+      columns_indexes, query = build_type_query(type_, result_spec)
+    except AttributeError:
+      logger.info('type_ to build_type_query: %s', type_)
+      logger.info('result_spec to build_type_query: %s', result_spec)
+      continue
     type_column_indexes[type_] = columns_indexes
     type_queries[type_] = query
     if len(columns_indexes) > column_count:
@@ -516,6 +521,9 @@ def publish_representation(resource):
     return resource
 
   results, type_columns, query = build_stub_union_query(queries)
+  if query is None:
+    resource['modified_by'] = None
+    return resource
   rows = query.all()
   for row in rows:
     type_ = row[0]

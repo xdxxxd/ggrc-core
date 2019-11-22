@@ -10,6 +10,11 @@ import Pagination from '../../base-objects/pagination';
 import template from './templates/related-revisions.stache';
 import './related-revisions-item';
 import Revision from '../../../models/service-models/revision.js';
+import {
+  buildParam,
+  batchRequests,
+} from '../../../plugins/utils/query-api-utils';
+import QueryParser from '../../../generated/ggrc-filter-query-parser';
 
 export default canComponent.extend({
   tag: 'related-revisions',
@@ -25,59 +30,92 @@ export default canComponent.extend({
     },
     instance: null,
     lastRevision: {},
-    visibleRevisions: [],
     revisions: [],
     loading: false,
-    setVisibleRevisions() {
-      const visibleRevisions = this.attr('revisions')
-        .slice(...this.attr('paging.limits'));
-      this.attr('visibleRevisions', visibleRevisions);
-
-      // recalculate pages
-      this.attr('paging.total', this.attr('revisions').length);
-    },
-    loadRevisions() {
+    async loadRevisions() {
       if (!this.attr('instance')) {
         return;
       }
 
       this.attr('loading', true);
 
-      this.buildRevisionRequest('resource').then((data) => {
-        let revisions;
-        this.attr('loading', false);
+      const paging = this.attr('paging');
+      let first = 0;
+      let last = 0;
+      if (paging.current && paging.pageSize) {
+        // start from the second revision because the first is loaded by loadLastRevision()
+        first = (paging.current - 1) * paging.pageSize + 1;
+        last = paging.current * paging.pageSize + 1;
+      }
+      let response = await this.getRevisions(first, last);
+      this.attr('loading', false);
+      if (!response) {
+        return;
+      }
+      let {revisions, total} = response;
 
-        if (!data || !data.length) {
-          return;
-        }
-
-        // skip last revision. it's current state of object
-        revisions = data.slice(1, data.length);
-        this.attr('paging.total', revisions.length);
-        this.attr('revisions', revisions);
-
-        // get first because revisions have desc sorting
-        this.attr('lastRevision', data[0]);
-
-        this.setVisibleRevisions();
-      });
+      // exclude last revision
+      total = total ? total - 1 : 0;
+      this.attr('revisions', revisions);
+      this.attr('paging.total', total);
     },
-    buildRevisionRequest(attr) {
-      const query = {__sort: '-updated_at'};
-      query[attr + '_type'] = this.attr('instance.type');
-      query[attr + '_id'] = this.attr('instance.id');
-      return Revision.findAll(query);
+
+    async loadLastRevision() {
+      if (!this.attr('instance')) {
+        return;
+      }
+      // [0,1] is limit to get the first revision
+      let response = await this.getRevisions(0, 1);
+      if (!response) {
+        return;
+      }
+      this.attr('lastRevision', response.revisions[0]);
+    },
+    async getRevisions(first, last) {
+      const page = {
+        sort: [{
+          direction: 'desc',
+          key: 'updated_at',
+        }],
+        first,
+        last,
+      };
+      let params = buildParam(
+        'Revision',
+        page,
+        null,
+        null,
+        this.getQueryFilter()
+      );
+      let data = await batchRequests(params);
+      data = data.Revision;
+      if (!data || !data.values) {
+        return Promise.resolve();
+      }
+
+      let revisions = data.values;
+      revisions = revisions.map(
+        (source) => Revision.model(source, 'Revision'));
+
+      return {revisions, total: data.total};
+    },
+
+    getQueryFilter() {
+      const instance = this.attr('instance');
+      return QueryParser.parse(
+        `${instance.type} not_empty_revisions_for ${instance.id}`);
     },
   }),
   events: {
     inserted() {
+      this.viewModel.loadLastRevision();
       this.viewModel.loadRevisions();
     },
     '{viewModel.paging} current'() {
-      this.viewModel.setVisibleRevisions();
+      this.viewModel.loadRevisions();
     },
     '{viewModel.paging} pageSize'() {
-      this.viewModel.setVisibleRevisions();
+      this.viewModel.loadRevisions();
     },
     '{viewModel.instance} modelAfterSave'() {
       this.viewModel.loadRevisions();

@@ -4,7 +4,7 @@
 */
 
 import Component from '../create-saved-search';
-import {getComponentVM} from '../../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../../js_specs/spec-helpers';
 import pubSub from '../../../../pub-sub';
 import SavedSearch from '../../../../models/service-models/saved-search';
 import * as NotifierUtils from '../../../../plugins/utils/notifiers-utils';

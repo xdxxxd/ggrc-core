@@ -6,7 +6,7 @@
 import loThrottle from 'lodash/throttle';
 import loIsFunction from 'lodash/isFunction';
 import loAssign from 'lodash/assign';
-import {ggrcAjax, ggrcGet} from '../../plugins/ajax_extensions';
+import {ggrcAjax, ggrcGet} from '../../plugins/ajax-extensions';
 import Cacheable from '../cacheable';
 import {prepareCustomAttributes} from '../../plugins/utils/ca-utils';
 import {getRole} from '../../plugins/utils/acl-utils';
@@ -18,7 +18,7 @@ import AccessControlList from '../mixins/access-control-list';
 import RefetchHash from '../mixins/refetch-hash';
 import AssessmentIssueTracker from '../mixins/assessment-issue-tracker';
 import RelatedAssessmentsLoader from '../mixins/related-assessments-loader';
-import {REFRESH_MAPPING, REFRESHED} from '../../events/eventTypes';
+import {REFRESH_MAPPING, REFRESHED} from '../../events/event-types';
 
 export default Cacheable.extend({
   root_object: 'assessment',
@@ -40,8 +40,11 @@ export default Cacheable.extend({
     test_plan_procedure: true,
     assessment_type: 'Control',
     status: 'Not Started',
+    sox_302_enabled: false,
     send_by_default: true, // notifications when a comment is added
     recipients: 'Assignees,Creators,Verifiers', // user roles to be notified
+    _is_sox_restricted: false, // restrict assignee's permissions if enabled sox302
+    _readonly_fields: [], // readOnly attributes names to restrict permissions
   },
   statuses: ['Not Started', 'In Progress', 'In Review',
     'Verified', 'Completed', 'Deprecated', 'Rework Needed'],
@@ -55,7 +58,7 @@ export default Cacheable.extend({
     'Secondary Contacts': 5,
   },
   tree_view_options: {
-    add_item_view: 'assessments/tree_add_item',
+    add_item_view: 'assessments/tree-add-item',
     attr_list: [{
       attr_title: 'Title',
       attr_name: 'title',
@@ -137,6 +140,10 @@ export default Cacheable.extend({
       attr_title: 'Assessment Procedure',
       attr_name: 'test_plan',
       order: 20,
+    }, {
+      attr_title: 'SOX 302 assessment workflow',
+      attr_name: 'sox_302_enabled',
+      order: 21,
     }],
     display_attr_names: ['title', 'status', 'label', 'Assignees', 'Verifiers',
       'start_date', 'updated_at'],

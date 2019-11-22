@@ -1,0 +1,178 @@
+{{!
+  Copyright (C) 2019 Google Inc.
+  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+}}
+
+{{#instance}}
+<custom-attributes-modal instance:from="instance">
+<form action="javascript://">
+  <input type="hidden" name="definition_type" value="{{definition_type}}">
+  <div class="row-fluid">
+    <div class="span6 {{#instance.computed_errors.title}}field-failure{{/instance.computed_errors.title}}">
+      <label class="form-label">
+        Attribute title
+        <i class="fa fa-asterisk"></i>
+        <i class="fa fa-question-circle" rel="tooltip" title="Give new {{model.title_plural}} a name."></i>
+      </label>
+      <input
+        type="text"
+        name="title"
+        el:value:bind="title"
+        class="input-filter input-block-level"
+        placeholder="Enter Title"
+        tabindex="1"
+        autofocus
+        {{^if new_object_form}}disabled{{/if}}>
+      {{#instance.computed_errors.title}}<label class="help-inline warning">{{this}}</label>{{/instance.computed_errors.title}}
+    </div>
+    <div class="span4">
+      <label class="form-label">
+        Attribute type
+        <i class="fa fa-asterisk"></i>
+        <i class="fa fa-question-circle" rel="tooltip" title="Choose the type of attribute to create."></i>
+      </label>
+        <dropdown-component optionsList:from="attributeTypes"
+                            name:bind="instance.attribute_type"
+                            {{^if new_object_form}}isDisabled:from="true"{{/if}}>
+        </dropdown-component>
+    </div>
+    {{^is(instance.definition_type, "assessment")}}
+      <div class="span2">
+        <label>
+          Mandatory
+        </label>
+        <input tabindex="3" type="checkbox" class="input-block-level" placeholder="Enter Placeholder" name="mandatory" {{#if mandatory}}checked="checked"{{/if}}>
+      </div>
+    {{/is}}
+  </div>
+  {{#switch attribute_type}}
+  {{#case "Text"}}
+    <div class="row-fluid">
+      <div class="span6">
+        <label>
+          Inline help
+          <i class="fa fa-question-circle" rel="tooltip"
+            title="Provide text to help users understand what this attribute is for."></i>
+        </label>
+        <input tabindex="4" class="input-block-level" placeholder="Enter Help Text" name="helptext" type="text" value="{{helptext}}">
+      </div>
+      <div class="span6">
+        <label>
+          Placeholder
+          <i class="fa fa-question-circle" rel="tooltip"
+            title="Provide text to show in the text field when the value is empty or not set. This should help users to understand what type of value to provide."></i>
+        </label>
+        <input tabindex="5" class="input-block-level" placeholder="Enter Placeholder" name="placeholder" type="text" value="{{placeholder}}">
+      </div>
+    </div>
+  {{/case}}
+  {{#case "Rich Text"}}
+    <div class="row-fluid">
+      <div class="span6">
+        <label>
+          Inline help
+          <i class="fa fa-question-circle" rel="tooltip"
+            title="Provide text to help users understand what this attribute is for."></i>
+        </label>
+        <input tabindex="4" class="input-block-level" placeholder="Enter Help Text" name="helptext" type="text" value="{{helptext}}">
+      </div>
+      <div class="span6">
+        <label>
+          Placeholder
+          <i class="fa fa-question-circle" rel="tooltip"
+            title="Provide text to show in the text field when the value is empty or not set. This should help users to understand what type of value to provide."></i>
+        </label>
+        <input tabindex="5" class="input-block-level" placeholder="Enter Placeholder" name="placeholder" type="text" value="{{placeholder}}">
+      </div>
+    </div>
+  {{/case}}
+
+  {{#case "Dropdown"}}
+    <div class="row-fluid">
+      <div class="span12 {{#if instance.computed_errors.multi_choice_options}}field-failure{{/if}}">
+        <label class="form-label">
+          Possible values (separated by comma ",")
+          <i class="fa fa-asterisk"></i>
+          <i class="fa fa-question-circle" rel="tooltip"
+             title="Provide a list of values from which users will be able to choose.">
+          </i>
+        </label>
+        {{#instance.computed_errors.multi_choice_options}}
+          <label class="help-inline warning">{{this}}</label>
+        {{/instance.computed_errors.multi_choice_options}}
+        <input type="text" class="input-block-level"
+               name="multi_choice_options" value="{{multi_choice_options}}"
+               placeholder="Enter possible values" tabindex="4"
+               {{^if new_object_form}}disabled{{/if}}>
+      </div>
+    </div>
+    <div class="row-fluid">
+      <div class="span6">
+        <label>
+          Inline help
+          <i class="fa fa-question-circle" rel="tooltip"
+            title="Provide text to help users understand what this attribute is for."></i>
+        </label>
+        <input tabindex="5" class="input-block-level" placeholder="Enter Help Text" name="helptext" type="text" value="{{helptext}}">
+      </div>
+    </div>
+  {{/case}}
+  {{#case "Checkbox"}}
+  <div class="row-fluid">
+    <div class="span6">
+      <label>
+        Inline help
+        <i class="fa fa-question-circle" rel="tooltip"
+           title="Provide text to help users understand what this attribute is for.">
+        </i>
+      </label>
+      <input tabindex="4" class="input-block-level" placeholder="Enter Help Text" name="helptext" type="text" value="{{helptext}}">
+    </div>
+  </div>
+  {{/case}}
+  {{#case "Multiselect"}}
+    <div class="row-fluid">
+      <div class="span12 {{#if instance.computed_errors.multi_choice_options}}field-failure{{/if}}">
+        <label class="form-label">
+          Possible values (separated by comma ",")
+          <i class="fa fa-asterisk"></i>
+          <i class="fa fa-question-circle" rel="tooltip"
+             title="Provide a list of values from which users will be able to choose.">
+          </i>
+        </label>
+        {{#instance.computed_errors.multi_choice_options}}
+          <label class="help-inline warning">{{this}}</label>
+        {{/instance.computed_errors.multi_choice_options}}
+        <input type="text" class="input-block-level"
+               name="multi_choice_options" value="{{multi_choice_options}}"
+               placeholder="Enter possible values" tabindex="4"
+               {{^if new_object_form}}disabled{{/if}}>
+      </div>
+    </div>
+    <div class='row-fluid'>
+      <div class="span6">
+        <label>
+          Inline help
+          <i class="fa fa-question-circle" rel="tooltip"
+             title="Provide text to help users understand what this attribute is for."></i>
+        </label>
+        <input tabindex="4" class="input-block-level" placeholder="Enter Help Text" name="helptext" type="text" value="{{helptext}}">
+      </div>
+    </div>
+  {{/case}}
+  {{#case "Date"}}
+  <div class="row-fluid">
+    <div class="span6">
+      <label>
+        Inline help
+        <i class="fa fa-question-circle" rel="tooltip"
+        title="Provide text to help users understand what this attribute is for."></i>
+      </label>
+      <input tabindex="5" class="input-block-level" placeholder="Enter Help Text" name="helptext" type="text" value="{{helptext}}">
+    </div>
+  </div>
+  {{/case}}
+  {{/switch}}
+</form>
+</custom-attributes-modal>
+{{/instance}}

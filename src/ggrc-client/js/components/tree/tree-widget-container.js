@@ -41,7 +41,7 @@ import * as StateUtils from '../../plugins/utils/state-utils';
 import {
   REFRESH_RELATED,
   REFRESH_MAPPING,
-} from '../../events/eventTypes';
+} from '../../events/event-types';
 import * as TreeViewUtils from '../../plugins/utils/tree-view-utils';
 import {
   initMappedInstances,

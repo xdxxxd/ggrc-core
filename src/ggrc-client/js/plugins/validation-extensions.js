@@ -3,7 +3,7 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import {splitTrim} from '../plugins/ggrc_utils';
+import {splitTrim} from '../plugins/ggrc-utils';
 import loCompact from 'lodash/compact';
 import loIsArray from 'lodash/isArray';
 import loUniq from 'lodash/uniq';
@@ -52,7 +52,7 @@ validatejs.validators.validateIssueTrackerEnabled = (value,
   type, key, attributes) => {
   if (value.enabled && value._initialized === false) {
     return {
-      enabled: `Turn Off or link ${type} to a Buganizer Ticket by 
+      enabled: `Turn Off or link ${type} to a Buganizer Ticket by
       generating a new ticket or linking to an existing one.`,
     };
   }
@@ -178,5 +178,13 @@ validatejs.validators.validateGCA = (value, options, key, attributes) => {
   const isCustomAttributable = options.constructor.is_custom_attributable;
   if (isCustomAttributable && !options.attr('_gca_valid')) {
     return 'Missing required global custom attribute(s)';
+  }
+};
+
+validatejs.validators.validateOnExcludedSymbols =
+(value, options, key, attributes) => {
+  const regex = new RegExp(`[${attributes.excludedSymbols}]`, 'gi');
+  if (regex.test(value)) {
+    return `cannot contain ${attributes.excludedSymbols}`;
   }
 };

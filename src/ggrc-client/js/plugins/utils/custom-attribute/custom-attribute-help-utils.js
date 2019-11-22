@@ -5,7 +5,7 @@
 
 import loFlow from 'lodash/flow';
 import loIsEmpty from 'lodash/isEmpty';
-import {getPlainText} from '../../ggrc_utils';
+import {getPlainText} from '../../ggrc-utils';
 
 /**
  * Checks if the [custom attribute object]{@link CustomAttributeObject} has

@@ -1,12 +1,12 @@
 # Copyright (C) 2019 Google Inc.
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+# pylint: disable=too-many-lines
+# pylint: disable=too-many-public-methods
 """Tests exported csv files"""
-from os.path import abspath, dirname, join
 
 import collections
 import ddt
 from flask.json import dumps
-
 from ggrc import utils
 from ggrc.converters import get_exportables
 from ggrc.models import inflector, all_models
@@ -14,14 +14,66 @@ from ggrc.models.reflection import AttributeInfo
 from integration.ggrc import TestCase
 from integration.ggrc.models import factories
 
-THIS_ABS_PATH = abspath(dirname(__file__))
-CSV_DIR = join(THIS_ABS_PATH, 'test_csvs/')
+
+def define_op_expr(left_expr, opr, right_expr):
+  """Returns op expression"""
+  obj = {
+      "left": left_expr,
+      "op": {"name": opr},
+      "right": right_expr,
+  }
+  return obj
+
+
+def define_relevant_expr(obj_name, obj_slugs=None, obj_ids=None):
+  """Returns relevant op expression"""
+  obj = {
+      "op": {"name": "relevant"},
+      "object_name": obj_name,
+  }
+  if obj_slugs:
+    obj["slugs"] = obj_slugs
+  if obj_ids:
+    obj["ids"] = obj_ids
+  return obj
+
+
+# pylint: disable=too-many-arguments
+def get_related_objects(obj_name, related_obj_name,
+                        obj_slugs=None, obj_ids=None):
+  """Returns query filter expression"""
+  related_objects = {
+      "object_name": related_obj_name,
+      "filters": {
+          "expression": define_relevant_expr(obj_name, obj_slugs, obj_ids),
+      },
+      "fields": "all",
+  }
+
+  return related_objects
+
+
+def get_object_data(obj_name, obj_code="", contract=None,
+                    policy=None, product=None, requirement=None):
+  """Returns data object"""
+  data = collections.OrderedDict([
+      ("object_type", obj_name),
+      ("Code", obj_code),
+  ])
+  if contract:
+    data["map:contract"] = contract
+  if policy:
+    data["map:policy"] = policy
+  if product:
+    data["map:product"] = product
+  if requirement:
+    data["map:Requirement"] = requirement
+  return data
 
 
 @ddt.ddt
 class TestExportEmptyTemplate(TestCase):
   """Tests for export of import templates."""
-
   TICKET_TRACKER_FIELDS = ["Ticket Tracker", "Component ID",
                            "Ticket Tracker Integration", "Hotlist ID",
                            "Priority", "Severity", "Ticket Title",
@@ -51,6 +103,25 @@ class TestExportEmptyTemplate(TestCase):
                                 data=dumps(data), headers=self.headers)
     self.assertIn("Allowed values are:\nTRUE\nFALSE", response.data)
 
+  def test_custom_attr_people(self):
+    """Test if LCA Map:Person type has hint for Assessment ."""
+    with factories.single_commit():
+      assessment = factories.AssessmentFactory()
+      factories.CustomAttributeDefinitionFactory(
+          definition_type="assessment",
+          title="Included LCAD",
+          attribute_type="Map:Person",
+          definition_id=assessment.id,
+      )
+    data = {
+        "export_to": "csv",
+        "objects": [{"object_name": "Assessment", "fields": "all"}]
+    }
+    response = self.client.post("/_service/export_csv",
+                                data=dumps(data), headers=self.headers)
+    self.assertIn("Included LCAD", response.data)
+    self.assertIn("Allowed values are emails", response.data)
+
   def test_basic_policy_template(self):
     """Tests for basic policy templates."""
     data = {
@@ -64,19 +135,55 @@ class TestExportEmptyTemplate(TestCase):
     self.assertIn("Title*", response.data)
     self.assertIn("Policy", response.data)
 
-  @ddt.data("Assessment", "Issue", "Person", "Audit", "Product")
-  def test_custom_attr_dd(self, model):
-    """Test if custom attribute Dropdown type has hint for {}."""
+  @ddt.data(
+      ("Assessment", "Dropdown"),
+      ("Assessment", "Multiselect"),
+      ("Issue", "Dropdown"),
+      ("Issue", "Multiselect"),
+      ("Person", "Dropdown"),
+      ("Person", "Multiselect"),
+      ("Audit", "Dropdown"),
+      ("Audit", "Multiselect"),
+      ("Product", "Dropdown"),
+      ("Product", "Multiselect"),
+  )
+  @ddt.unpack
+  def test_ca_dropdown_multiselect(self, model, attribute):
+    """Test if CAD {1} type has hint for {0}."""
     with factories.single_commit():
       multi_options = "option_1,option_2,option_3"
       factories.CustomAttributeDefinitionFactory(
           definition_type=model.lower(),
-          attribute_type="Dropdown",
+          attribute_type=attribute,
           multi_choice_options=multi_options,
       )
+
     data = {
         "export_to": "csv",
         "objects": [{"object_name": model, "fields": "all"}]
+    }
+    response = self.client.post("/_service/export_csv",
+                                data=dumps(data), headers=self.headers)
+    self.assertIn("Allowed values are:\n{}".format(
+        multi_options.replace(',', '\n')), response.data)
+
+  @ddt.data("Dropdown", "Multiselect")
+  def test_lca_multichoice_hint(self, attribute):
+    """Test if Local CAD {} has hint for Assessment ."""
+    with factories.single_commit():
+      assessment = factories.AssessmentFactory()
+      multi_options = "option_1,option_2,option_3"
+      factories.CustomAttributeDefinitionFactory(
+          definition_type="assessment",
+          title="LCAD ",
+          attribute_type=attribute,
+          definition_id=assessment.id,
+          multi_choice_options=multi_options,
+      )
+
+    data = {
+        "export_to": "csv",
+        "objects": [{"object_name": "Assessment", "fields": "all"}]
     }
     response = self.client.post("/_service/export_csv",
                                 data=dumps(data), headers=self.headers)
@@ -95,7 +202,6 @@ class TestExportEmptyTemplate(TestCase):
             {"object_name": "Contract", "fields": "all"},
         ],
     }
-
     response = self.client.post("/_service/export_csv",
                                 data=dumps(data), headers=self.headers)
     self.assertEqual(response.status_code, 200)
@@ -116,7 +222,6 @@ class TestExportEmptyTemplate(TestCase):
             {"object_name": object_name, "fields": "all"},
         ],
     }
-
     response = self.client.post("/_service/export_csv",
                                 data=dumps(data), headers=self.headers)
     self.assertEqual(response.status_code, 200)
@@ -128,7 +233,6 @@ class TestExportEmptyTemplate(TestCase):
   @ddt.data("Assessment", "Issue")
   def test_ticket_tracker_field_order(self, model):
     """Tests if Ticket Tracker fields come before mapped objects for {}."""
-
     data = {
         "export_to": "csv",
         "objects": [
@@ -137,16 +241,13 @@ class TestExportEmptyTemplate(TestCase):
     }
     response = self.client.post("/_service/export_csv",
                                 data=dumps(data), headers=self.headers)
-
     first_mapping_field_pos = response.data.find("map:")
-
     for field in self.TICKET_TRACKER_FIELDS:
       self.assertLess(response.data.find(field), first_mapping_field_pos)
 
   @ddt.data("Assessment", "Issue")
   def test_ticket_tracker_fields(self, model):
     """Tests if Ticket Tracker fields are in export file for {}"""
-
     data = {
         "export_to": "csv",
         "objects": [
@@ -155,14 +256,12 @@ class TestExportEmptyTemplate(TestCase):
     }
     response = self.client.post("/_service/export_csv",
                                 data=dumps(data), headers=self.headers)
-
     for field in self.TICKET_TRACKER_FIELDS:
       self.assertIn(field, response.data)
 
   @ddt.data("Process", "System")
   def test_network_zone_tip(self, model):
     """Tests if Network Zone column has tip message in export file for {}"""
-
     data = {
         "export_to": "csv",
         "objects": [
@@ -186,6 +285,20 @@ class TestExportEmptyTemplate(TestCase):
     response = self.client.post("/_service/export_csv",
                                 data=dumps(data), headers=self.headers)
     self.assertIn("Allowed value is:\nYes", response.data)
+
+  @ddt.data("Assessment", "Issue")
+  def test_ga_tip_people_type(self, model):
+    """Tests if Predefined GA of people type  has tip message for {}"""
+    data = {
+        "export_to": "csv",
+        "objects": [
+            {"object_name": model, "fields": "all"},
+        ],
+    }
+    response = self.client.post("/_service/export_csv",
+                                data=dumps(data), headers=self.headers)
+    self.assertIn(u"Multiple values are allowed.\nDelimiter is"
+                  u" 'line break'.\nAllowed values are emails", response.data)
 
   def test_conclusion_tip(self):
     """Tests if design and operationally are with tip in export file."""
@@ -227,6 +340,19 @@ class TestExportEmptyTemplate(TestCase):
     self.assertIn("Allowed values are:\n{}".format('\n'.join(
         all_models.Assessment.ASSESSMENT_TYPE_OPTIONS)), response.data)
 
+  def test_assessment_template_tip(self):
+    """Tests if Assessment Template Ticket Tracker Integration column has
+      tip message in export file"""
+    data = {
+        "export_to": "csv",
+        "objects": [
+            {"object_name": "AssessmentTemplate", "fields": "all"},
+        ],
+    }
+    response = self.client.post("/_service/export_csv",
+                                data=dumps(data), headers=self.headers)
+    self.assertIn("Allowed values are:\nOn\nOff", response.data)
+
   def test_role_tip(self):
     """Tests if Role column has tip message in export file (People Object)."""
     data = {
@@ -253,6 +379,20 @@ class TestExportEmptyTemplate(TestCase):
 
     self.assertIn("Allowed values are:\n{}".format('\n'.join(
         all_models.Product.TYPE_OPTIONS)), response.data)
+
+  def test_policy_tip(self):
+    """Tests if Policy Kind/Type column has tip message in export file"""
+    data = {
+        "export_to": "csv",
+        "objects": [
+            {"object_name": "Policy", "fields": "all"},
+        ],
+    }
+    response = self.client.post("/_service/export_csv",
+                                data=dumps(data), headers=self.headers)
+
+    self.assertIn("Allowed values are:\n{}".format('\n'.join(
+        all_models.Policy.POLICY_OPTIONS)), response.data)
 
   def test_f_realtime_email_updates(self):
     """Tests if Force real-time email updates column has tip message. """
@@ -295,16 +435,14 @@ class TestExportSingleObject(TestCase):
 
   def test_simple_export_query(self):
     """Test simple export query."""
-    response = self._import_file("data_for_export_testing_program.csv")
-    self._check_csv_response(response, {})
+    with factories.single_commit():
+      for i in range(1, 24):
+        factories.ProgramFactory(title="Cat ipsum {}".format(i))
+
     data = [{
         "object_name": "Program",
         "filters": {
-            "expression": {
-                "left": "title",
-                "op": {"name": "="},
-                "right": "Cat ipsum 1",
-            },
+            "expression": define_op_expr("title", "=", "Cat ipsum 1"),
         },
         "fields": "all",
     }]
@@ -319,11 +457,7 @@ class TestExportSingleObject(TestCase):
     data = [{
         "object_name": "Program",
         "filters": {
-            "expression": {
-                "left": "title",
-                "op": {"name": "~"},
-                "right": "1",
-            },
+            "expression": define_op_expr("title", "~", "1"),
         },
         "fields": "all",
     }]
@@ -352,11 +486,7 @@ class TestExportSingleObject(TestCase):
     data = [{
         "object_name": object_name,
         "filters": {
-            "expression": {
-                "left": "title",
-                "op": {"name": "="},
-                "right": obj.title,
-            },
+            "expression": define_op_expr("title", "=", obj.title),
         },
         "fields": "all",
     }]
@@ -369,31 +499,53 @@ class TestExportSingleObject(TestCase):
     self.assertIn("Review State", response.data)
     self.assertIn("Reviewers", response.data)
 
+  @ddt.data("Assessment", "AssessmentTemplate", "Audit", "Issue")
+  def test_tracker_integration_hint(self, model):
+    """Tests if {} attribute 'Ticket Tracker Integration' has hint expected"""
+    data = {
+        "export_to": "csv",
+        "objects": [
+            {"object_name": model, "fields": ["enabled"]},
+        ],
+    }
+    response = self.client.post("/_service/export_csv",
+                                data=dumps(data), headers=self.headers)
+    self.assertIn("Allowed values are:\nOn\nOff", response.data)
+
+  @ddt.data("Assessment", "AssessmentTemplate", "Audit", "Contract",
+            "Issue", "Program", "Regulation", "Objective", "Policy",
+            "Standard", "Threat", "Requirement")
+  def test_unified_hint_state(self, model):
+    """Tests if {} type attribute state has hint expected"""
+    data = {
+        "export_to": "csv",
+        "objects": [
+            {"object_name": model, "fields": ["title", "status"]},
+        ],
+    }
+    response = self.client.post("/_service/export_csv",
+                                data=dumps(data), headers=self.headers)
+    self.assertIn("Allowed values are:\n{}".format(
+        '\n'.join(inflector.get_model(model).VALID_STATES)), response.data)
+
   def test_and_export_query(self):
     """Test export query with AND clause."""
-    response = self._import_file("data_for_export_testing_program.csv")
-    self._check_csv_response(response, {})
+    with factories.single_commit():
+      for i in range(1, 24):
+        factories.ProgramFactory(title="Cat ipsum {}".format(i))
+
     data = [{
         "object_name": "Program",
         "filters": {
             "expression": {
-                "left": {
-                    "left": "title",
-                    "op": {"name": "!~"},
-                    "right": "2",
-                },
+                "left": define_op_expr("title", "!~", "2"),
                 "op": {"name": "AND"},
-                "right": {
-                    "left": "title",
-                    "op": {"name": "~"},
-                    "right": "1",
-                },
+                "right": define_op_expr("title", "~", "1"),
             },
         },
         "fields": "all",
     }]
     response = self.export_csv(data)
-
     expected = set([1, 10, 11, 13, 14, 15, 16, 17, 18, 19])
     for i in range(1, 24):
       if i in expected:
@@ -403,141 +555,133 @@ class TestExportSingleObject(TestCase):
 
   def test_simple_relevant_query(self):
     """Test simple relevant query"""
-    self.import_file("data_for_export_testing_program_contract.csv")
-    data = [{
-        "object_name": "Program",
-        "filters": {
-            "expression": {
-                "op": {"name": "relevant"},
-                "object_name": "Contract",
-                "slugs": ["contract-25", "contract-40"],
-            },
-        },
-        "fields": "all",
-    }]
+    contract_slugs = []
+    program_slugs = []
+    with factories.single_commit():
+      for i in range(1, 5):
+        contract = factories.ContractFactory(title="contract-{}".format(i))
+        contract_slugs.append(contract.slug)
+        program = factories.ProgramFactory(title="program-{}".format(i))
+        program_slugs.append(program.slug)
+        factories.RelationshipFactory(source=contract, destination=program)
+
+    data = [
+        get_related_objects("Contract", "Program", contract_slugs[:2])
+    ]
     response = self.export_csv(data)
-
-    expected = set([1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 13, 14, 16])
-    for i in range(1, 24):
+    expected = set([1, 2])
+    for i in range(1, 5):
       if i in expected:
-        self.assertIn(",Cat ipsum {},".format(i), response.data)
+        self.assertIn(",program-{},".format(i), response.data)
       else:
-        self.assertNotIn(",Cat ipsum {},".format(i), response.data)
+        self.assertNotIn(",program-{},".format(i), response.data)
 
+  # pylint:disable=invalid-name
   def test_program_audit_relevant_query(self):
     """Test program audit relevant query"""
-    response = self._import_file("data_for_export_testing_program_audit.csv")
-    self._check_csv_response(response, {})
-    data = [{  # should return just program prog-1
-        "object_name": "Program",
-        "filters": {
-            "expression": {
-                "op": {"name": "relevant"},
-                "object_name": "Audit",
-                "slugs": ["au-1"],
-            },
-        },
-        "fields": "all",
-    }, {  # Audits : au-1, au-3, au-5, au-7,
-        "object_name": "Audit",
-        "filters": {
-            "expression": {
-                "op": {"name": "relevant"},
-                "object_name": "__previous__",
-                "ids": ["0"],
-            },
-        },
-        "fields": "all",
-    }]
+    with factories.single_commit():
+      programs = [factories.ProgramFactory(title="Prog-{}".format(i))
+                  for i in range(1, 3)]
+
+    program_slugs = [program.slug for program in programs]
+    audit_data = [
+        collections.OrderedDict([
+            ("object_type", "Audit"),
+            ("Code", ""),
+            ("Title", "Au-{}".format(i)),
+            ("State", "Planned"),
+            ("Audit Captains", "user@example.com"),
+            ("Program", program_slugs[0]),
+        ]) for i in range(1, 3)
+    ]
+
+    audit_data += [
+        collections.OrderedDict([
+            ("object_type", "Audit"),
+            ("Code", ""),
+            ("Title", "Au-{}".format(i)),
+            ("State", "Planned"),
+            ("Audit Captains", "user@example.com"),
+            ("Program", program_slugs[1]),
+        ]) for i in range(3, 5)
+    ]
+    self.import_data(*audit_data)
+
+    audit = all_models.Audit.query.filter_by(title="Au-1").first()
+    data = [
+        get_related_objects("Audit", "Program", [audit.slug]),
+        get_related_objects("__previous__", "Audit", obj_ids=["0"]),
+    ]
     response = self.export_csv(data)
 
-    self.assertIn(",Cat ipsum 1,", response.data)
-    expected = set([1, 3, 5, 7])
-    for i in range(1, 14):
+    self.assertIn(",Prog-1,", response.data)
+    expected = set([1, 2])
+    for i in range(1, 5):
       if i in expected:
-        self.assertIn(",Audit {},".format(i), response.data)
+        self.assertIn(",Au-{},".format(i), response.data)
       else:
-        self.assertNotIn(",Audit {},".format(i), response.data)
+        self.assertNotIn(",Au-{},".format(i), response.data)
 
+  # pylint:disable=invalid-name
+  # pylint:disable=too-many-locals
   def test_requirement_policy_relevant_query(self):
     """Test requirement policy relevant query"""
-    response = self._import_file("data_for_export_testing_directives.csv")
-    self._check_csv_response(response, {})
-    data = [{  # sec-1
-        "object_name": "Requirement",
-        "filters": {
-            "expression": {
-                "op": {"name": "relevant"},
-                "object_name": "Policy",
-                "slugs": ["p1"],
-            },
-        },
-        "fields": "all",
-    }, {  # p3
-        "object_name": "Policy",
-        "filters": {
-            "expression": {
-                "op": {"name": "relevant"},
-                "object_name": "Requirement",
-                "slugs": ["sec-3"],
-            },
-        },
-        "fields": "all",
-    }, {  # sec-8
-        "object_name": "Requirement",
-        "filters": {
-            "expression": {
-                "op": {"name": "relevant"},
-                "object_name": "Standard",
-                "slugs": ["std-1"],
-            },
-        },
-        "fields": "all",
-    }, {  # std-3
-        "object_name": "Standard",
-        "filters": {
-            "expression": {
-                "op": {"name": "relevant"},
-                "object_name": "Requirement",
-                "slugs": ["sec-10"],
-            },
-        },
-        "fields": "all",
-    }, {  # sec-5
-        "object_name": "Requirement",
-        "filters": {
-            "expression": {
-                "op": {"name": "relevant"},
-                "object_name": "Regulation",
-                "slugs": ["reg-2"],
-            },
-        },
-        "fields": "all",
-    }, {  # reg-1
-        "object_name": "Regulation",
-        "filters": {
-            "expression": {
-                "op": {"name": "relevant"},
-                "object_name": "Requirement",
-                "slugs": ["sec-4"],
-            },
-        },
-        "fields": "all",
-    }]
-    response = self.export_csv(data)
+    with factories.single_commit():
+      policies = [factories.PolicyFactory(title="pol-{}".format(i))
+                  for i in range(1, 3)]
+      standards = [factories.StandardFactory(title="stand-{}".format(i))
+                   for i in range(1, 3)]
+      regulations = [factories.RegulationFactory(title="reg-{}".format(i))
+                     for i in range(1, 3)]
+      requirements = [factories.RequirementFactory(title="req-{}".format(i))
+                      for i in range(1, 4)]
 
-    titles = [",mapped section {},".format(i) for i in range(1, 11)]
-    titles.extend([",mapped reg {},".format(i) for i in range(1, 11)])
-    titles.extend([",mapped policy {},".format(i) for i in range(1, 11)])
-    titles.extend([",mapped standard {},".format(i) for i in range(1, 11)])
+    policy_slugs = [policy.slug for policy in policies]
+    standard_slugs = [standard.slug for standard in standards]
+    regulation_slugs = [regulation.slug for regulation in regulations]
+    requirement_slugs = [requirement.slug for requirement in requirements]
+
+    policy_map_data = [
+        get_object_data("Policy", policy_slugs[0],
+                        requirement=requirement_slugs[0]),
+    ]
+    self.import_data(*policy_map_data)
+
+    standard_map_data = [
+        get_object_data("Standard", standard_slugs[0],
+                        requirement=requirement_slugs[1]),
+    ]
+    self.import_data(*standard_map_data)
+
+    regulation_map_data = [
+        get_object_data("Regulation", regulation_slugs[0],
+                        requirement=requirement_slugs[2]),
+    ]
+    self.import_data(*regulation_map_data)
+
+    data = [
+        get_related_objects("Policy", "Requirement", policy_slugs[:1]),
+        get_related_objects("Requirement", "Policy", requirement_slugs[:1]),
+        get_related_objects("Standard", "Requirement", standard_slugs[:1]),
+        get_related_objects("Requirement", "Standard", requirement_slugs[1:2]),
+        get_related_objects("Regulation", "Requirement", regulation_slugs[:1]),
+        get_related_objects("Requirement", "Regulation",
+                            requirement_slugs[2:3])
+    ]
+
+    response = self.export_csv(data)
+    titles = [",req-{},".format(i) for i in range(1, 4)]
+    titles.extend([",pol-1,", ",pol-2,",
+                   ",stand-1,", ",stand-2,",
+                   ",reg-1,", ",reg-2,"])
 
     expected = set([
-        ",mapped section 1,",
-        ",mapped section 5,",
-        ",mapped section 8,",
-        ",mapped reg 1,",
-        ",mapped standard 3,",
-        ",mapped policy 3,",
+        ",req-1,",
+        ",req-2,",
+        ",req-3,",
+        ",pol-1,",
+        ",stand-1,",
+        ",reg-1,",
     ])
 
     for title in titles:
@@ -548,42 +692,63 @@ class TestExportSingleObject(TestCase):
 
   def test_multiple_relevant_query(self):
     """Test multiple relevant query"""
-    response = self._import_file(
-        "data_for_export_testing_program_policy_contract.csv")
-    self._check_csv_response(response, {})
+    with factories.single_commit():
+      policies = [factories.PolicyFactory(title="policy-{}".format(i))
+                  for i in range(1, 5)]
+      contracts = [factories.ContractFactory(title="contract-{}".format(i))
+                   for i in range(1, 5)]
+      programs = [factories.ProgramFactory(title="program-{}".format(i))
+                  for i in range(1, 10)]
+
+    policy_slugs = [policy.slug for policy in policies]
+    contract_slugs = [contract.slug for contract in contracts]
+    program_slugs = [program.slug for program in programs]
+
+    program_data = [
+        get_object_data("Program", program_slugs[0], "", ""),
+        get_object_data("Program", program_slugs[1], contract_slugs[0], ""),
+        get_object_data("Program", program_slugs[2],
+                        '\n'.join(contract_slugs[1:3]), ""),
+        get_object_data("Program", program_slugs[3], "", policy_slugs[0]),
+        get_object_data("Program", program_slugs[4], contract_slugs[1],
+                        policy_slugs[1]),
+        get_object_data("Program", program_slugs[5],
+                        '\n'.join(contract_slugs[2:4]), policy_slugs[2]),
+        get_object_data("Program", program_slugs[6], "",
+                        '\n'.join(policy_slugs[1:3])),
+        get_object_data("Program", program_slugs[7],
+                        contract_slugs[1], '\n'.join(policy_slugs[2:4])),
+        get_object_data("Program", program_slugs[8],
+                        '\n'.join(contract_slugs[:2]),
+                        '\n'.join(policy_slugs[:2])),
+    ]
+
+    self.import_data(*program_data)
+
     data = [{
         "object_name": "Program",
         "filters": {
-            "expression": {
-                "left": {
-                    "op": {"name": "relevant"},
-                    "object_name": "Policy",
-                    "slugs": ["policy-3"],
-                },
-                "op": {"name": "AND"},
-                "right": {
-                    "op": {"name": "relevant"},
-                    "object_name": "Contract",
-                    "slugs": ["contract-25", "contract-40"],
-                },
-            },
+            "expression": define_op_expr(
+                define_relevant_expr("Policy", policy_slugs[1:2]), "AND",
+                define_relevant_expr("Contract", contract_slugs[:2])
+            ),
         },
         "fields": "all",
     }]
     response = self.export_csv(data)
-
-    expected = set([1, 2, 4, 8, 10, 11, 13])
-    for i in range(1, 24):
+    expected = set([5, 9])
+    for i in range(1, 10):
       if i in expected:
-        self.assertIn(",Cat ipsum {},".format(i), response.data)
+        self.assertIn(",program-{},".format(i), response.data)
       else:
-        self.assertNotIn(",Cat ipsum {},".format(i), response.data)
+        self.assertNotIn(",program-{},".format(i), response.data)
 
   def test_query_all_aliases(self):
     """Tests query for all aliases"""
-    def rhs(model, attr):
+    def rhs(model, attr):  # pylint:disable=missing-docstring
       attr = getattr(model, attr, None)
       if attr is not None and hasattr(attr, "_query_clause_element"):
+        # pylint:disable=protected-access
         class_name = attr._query_clause_element().type.__class__.__name__
         if class_name == "Boolean":
           return "1"
@@ -594,16 +759,14 @@ class TestExportSingleObject(TestCase):
           "object_name": model.__name__,
           "fields": "all",
           "filters": {
-              "expression": {
-                  "left": field.lower(),
-                  "op": {"name": "="},
-                  "right": rhs(model, attr)
-              },
+              "expression": define_op_expr(field.lower(), "=",
+                                           rhs(model, attr)),
           }
       }]
 
     failed = set()
     for model in set(get_exportables().values()):
+      # pylint:disable=protected-access
       for attr, field in AttributeInfo(model)._aliases.items():
         if field is None:
           continue
@@ -611,14 +774,14 @@ class TestExportSingleObject(TestCase):
           field = field["display_name"] if isinstance(field, dict) else field
           res = self.export_csv(data(model, attr, field))
           self.assertEqual(res.status_code, 200)
-        except Exception as err:
+        except Exception as err:  # pylint:disable=broad-except
           failed.add((model, attr, field, err))
     self.assertEqual(sorted(failed), [])
 
 
 @ddt.ddt
 class TestExportMultipleObjects(TestCase):
-
+  """Tests export of Multiple objects"""
   def setUp(self):
     super(TestExportMultipleObjects, self).setUp()
     self.client.get("/login")
@@ -629,30 +792,22 @@ class TestExportMultipleObjects(TestCase):
     }
 
   def test_simple_multi_export(self):
-    """Test basic import of multiple objects"""
+    """Test basic export of multiple objects"""
     match = 1
     with factories.single_commit():
-      programs = [factories.ProgramFactory().title for i in range(3)]
-      regulations = [factories.RegulationFactory().title for i in range(3)]
+      programs = [factories.ProgramFactory().title for _ in range(3)]
+      regulations = [factories.RegulationFactory().title for _ in range(3)]
 
     data = [{
-        "object_name": "Program",  # prog-1
+        "object_name": "Program",
         "filters": {
-            "expression": {
-                "left": "title",
-                "op": {"name": "="},
-                "right": programs[match]
-            },
+            "expression": define_op_expr("title", "=", programs[match]),
         },
         "fields": "all",
     }, {
-        "object_name": "Regulation",  # regulation-9000
+        "object_name": "Regulation",
         "filters": {
-            "expression": {
-                "left": "title",
-                "op": {"name": "="},
-                "right": regulations[match]
-            },
+            "expression": define_op_expr("title", "=", regulations[match]),
         },
         "fields": "all",
     }]
@@ -674,21 +829,13 @@ class TestExportMultipleObjects(TestCase):
     data = [{
         "object_name": "Program",
         "filters": {
-            "expression": {
-                "left": "title",
-                "op": {"name": "="},
-                "right": program.title
-            },
+            "expression": define_op_expr("title", "=", program.title),
         },
         "fields": "all",
     }, {
         "object_name": "Regulation",
         "filters": {
-            "expression": {
-                "left": "title",
-                "op": {"name": "="},
-                "right": regulation.title
-            },
+            "expression": define_op_expr("title", "=", regulation.title),
         },
         "fields": "all",
     }]
@@ -709,21 +856,13 @@ class TestExportMultipleObjects(TestCase):
     data = [{
         "object_name": "Program",
         "filters": {
-            "expression": {
-                "left": "title",
-                "op": {"name": "="},
-                "right": program.title
-            },
+            "expression": define_op_expr("title", "=", program.title),
         },
         "fields": "all",
     }, {
         "object_name": "Regulation",
         "filters": {
-            "expression": {
-                "left": "title",
-                "op": {"name": "="},
-                "right": regulation.title
-            },
+            "expression": define_op_expr("title", "=", regulation.title),
         },
         "fields": "all",
     }]
@@ -734,113 +873,64 @@ class TestExportMultipleObjects(TestCase):
     response_data = response.data
     self.assertEquals(response_data, "")
 
+  # pylint:disable=invalid-name
   def test_relevant_to_previous_export(self):
     """Test relevant to previous export"""
-    res = self._import_file("data_for_export_testing_relevant_previous.csv")
-    self._check_csv_response(res, {})
+    with factories.single_commit():
+      products = [factories.ProductFactory(title="product-{}".format(i))
+                  for i in range(1, 3)]
+      policies = [factories.PolicyFactory(title="policy-{}".format(i))
+                  for i in range(1, 3)]
+      programs = [factories.ProgramFactory(title="program-{}".format(i))
+                  for i in range(1, 3)]
+
+    product_slugs = [product.slug for product in products]
+    policy_slugs = [policy.slug for policy in policies]
+    program_slugs = [program.slug for program in programs]
+
+    policy_data = [
+        get_object_data("Policy", policy_slugs[0], product=product_slugs[0]),
+        get_object_data("Policy", policy_slugs[1],
+                        product="\n".join(product_slugs[:2])),
+    ]
+    self.import_data(*policy_data)
+
+    program_data = [
+        get_object_data("Program", program_slugs[0], policy=policy_slugs[0],
+                        product=product_slugs[1]),
+        get_object_data("Program", program_slugs[1], policy=policy_slugs[1],
+                        product=product_slugs[0]),
+    ]
+    self.import_data(*program_data)
+
     data = [{
-        "object_name": "Program",  # prog-1, prog-23
+        "object_name": "Program",  # program-1
         "filters": {
-            "expression": {
-                "left": {
-                    "left": "title",
-                    "op": {"name": "="},
-                    "right": "cat ipsum 1"
-                },
-                "op": {"name": "OR"},
-                "right": {
-                    "left": "title",
-                    "op": {"name": "="},
-                    "right": "cat ipsum 23"
-                },
-            },
+            "expression": define_op_expr("title", "=", "program-1"),
         },
         "fields": ["slug", "title", "description"],
     }, {
-        "object_name": "Contract",  # contract-25, contract-27, contract-47
+        "object_name": "Product",  # product-2
         "filters": {
-            "expression": {
-                "op": {"name": "relevant"},
-                "object_name": "__previous__",
-                "ids": ["0"],
-            },
+            "expression": define_relevant_expr("__previous__", obj_ids=["0"]),
         },
         "fields": ["slug", "title", "description"],
     }, {
-        "object_name": "Product",  # product-3, product-4, product-5
+        "object_name": "Policy",  # policy-2
         "filters": {
-            "expression": {
-                "left": {
-                    "op": {"name": "relevant"},
-                    "object_name": "__previous__",
-                    "ids": ["0"],
-                },
-                "op": {"name": "AND"},
-                "right": {
-                    "left": {
-                        "left": "code",
-                        "op": {"name": "!~"},
-                        "right": "1"
-                    },
-                    "op": {"name": "AND"},
-                    "right": {
-                        "left": "code",
-                        "op": {"name": "!~"},
-                        "right": "2"
-                    },
-                },
-            },
-        },
-        "fields": ["slug", "title", "description"],
-    }, {
-        "object_name": "Policy",  # policy - 3, 4, 5, 6, 15, 16
-        "filters": {
-            "expression": {
-                "left": {
-                    "op": {"name": "relevant"},
-                    "object_name": "__previous__",
-                    "ids": ["0"],
-                },
-                "op": {"name": "AND"},
-                "right": {
-                    "op": {"name": "relevant"},
-                    "object_name": "__previous__",
-                    "ids": ["2"],
-                },
-            },
+            "expression": define_relevant_expr("__previous__", obj_ids=["1"])
         },
         "fields": ["slug", "title", "description"],
     }
     ]
     response = self.export_csv(data)
 
-    # programs
-    for i in range(1, 24):
-      if i in (1, 23):
-        self.assertIn(",Cat ipsum {},".format(i), response.data)
-      else:
-        self.assertNotIn(",Cat ipsum {},".format(i), response.data)
-
-    # contracts
-    for i in range(5, 121, 5):
-      if i in (5, 15, 115):
-        self.assertIn(",con {},".format(i), response.data)
-      else:
-        self.assertNotIn(",con {},".format(i), response.data)
-
-    # product
-    for i in range(115, 140):
-      if i in (117, 118, 119):
-        self.assertIn(",Startupsum {},".format(i), response.data)
-      else:
-        self.assertNotIn(",Startupsum {},".format(i), response.data)
-
-    # policies
-    for i in range(5, 25):
-      if i in (7, 8, 9, 10, 19, 20):
-        self.assertIn(",Cheese ipsum ch {},".format(i), response.data)
-      else:
-        self.assertNotIn(",Cheese ipsum ch {},".format(i), response.data)
+    self.assertIn(",program-1,", response.data)
+    self.assertNotIn(",program-2,", response.data)
+    self.assertIn(",product-2,", response.data)
+    self.assertNotIn(",product-1,", response.data)
+    self.assertIn(",policy-2,", response.data)
+    self.assertNotIn(",policy-{},", response.data)
 
   @ddt.data(
       "Assessment",
@@ -875,7 +965,7 @@ class TestExportMultipleObjects(TestCase):
           ("object_type", model),
           ("Assessment Procedure", "Procedure-{}".format(i)),
           ("Title", "Title {}".format(i)),
-          ("Code*", "{}-{}".format(model, i)),
+          ("Code*", ""),
           ("Admin", "user@example.com"),
           ("Assignees", "user@example.com"),
           ("Creators", "user@example.com"),

@@ -29,9 +29,11 @@ from ggrc.models.mixins import reminderable
 from ggrc.models.mixins import statusable
 from ggrc.models.mixins import labeled
 from ggrc.models.mixins import issue_tracker as issue_tracker_mixins
+from ggrc.models.mixins import with_sox_302
 from ggrc.models.mixins.assignable import Assignable
 from ggrc.models.mixins.autostatuschangeable import AutoStatusChangeable
 from ggrc.models.mixins.with_action import WithAction
+from ggrc.models.mixins.with_custom_restrictions import WithCustomRestrictions
 from ggrc.models.mixins.with_evidence import WithEvidence
 from ggrc.models.mixins.with_similarity_score import WithSimilarityScore
 from ggrc.models.deferred import deferred
@@ -41,15 +43,32 @@ from ggrc.models.relationship import Relatable
 from ggrc.fulltext.mixin import Indexed
 
 
-class Assessment(Assignable, statusable.Statusable, AuditRelationship,
-                 AutoStatusChangeable, TestPlanned,
-                 CustomAttributable, WithEvidence, Commentable,
-                 Personable, reminderable.Reminderable, Relatable,
-                 LastDeprecatedTimeboxed, WithSimilarityScore, FinishedDate,
-                 VerifiedDate, Notifiable, WithAction,
-                 labeled.Labeled, with_last_comment.WithLastComment,
-                 issue_tracker_mixins.IssueTrackedWithUrl, base.ContextRBAC,
-                 BusinessObject, Indexed, db.Model):
+class Assessment(Assignable,
+                 statusable.Statusable,
+                 AuditRelationship,
+                 AutoStatusChangeable,
+                 TestPlanned,
+                 CustomAttributable,
+                 WithEvidence,
+                 Commentable,
+                 Personable,
+                 reminderable.Reminderable,
+                 Relatable,
+                 LastDeprecatedTimeboxed,
+                 WithSimilarityScore,
+                 FinishedDate,
+                 VerifiedDate,
+                 Notifiable,
+                 WithAction,
+                 labeled.Labeled,
+                 with_last_comment.WithLastComment,
+                 issue_tracker_mixins.IssueTrackedWithUrl,
+                 base.ContextRBAC,
+                 BusinessObject,
+                 with_sox_302.WithSOX302FlowReadOnly,
+                 WithCustomRestrictions,
+                 Indexed,
+                 db.Model):
   """Class representing Assessment.
 
   Assessment is an object representing an individual assessment performed on
@@ -161,6 +180,41 @@ class Assessment(Assignable, statusable.Statusable, AuditRelationship,
       'audit': audit.build_audit_stub,
   }
 
+  _in_progress_restrictions = (
+      "access_control_list",
+      "description",
+      "title",
+      "labels",
+      "test_plan",
+      "assessment_type",
+      "slug",
+      "notes",
+      "start_date",
+      "design",
+      "operationally",
+      "reminderType",
+      "issue_tracker",
+      "map: Snapshot",
+      "map: Issue",
+  )
+
+  _done_state_restrictions = _in_progress_restrictions + (
+      "custom_attributes_values",
+      "map: Evidence",
+  )
+
+  _restriction_condition = {
+      "status": {
+          (statusable.Statusable.START_STATE,
+           statusable.Statusable.PROGRESS_STATE,
+           REWORK_NEEDED,
+           statusable.Statusable.DONE_STATE): _in_progress_restrictions,
+          (statusable.Statusable.VERIFIED_STATE,
+           statusable.Statusable.FINAL_STATE,
+           statusable.Statusable.DEPRECATED): _done_state_restrictions
+      }
+  }
+
   @classmethod
   def _populate_query(cls, query):
     return query.options(
@@ -257,7 +311,8 @@ class Assessment(Assignable, statusable.Statusable, AuditRelationship,
       "status": {
           "display_name": "State",
           "mandatory": False,
-          "description": "Options are:\n{}".format('\n'.join(VALID_STATES))
+          "description": "Allowed values are:\n{}".format('\n'.join(
+              VALID_STATES))
       },
       "issue_tracker": {
           "display_name": "Ticket Tracker",

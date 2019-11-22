@@ -4,7 +4,7 @@
 */
 
 import canMap from 'can-map';
-import RefreshQueue from '../../../models/refresh_queue';
+import RefreshQueue from '../../../models/refresh-queue';
 import Component from '../object-generator';
 import Program from '../../../models/business-models/program';
 import * as modelsUtils from '../../../plugins/utils/models-utils';

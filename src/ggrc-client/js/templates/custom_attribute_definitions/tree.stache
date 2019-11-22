@@ -7,7 +7,7 @@
 <li class="tree-item" data-model="true">
   <div class="item-main" {{canData 'model'}}>
     <div class="item-wrap">
-      {{> /static/templates/base_objects/open_close.stache}}
+      {{> /static/templates/base_objects/open-close.stache}}
       <div class="select disabled">
         <div class="item-data">
           <div class="row-fluid">
@@ -33,7 +33,7 @@
           parentModel:from="instance"
           model:from="loadedModel"
           modalTitle:from="'Add Attribute to type {{instance.title_singular}}'"
-          contentViewPath:from="'/custom_attribute_definitions/modal_content.stache'"
+          contentViewPath:from="'/custom_attribute_definitions/modal-content.stache'"
         >
           <table class="table custom-attribute-definitions">
             <colgroup>

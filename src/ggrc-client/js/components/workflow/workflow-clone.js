@@ -9,7 +9,7 @@ import Cacheable from '../../models/cacheable';
 import {BUTTON_VIEW_SAVE_CANCEL} from '../../plugins/utils/modals';
 import {navigate} from '../../plugins/utils/current-page-utils';
 import Workflow from '../../models/business-models/workflow';
-import ModalsController from '../../controllers/modals/modals_controller';
+import ModalsController from '../../controllers/modals/modals-controller';
 
 let CloneWorkflow = Cacheable.extend({
   defaults: {
@@ -57,7 +57,7 @@ export default canComponent.extend({
               source_workflow: this.viewModel.workflow,
             }),
             content_view: GGRC.templates_path +
-              '/workflows/clone_modal_content.stache',
+              '/workflows/clone-modal-content.stache',
             custom_save_button_text: 'Proceed',
             button_view: BUTTON_VIEW_SAVE_CANCEL,
           });

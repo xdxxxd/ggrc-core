@@ -9,7 +9,7 @@ import template from './issue-tracker-enable.stache';
 import logger from './issue-tracker-log';
 import {getPageInstance} from '../current-page-utils';
 import Assessment from '../../../models/business-models/assessment';
-import QueryParser from '../../../generated/ggrc_filter_query_parser';
+import QueryParser from '../../../generated/ggrc-filter-query-parser';
 import {request} from '../request-utils';
 
 /* eslint-disable no-console */

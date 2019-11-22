@@ -7,7 +7,7 @@ import loForEach from 'lodash/forEach';
 import loFilter from 'lodash/filter';
 import canMap from 'can-map';
 import * as StateUtils from '../../../plugins/utils/state-utils';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../advanced-search-filter-state';
 import * as ModelsUtils from '../../../plugins/utils/models-utils';
 

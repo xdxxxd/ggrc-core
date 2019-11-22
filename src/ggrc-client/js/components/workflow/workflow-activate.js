@@ -14,6 +14,7 @@ import {
 } from '../../plugins/utils/widgets-utils';
 import {refreshPermissions} from '../../permission';
 import {countsMap as workflowCountsMap} from '../../apps/workflows';
+import {refreshAll} from '../../models/refresh-queue';
 
 const viewModel = canMap.extend({
   instance: {},
@@ -37,7 +38,7 @@ const viewModel = canMap.extend({
       await this.initWorkflow(workflow);
       await refreshPermissions();
       await this.updateActiveCycleCounts(workflow);
-      await workflow.refresh_all('task_groups', 'task_group_tasks');
+      await refreshAll(workflow, ['task_groups', 'task_group_tasks']);
       redirectToCycle();
     } catch (err) {
       result = Promise.reject(err);

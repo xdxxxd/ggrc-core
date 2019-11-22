@@ -6,6 +6,7 @@
 import Cacheable from '../cacheable';
 import Contactable from '../mixins/contactable';
 import Stub from '../stub';
+import {refreshAll} from '../../models/refresh-queue';
 
 export default Cacheable.extend({
   root_object: 'task_group',
@@ -24,7 +25,7 @@ export default Cacheable.extend({
   },
 
   tree_view_options: {
-    add_item_view: 'task_groups/tree_add_item',
+    add_item_view: 'task_groups/tree-add-item',
     attr_list: [
       {attr_title: 'Title', attr_name: 'title'},
       {attr_title: 'Assignee', attr_name: 'assignee',
@@ -42,12 +43,12 @@ export default Cacheable.extend({
 
     this.bind('updated', function (ev, instance) {
       if (instance instanceof that) {
-        instance.refresh_all_force('workflow', 'context');
+        refreshAll(instance, ['workflow', 'context'], true);
       }
     });
     this.bind('destroyed', function (ev, inst) {
       if (inst instanceof that) {
-        inst.refresh_all_force('workflow', 'context');
+        refreshAll(inst, ['workflow', 'context'], true);
       }
     });
   },

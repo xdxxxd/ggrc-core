@@ -22,7 +22,7 @@
     </add-tab-button>
 
     {{#is(instance.type, "Workflow")}}
-      {{> /static/templates/dashboard/object_nav_actions.stache}}
+      {{> /static/templates/dashboard/object-nav-actions.stache}}
     {{/is}}
   </nav>
 </div>

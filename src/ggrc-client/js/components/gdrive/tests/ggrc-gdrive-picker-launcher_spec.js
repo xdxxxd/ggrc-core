@@ -4,8 +4,9 @@
 */
 
 import * as pickerUtils from '../../../plugins/utils/gdrive-picker-utils';
+import * as NotifiersUtils from '../../../plugins/utils/notifiers-utils';
 import tracker from '../../../tracker';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../ggrc-gdrive-picker-launcher';
 
 describe('ggrc-gdrive-picker-launcher', function () {
@@ -144,63 +145,167 @@ describe('ggrc-gdrive-picker-launcher', function () {
     });
   });
 
-  describe('trigger_upload_parent() method', function () {
-    let uploadFilesDfd;
+  describe('trigger_upload_parent() method', () => {
+    let uploadDfd;
     let parentFolderDfd;
-    let el;
     let parentFolderStub;
+    let errorMessage;
 
-    beforeEach(function () {
-      el = jasmine.createSpyObj(['data', 'trigger']);
+    beforeEach(() => {
       parentFolderStub = {id: 'id'};
       parentFolderDfd = $.Deferred();
-      uploadFilesDfd = $.Deferred();
+      uploadDfd = $.Deferred();
 
       spyOn(pickerUtils, 'findGDriveItemById').and.returnValue(parentFolderDfd);
-      spyOn(pickerUtils, 'uploadFiles').and.returnValue(uploadFilesDfd);
+      spyOn(viewModel, 'uploadParentHelper').and.returnValue(uploadDfd);
+      spyOn($.fn, 'trigger').and.callThrough();
     });
 
-    it('sets "isUploading" flag to true', function (done) {
-      parentFolderDfd.resolve(parentFolderStub);
-      viewModel.attr('isUploading', false);
+    it('uses transient folder as parent folder if it exists', () => {
+      viewModel.instance.attr('_transient.folder', 'folder');
 
-      viewModel.trigger_upload_parent(viewModel, el).then(() => {
-        expect(viewModel.attr('isUploading')).toBe(true);
+      viewModel.trigger_upload_parent(viewModel);
+      expect(pickerUtils.findGDriveItemById).not.toHaveBeenCalled();
+    });
+
+    it('calls findGDriveItemById() if transient folder doesn\'t exist', () => {
+      let folderId = 123;
+      viewModel.instance.attr('_transient.folder', undefined);
+      viewModel.instance.attr('folder', folderId);
+
+      viewModel.trigger_upload_parent(viewModel);
+      expect(pickerUtils.findGDriveItemById).toHaveBeenCalledWith(folderId);
+    });
+
+
+    it('calls uploadParentHelper() method', (done) => {
+      parentFolderDfd.resolve(parentFolderStub);
+
+      viewModel.trigger_upload_parent(viewModel).then(() => {
+        expect(viewModel.uploadParentHelper).toHaveBeenCalled();
         done();
       });
     });
 
-    describe('sets "isUploading" flag to false', function () {
-      beforeEach(function () {
-        viewModel.attr('isUploading', true);
-        jasmine.clock().install();
-      });
+    it('displays error message if gdrive hasn\'t found', (done) => {
+      parentFolderDfd.reject();
+      errorMessage = 'Can\'t upload: No GDrive folder found';
 
-      afterEach(function () {
-        jasmine.clock().uninstall();
-      });
-
-      it('after uploadFiles() success', function () {
-        spyOn(viewModel, 'createDocumentModel')
-          .and.returnValue($.Deferred().resolve());
-        parentFolderDfd.resolve(parentFolderStub);
-        uploadFilesDfd.resolve();
-
-        viewModel.trigger_upload_parent(viewModel, el);
-
-        jasmine.clock().tick(1);
-        expect(viewModel.attr('isUploading')).toBe(false);
-      });
-
-      it('when uploadFiles() was failed', function () {
-        parentFolderDfd.resolve(parentFolderStub);
-        uploadFilesDfd.reject();
-
-        viewModel.trigger_upload_parent(viewModel, el);
-
-        jasmine.clock().tick(1);
-        expect(viewModel.attr('isUploading')).toBe(false);
+      viewModel.trigger_upload_parent(viewModel).fail(() => {
+        expect($.fn.trigger).toHaveBeenCalledWith('ajax:flash', {
+          warning: errorMessage,
+        });
+        done();
       });
     });
+  });
+
+  describe('uploadParentHelper() method', () => {
+    let uploadParentHelper;
+    let uploadFilesDfd;
+    let parentFolderDfd;
+    let files;
+    let parentFolderStub;
+    let scope;
+    let error;
+
+    beforeEach(() => {
+      parentFolderStub = {id: 'id'};
+      parentFolderDfd = $.Deferred();
+      uploadFilesDfd = $.Deferred();
+      files = ['file', 'file'];
+
+      scope = {
+        instance: {
+          type: 'type',
+        },
+      };
+
+      spyOn(viewModel, 'createDocumentModel')
+        .and.returnValue(uploadFilesDfd.resolve());
+
+      spyOn(pickerUtils, 'uploadFiles')
+        .and.returnValue(parentFolderDfd);
+
+      spyOn(NotifiersUtils, 'notifier');
+
+      uploadParentHelper = viewModel.uploadParentHelper.bind(viewModel);
+    });
+
+    it('sets "isUploading" flag to true', () => {
+      viewModel.attr('isUploading', false);
+
+      uploadParentHelper(parentFolderStub);
+      expect(viewModel.attr('isUploading')).toBe(true);
+    });
+
+    it('sets "isUploading" flag to false after uploadFiles() success',
+      (done) => {
+        parentFolderDfd.resolve(files);
+
+        viewModel.attr('isUploading', true);
+
+        uploadParentHelper(parentFolderStub, scope).then(() => {
+          expect(viewModel.attr('isUploading')).toBe(false);
+          done();
+        });
+      });
+
+    it('sets "isUploading" flag to false when uploadFiles() was failed',
+      (done) => {
+        parentFolderDfd.reject();
+
+        viewModel.attr('isUploading', true);
+
+        uploadParentHelper(parentFolderStub, scope).fail(() => {
+          expect(viewModel.attr('isUploading')).toBe(false);
+          done();
+        });
+      });
+
+    it('calls createDocumentModel() method after uploadFiles() success',
+      (done) => {
+        parentFolderDfd.resolve(files);
+
+        viewModel.attr('isUploading', true);
+
+        uploadParentHelper(parentFolderStub, scope).then(() => {
+          expect(viewModel.createDocumentModel).toHaveBeenCalledWith(files);
+          done();
+        });
+      });
+
+    it('calls notifier() if error code equal 403',
+      (done) => {
+        error = {
+          code: 403,
+          type: 'GDRIVE_PICKER_ERR_CANCEL',
+        };
+
+        parentFolderDfd.reject(error);
+
+        uploadParentHelper(parentFolderStub, scope).fail(() => {
+          expect(NotifiersUtils.notifier)
+            .toHaveBeenCalledWith('error', NotifiersUtils.messages[403]);
+          done();
+        });
+      });
+
+    it('calls notifier() if error type not equal GDRIVE_PICKER_ERR_CANCEL',
+      (done) => {
+        error = {
+          code: 404,
+          type: 'SOME_ANOTHER_ERROR',
+          message: 'not found',
+        };
+
+        parentFolderDfd.reject(error);
+
+        uploadParentHelper(parentFolderStub, scope).fail(() => {
+          expect(NotifiersUtils.notifier)
+            .toHaveBeenCalledWith('error', error.message);
+          done();
+        });
+      });
   });
 });

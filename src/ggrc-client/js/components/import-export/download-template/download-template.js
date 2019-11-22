@@ -104,6 +104,19 @@ const viewModel = canMap.extend({
 
     this.updateDuplicatesAfterRemove(removedTemplate.attr('id'));
   },
+  eraseTemplate(index) {
+    const templateId = this.attr('templates')[index].id;
+
+    if (templateId !== null) {
+      this.attr('templates')[index].attr({
+        id: null,
+        value: null,
+        isDuplicate: false,
+      });
+
+      this.updateDuplicatesAfterRemove(templateId);
+    }
+  },
   selectTemplate(selectedItem, index) {
     const {id: templateId, title} = selectedItem;
 
@@ -176,7 +189,7 @@ const viewModel = canMap.extend({
         modal_description: `GDrive file is generated successfully.
          Click button below to view the file.`,
         gDriveLink: link,
-        button_view: `${GGRC.templates_path}/modals/open_sheet.stache`,
+        button_view: `${GGRC.templates_path}/modals/open-sheet.stache`,
       });
     }).always(() => {
       this.attr('isLoading', false);

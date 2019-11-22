@@ -18,7 +18,7 @@ import {
   REFRESH_MAPPING,
   DESTINATION_UNMAPPED,
   NAVIGATE_TO_TAB,
-} from '../../events/eventTypes';
+} from '../../events/event-types';
 import {getRole} from '../../plugins/utils/acl-utils';
 import {notifier} from '../../plugins/utils/notifiers-utils';
 

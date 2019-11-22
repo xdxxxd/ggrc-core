@@ -8,7 +8,7 @@ import Component from '../tree-item-custom-attribute';
 import {
   makeFakeInstance,
   getComponentVM,
-} from '../../../../js_specs/spec_helpers';
+} from '../../../../js_specs/spec-helpers';
 import * as DateUtils from '../../../plugins/utils/date-utils';
 import * as MarkdownUtils from '../../../plugins/utils/markdown-utils';
 

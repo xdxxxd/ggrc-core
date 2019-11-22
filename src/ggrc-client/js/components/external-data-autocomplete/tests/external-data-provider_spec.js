@@ -2,10 +2,10 @@
  Copyright (C) 2019 Google Inc.
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../external-data-provider';
 import * as NotifiersUtils from '../../../plugins/utils/notifiers-utils';
-import * as AjaxUtils from '../../../plugins/ajax_extensions';
+import * as AjaxUtils from '../../../plugins/ajax-extensions';
 
 describe('external-data-provider component', () => {
   let viewModel;

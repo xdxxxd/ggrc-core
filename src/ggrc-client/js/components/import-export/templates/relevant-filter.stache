@@ -48,7 +48,7 @@
               name="filter_list.{{@index}}.filter"
               value="{{firstnonempty filter.name filter.email filter.title}}"
               data-lookup="{{this}}"
-              data-template="/{{#is(model_name, 'Person')}}people{{else}}base_objects{{/is}}/autocomplete_result.stache"
+              data-template="/{{#is(model_name, 'Person')}}people{{else}}base_objects{{/is}}/autocomplete-result.stache"
               {{initAutocomplete}}
             >
           </div>

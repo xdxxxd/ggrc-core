@@ -4,7 +4,7 @@
 */
 
 import canMap from 'can-map';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../person-modal';
 import PersonProfile from '../../../models/service-models/person-profile';
 import * as UserUtils from '../../../plugins/utils/user-utils';

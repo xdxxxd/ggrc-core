@@ -3,25 +3,27 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-import ModalsController from '../../controllers/modals/modals_controller';
+import ModalsController from '../../controllers/modals/modals-controller';
 
 /**
  * Utils methods for showing standart modals
  */
 
 const path = GGRC.templates_path || '/static/templates';
-const BUTTON_VIEW_DONE = `${path}/modals/done_buttons.stache`;
-const BUTTON_VIEW_CLOSE = `${path}/modals/close_buttons.stache`;
-const BUTTON_VIEW_SAVE_CANCEL = `${path}/modals/save_cancel_buttons.stache`;
+const BUTTON_VIEW_DONE = `${path}/modals/done-buttons.stache`;
+const BUTTON_VIEW_CLOSE = `${path}/modals/close-buttons.stache`;
+const BUTTON_VIEW_SAVE_CANCEL = `${path}/modals/save-cancel-buttons.stache`;
 const BUTTON_VIEW_SAVE_CANCEL_DELETE = // eslint-disable-line
-  `${path}/modals/save_cancel_delete_buttons.stache`;
+  `${path}/modals/save-cancel-delete-buttons.stache`;
 const BUTTON_VIEW_CONFIRM_CANCEL = // eslint-disable-line
-  `${path}/modals/confirm_cancel_buttons.stache`;
+  `${path}/modals/confirm-cancel-buttons.stache`;
 const CONTENT_VIEW_WARNING =
-  `${path}/base_objects/confirm_warning.stache`;
-const BUTTON_VIEW_CONFIRM = `${path}/modals/confirm_button.stache`;
+  `${path}/base_objects/confirm-warning.stache`;
+const BUTTON_VIEW_CONFIRM = `${path}/modals/confirm-button.stache`;
 const CONTENT_VIEW_CONFIRM = `${path}/modals/confirm.stache`;
-const BUTTON_CREATE_PROPOSAL = `${path}/modals/create_proposal.stache`;
+const BUTTON_CREATE_PROPOSAL = `${path}/modals/create-proposal.stache`;
+const ASSESSMENT_TEMPLATE_FOOTER = // eslint-disable-line
+  `${path}/modals/assessment-template-footer.stache`;
 
 /**
  * Shows a warning popup within given options. If a user confirms
@@ -234,4 +236,5 @@ export {
   BUTTON_VIEW_SAVE_CANCEL_DELETE,
   BUTTON_VIEW_CONFIRM_CANCEL,
   BUTTON_CREATE_PROPOSAL,
+  ASSESSMENT_TEMPLATE_FOOTER,
 };

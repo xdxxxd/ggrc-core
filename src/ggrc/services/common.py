@@ -647,6 +647,14 @@ class Resource(ModelView):
           description="The object is in a read-only mode and "
                       "is dedicated for SOX needs")
 
+  @staticmethod
+  def _validate_readonly_fields(obj, src):
+    if hasattr(obj, "is_updating_readonly_fields"):
+      if obj.is_updating_readonly_fields(src):
+        raise Forbidden(
+            description="Some fields in the object is in a read-only "
+                        "mode for Assignees")
+
   def _validate_readonly_access_on_post(self, objects, sources):
     """Validate read-only access on POST"""
 
@@ -683,6 +691,9 @@ class Resource(ModelView):
       # check read-only access AFTER check for permissions to disallow
       # user obtain value for flag "readonly"
       self._validate_readonly_access(obj, src)
+
+    with benchmark("Validate read-only fields access"):
+      self._validate_readonly_fields(obj, src)
 
     with benchmark("Deserialize object"):
       self.json_update(obj, src)
@@ -1054,7 +1065,7 @@ class Resource(ModelView):
       relationship.updated_at = datetime.datetime.utcnow()
     return relationship
 
-  def _get_model_instance(self, src=None):
+  def _get_model_instance(self, src=None):  # pylint: disable=unused-argument
     """Get a model instance.
 
     This function creates a new model instance and returns it. The function is
@@ -1066,16 +1077,12 @@ class Resource(ModelView):
       src: dict containing new object source.
 
     Returns:
-      An instance of current model.
+      obj: An instance of current model.
+      needs_update: Flag shows if we need to update obj attributes.
     """
-
-    obj = None
-    if self.model.__name__ == "Relationship":
-      obj = self._get_relationship(src)
-    if obj is None:
-      obj = self.model()
-      db.session.add(obj)
-    return obj
+    obj = self.model()
+    db.session.add(obj)
+    return obj, True
 
   def _check_post_permissions(self, objects):
     """Check create permissions for a list of objects.append
@@ -1138,9 +1145,18 @@ class Resource(ModelView):
     with benchmark("Generate objects"):
       objects = []
       sources = []
+
       for wrapped_src in body:
         src = self._unwrap_collection_post_src(wrapped_src)
-        obj = self._get_model_instance(src)
+        obj, needs_update = self._get_model_instance(src)
+
+        if not needs_update:
+          obj.modified_by = get_current_user()
+          db.session.flush()
+          object_for_json = {} if no_result else self.object_for_json(obj)
+          res.append((200, object_for_json))
+          continue
+
         with benchmark("Deserialize object"):
           self.json_create(obj, src)
         with benchmark("Send model POSTed event"):

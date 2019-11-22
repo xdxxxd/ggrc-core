@@ -7,7 +7,7 @@ import loDifference from 'lodash/difference';
 import loIsFunction from 'lodash/isFunction';
 import loForEach from 'lodash/forEach';
 import loMap from 'lodash/map';
-import {ggrcAjax} from '../../plugins/ajax_extensions';
+import {ggrcAjax} from '../../plugins/ajax-extensions';
 import canStache from 'can-stache';
 import canList from 'can-list';
 import canMap from 'can-map';

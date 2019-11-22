@@ -47,7 +47,7 @@
                                   onClose:from="@onClose">
                 </info-pin-buttons>
                 <div class="info-pane-utility">
-                  {{> /static/templates/people/dropdown_menu.stache}}
+                  {{> /static/templates/people/dropdown-menu.stache}}
                 </div>
               {{/if}}
             </div>

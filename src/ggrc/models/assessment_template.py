@@ -20,6 +20,7 @@ from ggrc.models import relationship
 from ggrc.models.mixins import base
 from ggrc.models.mixins import clonable
 from ggrc.models.mixins import issue_tracker
+from ggrc.models.mixins import with_sox_302
 from ggrc.models.exceptions import ValidationError
 from ggrc.models.reflection import AttributeInfo
 from ggrc.models import reflection
@@ -33,11 +34,12 @@ def _hint_verifier_assignees(actual_people_label, control_people_label,
                              risk_people_label):
   """Returns description default verifiers/assignees fields"""
 
-  description = "For all Assessment Types except of " \
-                "Control and Risk options are:\n{}\nuser@example.com\n" \
-                "For Assessment type of Control options are:\n{}\n" \
+  description = "Allowed values are:\n" \
+                "For all Assessment Types except of Control and Risk:" \
+                "\n{}\nuser@example.com\n" \
+                "For Assessment type of Control:\n{}\n" \
                 "user@example.com\n" \
-                "For Assessment type of Risk options are:\n{}\n" \
+                "For Assessment type of Risk:\n{}\n" \
                 "user@example.com".format(
                     "\n".join(actual_people_label.values()),
                     "\n".join(control_people_label.values()),
@@ -55,6 +57,7 @@ class AssessmentTemplate(assessment.AuditRelationship,
                          mixins.Slugged,
                          mixins.Stateful,
                          clonable.MultiClonable,
+                         with_sox_302.WithSOX302Flow,
                          Indexed,
                          db.Model):
   """A class representing the assessment template entity.
@@ -187,12 +190,14 @@ class AssessmentTemplate(assessment.AuditRelationship,
                                      "Standards",
                                      "Threats",
                                      )
+  TICKET_TRACKER_STATES = ("On", "Off")
 
   _aliases = {
       "status": {
           "display_name": "State",
           "mandatory": False,
-          "description": "Options are:\n{}".format('\n'.join(VALID_STATES))
+          "description": "Allowed values are:\n{}".format(
+              '\n'.join(VALID_STATES))
       },
       "default_assignees": {
           "display_name": "Default Assignees",
@@ -234,6 +239,12 @@ class AssessmentTemplate(assessment.AuditRelationship,
           "ignore_on_update": True,
           "view_only": True,
       },
+      "enabled": {
+          "display_name": "Ticket Tracker Integration",
+          "mandatory": False,
+          "description": "Allowed values are:\n{}".format(
+              '\n'.join(TICKET_TRACKER_STATES)),
+      },
       "template_custom_attributes": {
           "display_name": "Custom Attributes",
           "type": AttributeInfo.Type.SPECIAL_MAPPING,
@@ -249,10 +260,19 @@ class AssessmentTemplate(assessment.AuditRelationship,
               "and trailing spaces are ignored.\n"
               "list of attribute values: Comma separated list, only used if "
               "attribute type is 'Dropdown'. Prepend '(a)' if the value has a "
-              "mandatory attachment and/or (c) if the value requires a "
+              "mandatory attachment and/or '(c)' if the value requires a "
               "mandatory comment.\n\n"
-              "Limitations: Dropdown values can not start with either '(a)' or"
-              "'(c)' and attribute names can not contain commas ','."
+              "list of attribute values (only if 'SOX 302 Assessment "
+              "workflow' = YES):\n"
+              "- for Dropdown: Comma separated list. Prepend '(a)' if the "
+              "value has a mandatory attachment and/or '(c)' if the value "
+              "requires a mandatory comment and/or '(n)' if the value should "
+              "be treated as negative answer.\n"
+              "- for Text and Reach text: options possible are 'Not empty' or "
+              "'Empty'. Prepend '(n)' if the value should be treated as "
+              "negative answer.\n\n"
+              "Limitations: Dropdown values can not start with either '(a)', "
+              "'(c)' or '(n)' and attribute names can not contain commas ','."
           ),
       },
   }
@@ -306,6 +326,7 @@ class AssessmentTemplate(assessment.AuditRelationship,
         "default_people": self.default_people,
         "modified_by": login.get_current_user(),
         "status": self.status,
+        "sox_302_enabled": self.sox_302_enabled,
     }
     assessment_template_copy = AssessmentTemplate(**data)
     db.session.add(assessment_template_copy)

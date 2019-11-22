@@ -24,6 +24,7 @@
           data-item-index="{{@index}}">
           <i class="fa fa-trash"></i>
         </a>
+         <spinner-component class="control-offset" toggle:from="unmapping" />
       {{/if}}
     </li>
   {{/each}}

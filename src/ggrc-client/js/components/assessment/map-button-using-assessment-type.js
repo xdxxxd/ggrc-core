@@ -12,13 +12,11 @@ export default canComponent.extend({
   leakScope: true,
   viewModel: canMap.extend({
     instance: {},
-    deferredTo: {},
-    openMapper: function () {
+    openMapper() {
       let data = {
         join_object_type: this.attr('instance.type'),
         join_object_id: this.attr('instance.id'),
         type: this.attr('instance.assessment_type'),
-        deferred_to: this.attr('deferredTo'),
       };
 
       import(/* webpackChunkName: "mapper" */ '../../controllers/mapper/mapper')
@@ -26,24 +24,13 @@ export default canComponent.extend({
           mapper.ObjectMapper.openMapper(data);
         });
     },
-    onClick: function (el, ev) {
-      el.data('type', this.attr('instance.assessment_type'));
-      el.data('deferred_to', this.attr('deferredTo'));
+    onMapObjectsClick(el, ev) {
+      const $el = $(el);
+      $el.data('type', this.attr('instance.assessment_type'));
       import(/* webpackChunkName: "mapper" */ '../../controllers/mapper/mapper')
         .then(() => {
-          trigger.call(el[0], 'openMapper', ev);
+          trigger.call($el[0], 'openMapper', ev);
         });
     },
   }),
-  events: {
-    inserted: function () {
-      this.viewModel.attr('deferredTo',
-        this.element.data('deferred_to'));
-    },
-    '.assessment-map-btn click': function (el, ev) {
-      this.viewModel.onClick(el, ev);
-      ev.preventDefault();
-      return false;
-    },
-  },
 });

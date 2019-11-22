@@ -4,9 +4,9 @@
  */
 
 import Cycle from '../cycle';
-import {makeFakeInstance} from '../../../../js_specs/spec_helpers';
+import {makeFakeInstance} from '../../../../js_specs/spec-helpers';
 import * as CurrentPageUtils from '../../../plugins/utils/current-page-utils';
-import {REFRESH_MAPPING} from '../../../events/eventTypes';
+import {REFRESH_MAPPING} from '../../../events/event-types';
 
 describe('Cycle model', () => {
   let fakeCycleModel;

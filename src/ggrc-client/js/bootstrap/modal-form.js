@@ -9,7 +9,7 @@ import loSome from 'lodash/some';
 import loIsFunction from 'lodash/isFunction';
 import loForEach from 'lodash/forEach';
 import {confirm} from '../plugins/utils/modals';
-import {hasPending as hasPendingUtil} from '../plugins/ggrc_utils';
+import {hasPending as hasPendingUtil} from '../plugins/ggrc-utils';
 import {navigate} from '../plugins/utils/current-page-utils';
 import {changeUrl} from '../router';
 import {trigger} from 'can-event';
@@ -212,7 +212,7 @@ $.extend(ModalForm.prototype, {
           ' to discard your changes?',
           modal_confirm: 'Continue Editing',
           button_view: GGRC.templates_path +
-            '/modals/discard_buttons.stache',
+            '/modals/discard-buttons.stache',
           skip_refresh: true,
         }, function () {
           trigger.call(instance, 'modal:dismiss');

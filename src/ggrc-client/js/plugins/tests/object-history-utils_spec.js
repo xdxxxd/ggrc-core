@@ -8,7 +8,7 @@ import {
   buildModifiedListField,
   getInstanceView,
 } from '../utils/object-history-utils';
-import {makeFakeInstance} from '../../../js_specs/spec_helpers';
+import {makeFakeInstance} from '../../../js_specs/spec-helpers';
 import Vendor from '../../models/business-models/vendor';
 import Risk from '../../models/business-models/risk';
 

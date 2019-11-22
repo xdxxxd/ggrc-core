@@ -40,6 +40,7 @@ export default Cacheable.extend({
   },
   defaults: {
     test_plan_procedure: true,
+    sox_302_enabled: false,
     template_object_type: 'Control',
     default_people: {
       assignees: 'Principal Assignees',
@@ -69,8 +70,12 @@ export default Cacheable.extend({
       attr_title: 'Last Updated By',
       attr_name: 'modified_by',
       order: 71,
+    }, {
+      attr_title: 'SOX 302 assessment workflow',
+      attr_name: 'sox_302_enabled',
+      order: 72,
     }],
-    add_item_view: 'assessment_templates/tree_add_item',
+    add_item_view: 'assessment_templates/tree-add-item',
   },
 }, {
   define: {

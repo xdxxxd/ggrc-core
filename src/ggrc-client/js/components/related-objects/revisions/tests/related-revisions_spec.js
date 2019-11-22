@@ -4,8 +4,9 @@
  */
 
 import Component from '../related-revisions';
-import {getComponentVM} from '../../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../../js_specs/spec-helpers';
 import Revision from '../../../../models/service-models/revision';
+import * as QueryAPI from '../../../../plugins/utils/query-api-utils';
 
 describe('RelatedRevisions component', () => {
   let viewModel;
@@ -23,37 +24,19 @@ describe('RelatedRevisions component', () => {
     });
   });
 
-  describe('setVisibleRevisions() method', () => {
-    it(`sets visibleRevisions according to paging.limits
-      and recalculates pages`, () => {
-      let revisions = new Array(10);
-      revisions.fill(1);
-      viewModel.attr('visibleRevisions', null);
-      viewModel.attr('revisions', revisions);
-      viewModel.attr('paging.limits', [0, 5]);
-      viewModel.attr('paging.total', 0);
-
-      viewModel.setVisibleRevisions();
-
-      expect(viewModel.attr('visibleRevisions').length).toBe(5);
-      expect(viewModel.attr('paging.total')).toBe(10);
-    });
-  });
-
   describe('loadRevisions() method', () => {
     let requestDeferred;
 
     beforeEach(() => {
       viewModel.attr('instance', {id: 1, type: 'Risk'});
       requestDeferred = $.Deferred();
-      spyOn(viewModel, 'buildRevisionRequest').and.returnValue(requestDeferred);
-      spyOn(viewModel, 'setVisibleRevisions');
+      spyOn(viewModel, 'getRevisions').and.returnValue(requestDeferred);
     });
 
     it('should not load items if instance is undefined', () => {
       viewModel.attr('instance', undefined);
       viewModel.loadRevisions();
-      expect(viewModel.buildRevisionRequest).not.toHaveBeenCalled();
+      expect(viewModel.getRevisions).not.toHaveBeenCalled();
       expect(viewModel.attr('loading')).toBeFalsy();
     });
 
@@ -64,104 +47,124 @@ describe('RelatedRevisions component', () => {
       expect(viewModel.attr('loading')).toBeTruthy();
     });
 
-    it('builds revision request with "resource" param', () => {
+    it('gets revisions with params', () => {
+      viewModel.attr('paging.current', 1);
+      viewModel.attr('paging.pageSize', 5);
       viewModel.loadRevisions();
-      expect(viewModel.buildRevisionRequest).toHaveBeenCalledWith('resource');
+      expect(viewModel.getRevisions).toHaveBeenCalledWith(1, 6);
     });
 
     it('turns off loading flag if all is OK', (done) => {
-      viewModel.loadRevisions();
-      expect(viewModel.attr('loading')).toBeTruthy();
+      viewModel.attr('paging.current', 1);
+      viewModel.attr('paging.pageSize', 5);
 
-      requestDeferred.then(() => {
+      viewModel.loadRevisions().then(() => {
         expect(viewModel.attr('loading')).toBeFalsy();
         done();
       });
-      requestDeferred.resolve();
-    });
-
-    it('sets lastRevision correctly', (done) => {
-      viewModel.attr('lastRevision', null);
-      viewModel.loadRevisions();
-
-      requestDeferred.then(() => {
-        expect(viewModel.attr('lastRevision')).toBe('lastRevision');
-        done();
+      requestDeferred.resolve({
+        revisions: ['revision3', 'revision2'],
+        total: 3,
       });
-
-      requestDeferred.resolve(['lastRevision', 'revision2', 'revision1']);
     });
 
     it('sets paging.total correctly', (done) => {
       viewModel.attr('paging.total', null);
-      viewModel.loadRevisions();
+      viewModel.attr('paging.current', 1);
+      viewModel.attr('paging.pageSize', 5);
 
-      requestDeferred.then(() => {
-        expect(viewModel.attr('paging.total')).toBe(2);
+      viewModel.loadRevisions().then(() => {
+        expect(viewModel.attr('paging.total')).toBe(3);
         done();
       });
 
-      requestDeferred.resolve(['lastRevision', 'revision2', 'revision1']);
+      requestDeferred.resolve({
+        revisions: ['revision3', 'revision2', 'revision1'],
+        total: 4,
+      });
     });
 
     it('sets revisions correctly', (done) => {
       viewModel.attr('revisions', null);
-      viewModel.loadRevisions();
-
-      requestDeferred.then(() => {
+      viewModel.loadRevisions().then(() => {
         const revisions = viewModel.attr('revisions').attr();
         expect(revisions.length).toBe(2);
-        expect(revisions[0]).toEqual('revision2');
-        expect(revisions[1]).toEqual('revision1');
+        expect(revisions[0]).toEqual('revision3');
+        expect(revisions[1]).toEqual('revision2');
         done();
       });
 
-      requestDeferred.resolve(['lastRevision', 'revision2', 'revision1']);
-    });
-
-    it('calls setVisibleRevisions method ' +
-      'if revisions are available', (done) => {
-      viewModel.loadRevisions();
-
-      requestDeferred.then(() => {
-        expect(viewModel.setVisibleRevisions).toHaveBeenCalled();
-        done();
+      requestDeferred.resolve({
+        revisions: ['revision3', 'revision2'],
+        total: 3,
       });
-
-      requestDeferred.resolve(['lastRevision', 'revision2', 'revision1']);
     });
-
-    it('do not call setVisibleRevisions() if revisions are not available',
-      (done) => {
-        viewModel.loadRevisions();
-
-        requestDeferred.then(() => {
-          expect(viewModel.setVisibleRevisions).not.toHaveBeenCalled();
-          done();
-        });
-
-        requestDeferred.resolve();
-      }
-    );
   });
 
-  describe('buildRevisionRequest() method', () => {
-    it('calls Revision.findAll() method with correct query', () => {
-      const query = {
-        __sort: '-updated_at',
-        resource_type: 'type',
-        resource_id: 'id',
-      };
-      spyOn(Revision, 'findAll');
-      viewModel.attr('instance', {
-        type: 'type',
-        id: 'id',
+  describe('loadLastRevision() method', () => {
+    let requestDeferred;
+
+    beforeEach(() => {
+      viewModel.attr('instance', {id: 1, type: 'Risk'});
+      requestDeferred = $.Deferred();
+      spyOn(viewModel, 'getRevisions').and.returnValue(requestDeferred);
+    });
+
+    it('should not load last revision if instance is undefined', () => {
+      viewModel.attr('instance', undefined);
+      viewModel.loadLastRevision();
+      expect(viewModel.getRevisions).not.toHaveBeenCalled();
+    });
+
+    it('sets lastRevision correctly', (done) => {
+      viewModel.attr('lastRevision', null);
+      viewModel.loadLastRevision().then(() => {
+        expect(viewModel.attr('lastRevision')).toBe('lastRevision');
+        done();
       });
 
-      viewModel.buildRevisionRequest('resource');
+      requestDeferred.resolve({
+        revisions: ['lastRevision'],
+        total: 3,
+      });
+    });
+  });
 
-      expect(Revision.findAll.calls.mostRecent().args)
-        .toEqual([query]);
+  describe('getRevisions() method', () => {
+    let requestDeferred;
+
+    beforeEach(() => {
+      viewModel.attr('instance', {id: 1, type: 'Risk'});
+      requestDeferred = $.Deferred();
+      spyOn(viewModel, 'getQueryFilter');
+      spyOn(QueryAPI, 'batchRequests').and.returnValue(requestDeferred);
+      spyOn(Revision, 'model').and.callFake((source) => source);
+      spyOn(QueryAPI, 'buildParam').and.callFake((source) => source);
+    });
+
+    it('should load revisions and total correctly', (done) => {
+      viewModel.getRevisions(1, 3).then(({revisions, total}) => {
+        expect(revisions.length).toBe(3);
+        expect(total).toBe(5);
+        done();
+      });
+
+      requestDeferred.resolve({
+        Revision: {
+          count: 3,
+          values: ['lastRevision', 'revision2', 'revision1'],
+          total: 5,
+        },
+      });
+    });
+
+    it('should not return any values when no data was fetched', (done) => {
+      viewModel.getRevisions(1, 3).then((response) => {
+        expect(response).toBeUndefined();
+        done();
+      });
+
+      requestDeferred.resolve({});
     });
   });
 });

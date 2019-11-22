@@ -1410,6 +1410,84 @@ class TestAssessmentImport(TestCase):
     self.assertEqual(assessment.status, all_models.Assessment.PROGRESS_STATE)
     self.assertEqual(verifiers or [""], [""])
 
+  @ddt.data(
+      (
+          ("LCA1", "LCA2", "LCA3"),
+          ("val1", "val2", "val3"),
+          ("", "", ""),
+          {},
+      ),
+      (
+          ("LCA1", "LCA2", "LCA3"),
+          ("val1", "val2", "val3"),
+          ("", "val", ""),
+          {
+              "Assessment": {
+                  "row_warnings": {
+                      "Line 4: Object does not contain attribute 'LCA2'. "
+                      "The value will be ignored.",
+                  },
+              },
+          },
+      ),
+      (
+          ("LCA1", "LCA2", "LCA3", "LCA4"),
+          ("val1", "val2", "val3", ""),
+          ("", "", "", ""),
+          {
+              "Assessment": {
+                  "block_warnings": {
+                      "Line 2: Attribute 'lca4' does not exist. "
+                      "Column will be ignored.",
+                  },
+              },
+          },
+      ),
+  )
+  @ddt.unpack
+  def test_import_assessments_with_lca(self, attrs, asmt1_vals, asmt2_vals,
+                                       exp_errors):
+    """Test import file with two or more assessments, only one have lca"""
+    with factories.single_commit():
+      audit = factories.AuditFactory()
+      assessment1 = factories.AssessmentFactory(audit=audit)
+      assessment2 = factories.AssessmentFactory(audit=audit)
+      factories.CustomAttributeDefinitionFactory(
+          title=attrs[0],
+          definition_type='assessment',
+          definition_id=assessment1.id,
+      )
+      factories.CustomAttributeDefinitionFactory(
+          title=attrs[1],
+          definition_type='assessment',
+          definition_id=assessment1.id,
+      )
+      factories.CustomAttributeDefinitionFactory(
+          title=attrs[2],
+          definition_type='assessment',
+          definition_id=assessment1.id,
+      )
+    assessment_data1 = collections.OrderedDict([
+        ("object_type", "Assessment"),
+        ("Code*", assessment1.slug),
+        ("Audit", audit.slug),
+        ("Title", assessment1.title),
+    ])
+    assessment_data2 = collections.OrderedDict([
+        ("object_type", "Assessment"),
+        ("Code*", assessment2.slug),
+        ("Audit", audit.slug),
+        ("Title", assessment2.title),
+    ])
+    assessment_data1.update(
+        dict([(attrs[i], asmt1_vals[i]) for i in range(len(attrs))]))
+    assessment_data2.update(
+        dict([(attrs[i], asmt2_vals[i]) for i in range(len(attrs))]))
+
+    response = self.import_data(assessment_data1, assessment_data2)
+
+    self._check_csv_response(response, exp_errors)
+
 
 @ddt.ddt
 class TestAssessmentExport(TestCase):

@@ -4,7 +4,7 @@
  */
 
 import loMap from 'lodash/map';
-import {ggrcAjax} from '../ajax_extensions';
+import {ggrcAjax} from '../ajax-extensions';
 import {
   buildParam,
   batchRequests,

@@ -6,7 +6,7 @@
 import loLast from 'lodash/last';
 import loIsEmpty from 'lodash/isEmpty';
 import * as StateUtils from './state-utils';
-import QueryParser from '../../generated/ggrc_filter_query_parser';
+import QueryParser from '../../generated/ggrc-filter-query-parser';
 import {makeRelevantFilter} from './query-api-utils';
 
 /**

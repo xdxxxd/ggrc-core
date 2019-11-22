@@ -4,7 +4,7 @@
 */
 
 import Component from '../rich-text';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 
 describe('rich-text component', () => {
   let viewModel;

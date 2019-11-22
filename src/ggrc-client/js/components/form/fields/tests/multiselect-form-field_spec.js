@@ -4,7 +4,7 @@
 */
 
 import canMap from 'can-map';
-import {getComponentVM} from '../../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../../js_specs/spec-helpers';
 import Component from '../multiselect-form-field';
 
 describe('multiselect-form-field component', () => {

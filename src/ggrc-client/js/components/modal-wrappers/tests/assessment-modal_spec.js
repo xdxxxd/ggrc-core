@@ -6,7 +6,7 @@
 import {
   getComponentVM,
   makeFakeInstance,
-} from '../../../../js_specs/spec_helpers';
+} from '../../../../js_specs/spec-helpers';
 import Component from '../assessment-modal';
 import * as SnapshotUtils from '../../../plugins/utils/snapshot-utils';
 import Assessment from '../../../models/business-models/assessment';
@@ -25,7 +25,7 @@ describe('<assessment-modal/> component', () => {
   });
 
   describe('loadData() method', () => {
-    it('sets the correct data', (done) => {
+    it('sets the correct data to mappingsList field', (done) => {
       let model = makeFakeInstance({model: Assessment})();
 
       spyOn(model, 'getRelatedObjects').and
@@ -34,9 +34,10 @@ describe('<assessment-modal/> component', () => {
         }));
 
       vm.attr('instance', model);
+      vm.attr('mappingsList', []);
 
       vm.loadData().then(() => {
-        expect(vm.attr('mappedObjects').length).toBe(3);
+        expect(vm.attr('mappingsList').length).toBe(3);
 
         done();
       });

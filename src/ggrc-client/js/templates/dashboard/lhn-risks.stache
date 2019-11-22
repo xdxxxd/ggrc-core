@@ -1,0 +1,17 @@
+{{!
+    Copyright (C) 2019 Google Inc.
+    Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+}}
+
+<li class="risk accordion-group">
+  <a data-test-id="risk/threats_66116337" class="risk list-toggle top" href="javascript:void(0)">
+    <i class="fa fa-caret-right"></i>
+    Risks/Threats
+  </a>
+  <div class="content">
+    <ul class="mid-level">
+      {{{renderLive "dashboard/lhn-search" type="Risk" title_plural="Risks" li_class="risk"}}}
+      {{{renderLive "dashboard/lhn-search" type="Threat" title_plural="Threats" li_class="risk"}}}
+    </ul>
+  </div>
+</li>

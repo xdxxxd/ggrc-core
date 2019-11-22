@@ -12,7 +12,7 @@
           <h2>Get Started</h2>
         </header>
         <section class="get-started__content">
-          {{> /static/templates/dashboard/info/get_started.stache}}
+          {{> /static/templates/dashboard/info/get-started.stache}}
         </section><!-- Widget content end -->
       </section><!-- Widget end -->
     </div><!-- inner-content end -->

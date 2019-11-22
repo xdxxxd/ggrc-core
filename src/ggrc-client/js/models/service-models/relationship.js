@@ -3,7 +3,7 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import {ggrcAjax} from '../../plugins/ajax_extensions';
+import {ggrcAjax} from '../../plugins/ajax-extensions';
 import Cacheable from '../cacheable';
 import Stub from '../stub';
 import {trigger} from 'can-event';

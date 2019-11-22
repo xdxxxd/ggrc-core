@@ -12,7 +12,7 @@ import canComponent from 'can-component';
 import '../tree-pagination/tree-pagination';
 import './revision-page';
 
-import RefreshQueue from '../../models/refresh_queue';
+import RefreshQueue from '../../models/refresh-queue';
 import template from './revision-log.stache';
 import tracker from '../../tracker';
 import Revision from '../../models/service-models/revision';
@@ -23,8 +23,9 @@ import {
   buildParam,
   batchRequests,
 } from '../../plugins/utils/query-api-utils';
-import QueryParser from '../../generated/ggrc_filter_query_parser';
+import QueryParser from '../../generated/ggrc-filter-query-parser';
 import Pagination from '../base-objects/pagination';
+import Person from '../../models/business-models/person';
 import {notifier} from '../../plugins/utils/notifiers-utils';
 
 export default canComponent.extend({
@@ -162,6 +163,7 @@ export default canComponent.extend({
       return refreshQueue.trigger().then(() => revisions);
     },
     enqueueRelated(object, refreshQueue) {
+      this.loadACLPeople(object, refreshQueue);
       if (object.modified_by) {
         refreshQueue.enqueue(object.modified_by);
       }
@@ -179,6 +181,16 @@ export default canComponent.extend({
         });
         refreshQueue.enqueue(object.source);
       }
+    },
+    loadACLPeople(revision, refreshQueue) {
+      if (!revision.content || !revision.content.access_control_list.length) {
+        return;
+      }
+      revision.content.access_control_list.forEach((aclItem) => {
+        if (!Person.findInCacheById(aclItem.person.id)) {
+          refreshQueue.enqueue(aclItem.person);
+        }
+      });
     },
     composeRevisionsData(revisions) {
       let objRevisions = [];

@@ -23,7 +23,7 @@
               {{/if}}
 
               {{> /static/templates/base_objects/description.stache}}
-              {{> /static/templates/issues/remediation_plan.stache}}
+              {{> /static/templates/issues/remediation-plan.stache}}
               {{> /static/templates/base_objects/notes.stache}}
 
               <div class="row-fluid wrap-row">

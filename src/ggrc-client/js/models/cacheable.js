@@ -4,7 +4,7 @@
 */
 
 import loFind from 'lodash/find';
-import {filteredMap} from '../plugins/ggrc_utils';
+import {filteredMap} from '../plugins/ggrc-utils';
 import loThrottle from 'lodash/throttle';
 import loIsEmpty from 'lodash/isEmpty';
 import loIsFunction from 'lodash/isFunction';
@@ -12,7 +12,7 @@ import loForEach from 'lodash/forEach';
 // Disabling some minor eslint rules until major refactoring
 /* eslint-disable no-console, id-length */
 
-import {ggrcAjax} from '../plugins/ajax_extensions';
+import {ggrcAjax} from '../plugins/ajax-extensions';
 import canBatch from 'can-event/batch/batch';
 import canModel from 'can-model';
 import canList from 'can-list';
@@ -24,8 +24,7 @@ import {
 } from '../plugins/utils/snapshot-utils';
 import resolveConflict from './conflict-resolution/conflict-resolution';
 import PersistentNotifier from '../plugins/persistent-notifier';
-import enqueue from './save_queue';
-import {refreshAll} from './refresh_queue';
+import enqueue from './save-queue';
 import tracker from '../tracker';
 import {delayLeavingPageUntil} from '../plugins/utils/current-page-utils';
 import Stub from './stub';
@@ -779,15 +778,5 @@ export default canModel.extend({
     enqueue(this, this._super);
 
     return this._dfd;
-  },
-  refresh_all: function () {
-    let props = Array.prototype.slice.call(arguments, 0);
-
-    return refreshAll(this, props);
-  },
-  refresh_all_force: function () {
-    let props = Array.prototype.slice.call(arguments, 0);
-
-    return refreshAll(this, props, true);
   },
 });

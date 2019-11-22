@@ -4,7 +4,7 @@
  */
 
 import Cacheable from '../../../models/cacheable';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../mandatory-fields-modal';
 
 describe('mandatory-fields-modal component', () => {

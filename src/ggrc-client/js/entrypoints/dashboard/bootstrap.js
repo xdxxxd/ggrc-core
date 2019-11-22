@@ -20,7 +20,7 @@ import routes from './routes';
 import '../../plugins/utils/it-enable/issue-tracker-enable';
 import {gapiClient} from '../../plugins/ggrc-gapi-client';
 import {saveRecentlyViewedObject} from '../../plugins/utils/recently-viewed-utils';
-import {PageObjectControl} from '../../controllers/dashboard_controller';
+import {PageObjectControl} from '../../controllers/dashboard-controller';
 
 const instance = getPageInstance();
 const location = window.location.pathname;
@@ -47,7 +47,7 @@ new PageObjectControl('#pageContent', {
   widget_descriptors: widgetList,
   default_widgets: defaults || [],
   instance: getPageInstance(),
-  header_view: GGRC.templates_path + '/base_objects/page_header.stache',
+  header_view: GGRC.templates_path + '/base_objects/page-header.stache',
   innernav_view: GGRC.templates_path + '/base_objects/inner-nav.stache',
   page_title: function (controller) {
     return controller.options.instance.title;

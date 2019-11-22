@@ -5,7 +5,7 @@
 
 import canList from 'can-list';
 import canMap from 'can-map';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../revision-page';
 import Person from '../../../models/business-models/person';
 
@@ -18,17 +18,8 @@ describe('revision-page component', function () {
 
   describe('computeChanges() method', () => {
     beforeEach(() => {
-      spyOn(viewModel, '_loadACLPeople');
       spyOn(viewModel, '_computeObjectChanges');
       spyOn(viewModel, '_computeMappingChanges');
-    });
-
-    it('calls _loadACLPeople', () => {
-      viewModel.attr('revisions', {
-        object: 'object',
-      });
-
-      expect(viewModel._loadACLPeople).toHaveBeenCalledWith('object');
     });
 
     it('assigns computed object changes to changeHistory attr', () => {

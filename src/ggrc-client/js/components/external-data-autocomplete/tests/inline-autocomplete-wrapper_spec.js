@@ -9,7 +9,7 @@ import Component from '../inline-autocomplete-wrapper';
 import {
   makeFakeInstance,
   getComponentVM,
-} from '../../../../js_specs/spec_helpers';
+} from '../../../../js_specs/spec-helpers';
 import Control from '../../../models/business-models/control';
 
 describe('inline-autocomplete-wrapper component', () => {

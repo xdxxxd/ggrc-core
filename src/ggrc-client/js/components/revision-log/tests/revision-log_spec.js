@@ -4,12 +4,13 @@
 */
 
 import canMap from 'can-map';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../revision-log';
 
 import * as NotifierUtils from '../../../plugins/utils/notifiers-utils';
-import RefreshQueue from '../../../models/refresh_queue';
+import RefreshQueue from '../../../models/refresh-queue';
 import Revision from '../../../models/service-models/revision';
+import Person from '../../../models/business-models/person';
 import Stub from '../../../models/stub';
 import * as ReifyUtils from '../../../plugins/utils/reify-utils';
 import * as QueryApiUtils from '../../../plugins/utils/query-api-utils';
@@ -297,6 +298,7 @@ describe('revision-log component', function () {
     () => {
       let revisions;
       let enqueueSpy;
+      let loadACLPeopleSpy;
 
       beforeEach(() => {
         revisions = [{
@@ -319,9 +321,17 @@ describe('revision-log component', function () {
         }];
 
         enqueueSpy = spyOn(RefreshQueue.prototype, 'enqueue');
+        loadACLPeopleSpy = spyOn(viewModel, 'loadACLPeople');
 
         revisions.forEach((revision) => {
           viewModel.enqueueRelated(revision, RefreshQueue.prototype);
+        });
+      });
+
+      it('calls "loadACLpeople" method for each revision', () => {
+        revisions.forEach((revision) => {
+          expect(loadACLPeopleSpy)
+            .toHaveBeenCalledWith(revision, RefreshQueue.prototype);
         });
       });
 
@@ -395,6 +405,83 @@ describe('revision-log component', function () {
         });
       });
     });
+
+  describe('loadACLPeople() method', () => {
+    let revision;
+    let enqueueSpy;
+
+    beforeEach(() => {
+      enqueueSpy = spyOn(RefreshQueue.prototype, 'enqueue');
+    });
+
+    it('should do nothing if revision doesn\'t have  content', () => {
+      revision = {};
+
+      viewModel.loadACLPeople(revision, RefreshQueue.prototype);
+
+      expect(enqueueSpy).not.toHaveBeenCalled();
+    });
+
+    it('should do nothing if access list doesn\'t have people', () => {
+      revision = {
+        content: {
+          access_control_list: [],
+        },
+      };
+
+      viewModel.loadACLPeople(revision, RefreshQueue.prototype);
+
+      expect(enqueueSpy).not.toHaveBeenCalled();
+    });
+
+    it('should do nothing if person from access list exists in cache', () => {
+      revision = {
+        content: {
+          access_control_list: [{
+            person: {
+              id: 123,
+            },
+          }],
+        },
+      };
+
+      spyOn(Person, 'findInCacheById').and.returnValue(true);
+
+      viewModel.loadACLPeople(revision, RefreshQueue.prototype);
+
+      expect(enqueueSpy).not.toHaveBeenCalled();
+    });
+
+    it('calls "enqueue" for each user who doesn\'t exist in cache', () => {
+      revision = {
+        content: {
+          access_control_list: [{
+            person: {
+              id: 123,
+            },
+          },
+          {
+            person: {
+              id: 244,
+            },
+          },
+          {
+            person: {
+              id: 432,
+            },
+          }],
+        },
+      };
+
+      spyOn(Person, 'findInCacheById').and.returnValue(false);
+
+      viewModel.loadACLPeople(revision, RefreshQueue.prototype);
+
+      revision.content.access_control_list.forEach((aclItem) => {
+        expect(enqueueSpy).toHaveBeenCalledWith(aclItem.person);
+      });
+    });
+  });
 
   describe('composeRevisionsData(revisions) method',
     () => {

@@ -8,7 +8,7 @@ import {
   ddValidationMapToValue,
 } from '../../../plugins/utils/ca-utils';
 import * as Permission from '../../../permission';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component from '../assessment-local-ca';
 
 describe('assessment-local-ca component', () => {

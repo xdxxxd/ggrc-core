@@ -7,7 +7,7 @@ import canStache from 'can-stache';
 import canMap from 'can-map';
 import canComponent from 'can-component';
 import template from './templates/tree-field.stache';
-import {getTruncatedList} from '../../plugins/ggrc_utils';
+import {getTruncatedList} from '../../plugins/ggrc-utils';
 
 export default canComponent.extend({
   tag: 'tree-field',

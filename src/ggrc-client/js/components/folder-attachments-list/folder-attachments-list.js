@@ -12,7 +12,7 @@ import {
   REFRESH_MAPPING,
   BEFORE_DOCUMENT_CREATE,
   DOCUMENT_CREATE_FAILED,
-} from '../../events/eventTypes';
+} from '../../events/event-types';
 import {isAllowedFor} from '../../permission';
 import template from './folder-attachments-list.stache';
 

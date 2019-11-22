@@ -42,7 +42,7 @@
    </div>
   {{/is}}
 
-  {{> /static/templates/import_export/export/attribute_selector.stache}}
+  {{> /static/templates/import_export/export/attribute-selector.stache}}
 
   <div class="filter-query">
     <h6>Filter Query</h6>

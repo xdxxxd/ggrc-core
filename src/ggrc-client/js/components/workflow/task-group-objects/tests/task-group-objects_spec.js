@@ -4,7 +4,7 @@
  */
 
 import canMap from 'can-map';
-import {getComponentVM} from '../../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../../js_specs/spec-helpers';
 import Component from '../task-group-objects';
 import * as Stub from '../../../../models/stub';
 import * as Mappings from '../../../../models/mappers/mappings';
@@ -12,7 +12,7 @@ import * as QueryApiUtils from '../../../../plugins/utils/query-api-utils';
 import * as MapperUtils from '../../../../plugins/utils/mapper-utils';
 import * as NotifiersUtils from '../../../../plugins/utils/notifiers-utils';
 import * as ErrorUtils from '../../../../plugins/utils/errors-utils';
-import {OBJECTS_MAPPED_VIA_MAPPER} from '../../../../events/eventTypes';
+import {OBJECTS_MAPPED_VIA_MAPPER} from '../../../../events/event-types';
 
 describe('task-group-objects component', function () {
   let viewModel;
@@ -22,6 +22,10 @@ describe('task-group-objects component', function () {
   });
 
   describe('addToList() method', () => {
+    beforeEach(() => {
+      spyOn(viewModel, 'getPending').and.returnValue([]);
+    });
+
     it('adds converted passed objects to "items"', () => {
       const objects = [
         {id: 1, type: 'Type1'},
@@ -29,7 +33,7 @@ describe('task-group-objects component', function () {
         {id: 3, type: 'Type3'},
         {id: 4, type: 'Type4'},
       ];
-      const fakeConverter = (object) => ({data: object});
+      const fakeConverter = (object) => ({stub: object});
       const expected = objects.map(fakeConverter);
       spyOn(viewModel, 'convertToListItem').and.callFake(fakeConverter);
 
@@ -59,6 +63,7 @@ describe('task-group-objects component', function () {
         title: object.title,
         iconClass: 'fa-object_type',
         disabled: false,
+        unmapping: false,
       };
 
       const result = viewModel.convertToListItem(object);
@@ -174,6 +179,26 @@ describe('task-group-objects component', function () {
     });
   });
 
+  describe('waitForResolveOfPendingItems() method', () => {
+    it('removes unmapped object from pending unmappings list', async (done) => {
+      const item = new canMap({stub: {id: 2, type: 'object'}});
+      viewModel.attr('items').push(item);
+
+      const unmapping = {
+        item: {id: 2, type: 'object'},
+        request: Promise.resolve,
+      };
+      viewModel.attr('taskGroup', {_pendingUnmappings: [unmapping]});
+      spyOn(viewModel, 'getPending')
+        .and.returnValue(viewModel.attr('taskGroup._pendingUnmappings'));
+      await viewModel.waitForResolveOfPendingItems();
+
+      expect(viewModel.attr('taskGroup._pendingUnmappings.length')).toBe(0);
+      expect(viewModel.attr('items')).not.toContain(item);
+      done();
+    });
+  });
+
   describe('unmapByItemIndex() method', () => {
     beforeEach(() => {
       spyOn(MapperUtils, 'unmapObjects').and.returnValue(
@@ -182,11 +207,12 @@ describe('task-group-objects component', function () {
       viewModel.attr('items', [
         new canMap({id: 1}),
       ]);
+      viewModel.attr('taskGroup', {_pendingUnmappings: []});
     });
 
-    it('sets "disabled" flag to true for certain item based on passed ' +
-    'itemIndex before unmapping object from task group', () => {
-      const item = new canMap({id: 2});
+    it('sets "disabled" and "unmapping" flags to true for certain item based '+
+    'on passed itemIndex before unmapping object from task group', () => {
+      const item = new canMap({stub: {id: 2}});
       viewModel.attr('items').push(item);
       const itemIndex = 1;
       item.attr('disabled', false);
@@ -194,6 +220,7 @@ describe('task-group-objects component', function () {
       viewModel.unmapByItemIndex(itemIndex);
 
       expect(item.attr('disabled')).toBe(true);
+      expect(item.attr('unmapping')).toBe(true);
     });
 
     it('unmaps object performed by stub and attached to item from task group',
@@ -223,11 +250,12 @@ describe('task-group-objects component', function () {
       beforeEach(() => {
         MapperUtils.unmapObjects.and.returnValue(Promise.resolve());
         spyOn(NotifiersUtils, 'notifier');
+        viewModel.attr('taskGroup', {_pendingUnmappings: []});
       });
 
       it('sets "disabled" flag to false for certain item based on passed ' +
       'itemIndex', async (done) => {
-        const item = new canMap({id: 2});
+        const item = new canMap({stub: {id: 2, type: 'object'}});
         viewModel.attr('items').push(item);
         const itemIndex = 1;
         item.attr('disabled', true);
@@ -240,12 +268,12 @@ describe('task-group-objects component', function () {
 
       it('removes unmapped object from the "items" list', async (done) => {
         const itemIndex = 2;
-        const removingObject = new canMap({id: 50});
+        const removingObject = new canMap({stub: {id: 50}});
         viewModel.attr('items').replace([
-          new canMap({id: 30}),
-          new canMap({id: 40}),
+          new canMap({stub: {id: 30}}),
+          new canMap({stub: {id: 40}}),
           removingObject,
-          new canMap({id: 60}),
+          new canMap({stub: {id: 60}}),
         ]);
 
         await viewModel.unmapByItemIndex(itemIndex);
@@ -255,8 +283,25 @@ describe('task-group-objects component', function () {
         done();
       });
 
+      it('removes unmapped object from pending unappings list',
+        async (done) => {
+          const itemIndex = 0;
+          const item = new canMap({stub: {id: 30}});
+          viewModel.attr('items').replace([item]);
+
+          await viewModel.unmapByItemIndex(itemIndex);
+
+          expect(viewModel.attr('taskGroup._pendingUnmappings.length'))
+            .toBe(0);
+          done();
+        });
+
       it('notifies the user that unmap operation was successfully done ',
         async (done) => {
+          viewModel.attr('items').replace([
+            new canMap({stub: {id: 1}}),
+          ]);
+
           await viewModel.unmapByItemIndex(0);
 
           expect(NotifiersUtils.notifier)
@@ -275,6 +320,9 @@ describe('task-group-objects component', function () {
         MapperUtils.unmapObjects.and.returnValue(Promise.reject(fakeXhr));
         spyOn(NotifiersUtils, 'notifier');
         spyOn(ErrorUtils, 'getAjaxErrorInfo').and.returnValue(fakeErrorInfo);
+        viewModel.attr('items').replace([
+          new canMap({stub: {id: 1}}),
+        ]);
       });
 
       it('shows error message', async (done) => {
@@ -289,8 +337,6 @@ describe('task-group-objects component', function () {
       });
 
       it('does not remove item by itemIndex', async (done) => {
-        viewModel.attr('items', [{}]);
-
         await viewModel.unmapByItemIndex(0);
 
         expect(viewModel.attr('items').length).toBe(1);
@@ -299,7 +345,7 @@ describe('task-group-objects component', function () {
 
       it('sets "disabled" flag to false for certain item based on passed ' +
       'itemIndex', async (done) => {
-        const item = new canMap({id: 2});
+        const item = new canMap({stub: {id: 2}});
         viewModel.attr('items').push(item);
         const itemIndex = 1;
         item.attr('disabled', true);

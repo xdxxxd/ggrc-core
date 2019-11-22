@@ -15,7 +15,7 @@ import '../form/fields/person-form-field';
 import '../form/fields/rich-text-form-field';
 import '../form/fields/text-form-field';
 import '../form/fields/numberbox-form-field';
-import {isInnerClick, getPlainText} from '../../plugins/ggrc_utils';
+import {isInnerClick, getPlainText} from '../../plugins/ggrc-utils';
 import template from './inline-edit-control.stache';
 
 export default canComponent.extend({

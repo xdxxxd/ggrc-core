@@ -4,7 +4,7 @@
 */
 
 import loDebounce from 'lodash/debounce';
-import {ggrcAjax} from '../plugins/ajax_extensions';
+import {ggrcAjax} from '../plugins/ajax-extensions';
 import canStache from 'can-stache';
 import canControl from 'can-control';
 const MOUSEENTER_THROTTLE = 300;
@@ -66,7 +66,7 @@ const InfiniteScrollControl = canControl.extend({}, {
 
 const LhnTooltipsControl = canControl.extend({
   defaults: {
-    tooltip_view: GGRC.templates_path + '/base_objects/extended_info.stache',
+    tooltip_view: GGRC.templates_path + '/base_objects/extended-info.stache',
     trigger_selector: '.show-extended',
     fade_in_delay: 300,
     fade_out_delay: 300,

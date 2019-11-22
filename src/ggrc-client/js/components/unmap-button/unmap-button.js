@@ -5,7 +5,7 @@
 
 import canMap from 'can-map';
 import canComponent from 'can-component';
-import {DESTINATION_UNMAPPED} from '../../events/eventTypes';
+import {DESTINATION_UNMAPPED} from '../../events/event-types';
 import Relationship from '../../models/service-models/relationship';
 
 export default canComponent.extend({

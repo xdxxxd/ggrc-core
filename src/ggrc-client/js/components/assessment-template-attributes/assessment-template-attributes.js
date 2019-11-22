@@ -26,6 +26,7 @@ export default canComponent.extend({
     fields: [],
     editMode: true,
     isLoading: false,
+    instance: {},
     types: [{
       type: 'Text',
       name: 'Text',

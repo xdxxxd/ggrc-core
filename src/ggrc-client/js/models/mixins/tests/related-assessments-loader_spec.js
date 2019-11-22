@@ -3,7 +3,7 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import {makeFakeInstance} from '../../../../js_specs/spec_helpers';
+import {makeFakeInstance} from '../../../../js_specs/spec-helpers';
 import Assessment from '../../business-models/assessment';
 import Control from '../../business-models/control';
 import Objective from '../../business-models/objective';
@@ -13,7 +13,7 @@ import Regulation from '../../business-models/regulation';
 import System from '../../business-models/system';
 import Issue from '../../business-models/issue';
 import Requirement from '../../business-models/requirement';
-import * as AjaxUtils from '../../../plugins/ajax_extensions';
+import * as AjaxUtils from '../../../plugins/ajax-extensions';
 
 const ENDPOINT = '/api/related_assessments';
 

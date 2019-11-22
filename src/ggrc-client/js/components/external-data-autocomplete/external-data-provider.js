@@ -6,7 +6,7 @@
 import canMap from 'can-map';
 import canComponent from 'can-component';
 import {notifier} from '../../plugins/utils/notifiers-utils';
-import {ggrcGet} from '../../plugins/ajax_extensions';
+import {ggrcGet} from '../../plugins/ajax-extensions';
 
 /**
  * The component is used to load data for autocomplete component from external sources.

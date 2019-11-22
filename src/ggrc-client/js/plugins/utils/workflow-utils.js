@@ -10,6 +10,7 @@ import Cycle from '../../models/business-models/cycle';
 import Stub from '../../models/stub';
 import {changeHash} from '../../router';
 import {getMappingList} from '../../models/mappers/mappings';
+import {refreshAll} from '../../models/refresh-queue';
 
 /**
  * A set of properties which describe minimum information
@@ -65,9 +66,9 @@ function generateCycle(workflow) {
     modal_confirm: 'Proceed',
     skip_refresh: true,
     button_view: GGRC.templates_path +
-      '/workflows/confirm_start_buttons.stache',
+      '/workflows/confirm-start-buttons.stache',
     content_view: GGRC.templates_path +
-      '/workflows/confirm_start.stache',
+      '/workflows/confirm-start.stache',
     instance: workflow,
   }, (params, option) => {
     let data = {};
@@ -101,7 +102,7 @@ async function updateStatus(instance, status) {
 
 function refreshTGRelatedItems(taskGroup) {
   refreshPermissions();
-  taskGroup.refresh_all_force('workflow', 'context');
+  refreshAll(taskGroup, ['workflow', 'context'], true);
 }
 
 function getRelevantMappingTypes(instance) {

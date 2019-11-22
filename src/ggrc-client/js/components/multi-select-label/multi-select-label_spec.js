@@ -5,7 +5,7 @@
 
 import canList from 'can-list';
 import * as LabelUtils from '../../plugins/utils/label-utils';
-import {getComponentVM} from '../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../js_specs/spec-helpers';
 import Component from './multi-select-label';
 
 describe('multi-select-label component', () => {

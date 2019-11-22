@@ -176,6 +176,33 @@ class CustomAttributable(CustomAttributableBase):
     )
 
   @declared_attr
+  def local_custom_attribute_definitions(cls):
+    # pylint: disable=no-self-argument
+    """Load local custom attribute definitions."""
+    from ggrc.models.custom_attribute_definition \
+        import CustomAttributeDefinition as cad
+
+    def join_function():
+      """Return join condition for object and local CADs."""
+      definition_id = foreign(remote(cad.definition_id))
+      definition_type = cad.definition_type
+      return sa.and_(
+          definition_type == cls._inflector.table_singular,
+          definition_id == cls.id,
+      )
+
+    return relationship(
+        "CustomAttributeDefinition",
+        primaryjoin=join_function,
+        backref="{0}_local_custom_attributable_definition".format(
+            cls.__name__,
+        ),
+        order_by=(cad.definition_id.desc(),
+                  cad.id.asc()),
+        viewonly=True,
+    )
+
+  @declared_attr
   def _custom_attributes_deletion(cls):  # pylint: disable=no-self-argument
     """This declared attribute is used only for handling cascade deletions
        for CustomAttributes. This is done in order not to try to delete

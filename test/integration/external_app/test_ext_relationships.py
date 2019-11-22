@@ -35,6 +35,33 @@ class TestExternalRelationshipNew(TestCase):
     resp = ext_api.delete("relationship", relationship_id)
     self.assertStatus(resp, 400)
 
+  def test_ext_app_recreate_normal_relationship(self):
+    """If ext app create already created relationship
+    it has to be with is_external=False"""
+    with factories.single_commit():
+      market1 = factories.MarketFactory()
+      market2 = factories.MarketFactory()
+      relationship = factories.RelationshipFactory(
+          source=market1,
+          destination=market2,
+          is_external=False,
+      )
+      relationship_id = relationship.id
+    ext_api = ExternalApiClient(use_ggrcq_service_account=True)
+
+    response = ext_api.post(all_models.Relationship, data={
+        "relationship": {
+            "source": {"id": market1.id, "type": market1.type},
+            "destination": {"id": market2.id, "type": market2.type},
+            "is_external": True,
+            "context": None,
+        },
+    })
+
+    self.assert200(response)
+    relationship = all_models.Relationship.query.get(relationship_id)
+    self.assertFalse(relationship.is_external)
+
   def test_sync_service_delete_normal_relationship(self):
     """Sync service can delete normal relationships via unmap endpoint"""
 

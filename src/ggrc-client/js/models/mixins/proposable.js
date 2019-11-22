@@ -4,7 +4,7 @@
 */
 
 import Mixin from './mixin';
-import {REFRESH_PROPOSAL_DIFF} from '../../events/eventTypes';
+import {REFRESH_PROPOSAL_DIFF} from '../../events/event-types';
 
 export default class Proposable extends Mixin {
   afterUpdate() {

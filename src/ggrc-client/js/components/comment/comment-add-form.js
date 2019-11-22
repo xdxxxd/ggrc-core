@@ -9,7 +9,7 @@ import canComponent from 'can-component';
 import './comment-input';
 import './comment-add-button';
 import template from './comment-add-form.stache';
-import {COMMENT_CREATED} from '../../events/eventTypes';
+import {COMMENT_CREATED} from '../../events/event-types';
 import tracker from '../../tracker';
 import {getAssigneeType} from '../../plugins/utils/comments-utils';
 import {notifier} from '../../plugins/utils/notifiers-utils';

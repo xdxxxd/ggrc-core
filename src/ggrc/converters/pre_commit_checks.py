@@ -25,8 +25,8 @@ def check_tasks(row_converter):
   if obj.start_date > obj.end_date:
     row_converter.add_error(
         errors.INVALID_START_END_DATES,
-        start_date="Start date",
-        end_date="End date",
+        start_date="Task Start Date",
+        end_date="Task Due Date",
     )
 
   if obj.start_date.isoweekday() > all_models.Workflow.WORK_WEEK_LEN:

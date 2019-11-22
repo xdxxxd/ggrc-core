@@ -4,7 +4,7 @@
  */
 
 import loForEach from 'lodash/forEach';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import Component, {KEY_MAP} from '../autocomplete-input';
 
 describe('autocomplete-input component', () => {

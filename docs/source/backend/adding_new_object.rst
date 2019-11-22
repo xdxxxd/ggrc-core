@@ -88,11 +88,11 @@ Create a Cacheable object
 
 1. Add ``new_object`` to ``objectTypeDecisionTree`` in
    plugins/utils/model-utils.js.
-2. Add ``new_object`` to ``base_widgets.js``
+2. Add ``new_object`` to ``base-widgets.js``
 
    ``baseWidgetsByType`` is where you define the child widgets for new object
    
-3. Add ``new_object`` to ``business_objects.js``
+3. Add ``new_object`` to ``business-objects.js``
 
   ``extraDescriptorOptions`` is where you define special
    parameters for some of the widgets ie. their content controller,
@@ -130,7 +130,7 @@ In :src:`ggrc-client/js/templates/dashboard/lhn.stache` add the line:
 Create template files
 ---------------------
 
-``new_object/modal_content.stache`` is the only mandatory template
+``new_object/modal-content.stache`` is the only mandatory template
 file that needs to be created. Creating all the other template files is
 optional. If the template file is not found in ``new_object`` it will be
 taken from ``base_objects``.

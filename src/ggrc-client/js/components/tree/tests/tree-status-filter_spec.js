@@ -7,7 +7,7 @@ import canList from 'can-list';
 import Component from '../tree-status-filter';
 import * as StateUtils from '../../../plugins/utils/state-utils';
 import router from '../../../router';
-import {getComponentVM} from '../../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../../js_specs/spec-helpers';
 import * as DisplayPrefs from '../../../plugins/utils/display-prefs-utils';
 
 describe('tree-status-filter component', () => {
@@ -231,6 +231,16 @@ describe('tree-status-filter component', () => {
         ]);
         newStatuses = ['A', 'B'];
         viewModel.attr('widgetId', 'test1');
+        router.attr('widget', 'test1');
+        viewModel.attr('disabled', false);
+      });
+
+      it('when newStatuses is not defined', () => {
+        viewModel.attr('filterStates', [
+          {value: 'A', checked: true},
+          {value: 'B', checked: true},
+        ]);
+        newStatuses = null;
         router.attr('widget', 'test1');
         viewModel.attr('disabled', false);
       });

@@ -681,15 +681,13 @@ canStache.registerHelper('isScopeModel', function (instance, options) {
 });
 
 /*
-  Given an object, it determines if it's a workflow, and if it's a recurring
-  workflow or not.
+  Given an object, it determines if it's a recurring workflow or not.
 
   @param object - the object we want to check
   */
-canStache.registerHelper('if_recurring_workflow', function (object, options) {
+canStache.registerHelper('if_recurring_workflow', (object, options) => {
   object = isFunction(object) ? object() : object;
-  if (object.type === 'Workflow' &&
-      ['day', 'week', 'month'].includes(object.unit)) {
+  if (['day', 'week', 'month'].includes(object.unit)) {
     return options.fn(this);
   }
   return options.inverse(this);
@@ -729,6 +727,17 @@ canStache.registerHelper('isValidAttr',
   }
 );
 
+canStache.registerHelper('initDeferredData',
+  (instance, list) => (el) => {
+    $(el).data('deferred_to', {
+      // list must be a reference to update deffered_to.list data attribute
+      // on element if the list has changed
+      list: isFunction(list) ? list() : list,
+      instance: isFunction(instance) ? instance() : instance,
+    });
+  }
+);
+
 canStache.registerHelper('isArray', (items, options) => {
   items = isFunction(items) ? items() : items;
 
@@ -757,4 +766,13 @@ canStache.registerHelper('displayCount', (countObserver) => {
   if (count) {
     return '(' + count + ')';
   }
+});
+
+canStache.registerHelper('is_edit_denied', (instance, options) => {
+  const source = isFunction(instance) ? instance(): instance;
+  const isEditDenied = source.archived || source._is_sox_restricted;
+
+  return isEditDenied
+    ? options.fn(options.context)
+    : options.inverse(options.context);
 });

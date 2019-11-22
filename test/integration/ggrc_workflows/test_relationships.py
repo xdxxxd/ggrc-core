@@ -49,4 +49,4 @@ class TestRelationships(workflow_test_case.WorkflowTestCase):
     self.assertEqual(response.status_code, 201)
 
     response = self.api_helper.post(all_models.Relationship, data_ct_dst)
-    self.assertEqual(response.status_code, 201)
+    self.assertEqual(response.status_code, 200)

@@ -3,9 +3,9 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-import * as Utils from '../../plugins/ggrc_utils';
+import * as Utils from '../../plugins/ggrc-utils';
 import {DATE_FORMAT} from '../../plugins/utils/date-utils';
-import {getComponentVM} from '../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../js_specs/spec-helpers';
 import Component from '../datepicker/datepicker-component';
 
 

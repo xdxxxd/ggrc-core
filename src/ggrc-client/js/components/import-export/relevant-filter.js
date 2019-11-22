@@ -15,7 +15,7 @@ import canMap from 'can-map';
 import canComponent from 'can-component';
 import template from './templates/relevant-filter.stache';
 import * as businessModels from '../../models/business-models';
-import TreeViewConfig from '../../apps/base_widgets';
+import TreeViewConfig from '../../apps/base-widgets';
 
 export default canComponent.extend({
   tag: 'relevant-filter',

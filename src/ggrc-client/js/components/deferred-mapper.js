@@ -8,10 +8,6 @@ import loFindIndex from 'lodash/findIndex';
 import loFilter from 'lodash/filter';
 import canMap from 'can-map';
 import canComponent from 'can-component';
-import {
-  isSnapshotType,
-  extendSnapshot,
-} from '../plugins/utils/snapshot-utils';
 import * as MapperUtils from '../plugins/utils/mapper-utils';
 import {
   REFRESH_MAPPING,
@@ -19,9 +15,8 @@ import {
   DEFERRED_MAP_OBJECTS,
   DEFERRED_MAPPED_UNMAPPED,
   UNMAP_DESTROYED_OBJECT,
-} from '../events/eventTypes';
+} from '../events/event-types';
 import {getPageInstance} from '../plugins/utils/current-page-utils';
-import {reify, isReifiable} from '../plugins/utils/reify-utils';
 
 export default canComponent.extend({
   tag: 'deferred-mapper',
@@ -39,25 +34,11 @@ export default canComponent.extend({
         },
       },
       // objects which should be mapped to new instance
-      // in this case 'mappedObjects' should be empty
       preMappedObjects: {
         value: [],
         set(objects) {
           if (objects.length) {
             this.addMappings(objects);
-            this.updateListWith(objects);
-          }
-
-          return objects;
-        },
-      },
-      // objects which already mapped to 'instance'
-      // in this case 'preMappedObjects' should be empty
-      mappedObjects: {
-        value: [],
-        set(objects) {
-          if (objects.length) {
-            this.updateListWith(objects);
           }
 
           return objects;
@@ -66,7 +47,6 @@ export default canComponent.extend({
     },
     useSnapshots: false,
     instance: null,
-    list: [],
     performMapActions(instance, objects) {
       let pendingMap = Promise.resolve();
 
@@ -168,8 +148,6 @@ export default canComponent.extend({
             how: 'map',
           });
         }
-
-        this.addListItem(obj);
       });
     },
     removeMappings(obj) {
@@ -185,26 +163,10 @@ export default canComponent.extend({
         });
       }
 
-      const indexInList = loFindIndex(this.attr('list'),
-        ({id, type}) => id === obj.id && type === obj.type);
-      if (indexInList !== -1) {
-        this.attr('list').splice(indexInList, 1);
-      }
-    },
-    addListItem(item) {
-      if (isSnapshotType(item) && item.snapshotObject) {
-        item = extendSnapshot(item, item.snapshotObject);
-      } else if (!isSnapshotType(item) && isReifiable(item)) {
-        // add full item object from cache
-        // if it isn't snapshot
-        item = reify(item);
-      }
-
-      this.attr('list').push(item);
-    },
-    updateListWith(objects = []) {
-      this.attr('list', []);
-      objects.forEach((obj) => this.addListItem(obj));
+      this.dispatch({
+        type: 'removeMappings',
+        object: obj,
+      });
     },
   }),
   events: {
@@ -221,6 +183,10 @@ export default canComponent.extend({
     },
     [`{instance} ${DEFERRED_MAP_OBJECTS.type}`](el, {objects}) {
       this.viewModel.addMappings(objects);
+      this.viewModel.dispatch({
+        type: 'addMappings',
+        objects,
+      });
     },
     removed() {
       const instance = this.viewModel.attr('instance');

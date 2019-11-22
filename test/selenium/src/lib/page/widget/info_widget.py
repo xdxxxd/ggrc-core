@@ -11,34 +11,20 @@ from lib import base
 from lib.app_entity_factory import entity_factory_common
 from lib.constants import (
     locator, objects, element, roles, regex, messages)
-from lib.constants.locator import WidgetInfoAssessment, WidgetInfoControl
 from lib.element import (
     info_widget_three_bbs, page_elements, tables, tab_element, tab_containers)
-from lib.page import dashboard
 from lib.page.modal import (
     apply_decline_proposal, set_value_for_asmt_ca, snapshoted_controls_info)
-from lib.page.widget import (
-    info_panel, object_modal, object_page, related_proposals)
-from lib.page.widget import page_mixins
+from lib.page.widget import info_panel, object_modal, object_page, page_mixins
 from lib.utils import selenium_utils, help_utils, ui_utils
 
 
-def get_widget_bar(obj_name):
-  """Gets widget bar for object based on its name."""
-  mapping = {
-      objects.ASSESSMENTS: Assessments,
-      objects.CONTROLS: Controls,
-      objects.RISKS: Risks,
-  }
-  return mapping.get(obj_name, InfoWidget)()
-
-
-class InfoWidget(page_mixins.WithObjectReview, page_mixins.WithPageElements,
-                 base.Widget, object_page.ObjectPage):
-  """Abstract class of common info for Info pages and Info panels."""
-  # pylint: disable=too-many-public-methods
+class ReadOnlyInfoWidget(page_mixins.WithPageElements, base.Widget,
+                         object_page.ObjectPage):
+  """Abstract class for disabled object's Info pages and Info panels
+  which don't have edit elements."""
   # pylint: disable=too-many-instance-attributes
-  # pylint: disable=protected-access
+  # pylint: disable=too-many-public-methods
   _locators = locator.CommonWidgetInfo
   _elements = element.Common
   _dropdown_settings_cls = info_widget_three_bbs.InfoWidgetThreeBbbs
@@ -47,28 +33,21 @@ class InfoWidget(page_mixins.WithObjectReview, page_mixins.WithPageElements,
   _evidence_url_label = "Evidence URL"
 
   def __init__(self, _driver=None):
-    super(InfoWidget, self).__init__()
+    super(ReadOnlyInfoWidget, self).__init__()
     self.child_cls_name = self.__class__.__name__
     self.obj_name = objects.get_singular(self.child_cls_name)
-    self.is_asmts_info_widget = (
-        self.child_cls_name.lower() == objects.ASSESSMENTS)
     self.list_all_headers_txt = []
     self.list_all_values_txt = []
     self.inline_edit_controls = self._browser.elements(
         class_name="set-editable-group")
     self.tabs = tab_element.Tabs(self._browser, tab_element.Tabs.INTERNAL)
-    self.add_tab_btn = self._browser.element(
-        data_test_id="button_widget_add_2c925d94")
     self._attributes_tab_name = "Attributes"
     self._changelog_tab_name = "Change Log"
     # for overridable methods
-    if (self.__class__ in
-        [Controls, Programs, Regulations, Objectives, Contracts,
-         Policies, Risks, Standards, Threat, Requirements]):
+    if self.__class__ in [Controls, Risks]:
       if self.is_info_page:
         self.tabs.ensure_tab(self._attributes_tab_name)
     self.comment_area = self._comment_area()
-    self.edit_popup = object_modal.get_modal_obj(self.obj_name, self._driver)
 
   @property
   def _root(self):
@@ -143,23 +122,6 @@ class InfoWidget(page_mixins.WithObjectReview, page_mixins.WithPageElements,
     footer_el = self._browser.element(class_name="info-widget-footer")
     footer_el.element(class_name="person-name").wait_until(lambda e: e.present)
     return re.search(footer_regexp, footer_el.text).group(group_idx)
-
-  @staticmethod
-  def wait_save():
-    """Wait for object to be saved and page to be updated.
-    Please note that in some cases spinner disappears before DOM changes
-    are fully finished. So this code may need to be changed
-    in case of a race condition.
-    """
-    ui_utils.wait_for_spinner_to_disappear()
-
-  def get_review_state_txt(self):
-    """Get object's review state text from Info Widget checking if exact UI
-    elements are existed.
-    """
-    return (element.ReviewStates.REVIEWED if self._browser.element(
-        class_name="state-reviewed").exists
-        else element.ReviewStates.UNREVIEWED)
 
   def show_related_assessments(self):
     """Click `Assessments` button on control or objective page and return
@@ -259,30 +221,6 @@ class InfoWidget(page_mixins.WithObjectReview, page_mixins.WithPageElements,
       custom_attributes[ca_title] = ca_elem.get_value()
     return custom_attributes
 
-  def fill_global_cas_in_popup(self, custom_attributes):
-    """Fills GCAs using Edit popup."""
-    self.three_bbs.select_edit()
-    self.fill_ca_values(custom_attributes, is_global=True, is_inline=False)
-
-  def fill_global_cas_inline(self, custom_attributes):
-    """Fills GCAs inline."""
-    self.fill_ca_values(custom_attributes, is_global=True, is_inline=True)
-
-  def fill_ca_values(self, custom_attributes, is_global, is_inline):
-    """Fills custom attributes with values."""
-    ca_manager = page_elements.CustomAttributeManager(
-        self._browser,
-        obj_type=self.child_cls_name.lower(),
-        is_global=is_global,
-        is_inline=is_inline)
-    for attr_title, attr_value in custom_attributes.iteritems():
-      elem_class = ca_manager.find_ca_elem_by_title(attr_title)
-      elem_class.set_value(attr_value)
-      if is_inline:
-        self.wait_save()
-    if not is_inline:
-      self.edit_popup.save_and_close()
-
   def has_ca_inline_edit(self, attr_title):
     """Tries to open edit form for CA by its title
     and returns bool if edit exists."""
@@ -314,8 +252,8 @@ class InfoWidget(page_mixins.WithObjectReview, page_mixins.WithPageElements,
           updated_at=self.updated_at()
       )
     if self.has_review():
-      scope.update(review_status=self.get_review_status(),
-                   review_status_display_name=self.get_review_status(),
+      scope.update(review_status=self.review_status,
+                   review_status_display_name=self.review_status,
                    review=self.get_review_dict())
     self.update_obj_scope(scope)
     return scope
@@ -358,6 +296,64 @@ class InfoWidget(page_mixins.WithObjectReview, page_mixins.WithPageElements,
       log_items.append(entry_data)
     return log_items
 
+  @property
+  def is_comments_panel_present(self):
+    """Returns whether comments panel exists on the page."""
+    return self._comment_area().exists
+
+
+class InfoWidget(page_mixins.WithObjectReview, ReadOnlyInfoWidget):
+  """Abstract class of common info for active object's Info pages and Info
+  panels."""
+  # pylint: disable=too-many-public-methods
+  # pylint: disable=too-many-instance-attributes
+  # pylint: disable=protected-access
+
+  def __init__(self, _driver=None):
+    super(InfoWidget, self).__init__()
+    # for overridable methods
+    if (self.__class__ in
+        [Programs, Regulations, Objectives, Contracts, Policies, Standards,
+         Threat, Requirements]):
+      if self.is_info_page:
+        self.tabs.ensure_tab(self._attributes_tab_name)
+    self.inline_edit_controls = self._browser.elements(
+        class_name="set-editable-group")
+    self.edit_popup = object_modal.get_modal_obj(self.obj_name, self._driver)
+
+  @staticmethod
+  def wait_save():
+    """Wait for object to be saved and page to be updated.
+    Please note that in some cases spinner disappears before DOM changes
+    are fully finished. So this code may need to be changed
+    in case of a race condition.
+    """
+    ui_utils.wait_for_spinner_to_disappear()
+
+  def fill_global_cas_in_popup(self, custom_attributes):
+    """Fills GCAs using Edit popup."""
+    self.three_bbs.select_edit()
+    self.fill_ca_values(custom_attributes, is_global=True, is_inline=False)
+
+  def fill_global_cas_inline(self, custom_attributes):
+    """Fills GCAs inline."""
+    self.fill_ca_values(custom_attributes, is_global=True, is_inline=True)
+
+  def fill_ca_values(self, custom_attributes, is_global, is_inline):
+    """Fills custom attributes with values."""
+    ca_manager = page_elements.CustomAttributeManager(
+        self._browser,
+        obj_type=self.child_cls_name.lower(),
+        is_global=is_global,
+        is_inline=is_inline)
+    for attr_title, attr_value in custom_attributes.iteritems():
+      elem_class = ca_manager.find_ca_elem_by_title(attr_title)
+      elem_class.set_value(attr_value)
+      if is_inline:
+        self.wait_save()
+    if not is_inline:
+      self.edit_popup.save_and_close()
+
   def edit_obj(self, **changes):
     """Makes changes `changes` to object."""
     self.three_bbs.select_edit()
@@ -374,22 +370,6 @@ class InfoWidget(page_mixins.WithObjectReview, page_mixins.WithPageElements,
     """Returns comments panel."""
     return base.CommentsPanel(self._root.wd,
                               (By.CSS_SELECTOR, "comment-data-provider"))
-
-  @property
-  def is_comments_panel_present(self):
-    """Returns whether comments panel exists on the page."""
-    return self._comment_area().exists
-
-  def get_hidden_items_from_add_tab(self):
-    """Returns all hidden items from 'Add Tab' dropdown."""
-    dropdown = self.click_add_tab_btn()
-    hidden_items = dropdown.get_all_hidden_items()
-    return hidden_items
-
-  def click_add_tab_btn(self):
-    """Clicks 'Add Tab' button."""
-    self.add_tab_btn.click()
-    return dashboard.CreateObjectDropdown()
 
 
 class Programs(InfoWidget, page_mixins.WithProposals):
@@ -413,12 +393,6 @@ class Programs(InfoWidget, page_mixins.WithProposals):
             self.three_bbs.edit_option,
             self.comment_area.add_section,
             self.reference_urls.add_button] + list(self.inline_edit_controls)
-
-  def related_proposals(self):
-    """Open related proposals tab."""
-    self.tabs.ensure_tab(self.proposals_tab_or_link_name)
-    selenium_utils.wait_for_js_to_load(self._driver)
-    return related_proposals.RelatedProposals()
 
 
 class Workflow(InfoWidget):
@@ -724,17 +698,17 @@ class Assessments(InfoWidget):
   def click_complete(self):
     """Click on 'Complete' button."""
     base.Button(self.info_widget_elem,
-                WidgetInfoAssessment.BUTTON_COMPLETE).click()
+                locator.WidgetInfoAssessment.BUTTON_COMPLETE).click()
 
   def click_verify(self):
     """Click on 'Verify' button."""
     base.Button(self.info_widget_elem,
-                WidgetInfoAssessment.BUTTON_VERIFY).click()
+                locator.WidgetInfoAssessment.BUTTON_VERIFY).click()
 
   def click_needs_rework(self):
     """Click on 'Needs Rework' button."""
     base.Button(self.info_widget_elem,
-                WidgetInfoAssessment.BUTTON_NEEDS_REWORK).click()
+                locator.WidgetInfoAssessment.BUTTON_NEEDS_REWORK).click()
 
   def choose_and_fill_dropdown_lca(self, dropdown, **kwargs):
     """Choose and fill comment or url for Assessment dropdown."""
@@ -744,7 +718,7 @@ class Assessments(InfoWidget):
     set_value_for_asmt_ca.SetValueForAsmtDropdown(
         self._driver).fill_dropdown_lca(**kwargs)
     selenium_utils.get_when_clickable(
-        self._driver, WidgetInfoAssessment.BUTTON_COMPLETE)
+        self._driver, locator.WidgetInfoAssessment.BUTTON_COMPLETE)
 
   def edit_answers(self):
     """Click to Edit Answers and Confirm"""
@@ -770,7 +744,6 @@ class AssessmentTemplates(InfoWidget):
 class Issues(InfoWidget):
   """Model for Issue object Info pages and Info panels."""
   _locators = locator.WidgetInfoIssue
-  _elements = element.IssueInfoWidget
 
   def __init__(self, driver):
     super(Issues, self).__init__(driver)
@@ -816,9 +789,9 @@ class Requirements(InfoWidget):
     super(Requirements, self).__init__(driver)
 
 
-class Controls(page_mixins.WithAssignFolder,
-               page_mixins.WithDisabledProposals,
-               page_mixins.WithDisabledVersionHistory, InfoWidget):
+class Controls(page_mixins.WithAssignFolder, page_mixins.WithDisabledProposals,
+               page_mixins.WithDisabledVersionHistory,
+               page_mixins.WithDisabledObjectReview, ReadOnlyInfoWidget):
   """Model for Control object Info pages and Info panels."""
   # pylint: disable=too-many-instance-attributes
   _locators = locator.WidgetInfoControl
@@ -839,17 +812,10 @@ class Controls(page_mixins.WithAssignFolder,
         [self.admin_entered_text, self.control_operator_entered_text,
          self.assertions.assertions_values])
 
-  @property
-  def control_review_status(self):
-    """Get control review status. As controls have different flow
-    WithObjectReview class does not suit here."""
-    return self._root.element(
-        class_name="state-value-dot review-status").text.title()
-
   def update_obj_scope(self, scope):
     """Updates obj scope."""
-    scope.update(review_status=self.control_review_status,
-                 review_status_display_name=self.control_review_status)
+    scope.update(review_status=self.review_status,
+                 review_status_display_name=self.review_status)
     if self.is_comments_panel_present and self.obj_name != "control":
       scope["comments"] = self.comments_panel.scopes
 
@@ -863,13 +829,6 @@ class Controls(page_mixins.WithAssignFolder,
   def control_owners(self):
     """Returns Control Owners page element."""
     return self._related_people_list(roles.CONTROL_OWNERS, self._root)
-
-  def select_first_available_date(self):
-    """Select first available day on datepicker on submit for review popup."""
-    date_picker = base.DatePicker(
-        self._driver, WidgetInfoControl.DATE_PICKER_FIELD,
-        WidgetInfoControl.DATE_PICKER_LOCATOR)
-    date_picker.select_month_start()
 
   def els_shown_for_editor(self):
     """Elements shown for user with edit permissions"""
@@ -1000,7 +959,7 @@ class Markets(InfoWidget):
 
 
 class Risks(page_mixins.WithDisabledProposals,
-            page_mixins.WithDisabledVersionHistory, InfoWidget):
+            page_mixins.WithDisabledVersionHistory, ReadOnlyInfoWidget):
   """Model for Risk object Info pages and Info panels."""
   _locators = locator.WidgetInfoRisk
 
@@ -1039,30 +998,3 @@ class Threat(InfoWidget):
   def update_obj_scope(self, scope):
     """Updates obj scope."""
     scope.update(admins=self.admins.get_people_emails())
-
-
-class People(base.Widget):
-  """Model for People object Info pages and Info panels."""
-  # pylint: disable=too-few-public-methods
-  _locators = locator.WidgetInfoPeople
-
-
-class Dashboard(base.Widget):
-  """Model for Dashboard object Info pages and Info panels."""
-  # pylint: disable=too-few-public-methods
-  _locators = locator.Dashboard
-
-  def __init__(self, driver):
-    super(Dashboard, self).__init__(driver)
-    self.start_new_program_btn = base.Button(
-        self._driver, self._locators.START_NEW_PROGRAM_BTN_CSS)
-    self.start_new_audit_btn = base.Button(
-        self._driver, self._locators.START_NEW_AUDIT_BTN_CSS)
-    self.start_new_workflow_btn = base.Button(
-        self._driver, self._locators.START_NEW_WORKFLOW_BTN_CSS)
-    self.create_task_btn = base.Button(
-        self._driver, self._locators.CREATE_TASK_BTN_CSS)
-    self.create_object_btn = base.Button(
-        self._driver, self._locators.CREATE_OBJECT_BTN_CSS)
-    self.all_objects_btn = base.Button(
-        self._driver, self._locators.ALL_OBJECTS_BTN_CSS)

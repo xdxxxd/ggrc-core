@@ -8,7 +8,7 @@ import {
   isMyAssessments,
   isMyWork,
 } from './current-page-utils';
-import QueryParser from '../../generated/ggrc_filter_query_parser';
+import QueryParser from '../../generated/ggrc-filter-query-parser';
 
 /**
  * Utils for state.

@@ -9,7 +9,7 @@ import IsOverdue from '../mixins/is-overdue';
 import Stub from '../stub';
 import Workflow from './workflow';
 import {getPageInstance} from '../../plugins/utils/current-page-utils';
-import {REFRESH_MAPPING} from '../../events/eventTypes';
+import {REFRESH_MAPPING} from '../../events/event-types';
 
 function refreshWorkflow(ev, instance) {
   if (instance instanceof this === false) {
