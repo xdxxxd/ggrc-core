@@ -64,12 +64,12 @@ let handlers = {
       skip_refresh: true,
       new_object_form: false,
       button_view:
-        GGRC.templates_path + '/modals/delete-cancel-buttons.stache',
+        '/modals/delete-cancel-buttons.stache',
       model: model,
       instance: instance,
       modal_title: 'Delete ' + $trigger.attr('data-object-singular'),
       content_view:
-        GGRC.templates_path + '/base_objects/confirm-delete.stache',
+        '/base_objects/confirm-delete.stache',
     };
 
     if (hasWarningType(instance)) {
@@ -146,7 +146,7 @@ let handlers = {
     }
 
     contentView = $trigger.data('template') ||
-      GGRC.templates_path + '/' +
+      '/' +
       $trigger.attr('data-object-plural') +
       '/modal-content.stache';
 
@@ -258,12 +258,12 @@ let handlers = {
     new ArchiveModalControl($target, {
       $trigger: $trigger,
       new_object_form: false,
-      button_view: GGRC.templates_path +
+      button_view:
       '/modals/archive-cancel-buttons.stache',
       model: model,
       instance: instance,
       modal_title: 'Archive ' + $trigger.attr('data-object-singular'),
-      content_view: GGRC.templates_path +
+      content_view:
       '/base_objects/confirm-archive.stache',
     });
 

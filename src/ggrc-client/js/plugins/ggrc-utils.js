@@ -222,8 +222,8 @@ function filteredMap(items, predicate) {
 
 
 function getTemplatePath(url) {
-  let match = url.match(/\/static\/(templates)\/(.*)\.stache/);
-  return match && match[2];
+  let match = url.match(/\/(.*)\.stache/);
+  return match && match[1];
 }
 
 function loadTemplate(templateUrl) {

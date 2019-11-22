@@ -17,8 +17,7 @@ import UserRole from '../models/service-models/user-role';
 // Role Assignment Modal Selector
 const userRolesModalSelector = canControl.extend({
   defaults: {
-    base_modal_view:
-      GGRC.templates_path + '/people_roles/base-modal.stache',
+    base_modal_view: '/people_roles/base-modal.stache',
     option_column_view: 'people_roles/option-column',
     object_detail_view: 'people_roles/object-detail',
 

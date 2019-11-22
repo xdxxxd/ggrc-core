@@ -30,7 +30,7 @@ export default canControl.extend({
     Relationship,
     model: getPageModel(),
     instance: getPageInstance(),
-    widget_view: GGRC.templates_path + '/base_objects/summary.stache',
+    widget_view: '/base_objects/summary.stache',
     isLoading: true,
     isShown: false,
     forceRefresh: false,
@@ -58,8 +58,7 @@ export default canControl.extend({
 }, {
   init: function () {
     if (this.element.data('widget-view')) {
-      this.options.widget_view = GGRC.templates_path +
-        this.element.data('widget-view');
+      this.options.widget_view = this.element.data('widget-view');
     }
     this.element.closest('.widget')
       .on('widget_shown', this.widget_shown.bind(this));
@@ -102,8 +101,7 @@ export default canControl.extend({
       .closest('[data-widget-view]')
       .attr('data-widget-view');
     return (widgetView && widgetView.length > 0) ?
-      GGRC.templates_path + widgetView :
-      this.options.widget_view;
+      widgetView : this.options.widget_view;
   },
   widget_shown: function (event) {
     this.options.isShown = true;

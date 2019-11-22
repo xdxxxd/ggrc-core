@@ -149,12 +149,8 @@ describe('"buildModifiedListField" method', () => {
 
 describe('"getInstanceView" method', () => {
   let originalTemplates;
-  let originalTemplatesPath;
 
   beforeAll(() => {
-    originalTemplatesPath = GGRC.templates_path;
-    GGRC.templates_path = 'superdir/dir';
-
     originalTemplates = GGRC.Templates;
     GGRC.Templates = {
       'risks/info': '<h1>Hello world</h1>',
@@ -164,7 +160,6 @@ describe('"getInstanceView" method', () => {
 
   afterAll(() => {
     GGRC.Templates = originalTemplates;
-    GGRC.templates_path = originalTemplatesPath;
   });
 
   it('should return empty string. instance is undefined', () => {
@@ -175,7 +170,7 @@ describe('"getInstanceView" method', () => {
   });
 
   it('should return default "view" path', () => {
-    const expectedPath = `${GGRC.templates_path}/base_objects/info.stache`;
+    const expectedPath = '/base_objects/info.stache';
 
     // "GGRC.Templates" const doesn't contain template for Vendor
     const instance = makeFakeInstance({model: Vendor})();
@@ -185,7 +180,7 @@ describe('"getInstanceView" method', () => {
   });
 
   it('should return object "view" path', () => {
-    const expectedPath = `${GGRC.templates_path}/risks/info.stache`;
+    const expectedPath = '/risks/info.stache';
 
     // "GGRC.Templates" const contains template for Risk
     const instance = makeFakeInstance({model: Risk})();

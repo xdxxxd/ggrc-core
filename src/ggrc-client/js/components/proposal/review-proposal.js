@@ -23,7 +23,7 @@ export default canComponent.extend({
     define: {
       buttonView: {
         get() {
-          return `${GGRC.templates_path}/modals/review-proposal.stache`;
+          return '/modals/review-proposal.stache';
         },
       },
       canReview: {

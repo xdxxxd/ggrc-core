@@ -36,8 +36,7 @@ export default canComponent.extend({
           confirm({
             modal_title: viewModel.attr('modal_title'),
             modal_description: viewModel.attr('modal_description'),
-            button_view:
-              GGRC.templates_path + '/modals/close-buttons.stache',
+            button_view: '/modals/close-buttons.stache',
           });
         });
     },

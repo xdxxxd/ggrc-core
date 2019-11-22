@@ -92,7 +92,7 @@ describe('confirm-edit-action component', function () {
         modal_description: 'You are about to move Assessment from "' +
           'In Review' +
           '" to "In Progress" - are you sure about that?',
-        button_view: GGRC.templates_path + '/modals/prompt-buttons.stache',
+        button_view: '/modals/prompt-buttons.stache',
       }, jasmine.any(Function), jasmine.any(Function));
     });
 

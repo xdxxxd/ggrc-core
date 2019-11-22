@@ -176,7 +176,7 @@ const buildModifiedAttValues = (values, definitions, modifiedAttrs) => {
 const getInstanceView = (instance) => {
   let typeView;
   let view;
-  const defaultPath = `${GGRC.templates_path}/base_objects/info.stache`;
+  const defaultPath = '/base_objects/info.stache';
 
   if (!instance) {
     return '';
@@ -185,7 +185,7 @@ const getInstanceView = (instance) => {
   typeView = `${instance.constructor.table_plural}/info`;
 
   if (typeView in GGRC.Templates) {
-    view = `${GGRC.templates_path}/${typeView}.stache`;
+    view = `/${typeView}.stache`;
   } else {
     view = defaultPath;
   }

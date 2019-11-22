@@ -5,7 +5,6 @@
 
 import canStache from 'can-stache';
 GGRC.Templates = GGRC.Templates || {};
-GGRC.templates_path = '/static/templates';
 
 let templates = require.context('./templates/', true, /\.stache/);
 

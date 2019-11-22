@@ -28,15 +28,14 @@ export default canControl.extend({
   defaults: {
     model: getPageModel(),
     instance: getPageInstance(),
-    widget_view: GGRC.templates_path + '/base_objects/info.stache',
+    widget_view: '/base_objects/info.stache',
   },
 }, {
   init: function () {
     this.init_menu();
 
     if (this.element.data('widget-view')) {
-      this.options.widget_view = GGRC.templates_path +
-        this.element.data('widget-view');
+      this.options.widget_view = this.element.data('widget-view');
     }
     if (this.options.instance.infoPanePreload) {
       this.options.instance.infoPanePreload();
@@ -62,7 +61,7 @@ export default canControl.extend({
     let widgetView = $(el)
       .closest('[data-widget-view]').attr('data-widget-view');
     if (widgetView && widgetView.length > 0) {
-      return GGRC.templates_path + widgetView;
+      return widgetView;
     }
     return this.options.widget_view;
   },

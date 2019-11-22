@@ -22,6 +22,6 @@ export default canComponent.extend({
     rightRevisions: [],
     modalTitle: 'Compare with the latest version',
     modalConfirm: 'Update',
-    buttonView: `${GGRC.templates_path}/modals/prompt-buttons.stache`,
+    buttonView: '/modals/prompt-buttons.stache',
   }),
 });

@@ -262,7 +262,7 @@ $.widget('ggrc.autocomplete', $.ui.autocomplete, {
       /* webpackChunkName: "infiniteScroll" */
       '../controllers/infinite-scroll-controller'
     ).then(() => {
-      const view = loadTemplate(GGRC.templates_path + template);
+      const view = loadTemplate(template);
       let frag = canStache(view)(context);
       $ul.html(frag);
       new LhnTooltipsControl($ul);

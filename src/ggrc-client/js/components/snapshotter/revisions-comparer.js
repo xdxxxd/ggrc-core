@@ -58,8 +58,7 @@ export default canComponent.extend({
       confirm({
         modal_title: this.attr('modalTitle'),
         modal_description: 'Loading...',
-        header_view: GGRC.templates_path +
-                      '/modals/modal-compare-header.stache',
+        header_view: '/modals/modal-compare-header.stache',
         modal_confirm: this.attr('modalConfirm'),
         skip_refresh: true,
         extraCssClass: 'compare-modal',
