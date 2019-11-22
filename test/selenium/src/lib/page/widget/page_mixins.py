@@ -35,6 +35,11 @@ class WithPageElements(base.WithBrowser):
     return page_elements.SimpleField(
         root_elem if root_elem else self._browser, label)
 
+  def _editable_simple_field(self, label, root_elem=None):
+    """Returns EditableSimpleField page element."""
+    return page_elements.EditableSimpleField(
+        root_elem if root_elem else self._browser, label)
+
   def _info_pane_form_field(self, label):
     """Returns InfoPaneFormField page element."""
     return page_elements.InfoPaneFormField(self._browser, label)

@@ -3,15 +3,23 @@
  * Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
+%inline-edit-header {
+  display: flex;
+  align-items: center;
+  line-height: 28px;
+  min-height: 42px;
+}
+
+.readonly-inline-header {
+  @extend %inline-edit-header;
+}
+
 inline-edit-control {
   .inline {
     @include action-toolbar-controls;
 
     .inline__header {
-      display: flex;
-      align-items: center;
-      line-height: 28px;
-      min-height: 42px;
+      @extend %inline-edit-header;
 
       label {
         margin: 0;

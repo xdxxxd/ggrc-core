@@ -11,6 +11,7 @@ import canControl from 'can-control';
 import '../components/info-pin-buttons/info-pin-buttons';
 import '../components/questions-link/questions-link';
 import '../components/info-pane/info-pane-footer';
+import '../components/info-pane/info-pane';
 import '../components/assessment/info-pane/assessment-info-pane';
 import '../components/folder-attachments-list/folder-attachments-list';
 import '../components/issue-tracker/info-issue-tracker-fields';

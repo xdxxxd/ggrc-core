@@ -218,3 +218,20 @@
   }
 }
 
+.ggrc-form-legacy {
+  &.ggrc-form-multiple-columns {
+    max-width: 100%;
+
+    .ggrc-form-item {
+      .ggrc-form-item__multiple-row {
+        display: flex;
+        margin-right: 0;
+        max-width: 400px;
+      }
+
+      .ggrc-form-item__multiple-row:not(:first-child) {
+        margin-left: 41px;
+      }
+    }
+  }
+}

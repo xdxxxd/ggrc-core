@@ -31,6 +31,7 @@ export default canComponent.extend({
     },
     instance: {},
     setIssueTitle: false,
+    isEditIconDenied: false,
     convertToBool: function (value) {
       if (typeof value === 'boolean') {
         return value;

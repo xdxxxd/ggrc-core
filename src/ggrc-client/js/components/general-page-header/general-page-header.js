@@ -32,6 +32,7 @@ const viewModel = canMap.extend({
     },
   },
   instance: null,
+  isSaving: false,
 });
 
 export default canComponent.extend({
