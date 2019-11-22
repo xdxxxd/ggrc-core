@@ -2,6 +2,7 @@
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 # pylint: disable=too-many-lines
 # pylint: disable=too-many-public-methods
+
 """Tests exported csv files"""
 
 import collections
@@ -86,6 +87,49 @@ class TestExportEmptyTemplate(TestCase):
         "X-Requested-By": "GGRC",
         "X-export-view": "blocks",
     }
+
+  @ddt.data(("AccessGroup", 6),
+            ("AccountBalance", 6),
+            ("DataAsset", 6),
+            ("Facility", 6),
+            ("KeyReport", 6),
+            ("Market", 6),
+            ("Metric", 6),
+            ("OrgGroup", 6),
+            ("Process", 6),
+            ("Product", 6),
+            ("ProductGroup", 6),
+            ("Project", 6),
+            ("System", 6),
+            ("TechnologyEnvironment", 6),
+            ("Vendor", 6),
+            ("Threat", 6),
+            ("Objective", 6),
+            ("Issue", 6),
+            ("Contract", 6),
+            ("Policy", 6),
+            ("Regulation", 6),
+            ("Requirement", 6),
+            ("Standard", 6),
+            ("Audit", 4),
+            ("Program", 6),
+            ("Assessment", 8),
+            ("AssessmentTemplate", 3),
+            ("TaskGroup", 3),
+            ("TaskGroupTask", 3),
+            ("Workflow", 3),
+            ("Person", 3))
+  @ddt.unpack
+  def test_non_editable_tips(self, model, counts):
+    """Tests if {} has non-editable fields hint correctly"""
+    data = {
+        "export_to": "csv",
+        "objects": [{"object_name": model, "fields": "all"}]
+    }
+    response = self.client.post("/_service/export_csv",
+                                data=dumps(data), headers=self.headers)
+    self.assertEqual(counts,
+                     response.data.count("Automatically provided values"))
 
   @ddt.data("Assessment", "Issue", "Person", "Audit", "Product")
   def test_custom_attr_cb(self, model):

@@ -87,7 +87,6 @@ class TestExportEmptyTemplate(TestCase):
     self.assertEqual(response.status_code, 200)
     self.assertEqual(2, response.data.count(
         "{}\nOnly working days are accepted".format(TaskGroupTask.DATE_HINT)))
-    self.assertEqual(4, response.data.count(TaskGroupTask.DATE_HINT))
 
 
 class TestExportMultipleObjects(TestCase):
