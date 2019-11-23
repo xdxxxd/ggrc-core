@@ -3,14 +3,11 @@
 
 """Test audit RBAC."""
 import copy
-from os.path import abspath
-from os.path import dirname
-from os.path import join
-from collections import defaultdict
+import ddt
 
 from appengine import base
 
-from ggrc import app  # noqa  # pylint: disable=unused-import
+from ggrc import db
 from ggrc.models import all_models
 from integration.ggrc import TestCase
 from integration.ggrc.access_control import acl_helper
@@ -19,83 +16,298 @@ from integration.ggrc.generator import ObjectGenerator
 from integration.ggrc.models import factories
 
 
+@ddt.ddt
 class TestAuditRBAC(TestCase):
   """Test audit RBAC"""
 
-  CSV_DIR = join(abspath(dirname(__file__)), "test_csvs")
-
-  @classmethod
-  def setUpClass(cls):
-    """Base setup for entire test suite."""
-    TestCase.clear_data()
-    cls.response = cls._import_file("audit_rbac.csv")
-    cls.people = all_models.Person.eager_query().all()
-    cls.audit = all_models.Audit.eager_query().first()
-    sources = set(r.source for r in cls.audit.related_sources)
-    destinations = set(r.destination for r in cls.audit.related_destinations)
-    related = [obj for obj in sources.union(destinations)
-               if not isinstance(obj, all_models.Person)]
-    cls.related_objects = related
-
   def setUp(self):
-    """Imports test_csvs/audit_rbac.csv needed by the tests"""
-    self._check_csv_response(self.response, {})
+    """Generates objects needed by the tests"""
+    super(TestAuditRBAC, self).setUp()
+
     self.api = Api()
     self.client.get("/login")
 
-  def read(self, objects):
-    """Attempt to do a GET request for every object in the objects list"""
-    responses = []
-    for obj in objects:
-      status_code = self.api.get(obj.__class__, obj.id).status_code
-      responses.append((obj.type, status_code))
-    return responses
+  @ddt.data(
+      ("Administrator", "", 200),
+      ("Creator", "", 403),
+      ("Reader", "", 200),
+      ("Editor", "", 200),
+      ("Administrator", "Program Managers", 200),
+      ("Creator", "Program Managers", 200),
+      ("Reader", "Program Managers", 200),
+      ("Editor", "Program Managers", 200),
+      ("Administrator", "Program Editors", 200),
+      ("Creator", "Program Editors", 200),
+      ("Reader", "Program Editors", 200),
+      ("Editor", "Program Editors", 200),
+      ("Administrator", "Program Readers", 200),
+      ("Creator", "Program Readers", 200),
+      ("Reader", "Program Readers", 200),
+      ("Editor", "Program Readers", 200),
+  )
+  @ddt.unpack
+  def test_read_access_to_audit(self, rolename,
+                                object_role, expected_status_code):
+    """Test if {0} with {1} role, has read access to an audit.
+    All users except ("Creator", "", 403) should have read access."""
 
-  def update(self, objects):
-    """Attempt to do a PUT request for every object in the objects list"""
-    responses = []
-    for obj in objects:
-      response = self.api.get(obj.__class__, obj.id)
-      status_code = response.status_code
-      if response.status_code == 200:
-        status_code = self.api.put(obj, response.json).status_code
-      responses.append((obj.type, status_code))
-    return responses
+    user = self.create_user_with_role(rolename)
+    with factories.single_commit():
+      audit = factories.AuditFactory()
+      audit_id = audit.id
+      program = db.session.query(all_models.Program).one()
+      factories.RelationshipFactory(source=program, destination=audit)
 
-  def call_api(self, method, expected_statuses):
-    """Calls the REST api with a given method and returns a list of
-       status_codes that do not match the expected_statuses dict"""
-    all_errors = []
-    for person in self.people:
-      self.api.set_user(person)
-      responses = method(self.related_objects + [self.audit])
-      for type_, code in responses:
-        if code != expected_statuses[person.email]:
-          all_errors.append("{} does not have {} access to {} ({})".format(
-              person.email, method.__name__, type_, code))
-    return all_errors
+    if object_role:
+      program.add_person_with_role_name(user, object_role)
+      db.session.commit()
 
-  def test_read_access_on_mapped(self):
-    """Test if people have read access to mapped objects.
+    audit = all_models.Audit.query.get(audit_id)
+    self.api.set_user(user)
+    status_code = self.api.get(audit.__class__, audit_id).status_code
+    self.assertEqual(status_code, expected_status_code)
 
-    All users except creator@test.com should have read access."""
-    expected_statuses = defaultdict(lambda: 200)
-    for exception in ("creator@test.com",):
-      expected_statuses[exception] = 403
-    errors = self.call_api(self.read, expected_statuses)
-    assert not errors, "\n".join(errors)
+  @ddt.data(
+      ("Administrator", "", 200),
+      ("Creator", "", 403),
+      ("Reader", "", 200),
+      ("Editor", "", 200),
+      ("Administrator", "Program Managers", 200),
+      ("Creator", "Program Managers", 200),
+      ("Reader", "Program Managers", 200),
+      ("Editor", "Program Managers", 200),
+      ("Administrator", "Program Editors", 200),
+      ("Creator", "Program Editors", 200),
+      ("Reader", "Program Editors", 200),
+      ("Editor", "Program Editors", 200),
+      ("Administrator", "Program Readers", 200),
+      ("Creator", "Program Readers", 200),
+      ("Reader", "Program Readers", 200),
+      ("Editor", "Program Readers", 200),
+  )
+  @ddt.unpack
+  def test_read_access_to_assessment(self, rolename,
+                                     object_role, expected_status_code):
+    """Test if {0} with {1} role, has read access to an assessment.
+    All users except ("Creator", "", 403) should have read access."""
 
-  def test_update_access_on_mapped(self):
-    """Test if people have upate access to mapped objects.
+    user = self.create_user_with_role(rolename)
+    with factories.single_commit():
+      assessment = factories.AssessmentFactory()
+      assessment_id = assessment.id
+      program = db.session.query(all_models.Program).one()
+      audit = db.session.query(all_models.Audit).one()
+      factories.RelationshipFactory(source=program, destination=audit)
+      factories.RelationshipFactory(source=audit, destination=assessment)
 
-    All users except creator@test.com, reader@test.com, creatorpr@test.com,
-    readerpr@test.com should have update access."""
-    expected_statuses = defaultdict(lambda: 200)
-    for exception in ("creator@test.com", "reader@test.com",
-                      "creatorpr@test.com", "readerpr@test.com"):
-      expected_statuses[exception] = 403
-    errors = self.call_api(self.update, expected_statuses)
-    assert not errors, "\n".join(errors)
+    if object_role:
+      program.add_person_with_role_name(user, object_role)
+      db.session.commit()
+
+    assessment = all_models.Assessment.query.get(assessment_id)
+    self.api.set_user(user)
+    status_code = self.api.get(assessment.__class__, assessment_id).status_code
+    self.assertEqual(status_code, expected_status_code)
+
+  # pylint: disable=invalid-name
+  @ddt.data(
+      ("Administrator", "", 200),
+      ("Creator", "", 403),
+      ("Reader", "", 200),
+      ("Editor", "", 200),
+      ("Administrator", "Program Managers", 200),
+      ("Creator", "Program Managers", 200),
+      ("Reader", "Program Managers", 200),
+      ("Editor", "Program Managers", 200),
+      ("Administrator", "Program Editors", 200),
+      ("Creator", "Program Editors", 200),
+      ("Reader", "Program Editors", 200),
+      ("Editor", "Program Editors", 200),
+      ("Administrator", "Program Readers", 200),
+      ("Creator", "Program Readers", 200),
+      ("Reader", "Program Readers", 200),
+      ("Editor", "Program Readers", 200),
+  )
+  @ddt.unpack
+  def test_read_access_to_mapped_issue(self, rolename,
+                                       object_role, expected_status_code):
+    """Test if {0} with {1} role, has read access to mapped issue.
+    All users except ("Creator", "", 403) should have read access."""
+
+    user = self.create_user_with_role(rolename)
+    with factories.single_commit():
+      audit = factories.AuditFactory()
+      audit_id = audit.id
+      program = db.session.query(all_models.Program).one()
+      issue = factories.IssueFactory()
+      issue_id = issue.id
+      factories.RelationshipFactory(source=program, destination=audit)
+      factories.RelationshipFactory(source=audit, destination=issue)
+
+    if object_role:
+      program.add_person_with_role_name(user, object_role)
+      db.session.commit()
+
+    audit = all_models.Audit.query.get(audit_id)
+    issue = audit.related_objects(_types=["Issue"]).pop()
+    self.api.set_user(user)
+    status_code = self.api.get(issue.__class__, issue_id).status_code
+    self.assertEqual(status_code, expected_status_code)
+
+  @ddt.data(
+      ("Administrator", "", 200),
+      ("Creator", "", 403),
+      ("Reader", "", 403),
+      ("Editor", "", 200),
+      ("Administrator", "Program Managers", 200),
+      ("Creator", "Program Managers", 200),
+      ("Reader", "Program Managers", 200),
+      ("Editor", "Program Managers", 200),
+      ("Administrator", "Program Editors", 200),
+      ("Creator", "Program Editors", 200),
+      ("Reader", "Program Editors", 200),
+      ("Editor", "Program Editors", 200),
+      ("Administrator", "Program Readers", 200),
+      ("Creator", "Program Readers", 403),
+      ("Reader", "Program Readers", 403),
+      ("Editor", "Program Readers", 200),
+  )
+  @ddt.unpack
+  def test_update_access_on_audit(self, rolename,
+                                  object_role, expected_status_code):
+    """Test if {0} with {1} role, has update access to an audit.
+
+    All users except:
+    ("Creator", "", 403),
+    ("Creator", "Program Readers", 403),
+    ("Reader", "", 403),
+    ("Reader", "Program Readers", 403)
+    should have update access."""
+
+    user = self.create_user_with_role(rolename)
+    with factories.single_commit():
+      audit = factories.AuditFactory()
+      audit_id = audit.id
+      program = db.session.query(all_models.Program).one()
+      factories.RelationshipFactory(source=program, destination=audit)
+
+    if object_role:
+      program.add_person_with_role_name(user, object_role)
+      db.session.commit()
+
+    audit = all_models.Audit.query.get(audit_id)
+    self.api.set_user(user)
+    response = self.api.get(audit.__class__, audit_id)
+    status_code = response.status_code
+    if response.status_code == 200:
+      status_code = self.api.put(audit, response.json).status_code
+    self.assertEqual(status_code, expected_status_code)
+
+  # pylint: disable=invalid-name
+  @ddt.data(
+      ("Administrator", "", 200),
+      ("Creator", "", 403),
+      ("Reader", "", 403),
+      ("Editor", "", 200),
+      ("Administrator", "Program Managers", 200),
+      ("Creator", "Program Managers", 200),
+      ("Reader", "Program Managers", 200),
+      ("Editor", "Program Managers", 200),
+      ("Administrator", "Program Editors", 200),
+      ("Creator", "Program Editors", 200),
+      ("Reader", "Program Editors", 200),
+      ("Editor", "Program Editors", 200),
+      ("Administrator", "Program Readers", 200),
+      ("Creator", "Program Readers", 403),
+      ("Reader", "Program Readers", 403),
+      ("Editor", "Program Readers", 200),
+  )
+  @ddt.unpack
+  def test_update_access_on_assessment(self, rolename,
+                                       object_role, expected_status_code):
+    """Test if {0} with {1} role, has update access to an assessment.
+
+    All users except:
+    ("Creator", "", 403),
+    ("Creator", "Program Readers", 403),
+    ("Reader", "", 403),
+    ("Reader", "Program Readers", 403)
+    should have update access."""
+
+    user = self.create_user_with_role(rolename)
+    with factories.single_commit():
+      assessment = factories.AssessmentFactory()
+      assessment_id = assessment.id
+      program = db.session.query(all_models.Program).one()
+      audit = db.session.query(all_models.Audit).one()
+      factories.RelationshipFactory(source=program, destination=audit)
+      factories.RelationshipFactory(source=audit, destination=assessment)
+
+    if object_role:
+      program.add_person_with_role_name(user, object_role)
+      db.session.commit()
+
+    assessment = all_models.Assessment.query.get(assessment_id)
+    self.api.set_user(user)
+    response = self.api.get(assessment.__class__, assessment_id)
+    status_code = response.status_code
+    if response.status_code == 200:
+      status_code = self.api.put(assessment, response.json).status_code
+    self.assertEqual(status_code, expected_status_code)
+
+  # pylint: disable=invalid-name
+  @ddt.data(
+      ("Administrator", "", 200),
+      ("Creator", "", 403),
+      ("Reader", "", 403),
+      ("Editor", "", 200),
+      ("Administrator", "Program Managers", 200),
+      ("Creator", "Program Managers", 200),
+      ("Reader", "Program Managers", 200),
+      ("Editor", "Program Managers", 200),
+      ("Administrator", "Program Editors", 200),
+      ("Creator", "Program Editors", 200),
+      ("Reader", "Program Editors", 200),
+      ("Editor", "Program Editors", 200),
+      ("Administrator", "Program Readers", 200),
+      ("Creator", "Program Readers", 403),
+      ("Reader", "Program Readers", 403),
+      ("Editor", "Program Readers", 200),
+  )
+  @ddt.unpack
+  def test_update_access_on_mapped_issue(self, rolename,
+                                         object_role, expected_status_code):
+    """Test if {0} with {1} role, has update access to a mapped issue.
+
+    All users except:
+    ("Creator", "", 403),
+    ("Creator", "Program Readers", 403),
+    ("Reader", "", 403),
+    ("Reader", "Program Readers", 403)
+    should have update access."""
+
+    user = self.create_user_with_role(rolename)
+    with factories.single_commit():
+      audit = factories.AuditFactory()
+      audit_id = audit.id
+      program = db.session.query(all_models.Program).one()
+      issue = factories.IssueFactory()
+      issue_id = issue.id
+      factories.RelationshipFactory(source=program, destination=audit)
+      factories.RelationshipFactory(source=audit, destination=issue)
+
+    if object_role:
+      program.add_person_with_role_name(user, object_role)
+      db.session.commit()
+
+    audit = all_models.Audit.query.get(audit_id)
+    issue = audit.related_objects(_types=["Issue"]).pop()
+    self.api.set_user(user)
+    response = self.api.get(issue.__class__, issue_id)
+    status_code = response.status_code
+    if response.status_code == 200:
+      status_code = self.api.put(issue, response.json).status_code
+    self.assertEqual(status_code, expected_status_code)
 
 
 @base.with_memcache
