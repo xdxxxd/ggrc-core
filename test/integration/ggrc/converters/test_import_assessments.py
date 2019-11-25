@@ -1220,7 +1220,7 @@ class TestAssessmentImport(TestCase):
         all_models.Assessment.DONE_STATE)
 
   def test_import_asmnt_state_with_verifiers_and_date(self):
-    """Assessment with Verifiers should update Status to In Review if we are
+    """Assessment with Verifiers should update Status to Completed if we are
     importing Completed state with filled Verified Date"""
     with factories.single_commit():
       assessment = factories.AssessmentFactory()

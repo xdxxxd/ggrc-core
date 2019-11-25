@@ -677,35 +677,42 @@ class TestOther(TestMixinAutoStatusChangeableBase):
           "Creators",
           models.Assessment.FINAL_STATE,
           models.Assessment.PROGRESS_STATE,
+          {}
       ),
       (
           "Creators",
           models.Assessment.DONE_STATE,
           models.Assessment.PROGRESS_STATE,
+          {}
       ),
       (
           "Assignees",
           models.Assessment.FINAL_STATE,
           models.Assessment.PROGRESS_STATE,
+          {}
       ),
       (
           "Assignees",
           models.Assessment.DONE_STATE,
           models.Assessment.PROGRESS_STATE,
+          {}
       ),
       (
           "Verifiers",
           models.Assessment.FINAL_STATE,
           models.Assessment.PROGRESS_STATE,
+          {"verified_date": datetime.datetime.utcnow()}
       ),
       (
           "Verifiers",
           models.Assessment.DONE_STATE,
           models.Assessment.PROGRESS_STATE,
+          {}
       ),
   )
   @ddt.unpack
-  def test_change_acl_status_sw(self, acr_name, start_state, end_state):
+  def test_change_acl_status_sw(self, acr_name, start_state, end_state,
+                                extra_setup_args):
     """Change in ACL switches status from `start_state` to `end_state`."""
     with factories.single_commit():
       assessment = factories.AssessmentFactory(status=start_state)
@@ -715,10 +722,9 @@ class TestOther(TestMixinAutoStatusChangeableBase):
     assessment = self.refresh_object(assessment)
     self.assertEqual(assessment.status, end_state)
 
-    if (acr_name == "Verifiers" and
-       start_state == models.Assessment.FINAL_STATE):
-      assessment.verified_date = datetime.datetime.utcnow()
-      db.session.commit()
+    for attr_name, value in extra_setup_args.items():
+      setattr(assessment, attr_name, value)
+    db.session.commit()
     assessment = self.change_status(assessment, start_state)
     self.modify_assignee(assessment, person.email, [])
     assessment = self.refresh_object(assessment)
