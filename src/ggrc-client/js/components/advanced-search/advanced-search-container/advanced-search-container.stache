@@ -8,6 +8,7 @@
     <section class="advanced-search__row">
       <advanced-search-filter-container
         items:bind="filterItems"
+        filterOperatorOptions:from="filterOperatorOptions"
         availableAttributes:from="availableAttributes"
         statesCollectionKey:from="statesCollectionKey"
         modelName:from="modelName" />

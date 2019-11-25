@@ -1,6 +1,7 @@
 # Copyright (C) 2019 Google Inc.
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 """Constants for roles."""
+# pylint: disable=too-many-public-methods
 from lib import url
 from lib.constants import objects
 from lib.decorator import lazy_property, memoize
@@ -204,6 +205,11 @@ class ACLRolesIDsMetaClass(type):
   def REQUIREMENT_ADMINS(cls):
     return cls.id_of_role(
         object_type=objects.get_obj_type(objects.REQUIREMENTS), name=ADMIN)
+
+  @property
+  def EVIDENCE_ADMINS(cls):
+    return cls.id_of_role(
+        object_type=objects.get_obj_type(objects.EVIDENCE), name=ADMIN)
 
 
 class ACLRolesIDs(object):

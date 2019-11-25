@@ -738,6 +738,15 @@ class AssessmentsService(BaseWebUiService):
     page.status_filter_dropdown.select_all()
     return page
 
+  def get_objs_from_bulk_update_modal(self, modal_element,
+                                      with_second_tier_info=False):
+    """Returns assessments objects from bulk verify modal.
+    Attrs 'comments', 'evidence_urls' and 'mapped_objects' are collected if
+    with_second_tier_info is set to True."""
+    scopes_list = modal_element.select_assessments_section.get_objs_scopes(
+        with_second_tier_info)
+    return self._create_list_objs(self.entities_factory_cls, scopes_list)
+
 
 class ControlsService(SnapshotsWebUiService):
   """Class for Controls business layer's services objects."""

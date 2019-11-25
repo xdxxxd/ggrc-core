@@ -3,8 +3,15 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 }}
 
-{{#if showBulkComplete}}
+{{#if showBulkSection}}
+  {{#if showBulkComplete}}
     <assessments-bulk-complete-button isButtonView:from="true" />
+  {{/if}}
+  {{#if showBulkVerify}}
+    <assessments-bulk-verify-button
+      class="bulk-verify__button"
+      isButtonView:from="true" />
+  {{/if}}
 {{else}}
   {{#if_instance_of parentInstance 'Audit'}}
     {{^if instance.archived}}

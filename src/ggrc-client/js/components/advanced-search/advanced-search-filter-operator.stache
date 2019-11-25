@@ -3,7 +3,7 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 }}
 
-<div class="filter-operator">
+<div class="filter-operator {{#if disabled}}disabled-block{{/if}}">
   <div class="filter-operator__content">
     <select value:bind="operator">
       <option value="AND">AND</option>

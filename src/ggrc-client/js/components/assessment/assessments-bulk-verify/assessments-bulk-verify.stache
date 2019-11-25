@@ -1,0 +1,81 @@
+{{!
+    Copyright (C) 2019 Google Inc.
+    Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+}}
+
+<div class="modal-header">
+  <a class="modal-dismiss pull-right" href="javascript://" data-dismiss="modal">
+    <i class="fa fa-times black"></i>
+  </a>
+  <h2>
+    Bulk Verify
+  </h2>
+</div>
+<div class="modal-section">
+  <collapsible-panel softMode:from="true" titleText:from="'Filter'" expanded:bind="showSearch">
+    <advanced-search-container
+      modelName:from="type"
+      statesCollectionKey:from="statesCollectionKey"
+      filterOperatorOptions:from="filterOperatorOptions"
+      disabled:from="is_loading"
+      mappedToItems:from="mappedToItems"
+      defaultFilterItems:from="defaultFilterItems"
+      availableAttributes:from="filterAttributes"
+      filterItems:bind="filterItems"
+      mappingItems:to="mappingItems"
+      on:vm:onSubmit="onSubmit()">
+        <can-template name="mapped-to-section">
+          {{#isMyAssessmentsView}}
+            <h6 class="spacing-top">My Assessments</h6>
+          {{/isMyAssessmentsView}}
+        </can-template>
+    </advanced-search-container>
+  </collapsible-panel>
+</div>
+
+<div class="modal-section modal-footer">
+  <collapsible-panel softMode:from="true" titleText:from="'Select assessments to verify in bulk ({{entriesTotalCount}})'" expanded:bind="showResults">
+    <div class="search-results">
+      {{#if resultsRequested}}
+        <mapper-results
+          type:from="type"
+          selected:from="selected"
+          filterItems:from="filterItems"
+          mappingItems:from="mappingItems"
+          relevantTo:from="mappedToItems"
+          @onSearch:to="onSearchCallback"
+          paging.total:to="entriesTotalCount"
+          isLoading:bind="is_loading"
+          items:bind="entries"
+          on:vm:loaded="onLoaded()"
+          itemDetailsViewType:from="'bulk-update'" />
+
+        <div class="control-buttons">
+          <div class="confirm-buttons">
+            <spinner-component toggle:from="isVerifying" />
+            <span class="confirm-buttons__objects-count">
+              {{selected.length}} object(s) selected
+            </span>
+            <button
+              type="button"
+              class="btn btn-small btn-white"
+              on:el:click="closeModal()">
+                Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-small btn-green"
+              on:el:click="onVerifyClick()"
+              {{#if isVerifyButtonDisabled}}disabled="disabled"{{/if}}>
+                Verify
+            </button>
+          </div>
+        </div>
+      {{else}}
+        <div class="well well-small">
+          No results
+        </div>
+      {{/if}}
+    </div>
+  </collapsible-panel>
+</div>

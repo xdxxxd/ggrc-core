@@ -5,7 +5,6 @@
 
 import canStache from 'can-stache';
 import canList from 'can-list';
-import canMap from 'can-map';
 import canComponent from 'can-component';
 import './advanced-search-filter-attribute';
 import './advanced-search-filter-group';
@@ -34,13 +33,12 @@ let viewModel = AdvancedSearchContainer.extend({
       get: function (items) {
         if (this.attr('defaultStatusFilter') && items && !items.length &&
           StateUtils.hasFilter(this.attr('modelName'))) {
-          const statusItem = new canMap(AdvancedSearch.create.state());
-          statusItem.value = AdvancedSearch.setDefaultStatusConfig(
-            statusItem.value,
+          const stateItem = AdvancedSearch.setDefaultStatusConfig(
             this.attr('modelName'),
             this.attr('statesCollectionKey')
           );
-          items.push(statusItem);
+
+          items.push(AdvancedSearch.create.state(stateItem));
         }
 
         return items;
@@ -82,12 +80,21 @@ let viewModel = AdvancedSearchContainer.extend({
    */
   statesCollectionKey: null,
   /**
+   * Contains list of options for "operator" control. May used, for example,
+   * to disable changing of operator (using {disable: true} option).
+   * @type {object|null}
+   */
+  filterOperatorOptions: null,
+  /**
    * Adds Filter Operator and Filter Attribute to the collection.
    */
   addFilterCriterion: function () {
     let items = this.attr('items');
     if (items.length) {
-      items.push(AdvancedSearch.create.operator('AND'));
+      items.push(AdvancedSearch.create.operator(
+        'AND',
+        this.attr('filterOperatorOptions'))
+      );
     }
     items.push(AdvancedSearch.create.attribute());
   },
@@ -103,6 +110,9 @@ let viewModel = AdvancedSearchContainer.extend({
       AdvancedSearch.create.operator('AND'),
       AdvancedSearch.create.attribute(),
     ]));
+  },
+  isAttributeActionsShown(isAttrDisabled = false) {
+    return !isAttrDisabled;
   },
 });
 

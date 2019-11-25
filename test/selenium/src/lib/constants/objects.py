@@ -99,6 +99,8 @@ def _get_singular(plurals):
       singular = "process"
     elif name == FACILITIES:
       singular = "facility"
+    elif name == EVIDENCE:
+      singular = EVIDENCE
     else:
       singular = name[:-1]
     singulars.append(singular.upper())

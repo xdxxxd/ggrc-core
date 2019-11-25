@@ -27,6 +27,8 @@ QUERY = "query"
 ACCESS_CONTROL_ROLES = "access_control_roles"
 REVIEWS = "reviews"
 NOTIFICATIONS = "_notifications"
+COMMENTS = "comments"
+EVIDENCE = "evidence"
 
 
 class Widget(object):

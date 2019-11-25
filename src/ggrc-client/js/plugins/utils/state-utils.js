@@ -20,6 +20,10 @@ const STATES_KEYS = {
     `States which are available
      for bulk complete operation`
   ),
+  BULK_VERIFY: Symbol(
+    `States which are available
+     for bulk verify operation`
+  ),
 };
 
 let statesModels = [
@@ -36,6 +40,7 @@ let statesModels = [
     ],
     [STATES_KEYS.BULK_COMPLETE]: ['Not Started', 'In Progress',
       'Rework Needed'],
+    [STATES_KEYS.BULK_VERIFY]: ['In Review'],
   },
   {
     models: ['Audit'],

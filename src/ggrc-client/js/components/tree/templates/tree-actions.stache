@@ -79,6 +79,11 @@
           <assessments-bulk-complete-button parentInstance:from="parentInstance" />
         </li>
       {{/if}}
+      {{#if showBulkVerify}}
+        <li>
+          <assessments-bulk-verify-button parentInstance:from="parentInstance" />
+        </li>
+      {{/if}}
     </three-dots-menu>
   {{/if}}
 </div>

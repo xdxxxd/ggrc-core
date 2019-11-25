@@ -6,7 +6,6 @@
 
 import re
 import time
-from selenium.webdriver.common.by import By
 from lib import base
 from lib.app_entity_factory import entity_factory_common
 from lib.constants import (
@@ -368,8 +367,8 @@ class InfoWidget(page_mixins.WithObjectReview, ReadOnlyInfoWidget):
   @property
   def comments_panel(self):
     """Returns comments panel."""
-    return base.CommentsPanel(self._root.wd,
-                              (By.CSS_SELECTOR, "comment-data-provider"))
+    return base.CommentsPanel(
+        self._browser.element(tag_name="comment-data-provider"))
 
 
 class Programs(InfoWidget, page_mixins.WithProposals):
@@ -609,7 +608,8 @@ class Assessments(InfoWidget):
   def comments_panel(self):
     """Returns comments panel."""
     self.tabs.ensure_tab(self._assessment_tab_name)
-    return base.CommentsPanel(self._root.wd, self._locators.COMMENTS_CSS)
+    return base.CommentsPanel(
+        self._browser.element(class_name="assessment-comments"))
 
   @property
   def is_comments_panel_present(self):
