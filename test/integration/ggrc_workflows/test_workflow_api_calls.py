@@ -696,6 +696,47 @@ class TestWorkflowsApiPost(TestCase):
     self.assertEquals(count, exp_count)
 
   @ddt.data(
+      'Creator',
+      'Reader',
+  )
+  def test_create_cycle_task(self, member_role):
+    """Check creation cycle task group by workflow member"""
+    member = self.create_user_with_role(member_role)
+    with factories.single_commit():
+      workflow = wf_factories.WorkflowFactory()
+      workflow.add_person_with_role_name(member, 'Workflow Member')
+      cycle = wf_factories.CycleFactory(workflow=workflow)
+      cycle_id = cycle.id
+      ctg_id = wf_factories.CycleTaskGroupFactory(
+          cycle=cycle,
+          title='TestCTG',
+      ).id
+    self.generator.activate_workflow(workflow)
+    self.api.set_user(member)
+
+    response = self.api.post(all_models.CycleTaskGroupObjectTask, {
+        "cycle_task_group_object_task": {
+            "title": "New Cycle Task",
+            "start_date": datetime.datetime.now().strftime("%Y-%m-%d"),
+            "end_date": datetime.datetime.now().strftime("%Y-%m-%d"),
+            "context": None,
+            "task_type": "text",
+            "cycle_task_group": {
+                "id": ctg_id,
+                "type": "Task Group",
+            },
+            "cycle": {
+                "id": cycle_id,
+                "type": "Cycle",
+            },
+        }
+    })
+
+    self.assert403(response)
+    count = len(all_models.CycleTaskGroupObjectTask.query.all())
+    self.assertEquals(count, 0)
+
+  @ddt.data(
       'Reader',
       'Editor',
       'Administrator',

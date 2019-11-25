@@ -57,7 +57,7 @@ class TestCycleTaskAssigneesPropagation(base.TestACLPropagation):
               "delete": False,
           },
           "CycleTask": {
-              "create": (False, "unimplemented"),
+              "create": False,
               "read": True,
               "update": True,
               "delete": False,
@@ -115,7 +115,7 @@ class TestCycleTaskAssigneesPropagation(base.TestACLPropagation):
               "delete": False,
           },
           "CycleTask": {
-              "create": (False, "unimplemented"),
+              "create": False,
               "read": True,
               "update": True,
               "delete": False,
