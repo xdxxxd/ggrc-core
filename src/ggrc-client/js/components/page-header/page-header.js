@@ -122,6 +122,10 @@ let viewModel = canMap.extend({
         return this.attr('headerStyle') ? oneColorLogo : logo;
       },
     },
+    maintenanceSchedulesUrl: {
+      type: 'string',
+      value: GGRC.config.external_maintenance_schedules_url,
+    },
     helpUrl: {
       type: 'string',
       value: GGRC.config.external_help_url,
