@@ -47,4 +47,15 @@ describe('mapper-results-item-details component', function () {
         .toEqual('Control');
     });
   });
+
+  describe('assessmentType get() method', () => {
+    it('returns plural title for instance.assessment_type', () => {
+      const instance = {
+        assessment_type: 'Control',
+      };
+      viewModel.attr('instance', instance);
+
+      expect(viewModel.attr('assessmentType')).toBe('Controls');
+    });
+  });
 });

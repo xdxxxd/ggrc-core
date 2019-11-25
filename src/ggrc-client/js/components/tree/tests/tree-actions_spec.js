@@ -9,7 +9,8 @@ import * as SnapshotUtils from '../../../plugins/utils/snapshot-utils';
 import * as AclUtils from '../../../plugins/utils/acl-utils';
 import * as CurrentPageUtils from '../../../plugins/utils/current-page-utils';
 import * as Permission from '../../../permission';
-import {getComponentVM} from '../../../../js_specs/spec-helpers';
+import {getComponentVM, spyProp} from '../../../../js_specs/spec-helpers';
+import * as BulkUpdateService from '../../../plugins/utils/bulk-update-service';
 
 describe('tree-actions component', () => {
   let vm;
@@ -190,5 +191,123 @@ describe('tree-actions component', () => {
 
         expect(vm.attr('show3bbs')).toBeTruthy();
       });
+  });
+
+  describe('isAssessmentOnAudit get() method', () => {
+    it('returns true for Assessments tab on Audit page', () => {
+      vm.attr('parentInstance', {type: 'Audit'});
+      vm.attr('model', {model_singular: 'Assessment'});
+
+      expect(vm.attr('isAssessmentOnAudit')).toBe(true);
+    });
+
+    it('returns false for any tab except Assessments tab on Audit page',
+      () => {
+        vm.attr('parentInstance', {type: 'Audit'});
+        vm.attr('model', {model_singular: 'Issue'});
+
+        expect(vm.attr('isAssessmentOnAudit')).toBe(false);
+      });
+
+    it('returns false for any page except Audit page', () => {
+      vm.attr('parentInstance', {type: 'Person'});
+      vm.attr('model', {model_singular: 'Assessment'});
+
+      expect(vm.attr('isAssessmentOnAudit')).toBe(false);
+    });
+  });
+
+  describe('showBulkVerify get() method', () => {
+    let method;
+    let setAttrValue;
+
+    beforeEach(() => {
+      method = vm.define.showBulkVerify.get.bind(vm);
+      setAttrValue = jasmine.createSpy('setAttrValue');
+    });
+
+    describe('when isAssessmentOnAudit attr is false', () => {
+      beforeEach(() => {
+        spyProp(vm, 'isAssessmentOnAudit').and.returnValue(false);
+      });
+
+      it('calls setAttrValue() with "false"', () => {
+        method(false, setAttrValue);
+
+        expect(setAttrValue).toHaveBeenCalledWith(false);
+      });
+
+      it('does not call getAsmtCountForVerify()', () => {
+        spyOn(BulkUpdateService, 'getAsmtCountForVerify');
+
+        method(false, setAttrValue);
+
+        expect(BulkUpdateService.getAsmtCountForVerify)
+          .not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when isAssessmentOnAudit attr is true', () => {
+      let dfd;
+
+      beforeEach(() => {
+        spyProp(vm, 'isAssessmentOnAudit').and.returnValue(true);
+        vm.attr('parentInstance', {
+          type: 'Audit',
+          id: 123,
+        });
+        dfd = $.Deferred();
+        spyOn(BulkUpdateService, 'getAsmtCountForVerify')
+          .and.returnValue(dfd);
+      });
+
+      it('calls setAttrValue() before getAsmtCountForVerify() call', () => {
+        method(false, setAttrValue);
+
+        expect(setAttrValue).toHaveBeenCalledWith(false);
+      });
+
+      it('calls getAsmtCountForVerify() with specified params', () => {
+        method(false, setAttrValue);
+
+        expect(BulkUpdateService.getAsmtCountForVerify).toHaveBeenCalledWith({
+          type: 'Audit',
+          id: 123,
+          operation: 'relevant',
+        });
+      });
+
+      it('calls setAttrValue() two times with specified params', (done) => {
+        method(false, setAttrValue);
+
+        dfd.resolve(3)
+          .then(() => {
+            expect(setAttrValue).toHaveBeenCalledTimes(2);
+            expect(setAttrValue.calls.first().args[0]).toBe(false);
+            expect(setAttrValue.calls.mostRecent().args[0]).toBe(true);
+            done();
+          });
+      });
+
+      it('calls setAttrValue() with "true" ' +
+      'if received assessments count > 0', (done) => {
+        method(false, setAttrValue);
+
+        dfd.resolve(3).then(() => {
+          expect(setAttrValue).toHaveBeenCalledWith(true);
+          done();
+        });
+      });
+
+      it('calls setAttrValue() with "false" ' +
+      'if received assessments count <= 0', (done) => {
+        method(false, setAttrValue);
+
+        dfd.resolve(0).then(() => {
+          expect(setAttrValue).toHaveBeenCalledWith(false);
+          done();
+        });
+      });
+    });
   });
 });
