@@ -40,13 +40,14 @@ export default Cacheable.extend({
   },
   defaults: {
     test_plan_procedure: true,
-    sox_302_enabled: false,
     template_object_type: 'Control',
     default_people: {
       assignees: 'Principal Assignees',
       verifiers: 'Auditors',
     },
     status: 'Draft',
+    verification_workflow: 'STANDARD',
+    review_levels_count: null,
   },
   statuses: ['Draft', 'Deprecated', 'Active'],
   tree_view_options: {
@@ -71,8 +72,8 @@ export default Cacheable.extend({
       attr_name: 'modified_by',
       order: 71,
     }, {
-      attr_title: 'SOX 302 assessment workflow',
-      attr_name: 'sox_302_enabled',
+      attr_title: 'Assessment Workflow',
+      attr_name: 'verification_workflow',
       order: 72,
     }],
     add_item_view: 'assessment_templates/tree-add-item',
