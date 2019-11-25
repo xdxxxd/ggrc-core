@@ -47,6 +47,9 @@ CUSTOM_URL_ROOT = os.environ.get("GGRC_CUSTOM_URL_ROOT")
 ABOUT_URL = os.environ.get("GGRC_ABOUT_URL")
 ABOUT_TEXT = os.environ.get("GGRC_ABOUT_TEXT")
 EXTERNAL_HELP_URL = os.environ.get("GGRC_EXTERNAL_HELP_URL")
+EXTERNAL_MAINTENANCE_SCHEDULES_URL = os.environ.get(
+    "GGRC_EXTERNAL_MAINTENANCE_SCHEDULES_URL"
+)
 EXTERNAL_IMPORT_HELP_URL = os.environ.get("GGRC_EXTERNAL_IMPORT_HELP_URL")
 SERVER_SOFTWARE = os.environ.get('SERVER_SOFTWARE', '')
 # whether the code is running in production or in the local development server
