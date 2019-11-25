@@ -1,8 +1,10 @@
-[//]: <> (updated 11/13/2019)
+[//]: <> (updated 12/02/2019)
 
 Our product team is working hard to engineer compliance @ scale and make your day to day user journeys easier. We have been adding key capabilities to the product as listed here below.
 
-## Additional description for an evidence (v2.21.0, 11/13/2019)
+## A New Assessment type for the SOX 302 Certification is now available in GGRC (v2.22.0, 12/2/2019)
+
+## Additional description for an evidence (v2.21.0, 12/2/2019)
 
 ## Ability to create a new Cycle Task Group during active Cycle (v2.20.0, 10/29/2019)
 
@@ -118,7 +120,16 @@ Our product team is working hard to engineer compliance @ scale and make your da
 
 ## Performance improvements
 
-### Additional description for an evidence (v2.21.0, 11/13/2019)
+### A New Assessment type for the SOX 302 Certification is now available in GGRC (v2.22.0, 12/2/2019)
+
+Now it is possible to create Assessments specific for the SOX 302 Controls Certification. You  can generate such Assessments via an Assessment Template with the checked “Enable SOX 302 assessment workflow” checkbox. When the checkbox is checked, a user is requested to specify:
+- Questions for Assessments 
+- Which answer options are treated as negative 
+The Assessments created via such Template have a special workflow:
+1. If there are no negative answers the verification step is skipped.
+2. An Assessment Assignee has permissions to provide answers to Assessment Questions, attach evidence files / URLs, add comments to an Assessment and ‘Complete’ it. Once the Assessment is completed, the Assignee can make no changes to it.
+
+### Additional description for an evidence (v2.21.0, 12/2/2019)
 
 From now, you can add an optional additional description to an evidence file or evidence URL.
 
