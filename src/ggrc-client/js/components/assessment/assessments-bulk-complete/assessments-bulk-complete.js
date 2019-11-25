@@ -131,8 +131,7 @@ const viewModel = AssessmentsBulkUpdatable.extend({
         modal_title: 'Warning',
         modal_description: 'Custom attributes list will be updated ' +
           'accordingly. All already added answers will be lost.',
-        button_view:
-          `${GGRC.templates_path}/modals/confirm-cancel-buttons.stache`,
+        button_view: '/modals/confirm-cancel-buttons.stache',
         modal_confirm: 'Proceed',
       }, () => this.generateAttributes());
     } else {
@@ -452,8 +451,7 @@ const viewModel = AssessmentsBulkUpdatable.extend({
         modal_title: 'Warning',
         modal_description: 'You\'ve added new answers for custom attributes ' +
          'that will replace existing answers.',
-        button_view:
-          `${GGRC.templates_path}/modals/confirm-cancel-buttons.stache`,
+        button_view: '/modals/confirm-cancel-buttons.stache',
         modal_confirm: 'Proceed',
       }, () => this.completeAssessments());
     } else {

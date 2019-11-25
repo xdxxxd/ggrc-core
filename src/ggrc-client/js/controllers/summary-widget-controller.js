@@ -4,8 +4,8 @@
 */
 
 import loIsNumber from 'lodash/isNumber';
-import {ggrcAjax, ggrcGet} from '../plugins/ajax-extensions';
-import canStache from 'can-stache';
+import {ggrcGet} from '../plugins/ajax-extensions';
+import {getFragment} from '../plugins/ggrc-utils';
 import canMap from 'can-map';
 import canControl from 'can-control';
 import '../components/add-object-button/add-object-button';
@@ -29,7 +29,7 @@ export default canControl.extend({
     Relationship,
     model: getPageModel(),
     instance: getPageInstance(),
-    widget_view: GGRC.templates_path + '/base_objects/summary.stache',
+    widget_view: '/base_objects/summary.stache',
     isLoading: true,
     isShown: false,
     forceRefresh: false,
@@ -57,8 +57,7 @@ export default canControl.extend({
 }, {
   init: function () {
     if (this.element.data('widget-view')) {
-      this.options.widget_view = GGRC.templates_path +
-        this.element.data('widget-view');
+      this.options.widget_view = this.element.data('widget-view');
     }
     this.element.closest('.widget')
       .on('widget_shown', this.widget_shown.bind(this));
@@ -76,14 +75,10 @@ export default canControl.extend({
       },
     });
 
-    ggrcAjax({
-      url: this.get_widget_view(this.element),
-      dataType: 'text',
-    }).then((view) => {
-      let frag = canStache(view)(this.options.context);
-      this.element.html(frag);
-      this.widget_shown();
-    });
+    let frag = getFragment(this.get_widget_view(this.element),
+      this.options.context);
+    this.element.html(frag);
+    this.widget_shown();
     return 0;
   },
   onRelationshipChange: function (model, ev, instance) {
@@ -105,8 +100,7 @@ export default canControl.extend({
       .closest('[data-widget-view]')
       .attr('data-widget-view');
     return (widgetView && widgetView.length > 0) ?
-      GGRC.templates_path + widgetView :
-      this.options.widget_view;
+      widgetView : this.options.widget_view;
   },
   widget_shown: function (event) {
     this.options.isShown = true;

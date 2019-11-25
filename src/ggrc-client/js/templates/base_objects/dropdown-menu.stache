@@ -8,7 +8,7 @@
       {{^is_edit_denied instance}}
         {{^if instance.constructor.isChangeableExternally}}
           {{^if instance.readonly}}
-            {{> /static/templates/base_objects/edit-object-link.stache}}
+            {{> base_objects/edit-object-link.stache}}
           {{/if}}
         {{/if}}
       {{/is_edit_denied}}

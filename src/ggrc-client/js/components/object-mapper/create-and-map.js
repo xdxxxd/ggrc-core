@@ -154,7 +154,7 @@ export default canComponent.extend({
         modal_description: this.attr('isMappableExternally')
           ? this.getCreateAndMapExternallyText()
           : this.getCreateAndReturnBackText(),
-        button_view: `${GGRC.templates_path}/modals/link-button.stache`,
+        button_view: '/modals/link-button.stache',
         modalConfirmLink: getCreateObjectUrl(destinationModel),
         modalConfirmButton: 'Proceed in the new tab',
       }, () => {
@@ -183,7 +183,7 @@ export default canComponent.extend({
           ${sourceModel.title_singular.toLowerCase()} only in the
           new frontend. By clicking "Proceed in the new tab" you'll be
           redirected to the new page where you can create mapping.`,
-        button_view: `${GGRC.templates_path}/modals/link-button.stache`,
+        button_view: '/modals/link-button.stache',
         modalConfirmButton: 'Proceed in the new tab',
         modalConfirmLink: getMappingUrl(this.attr('source'), destinationModel),
       });

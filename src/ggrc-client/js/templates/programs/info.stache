@@ -14,7 +14,7 @@
             <tab-panel panels:bind="panels" titleText:from="'Attributes'">
               <div class="info-pane__body">
                 <div class="info-pane__main-content info-pane__main-content-with-sidebar">
-                  {{> /static/templates/base_objects/object-review.stache}}
+                  {{> base_objects/object-review.stache}}
 
                   <div class="row-fluid wrap-row">
                     <inline-edit-control
@@ -63,8 +63,8 @@
                       </custom-roles>
                     </div>
                   </div>
-                  {{> /static/templates/base_objects/reference-urls.stache}}
-                  {{> /static/templates/base_objects/folder-attachments.stache}}
+                  {{> base_objects/reference-urls.stache}}
+                  {{> base_objects/folder-attachments.stache}}
 
                   <div class="custom-attr-wrap info-pane__section">
                     <div class="row-fluid">
@@ -115,7 +115,7 @@
                       </div>
                     </div>
                   </div><!-- custom-attr-wrap end -->
-                  {{> /static/templates/custom_attributes/info.stache}}
+                  {{> custom_attributes/info.stache}}
                 </div>
                 {{^if isSnapshot}}
                   <div class="info-pane__sidebar">

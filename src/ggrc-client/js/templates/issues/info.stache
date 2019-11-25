@@ -85,8 +85,8 @@
                       </div>
                     </div>
 
-                    {{> /static/templates/base_objects/reference-urls.stache}}
-                    {{> /static/templates/base_objects/folder-attachments.stache}}
+                    {{> base_objects/reference-urls.stache}}
+                    {{> base_objects/folder-attachments.stache}}
 
                     <div class="custom-attr-wrap info-pane__section">
                       <div class="row-fluid">
@@ -184,7 +184,7 @@
 
                       </div><!-- hidden-fields-area end -->
                     </div><!-- custom-attr-wrap end -->
-                    {{> /static/templates/custom_attributes/info.stache}}
+                    {{> custom_attributes/info.stache}}
                   </div>
                   {{^if isSnapshot}}
                   <div class="info-pane__sidebar">

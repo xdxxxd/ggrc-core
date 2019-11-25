@@ -189,7 +189,7 @@ const viewModel = canMap.extend({
         modal_description: `GDrive file is generated successfully.
          Click button below to view the file.`,
         gDriveLink: link,
-        button_view: `${GGRC.templates_path}/modals/open-sheet.stache`,
+        button_view: '/modals/open-sheet.stache',
       });
     }).always(() => {
       this.attr('isLoading', false);

@@ -64,7 +64,7 @@ WorkflowExtension.init_widgets_for_workflow_page = function () {
       info: {
         content_controller: InfoWidget,
         content_controller_options: {
-          widget_view: GGRC.templates_path + '/workflows/info.stache',
+          widget_view: '/workflows/info.stache',
         },
       },
       task_group: {

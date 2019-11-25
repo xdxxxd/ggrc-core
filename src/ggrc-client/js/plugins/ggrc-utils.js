@@ -8,6 +8,7 @@ import loIsObject from 'lodash/isObject';
 import loMap from 'lodash/map';
 import loValues from 'lodash/values';
 import loFind from 'lodash/find';
+import canStache from 'can-stache';
 /**
  * A module containing various utility functions.
  */
@@ -220,6 +221,21 @@ function filteredMap(items, predicate) {
     .filter((item) => item !== null && item !== undefined);
 }
 
+
+function getTemplatePath(url) {
+  let match = url.match(/\/(.*)\.stache/);
+  return match && match[1];
+}
+
+function getView(templateUrl) {
+  return GGRC.Templates[getTemplatePath(templateUrl)];
+}
+
+function getFragment(viewPath, context) {
+  const view = getView(viewPath);
+  return canStache(view)(context);
+}
+
 export {
   applyTypeFilter,
   isInnerClick,
@@ -233,4 +249,6 @@ export {
   exists,
   splitTrim,
   filteredMap,
+  getView,
+  getFragment,
 };

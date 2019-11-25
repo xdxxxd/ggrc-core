@@ -65,10 +65,8 @@ function generateCycle(workflow) {
     modal_title: 'Confirm',
     modal_confirm: 'Proceed',
     skip_refresh: true,
-    button_view: GGRC.templates_path +
-      '/workflows/confirm-start-buttons.stache',
-    content_view: GGRC.templates_path +
-      '/workflows/confirm-start.stache',
+    button_view: '/workflows/confirm-start-buttons.stache',
+    content_view: '/workflows/confirm-start.stache',
     instance: workflow,
   }, (params, option) => {
     let data = {};

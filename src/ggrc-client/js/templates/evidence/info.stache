@@ -23,7 +23,7 @@
                 </document-object-list-item>
               </div>
 
-              {{> /static/templates/base_objects/description.stache}}
+              {{> base_objects/description.stache}}
 
               <div class="row-fluid wrap-row">
                 <div class="span12">
@@ -36,7 +36,7 @@
                 </div>
               </div>
 
-              {{> /static/templates/base_objects/contacts.stache}}
+              {{> base_objects/contacts.stache}}
 
               <div class="row-fluid wrap-row">
                 <div class="span4">

@@ -4,9 +4,8 @@
 */
 
 import loSortBy from 'lodash/sortBy';
-import {ggrcAjax} from '../plugins/ajax-extensions';
+import {getFragment} from '../plugins/ggrc-utils';
 import makeArray from 'can-util/js/make-array/make-array';
-import canStache from 'can-stache';
 import canList from 'can-list';
 import canMap from 'can-map';
 import canControl from 'can-control';
@@ -17,8 +16,7 @@ import UserRole from '../models/service-models/user-role';
 // Role Assignment Modal Selector
 const userRolesModalSelector = canControl.extend({
   defaults: {
-    base_modal_view:
-      GGRC.templates_path + '/people_roles/base-modal.stache',
+    base_modal_view: '/people_roles/base-modal.stache',
     option_column_view: 'people_roles/option-column',
     object_detail_view: 'people_roles/object-detail',
 
@@ -50,15 +48,10 @@ const userRolesModalSelector = canControl.extend({
   initView() {
     let deferred = $.Deferred();
 
-    ggrcAjax({
-      url: this.options.base_modal_view,
-      dataType: 'text',
-    }).then((view) => {
-      let frag = canStache(view)(this.context);
-      $(this.element).html(frag);
-      $(this.element).trigger('loaded');
-      deferred.resolve();
-    });
+    let frag = getFragment(this.options.base_modal_view, this.context);
+    $(this.element).html(frag);
+    $(this.element).trigger('loaded');
+    deferred.resolve();
 
     this.on(); // Start listening for events
 

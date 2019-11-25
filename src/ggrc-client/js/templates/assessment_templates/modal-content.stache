@@ -6,7 +6,7 @@
 <div class="hideable-holder">
   <wrapper-assessment-template instance:from="instance">
   <form action="javascript://">
-    {{> /static/templates/base_objects/form-restore.stache}}
+    {{> base_objects/form-restore.stache}}
 
     <div class="row-fluid choose-object">
       <div class="span12">

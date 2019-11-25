@@ -347,8 +347,7 @@ export default canComponent.extend({
           ' automatically be mapped to parent program. Do you want' +
           ' to proceed?',
         modal_confirm: 'Proceed',
-        button_view:
-          `${GGRC.templates_path}/modals/confirm-cancel-buttons.stache`,
+        button_view: '/modals/confirm-cancel-buttons.stache',
       }, () => {
         this.viewModel.attr('is_saving', true);
         this.mapObjects(selectedObjects, true,

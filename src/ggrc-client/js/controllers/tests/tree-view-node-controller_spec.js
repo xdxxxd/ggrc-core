@@ -2,9 +2,7 @@
   Copyright (C) 2019 Google Inc.
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
-
-import * as CanStacheUtils from 'can-stache';
-import * as AjaxExtensions from '../../plugins/ajax-extensions';
+import * as GGRCUtils from '../../plugins/ggrc-utils';
 import canMap from 'can-map';
 import Ctrl from '../tree/tree-view-node';
 
@@ -35,9 +33,12 @@ describe('TreeViewNode Controller', function () {
       };
 
       method = Ctrl.prototype.draw_node.bind(ctrlInst);
-      spyOn(AjaxExtensions, 'ggrcAjax')
-        .and.returnValue(Promise.resolve('<div></div>'));
-      spyOn(CanStacheUtils, 'default');
+      spyOn(GGRCUtils, 'getFragment')
+        .and.callFake(() => {
+          const fragment= document.createDocumentFragment();
+          fragment.appendChild(document.createElement('div'));
+          return fragment;
+        });
     });
 
     it('doesn\'t render if DOM element is null', function () {

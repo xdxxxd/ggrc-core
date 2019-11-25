@@ -45,8 +45,7 @@ function createWidgetDescriptor(id, opts) {
   widgetView [optional] - a template for rendering the info.
 */
 function makeInfoWidget(instance, widgetView) {
-  let defaultInfoWidgetView = GGRC.templates_path +
-    '/base_objects/info.stache';
+  let defaultInfoWidgetView = '/base_objects/info.stache';
   return createWidgetDescriptor(
     instance.constructor.model_singular + ':info', {
       widget_id: 'info',
@@ -75,8 +74,7 @@ function makeInfoWidget(instance, widgetView) {
   widgetView [optional] - a template for rendering the info.
 */
 function makeSummaryWidget(instance, widgetView) {
-  let defaultView = GGRC.templates_path +
-    '/base_objects/summary.stache';
+  let defaultView = '/base_objects/summary.stache';
   return createWidgetDescriptor(
     instance.constructor.model_singular + ':summary', {
       widget_id: 'summary',
@@ -96,8 +94,7 @@ function makeSummaryWidget(instance, widgetView) {
 }
 
 function makeDashboardWidget(instance, widgetView) {
-  let defaultView = GGRC.templates_path +
-    '/base_objects/dashboard.stache';
+  let defaultView = '/base_objects/dashboard.stache';
   return createWidgetDescriptor(
     instance.constructor.model_singular + ':dashboard', {
       widget_id: 'dashboard',

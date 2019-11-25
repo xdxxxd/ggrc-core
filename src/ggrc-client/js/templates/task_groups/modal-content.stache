@@ -4,7 +4,7 @@
 }}
 
 <form action="javascript://">
-  {{> /static/templates/base_objects/form-restore.stache}}
+  {{> base_objects/form-restore.stache}}
 
   <div class="row-fluid">
     <div class="span8">

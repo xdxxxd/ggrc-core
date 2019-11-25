@@ -39,7 +39,7 @@ export default canComponent.extend({
         modal_description: 'You are about to move Assessment from "' +
           this.instance.status +
           '" to "In Progress" - are you sure about that?',
-        button_view: GGRC.templates_path + '/modals/prompt-buttons.stache',
+        button_view: '/modals/prompt-buttons.stache',
       }, confirmation.resolve, confirmation.reject);
 
       return confirmation.then(function (data) {

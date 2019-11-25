@@ -12,12 +12,12 @@
         <tab-panel panels:bind="panels" titleText:from="'Attributes'">
           <div class="info-pane__body">
             <div class="info-pane__main-content {{^if isSnapshot}}info-pane__main-content-with-sidebar{{/if}}">
-              {{> /static/templates/base_objects/description.stache}}
-              {{> /static/templates/base_objects/test-plan.stache}}
-              {{> /static/templates/base_objects/notes.stache}}
-              {{> /static/templates/base_objects/contacts.stache}}
-              {{> /static/templates/base_objects/reference-urls.stache}}
-              {{> /static/templates/base_objects/folder-attachments.stache}}
+              {{> base_objects/description.stache}}
+              {{> base_objects/test-plan.stache}}
+              {{> base_objects/notes.stache}}
+              {{> base_objects/contacts.stache}}
+              {{> base_objects/reference-urls.stache}}
+              {{> base_objects/folder-attachments.stache}}
 
               <div class="custom-attr-wrap info-pane__section">
                 <div class="row-fluid">
@@ -76,7 +76,7 @@
                   </div>
                 </div>
               </div><!-- custom-attr-wrap end -->
-              {{> /static/templates/custom_attributes/info.stache}}
+              {{> custom_attributes/info.stache}}
             </div>
             {{^if isSnapshot}}
             <div class="info-pane__sidebar">
