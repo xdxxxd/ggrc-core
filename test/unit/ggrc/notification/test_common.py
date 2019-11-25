@@ -8,7 +8,9 @@
 import unittest
 from datetime import datetime
 
-from ggrc.notifications.common import sort_comments
+import mock
+
+from ggrc.notifications import common
 
 
 class TestSortComments(unittest.TestCase):
@@ -42,7 +44,7 @@ class TestSortComments(unittest.TestCase):
         }
     }
 
-    sort_comments(data)
+    common.sort_comments(data)
 
     comment_data = data["comment_created"].values()[0]
     self.assertIsInstance(comment_data, list)
@@ -52,3 +54,20 @@ class TestSortComments(unittest.TestCase):
         "All tasks can be closed", "I am confused", "ABCD...", "Comment One"
     ]
     self.assertEqual(descriptions, expected_descriptions)
+
+  def test_get_daily_notification_huge_data(self):
+    """Test that we do not loose any notifications during merging chunks"""
+    notif_list = mock.MagicMock(return_value=None)
+
+    content = [(notif_list, {"user@example.com": {"notif": {"id": 1}}}),
+               (notif_list, {"user@example.com": {"notif 2": {"id": 1}}}),
+               (notif_list, {"test@example.com": {"notif": {"id": 1}}})]
+
+    expected_data = {"test@example.com": {"notif": {"id": 1}},
+                     "user@example.com": {"notif": {"id": 1},
+                                          "notif 2": {"id": 1}}}
+
+    with mock.patch("ggrc.notifications.common.generate_daily_notifications",
+                    return_value=content):
+      _, notif_data = common.get_daily_notifications()
+      self.assertEqual(expected_data, notif_data)

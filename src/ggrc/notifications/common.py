@@ -266,7 +266,7 @@ def get_daily_notifications():
   notifications_data = {}
   for notif_list, notif_data in generate_daily_notifications():
     notifications.extend(notif_list.all())
-    notifications_data.update(notif_data)
+    notifications_data = merge_dict(notifications_data, notif_data)
 
   return notifications, notifications_data
 
