@@ -10,6 +10,7 @@ import ddt
 from flask.json import dumps
 from ggrc import utils
 from ggrc.converters import get_exportables
+from ggrc.integrations import constants
 from ggrc.models import inflector, all_models
 from ggrc.models.reflection import AttributeInfo
 from integration.ggrc import TestCase
@@ -462,6 +463,20 @@ class TestExportEmptyTemplate(TestCase):
                                 data=dumps(data), headers=self.headers)
     self.assertIn("This field is not changeable\nafter workflow activation."
                   "\nAllowed values are:\nTRUE\nFALSE", response.data)
+
+  def test_severity_tip(self):
+    """Tests for tip in Severity column for AssessmentTemplate object"""
+    data = {
+        "export_to": "csv",
+        "objects": [
+            {"object_name": "AssessmentTemplate", "fields": "all"},
+        ],
+    }
+    response = self.client.post("/_service/export_csv",
+                                data=dumps(data), headers=self.headers)
+
+    self.assertIn("Allowed values are:\n{}".format(
+        '\n'.join(constants.AVAILABLE_SEVERITIES)), response.data)
 
 
 @ddt.ddt
