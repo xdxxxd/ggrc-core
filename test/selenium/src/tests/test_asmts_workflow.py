@@ -244,7 +244,7 @@ class TestAssessmentsWorkflow(base.Test):
     unchecked_asmt = assessments[0]
     checked_asmt = assessments[1]
 
-    checkbox_value = random.choice([True, False])
+    checkbox_value = random.choice(["yes", "no"])
     print "Checkbox value: {}".format(checkbox_value)
     self._set_values_for_assessment(
         unchecked_asmt, gcads_for_asmt,
@@ -284,7 +284,7 @@ class TestAssessmentsWorkflow(base.Test):
     unchecked_asmt = assessments_from_template[0]
     checked_asmt = assessments_from_template[1]
 
-    checkbox_value = random.choice([True, False])
+    checkbox_value = random.choice(["yes", "no"])
     print "Checkbox value: {}".format(checkbox_value)
     set_values_for_assessment(
         unchecked_asmt, only_checkbox=True, checkbox_value=checkbox_value)

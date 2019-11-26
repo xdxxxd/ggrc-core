@@ -145,7 +145,7 @@ class TestExportEmptyTemplate(TestCase):
     }
     response = self.client.post("/_service/export_csv",
                                 data=dumps(data), headers=self.headers)
-    self.assertIn("Allowed values are:\nTRUE\nFALSE", response.data)
+    self.assertIn("Allowed values are:\nyes\nno", response.data)
 
   def test_custom_attr_people(self):
     """Test if LCA Map:Person type has hint for Assessment ."""
