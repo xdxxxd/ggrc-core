@@ -76,20 +76,16 @@ class TestDisabledObjects(base.Test):
         control.repr_ui(), actual_objects,
         *entity.Representation.tree_view_attrs_to_exclude)
 
-  def test_user_cannot_add_person_to_custom_role(self, control,
-                                                 controls_service):
+  @pytest.mark.parametrize(
+      "obj, role", [("control", "control_owners"), ("risk", "risk_owners")],
+      indirect=["obj"])
+  def test_user_cannot_add_person_to_custom_role(self, obj, role, selenium,
+                                                 soft_assert):
     """Tests that user cannot add a person to custom Role."""
-    expected_conditions = {"add_person_text_field_exists": False,
-                           "same_url_for_new_tab": True}
-    actual_conditions = copy.deepcopy(expected_conditions)
-
-    widget = controls_service.open_info_page_of_obj(control)
-    widget.control_owners.inline_edit.open()
-    actual_conditions["add_person_text_field_exists"] = (
-        widget.control_owners.add_person_text_field.exists)
-    old_tab, new_tab = browsers.get_browser().windows()
-    actual_conditions["same_url_for_new_tab"] = (old_tab.url == new_tab.url)
-    assert expected_conditions == actual_conditions
+    webui_facade.soft_assert_role_cannot_be_edited(soft_assert, obj, role)
+    soft_assert.expect(webui_facade.are_tabs_urls_equal(),
+                       "Urls should be equal.")
+    soft_assert.assert_expectations()
 
   @pytest.mark.parametrize('obj', ["control", "risk"], indirect=True)
   def test_user_cannot_update_custom_attribute(self, obj, selenium,

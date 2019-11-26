@@ -16,7 +16,7 @@ from lib.page.widget import (generic_widget, object_modal, import_page,
 from lib.rest_facades import roles_rest_facade
 from lib.service import (webui_service, rest_service, rest_facade,
                          admin_webui_service)
-from lib.utils import selenium_utils, ui_utils, string_utils
+from lib.utils import selenium_utils, ui_utils, string_utils, test_utils
 
 
 def create_control_in_program_scope(selenium, program):
@@ -97,6 +97,23 @@ def assert_can_edit(selenium, obj, can_edit):
     _assert_title_editable(obj, selenium, info_page)
 
 
+def assert_can_edit_control(selenium, cntrl, can_edit):
+  """Assert that current user cannot edit control via UI."""
+  info_page = webui_service.ControlsService(
+      selenium).open_info_page_of_obj(cntrl)
+  els_shown_for_editor = info_page.els_shown_for_editor()
+  exp_list = [can_edit] * (len(els_shown_for_editor))
+  # Add comment btn exists on all control pages
+  exp_list[0] = True
+  # Request review button doesn't exist on all control pages
+  exp_list[1] = False
+  # Edit button doesn't exist on all control pages
+  exp_list[2] = False
+  assert [item.exists for item in els_shown_for_editor] == exp_list
+  if info_page.three_bbs.exists:
+    assert info_page.three_bbs.edit_option.exists is False
+
+
 def assert_can_delete(selenium, obj, can_delete):
   """If `can_delete` is True, assert that current user can delete object via UI
   otherwise check that user cannot delete object via UI
@@ -107,6 +124,14 @@ def assert_can_delete(selenium, obj, can_delete):
     info_page.three_bbs.select_delete().confirm_delete()
     selenium_utils.open_url(obj.url)
     assert ui_utils.is_error_404()
+
+
+def assert_cannot_delete_control(selenium, cntrl):
+  """Assert that current user cannot delete control via UI."""
+  cntrl_info_page = webui_service.ControlsService(
+      selenium).open_info_page_of_obj(cntrl)
+  if cntrl_info_page.three_bbs.exists:
+    assert cntrl_info_page.three_bbs.delete_option.exists is False
 
 
 def _get_ui_service(selenium, obj):
@@ -554,3 +579,17 @@ def soft_assert_bulk_verify_filter_functionality(page, modal, exp_asmt,
       webui_service.AssessmentsService().get_objs_from_bulk_update_modal(
           modal, with_second_tier_info=True),
       *exp_asmt.bulk_update_modal_tree_view_attrs_to_exclude)
+
+
+def soft_assert_role_cannot_be_edited(soft_assert, obj, role):
+  """Performs soft assert that click on role's pencil icon doesn't open
+  an input field."""
+  info_widget = factory.get_cls_webui_service(
+      objects.get_plural(obj.type))().open_info_page_of_obj(obj)
+  role_field_element = getattr(info_widget, role)
+  role_field_element.inline_edit.open()
+  # wait until new tab contains info page url
+  _, new_tab = browsers.get_browser().windows()
+  test_utils.wait_for(lambda: new_tab.url.endswith(url.Widget.INFO))
+  soft_assert.expect(not role_field_element.add_person_text_field.exists,
+                     "There should be no input field.")

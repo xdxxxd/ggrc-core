@@ -46,6 +46,7 @@ TECHNICAL_PMS = "Technical / Program Managers"
 LEGAL_COUNSELS = "Legal Counsels"
 SYSTEM_OWNERS = "System Owners"
 REVIEWERS = "Reviewers"
+RISK_OWNERS = "Risk Owners"
 
 # Some Smoke ACL tests check functionality under this set of roles
 IMPORTANT_ASMT_ROLES = [
