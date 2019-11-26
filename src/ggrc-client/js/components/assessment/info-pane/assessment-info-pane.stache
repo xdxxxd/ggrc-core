@@ -100,6 +100,7 @@
                               <item-edit-control document:from="{.}"
                                   propName:from="'notes'"
                                   value:from="notes"
+                                  date:from="updated_at"
                                   instance:from="instance"
                                   placeholder="Add optional description"
                                   isEditIconDenied:from="isSemiRestrictedOnStatus"
@@ -116,7 +117,7 @@
                                     {{notes}}
                                   </div>
                                 {{/unless}}
-                                <span class="date">{{localize_date created_at}}</span>
+                                <span class="date">{{localize_date date}}</span>
                               </item-edit-control>
                             </object-list>
                             {{#unless isSemiRestrictedOnStatus}}
@@ -141,6 +142,7 @@
                               <item-edit-control document:from="{.}"
                                     propName:from="'notes'"
                                     value:from="notes"
+                                    date:from="updated_at"
                                     instance:from="instance"
                                     placeholder="Add optional description"
                                     isEditIconDenied:from="isSemiRestrictedOnStatus"
@@ -157,7 +159,7 @@
                                       {{notes}}
                                     </div>
                                   {{/unless}}
-                                  <span class="date">{{localize_date created_at}}</span>
+                                  <span class="date">{{localize_date date}}</span>
                               </item-edit-control>
                             </object-list>
                           {{#unless isSemiRestrictedOnStatus}}
