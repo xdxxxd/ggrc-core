@@ -7,7 +7,7 @@ import * as AdvancedSearch from '../../plugins/utils/advanced-search-utils';
 import * as StateUtils from '../../plugins/utils/state-utils';
 import QueryParser from '../../generated/ggrc-filter-query-parser';
 import loEndsWith from 'lodash/endsWith';
-import {getComponentVM} from '../../../js_specs/spec_helpers';
+import {getComponentVM} from '../../../js_specs/spec-helpers';
 import Component from '../../components/tree/tree-widget-container';
 
 describe('AdvancedSearch', () => {

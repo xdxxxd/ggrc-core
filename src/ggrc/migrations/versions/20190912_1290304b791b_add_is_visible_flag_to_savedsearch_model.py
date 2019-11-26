@@ -15,7 +15,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "1290304b791b"
-down_revision = "0f827fe39ad5"
+down_revision = "007ee00ff963"
 
 
 def add_is_visible_column():
