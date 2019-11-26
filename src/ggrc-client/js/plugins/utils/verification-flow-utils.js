@@ -4,6 +4,8 @@
  */
 
 import loFind from 'lodash/find';
+import loSortBy from 'lodash/sortBy';
+import loHead from 'lodash/head';
 
 const VERIFICATION_FLOWS = {
   STANDARD: 'STANDARD',
@@ -31,9 +33,19 @@ const getFlowDisplayName = (instance) => {
   return flow ? flow.display_name : '';
 };
 
+const getFirstUnreviewedLevel = (instance) => {
+  const unreviewedLevels = instance.attr('review_levels')
+    .filter((reviewLevel) => !reviewLevel.verified_by);
+  const sortedByLevelNumber = loSortBy(unreviewedLevels, 'level_number');
+  const firstUnreviewedLevel = loHead(sortedByLevelNumber);
+
+  return firstUnreviewedLevel;
+};
+
 export {
   isStandardFlow,
   isSox302Flow,
   isMultiLevelFlow,
   getFlowDisplayName,
+  getFirstUnreviewedLevel,
 };

@@ -37,14 +37,78 @@ export default Cacheable.extend({
   is_custom_attributable: true,
   isRoleable: true,
   defaults: {
+    // STUB
+    // review_levels: {
+    //   people: [],
+    //   current_level: 3,
+    //   status: '??????',
+    //   verified_by: '???????',
+    //   completed_at: '????????',
+    // },
+    review_levels: [{
+      id: 5,
+      level_number: 5,
+      assessment_id: 2,
+      completed_at: null,
+      verified_by: null,
+      users: [{
+        id: 1,
+        email: 'artsioma@google.com',
+      }],
+    }, {
+      id: 4,
+      level_number: 4,
+      assessment_id: 2,
+      completed_at: null,
+      verified_by: null,
+      users: [{
+        id: 1,
+        email: 'artsioma@google.com',
+      }],
+    }, {
+      id: 1,
+      level_number: 1,
+      assessment_id: 2,
+      completed_at: null,
+      verified_by: 1,
+      users: [{
+        id: 1,
+        email: 'artsioma@google.com',
+      }],
+    }, {
+      id: 3,
+      level_number: 3,
+      assessment_id: 2,
+      completed_at: null,
+      verified_by: 5,
+      users: [{
+        id: 5,
+        email: 'someuser5@google.com',
+      }],
+    }, {
+      id: 2,
+      level_number: 2,
+      assessment_id: 2,
+      completed_at: null,
+      verified_by: 3,
+      users: [{
+        id: 3,
+        email: 'someuser@google.com',
+      }, {
+        id: 3,
+        email: 'user@example.com',
+      }],
+    }],
+
     test_plan_procedure: true,
     assessment_type: 'Control',
     status: 'Not Started',
-    sox_302_enabled: false,
     send_by_default: true, // notifications when a comment is added
     recipients: 'Assignees,Creators,Verifiers', // user roles to be notified
     _is_sox_restricted: false, // restrict assignee's permissions if enabled sox302
     _readonly_fields: [], // readOnly attributes names to restrict permissions
+    verification_workflow: 'STANDARD',
+    review_levels_count: null,
   },
   statuses: ['Not Started', 'In Progress', 'In Review',
     'Verified', 'Completed', 'Deprecated', 'Rework Needed'],
@@ -141,8 +205,8 @@ export default Cacheable.extend({
       attr_name: 'test_plan',
       order: 20,
     }, {
-      attr_title: 'SOX 302 assessment workflow',
-      attr_name: 'sox_302_enabled',
+      attr_title: 'Assessment Workflow',
+      attr_name: 'verification_workflow',
       order: 21,
     }],
     display_attr_names: ['title', 'status', 'label', 'Assignees', 'Verifiers',
