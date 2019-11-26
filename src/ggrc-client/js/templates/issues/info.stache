@@ -4,7 +4,7 @@
 }}
 
 {{#instance}}
-  <info-pane class="info-pane" instance:from="instance">
+  <info-pane instance:from="instance">
     <section class="info{{#if is_info_pin}} sticky-info-panel{{/if}}">
       <inline-form-control instance:from="instance">
         <div class="tier-content">

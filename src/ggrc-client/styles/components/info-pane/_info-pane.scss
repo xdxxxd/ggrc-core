@@ -5,6 +5,14 @@
 
 @import "controls-toolbar";
 
+%info-pane-saving {
+  line-height: 28px;
+  
+  .loading-status {
+    margin-right: 5px;
+  }
+}
+
 .info-pane {
 
   &__body {
@@ -151,11 +159,7 @@
       }
 
       .form-status {
-        line-height: 28px;
-
-        .loading-status {
-          margin-right: 5px;
-        }
+        @extend %info-pane-saving;
       }
     }
   }
@@ -190,4 +194,8 @@
       border-top: none;
     }
   }
+}
+
+.saving-status {
+  @extend %info-pane-saving;
 }
