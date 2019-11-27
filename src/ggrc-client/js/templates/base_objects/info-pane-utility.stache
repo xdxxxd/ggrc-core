@@ -4,6 +4,15 @@
 }}
 
 <div class="info-pane-utility">
+    <div class="saving-status">
+        <loading-status
+            class="loading-status"
+            isLoading:from="isSaving"
+            loadingText:from="'Saving...'"
+            showSpinner:from="true">
+        </loading-status>
+    </div>
+
     <questions-link instance:from="instance">
         Questionnaire
         <i class="fa fa-external-link"></i>
@@ -19,6 +28,7 @@
     <show-related-assessments-button instance:from="instance" 
                                      extraBtnCss:from="'btn-small'">
     </show-related-assessments-button>
+
     {{#if instance.snapshot}}
         {{> snapshots/dropdown-menu.stache}}
     {{else}}
@@ -28,13 +38,4 @@
           {{> base_objects/dropdown-menu.stache}}
         {{/is}}
      {{/if}}
-
-    <div class="form-status">
-        <loading-status
-            class="loading-status"
-            isLoading:from="isSaving"
-            loadingText:from="'Saving...'"
-            showSpinner:from="true">
-        </loading-status>
-    </div>
 </div>
