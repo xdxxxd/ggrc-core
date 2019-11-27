@@ -244,14 +244,14 @@ class TestAssessmentsWorkflow(base.Test):
     unchecked_asmt = assessments[0]
     checked_asmt = assessments[1]
 
-    checkbox_value = random.choice(["yes", "no"])
-    print "Checkbox value: {}".format(checkbox_value)
+    checkbox_values = ["yes", "no"]
+    random.shuffle(checkbox_values)
     self._set_values_for_assessment(
         unchecked_asmt, gcads_for_asmt,
-        only_checkbox=True, checkbox_value=checkbox_value)
+        only_checkbox=True, checkbox_value=checkbox_values[0])
     cavs = self._set_values_for_assessment(
         checked_asmt, gcads_for_asmt,
-        only_checkbox=False, checkbox_value=not checkbox_value)
+        only_checkbox=False, checkbox_value=checkbox_values[1])
 
     self._check_assessments_filtration(checked_asmt, cavs,
                                        operator, audit, selenium)
@@ -284,12 +284,12 @@ class TestAssessmentsWorkflow(base.Test):
     unchecked_asmt = assessments_from_template[0]
     checked_asmt = assessments_from_template[1]
 
-    checkbox_value = random.choice(["yes", "no"])
-    print "Checkbox value: {}".format(checkbox_value)
+    checkbox_values = ["yes", "no"]
+    random.shuffle(checkbox_values)
     set_values_for_assessment(
-        unchecked_asmt, only_checkbox=True, checkbox_value=checkbox_value)
+        unchecked_asmt, only_checkbox=True, checkbox_value=checkbox_values[0])
     set_attr_values = set_values_for_assessment(
-        checked_asmt, only_checkbox=False, checkbox_value=not checkbox_value)
+        checked_asmt, only_checkbox=False, checkbox_value=checkbox_values[1])
 
     self._check_assessments_filtration(checked_asmt,
                                        set_attr_values,
