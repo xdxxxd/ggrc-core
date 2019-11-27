@@ -21,20 +21,35 @@
 </div>
 <div class="flex-size-3">
 
-  <instance-fields-diff currentInstance:from="instance" modifiedFields:from="proposal.content.fields">
-  </instance-fields-diff>
+  <instance-fields-diff
+    currentInstance:from="instance"
+    modifiedFields:from="proposal.content.fields"
+    isLazyRender:from="true"
+  />
 
-  <instance-mapping-fields-diff currentInstance:from="instance" modifiedFields:from="proposal.content.mapping_fields">
-  </instance-mapping-fields-diff>
+  <instance-mapping-fields-diff
+    currentInstance:from="instance"
+    modifiedFields:from="proposal.content.mapping_fields"
+    isLazyRender:from="true"
+  />
 
-  <instance-list-fields-diff currentInstance:from="instance" modifiedFields:from="proposal.content.mapping_list_fields">
-  </instance-list-fields-diff>
+  <instance-list-fields-diff
+    currentInstance:from="instance"
+    modifiedFields:from="proposal.content.mapping_list_fields"
+    isLazyRender:from="true"
+  />
 
-  <instance-acl-diff currentInstance:from="instance" modifiedAcl:from="proposal.content.access_control_list">
-  </instance-acl-diff>
+  <instance-acl-diff
+    currentInstance:from="instance"
+    modifiedAcl:from="proposal.content.access_control_list"
+    isLazyRender:from="true"
+  />
 
-  <instance-gca-diff currentInstance:from="instance" modifiedAttributes:from="proposal.content.custom_attribute_values">
-  </instance-gca-diff>
+  <instance-gca-diff
+    currentInstance:from="instance"
+    modifiedAttributes:from="proposal.content.custom_attribute_values"
+    isLazyRender:from="true"
+  />
 
 </div>
 <div class="flex-size-1 object-history__attr">

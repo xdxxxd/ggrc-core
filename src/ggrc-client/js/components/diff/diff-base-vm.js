@@ -9,6 +9,7 @@ export default canMap.extend({
   currentInstance: {},
   diff: [],
   emptyValue: '—',
+  isLazyRender: false,
   getAttrDisplayName(name) {
     const instanceType = this.attr('currentInstance.type');
     const attrDefs = GGRC.model_attr_defs[instanceType];

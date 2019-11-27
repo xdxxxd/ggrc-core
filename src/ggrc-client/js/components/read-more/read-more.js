@@ -34,6 +34,7 @@ const viewModel = canMap.extend({
       },
     },
   },
+  isLazyRender: false,
   handleMarkdown: false,
   expanded: false,
   overflowing: false,
@@ -77,13 +78,28 @@ export default canComponent.extend({
   leakScope: true,
   viewModel,
   init() {
-    const observedElement = $(arguments[0]).children()[0];
+    const element = arguments[0];
+    const observedElement = $(element).children()[0];
+
     const observer = new MutationObserver((mutations) => {
       if (mutations.find((mutation) => mutation.type === 'childList')) {
-        this.viewModel.updateOverflowing(arguments[0]);
+        this.viewModel.updateOverflowing(element);
       }
     });
     observer.observe(observedElement, {childList: true, subtree: true});
+
+    if (this.viewModel.attr('isLazyRender')) {
+      const intersectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            this.viewModel.updateOverflowing(element);
+            intersectionObserver.unobserve(observedElement);
+          }
+        });
+      });
+
+      intersectionObserver.observe(observedElement);
+    }
   },
   events: {
     inserted() {
