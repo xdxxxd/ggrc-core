@@ -475,9 +475,17 @@ def cascade_unmappable(exp, object_class, target_class, query):
       ),
   ), "mapped_to_other_assessments")
 
-  result = set(db.session.query(mapped_to_issue))
-  result &= set(db.session.query(mapped_to_assessment))
-  result -= set(db.session.query(mapped_to_other_assessments))
+  result = db.session.query(
+      mapped_to_issue.c.target_id,
+  ).join(
+      mapped_to_assessment,
+      mapped_to_issue.c.target_id == mapped_to_assessment.c.target_id,
+  ).outerjoin(
+      mapped_to_other_assessments,
+      mapped_to_issue.c.target_id == mapped_to_other_assessments.c.target_id,
+  ).filter(
+      mapped_to_other_assessments.c.target_id.is_(None),
+  ).all()
 
   if not result:
     return sqlalchemy.sql.false()
