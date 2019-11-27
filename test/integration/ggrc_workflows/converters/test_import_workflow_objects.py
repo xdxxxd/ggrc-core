@@ -326,6 +326,14 @@ class TestWorkflowObjectsImport(TestCase):
       (False, 'False'),
       (False, 'false'),
       (False, 'FALSE'),
+      (True, 'yes'),
+      (True, 'YES'),
+      (True, 'Yes '),
+      (True, 'yEs'),
+      (False, ' no '),
+      (False, 'No '),
+      (False, 'nO'),
+      (False, 'NO'),
   )
   @ddt.unpack
   def test_import_verification_flag(self, flag, import_value):
@@ -350,6 +358,14 @@ class TestWorkflowObjectsImport(TestCase):
       ('TRUE', True),
       ('True', True),
       ('true', True),
+      ('yes', True),
+      ('YES', True),
+      ('Yes ', True),
+      ('yEs', True),
+      (' no ', False),
+      ('No ', False),
+      ('nO', False),
+      ('NO', False),
   )
   @ddt.unpack  # pylint: disable=invalid-name
   def test_update_verification_true_flag_positive(self, import_value,
@@ -389,6 +405,14 @@ class TestWorkflowObjectsImport(TestCase):
       ('TRUE', True),
       ('True', True),
       ('true', True),
+      ('yes', True),
+      ('YES', True),
+      ('Yes ', True),
+      ('yEs', True),
+      (' no ', False),
+      ('No ', False),
+      ('nO', False),
+      ('NO', False),
   )
   @ddt.unpack  # pylint: disable=invalid-name
   def test_update_verification_false_flag_positive(self, import_value,
@@ -428,6 +452,14 @@ class TestWorkflowObjectsImport(TestCase):
       (False, 'TRUE'),
       (False, 'True'),
       (False, 'true'),
+      (False, 'yes'),
+      (False, 'YES'),
+      (False, 'Yes '),
+      (False, 'yEs'),
+      (True, ' no '),
+      (True, 'No '),
+      (True, 'nO'),
+      (True, 'NO'),
   )
   @ddt.unpack  # pylint: disable=invalid-name
   def test_update_verification_flag_negative(self, db_value, import_value):
