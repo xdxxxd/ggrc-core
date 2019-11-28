@@ -82,7 +82,8 @@ class Evidence(Roleable, Relatable, mixins.Titled,
       "description",
       "kind",
       "status",
-      "archived"
+      "archived",
+      "notes",
   ]
 
   AUTO_REINDEX_RULES = [
