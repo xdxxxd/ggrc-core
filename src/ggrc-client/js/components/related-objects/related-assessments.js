@@ -106,7 +106,7 @@ export default canComponent.extend({
         });
       });
 
-      return $.when(...reusedObjectList)
+      return $.when(...Array.from(reusedObjectList))
         .done((...evidence) => {
           this.dispatch({
             type: 'reusableObjectsCreated',

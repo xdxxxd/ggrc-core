@@ -290,11 +290,11 @@ export default canModel.extend({
         item = sourceData[index];
         index += 1;
         models = self.models([item]);
-        instances.push(...models);
+        instances.push(...Array.from(models));
         canBatch.stop();
       }
       canBatch.start();
-      obsList.push(...instances);
+      obsList.push(...Array.from(instances));
       canBatch.stop();
     }
 

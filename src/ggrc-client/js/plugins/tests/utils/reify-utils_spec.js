@@ -31,7 +31,7 @@ describe('reify-utils', () => {
         );
       }
 
-      spyOn(Audit, 'model').and.returnValues(...audits);
+      spyOn(Audit, 'model').and.returnValues(...Array.from(audits));
 
       const result = ReifyUtils.reify(objs);
 
@@ -98,7 +98,7 @@ describe('reify-utils', () => {
         ));
       }
 
-      spyOn(Audit, 'model').and.returnValues(...audits);
+      spyOn(Audit, 'model').and.returnValues(...Array.from(audits));
 
       const result = ReifyUtils.reifyList(objs);
 

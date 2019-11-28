@@ -41,7 +41,7 @@ const buildRoleACL = (modifiedRoleId, currentRoleACL, modifiedRole) => {
   ).map((person) => buildAclObject(person, modifiedRoleId));
 
   // add new people
-  modifiedRoleACL.push(...shouldBeAdded);
+  modifiedRoleACL.push(...Array.from(shouldBeAdded));
 
   // remove existed people
   loRemove(modifiedRoleACL, (aclItem) =>

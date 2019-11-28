@@ -2,14 +2,14 @@
   "env": {
     "production": {
       "plugins": [
-        "transform-runtime",
-        "syntax-dynamic-import",
-        "transform-object-rest-spread",
-        "transform-strict-mode"
+        "@babel/plugin-transform-runtime",
+        "@babel/plugin-syntax-dynamic-import",
+        "@babel/plugin-proposal-object-rest-spread",
+        "@babel/plugin-transform-strict-mode"
       ],
       "presets": [
         [
-          "env",
+          "@babel/preset-env",
           {
             "targets": {
               "browsers": [
@@ -26,21 +26,22 @@
     },
     "development": {
       "plugins": [
-        "transform-runtime",
-        "syntax-dynamic-import",
-        "transform-object-rest-spread",
-        "transform-strict-mode"
+        "@babel/plugin-transform-runtime",
+        "@babel/plugin-syntax-dynamic-import",
+        "@babel/plugin-proposal-object-rest-spread",
+        "@babel/plugin-transform-strict-mode"
       ],
       "presets": [
         [
-          "env",
+          "@babel/preset-env",
           {
             "debug": true,
             "targets": {
               "browsers": [
                 "last 2 versions"
               ]
-            }
+            },
+            "modules": "commonjs"
           }
         ]
       ]
