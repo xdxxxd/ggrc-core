@@ -529,6 +529,7 @@ class TestAssessmentsWorkflow(base.Test):
                           custom_attributes=cas)
     _assert_asmt(asmts_ui_service, exp_asmt)
 
+  @pytest.mark.xfail(reason="Unstable test.")
   @pytest.mark.smoke_tests
   @pytest.mark.parametrize(
       "obj, obj_role",

@@ -805,13 +805,16 @@ class TestStatusFlowWithSOX302(BaseTestWithSOX302):
 
     for cad, cav in cad_cav_pairs:
       cad_type, cad_title, cad_options, cad_negatives = cad.split(";")
-      cad_negatives = cad_negatives.split(",")
-      cad_option_flags = ",".join(
-          str(flag_enum.IS_NEGATIVE)
-          if o in cad_negatives
-          else str(flag_enum.DEFAULT)
-          for o in cad_options.split(",")
-      )
+      if cad_negatives:
+        cad_negatives = cad_negatives.split(",")
+        cad_option_flags = ",".join(
+            str(flag_enum.IS_NEGATIVE)
+            if o in cad_negatives
+            else str(flag_enum.DEFAULT)
+            for o in cad_options.split(",")
+        )
+      else:
+        cad_option_flags = None
       lca = ggrc_factories.CustomAttributeDefinitionFactory(
           title=cad_title,
           definition_type=obj._inflector.table_singular,
@@ -856,6 +859,16 @@ class TestStatusFlowWithSOX302(BaseTestWithSOX302):
               ("Dropdown; LCA 1; yes,no; no", "yes"),
               ("Text; LCA 2; empty,not empty; empty", "positive"),
               ("Rich Text; LCA 3; empty,not empty; not empty", ""),
+          ],
+          "start_status": "Not Started",
+          "sent_status": "In Review",
+          "end_status": "Completed",
+      },
+      {
+          "cad_cav_pairs": [
+              ("Map:Person; LCA 1;empty,not empty;", "Person"),
+              ("Date; LCA 2; empty,not empty;", "2020-11-20"),
+              ("Checkbox; LCA 3; yes,no;", "yes"),
           ],
           "start_status": "Not Started",
           "sent_status": "In Review",
