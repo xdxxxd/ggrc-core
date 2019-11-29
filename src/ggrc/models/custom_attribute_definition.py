@@ -293,6 +293,8 @@ class CustomAttributeDefinition(CustomAttributeDefinitionBase):
     Returns:
       List of options that are marked as negative ones.
     """
+    if not self.multi_choice_mandatory:
+      return []
     bitmasks = self.multi_choice_mandatory.split(",")
     options = self.multi_choice_options.split(",")
     return [
