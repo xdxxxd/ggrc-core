@@ -18,6 +18,8 @@ def lists_equal(list1, list2):
     # we need it to have sorted values that we able to compare
     dict1 = {item.get('id'): item for item in list1}
     dict2 = {item.get('id'): item for item in list2}
+    if not lists_equal(dict1.keys(), dict2.keys()):
+      return False
     return dicts_equal(dict1, dict2)
   return sorted(list1) == sorted(list2)
 
@@ -33,7 +35,7 @@ def dicts_equal(dict1, dict2):
       # Debug information does not related to model
       continue
     if field not in dict2:
-      return False
+      continue
     if not fields_equal(dict2[field], value):
       return False
   return True
