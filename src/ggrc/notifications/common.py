@@ -23,11 +23,12 @@ from sqlalchemy import inspect
 from werkzeug.exceptions import Forbidden
 from google.appengine.api import mail
 
-from ggrc import db, extensions, settings, utils
+from ggrc import db
+from ggrc import extensions
 from ggrc import models
+from ggrc import settings
+from ggrc import utils
 from ggrc.app import app
-from ggrc.gcalendar import calendar_event_builder
-from ggrc.gcalendar import calendar_event_sync
 from ggrc.models import Person
 from ggrc.models import Notification, NotificationHistory
 from ggrc.models import background_task
@@ -476,21 +477,6 @@ def show_daily_digest_notifications():
   return settings.EMAIL_DAILY.render(data=notif_data)
 
 
-def send_calendar_events():
-  """Sends calendar events."""
-  error_msg = None
-  try:
-    with benchmark("Send calendar events"):
-      builder = calendar_event_builder.CalendarEventBuilder()
-      builder.build_cycle_tasks()
-      sync = calendar_event_sync.CalendarEventsSync()
-      sync.sync_cycle_tasks_events()
-  except Exception as exp:  # pylint: disable=broad-except
-    logger.error(exp.message)
-    error_msg = exp.message
-  return utils.make_simple_response(error_msg)
-
-
 def get_app_engine_email():
   """Get notification sender email.
 
@@ -521,14 +507,21 @@ def prefix_subject(subject):
 
 
 def send_email(user_email, subject, body):
-  """Helper function for sending emails.
+  """Send email to the passed recipient with provided subject and body.
+
+  Helper function which sends emails to the passed `user_email` recipient with
+  provided `subject` line and HTML `body`.
 
   Args:
-    user_email (string): Email of the recipient.
-    subject (string): Email subject.
-    body (basestring): Html body of the email. it can contain unicode
-      characters and will be sent as a html mime type.
+    user_email (str): Email of the recipient.
+    subject (str): Email subject.
+    body (basestring): HTML body of the email. It can contain unicode
+      characters and will be sent as a HTML mime type.
   """
+  if not settings.NOTIFICATIONS_ENABLED:
+    logger.info("Could not sent notification. Notifications are disabled.")
+    return
+
   sender = get_app_engine_email()
   if not mail.is_email_valid(user_email):
     logger.error("Invalid email recipient: %s", user_email)
@@ -537,13 +530,13 @@ def send_email(user_email, subject, body):
     logger.error("APPENGINE_EMAIL setting is invalid.")
     return
 
-  subject = prefix_subject(subject)
-  message = mail.EmailMessage(sender=sender, subject=subject)
-
-  message.to = user_email
-  message.html = body
-
-  message.send()
+  mail.send_mail(
+      sender=sender,
+      to=user_email,
+      subject=prefix_subject(subject),
+      body="",
+      html=body,
+  )
 
 
 def modify_data(data):
