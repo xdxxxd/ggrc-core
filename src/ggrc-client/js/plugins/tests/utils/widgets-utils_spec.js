@@ -494,7 +494,7 @@ describe('GGRC Utils Widgets', function () {
       expect(result).toEqual({
         name: 'Program',
         widgetId: 'Program_parent',
-        widgetName: 'Parent Programs',
+        widgetName: 'Programs (Parent)',
         countsName: 'Program_parent',
         isObjectVersion: undefined,
         relation: 'parent',
