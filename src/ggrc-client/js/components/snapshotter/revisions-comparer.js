@@ -306,7 +306,8 @@ export default canComponent.extend({
       function highlightValue($value) {
         if ($value.html() && !$value.find('.empty-message').length) {
           const title = isProposableExternalAttr ? '.action-toolbar' : 'h6';
-          $value.find(`h3, ${title} + *`).addClass(HIGHLIGHT_CLASS);
+          $value.find(`h3, ${title} + *, readonly-inline-content`)
+            .addClass(HIGHLIGHT_CLASS);
         }
       }
     },
