@@ -10,6 +10,7 @@ import inflection
 # objects
 RELATIONSHIPS = "relationships"
 PROGRAMS = "programs"
+PROGRAM_PARENTS = "program_parents"
 WORKFLOWS = "workflows"
 AUDITS = "audits"
 ASSESSMENTS = "assessments"

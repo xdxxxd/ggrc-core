@@ -21,13 +21,7 @@ class Widget(base.Widget):
   def __init__(self, driver, obj_name, is_versions_widget=False):
     self.obj_name = obj_name
     self._locators_filter = locator.BaseWidgetGeneric
-    self._locators_widget = factory.get_locator_widget(
-        self.obj_name.upper())
-    if is_versions_widget:
-      locator_parts = self._locators_widget[1].split("\"")
-      locator_parts[1] += "_version"
-      self._locators_widget = (self._locators_widget[0], "\"".join(
-          locator_parts))
+    self.is_versions_widget = is_versions_widget
     self.info_widget_cls = factory.get_cls_widget(
         object_name=obj_name, is_info=True)
     # Filter
@@ -45,6 +39,17 @@ class Widget(base.Widget):
     self.members_listed = None
     self.member_count = None
     self._set_members_listed()
+
+  @property
+  def _locators_widget(self):
+    """Property. Returns locator of widget."""
+    locators_widget = factory.get_locator_widget(self.obj_name.upper())
+    if self.is_versions_widget:
+      locator_parts = locators_widget[1].split("\"")
+      locator_parts[1] += "_version"
+      locators_widget = (locators_widget[0], "\"".join(
+          locator_parts))
+    return locators_widget
 
   def _set_member_count(self):
     """Parses widget name and number of items from widget tab title."""
@@ -290,6 +295,15 @@ class Issues(Widget):
 
 class Programs(Widget):
   """Model for Programs generic widgets"""
+  def __init__(self, driver=None, obj_name=objects.PROGRAMS):
+    self._actual_name = obj_name
+    self.obj_name = (objects.PROGRAMS if obj_name == objects.PROGRAM_PARENTS
+                     else obj_name)
+    super(Programs, self).__init__(driver, self.obj_name)
+
+  @property
+  def _locators_widget(self):
+    return factory.get_locator_widget(self._actual_name.upper())
 
 
 class TechnologyEnvironments(Widget):

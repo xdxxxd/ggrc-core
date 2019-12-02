@@ -814,6 +814,11 @@ class TreeViewItem(Element):
             cell in selenium_utils.get_when_all_visible(
                 self.element, self._locators.CELL)]
 
+  @property
+  def mega_program_icon(self):
+    """Return mega program icon"""
+    return self._browser.element(css=".mega-object-tree-view-icon")
+
 
 class CommentsPanel(WithBrowser):
   """Representing comments panel witch contains input part and items."""
