@@ -347,6 +347,12 @@ span.no-data {
   }
 }
 
+p.warning {
+  color: $gray;
+  font-style: italic;
+  margin-top: 5px;
+}
+
 // container-fluid reset
 .container-fluid {
   padding:0;

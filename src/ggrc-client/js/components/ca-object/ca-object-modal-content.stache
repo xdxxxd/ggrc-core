@@ -42,6 +42,9 @@
                     isAttachActionDisabled:from="isUpdatingEvidences"
                     instance:from="instance">
                 </attach-button>
+                {{#if isUpdatingEvidences}}
+                  <p class="warning">Wait until the file is attached</p>
+                {{/if}}
             </div>
         {{/if}}
         {{#if url}}
@@ -93,6 +96,10 @@
           Save
         </comment-add-button>
     {{/if}}
-        <button type="button" class="btn btn-small btn-white simple-modal__toolbar-item" on:el:click="hide; setUrlEditMode(false)">Close</button>
+        <button type="button" 
+                class="btn btn-small btn-white simple-modal__toolbar-item" 
+                {{#if isUpdatingEvidences}}disabled{{/if}}
+                on:el:click="hide; setUrlEditMode(false)">
+        Close</button>
     </div>
 </div>
