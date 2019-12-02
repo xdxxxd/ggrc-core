@@ -13,6 +13,7 @@ Endpoints:
 
 import json
 from datetime import datetime
+import collections
 
 import ddt
 import mock
@@ -541,7 +542,7 @@ class TestImportExports(TestImportExportBase):
     """Test if new revisions created during import."""
     data = "Object type,,,,,\n" + \
            "Contract,code*,title*,description,admin,state\n" + \
-           ",contract-1,contract-1,test,user@example.com,Draft"
+           ",,contract-1,test,user@example.com,Draft"
 
     user = all_models.Person.query.first()
 
@@ -564,9 +565,9 @@ class TestImportExports(TestImportExportBase):
     """Test if snapshots can be created from imported objects."""
     data = "Object type,,,,,\n" + \
            "Contract,code*,title*,description,admin,state\n" + \
-           ",contract-1,contract-1,test,user@example.com,Draft\n" + \
-           ",Contract-2,Contract-2,test,user@example.com,Active\n" + \
-           ",Contract-3,Contract-3,test,user@example.com,Draft"
+           ",,contract-1,test,user@example.com,Draft\n" + \
+           ",,Contract-2,test,user@example.com,Active\n" + \
+           ",,Contract-3,test,user@example.com,Draft"
 
     user = all_models.Person.query.first()
 
@@ -581,7 +582,9 @@ class TestImportExports(TestImportExportBase):
     self.assertEqual(3, len(snapshots))
 
   def test_import_map_objectives(self):
-    """Test import can't map assessments with objectives"""
+    """Test import mapping of assessments with objectives,
+       mapped to related audit.
+    """
     audit = factories.AuditFactory(slug='AUDIT-9999')
     audit_id = audit.id
     objectives = [
@@ -593,10 +596,18 @@ class TestImportExports(TestImportExportBase):
     for objective in objectives:
       factories.RelationshipFactory(source=audit.program,
                                     destination=objective)
-
-    response = self._import_file(
-        'assessments_map_with_objectives_in_scope_of_program.csv', True
-    )
+    assessments_data = [
+        collections.OrderedDict([
+            ("object_type", "Assessment"),
+            ("Code*", ""),
+            ("Audit*", "AUDIT-9999"),
+            ("title", "ASSESSMENT-999{}".format(i)),
+            ("Assignees", "user@example.com"),
+            ("Creators", "user@example.com"),
+            ("map:objective versions", "OBJECTIVE-999{}".format(i)),
+        ]) for i in range(10)
+    ]
+    response = self.import_data(*assessments_data, dry_run=True)
 
     row_errors = {
         'Line 10: You can not map Objective to Assessment, because '
@@ -628,10 +639,6 @@ class TestImportExports(TestImportExportBase):
         }
     }
 
-    assessments = db.session.query(all_models.Assessment).filter_by(
-        audit_id=audit_id).all()
-
-    self.assertEqual(len(assessments), 0)
     self._check_csv_response(response, expected_messages)
 
     # update the audit to the latest version
@@ -639,7 +646,7 @@ class TestImportExports(TestImportExportBase):
                  {'snapshots': {'operation': 'upsert'}}
                  )
 
-    response = self._import_file('assessments_map_to_obj_snapshots.csv')
+    response = self.import_data(*assessments_data)
 
     expected_messages = {
         'Assessment': {
