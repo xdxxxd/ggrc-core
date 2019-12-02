@@ -10,7 +10,7 @@ from lib import url, users, base, browsers, factory
 from lib.constants import objects, element, object_states, roles
 from lib.entities import entities_factory
 from lib.page import dashboard
-from lib.page.modal import bulk_update, unified_mapper
+from lib.page.modal import bulk_update, unified_mapper, request_review
 from lib.page.widget import (generic_widget, object_modal, import_page,
                              related_proposals, version_history, widget_base)
 from lib.rest_facades import roles_rest_facade
@@ -582,3 +582,21 @@ def check_mega_program_icon_in_unified_mapper(selenium, child_program,
                         in program_mapper.tree_view.tree_view_items()
                         if parent_program.title in program.text][0]
   assert parent_program_row.mega_program_icon.exists
+
+
+def open_propose_changes_modal(obj, selenium):
+  """Opens propose changes modal of obj."""
+  (_get_ui_service(selenium, obj).open_info_page_of_obj(obj).
+   click_propose_changes())
+  modal = object_modal.BaseObjectModal(selenium)
+  modal.wait_until_present()
+  return modal
+
+
+def open_request_review_modal(obj, selenium):
+  """Opens request review modal of obj."""
+  (_get_ui_service(selenium, obj).open_info_page_of_obj(obj).
+   open_submit_for_review_popup())
+  modal = request_review.RequestReviewModal(selenium)
+  modal.wait_until_present()
+  return modal

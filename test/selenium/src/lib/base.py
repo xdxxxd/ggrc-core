@@ -820,8 +820,48 @@ class TreeViewItem(Element):
     return self._browser.element(css=".mega-object-tree-view-icon")
 
 
+class CommentInput(object):
+  """Represents comment input field. Contains input field and email dropdown.
+  """
+
+  def __init__(self, container):
+    self._root = container.element(tag_name="people-mention").parent()
+    self._input_field = self._root.element(class_name="ql-editor")
+
+  @property
+  def emails_dropdown(self):
+    """Represents mention email dropdown."""
+    return MentionEmailDropdown(self._root)
+
+  @property
+  def is_empty(self):
+    """Checks whether field is empty."""
+    return not self._input_field.text
+
+  @property
+  def text(self):
+    """Returns text for input field."""
+    return self._input_field.text
+
+  def clear(self):
+    """Clears textfield."""
+    self._input_field.clear()
+
+  def fill(self, text):
+    """Type text to input field"""
+    self._input_field.send_keys(text)
+
+  def call_email_dropdown(self, first_symbol,
+                          match_str=users.DEFAULT_EMAIL_DOMAIN[0]):
+    """Types mention first_symbol with match_str and waits for dropdown with
+    emails to appear."""
+    self.fill("{}{}".format(first_symbol, match_str))
+    self.emails_dropdown.wait_until_appears()
+
+
 class CommentsPanel(WithBrowser):
-  """Representing comments panel witch contains input part and items."""
+  """Representing comments panel on info page/panel of object which contains
+  input field and items."""
 
   def __init__(self, container=None):
     super(CommentsPanel, self).__init__()
@@ -830,12 +870,9 @@ class CommentsPanel(WithBrowser):
     self._container = container or self._root
 
   @property
-  def emails_dropdown(self):
-    return MentionEmailDropdown(self._root)
-
-  @property
-  def input_field(self):
-    return self._root.element(class_name="ql-editor")
+  def comment_input(self):
+    """Returns comment input field."""
+    return CommentInput(self._root)
 
   @property
   def add_btn(self):
@@ -860,31 +897,14 @@ class CommentsPanel(WithBrowser):
     """Return count of text comments on comments panel."""
     return len(self.scopes)
 
-  @property
-  def is_input_empty(self):
-    """Return 'True' if comments input field is empty, else 'False'."""
-    return not self.input_field.text
-
-  def wait_until_dropdown_appears(self):
-    """Waits until dropdown appears."""
-    self.emails_dropdown.wait_until_appears()
-
-  def clear_input_field(self):
-    """Clears textfield."""
-    self.input_field.clear()
-
-  def fill_input_field(self, text):
-    """Type text to textfield"""
-    self.input_field.send_keys(text)
-
   def click_add_button(self):
     """Clicks Add button"""
     self.add_btn.click()
 
   def add_comment(self, text):
     """Clear text from element and enter new text."""
-    self.clear_input_field()
-    self.fill_input_field(text)
+    self.comment_input.clear()
+    self.comment_input.fill(text)
     self.click_add_button()
 
   def add_comments(self, comments):
@@ -902,13 +922,6 @@ class CommentsPanel(WithBrowser):
         raise (messages.ExceptionsMessages.err_comments_count.format(
             count_of_comments, len(self.scopes)) + str(err))
     return self
-
-  def call_email_dropdown(self, first_symbol):
-    """Types mention first_symbol with letter which is common for all emails
-    and waits for dropdown with emails to appear."""
-    self.fill_input_field("{}{}".format(
-        first_symbol, users.DEFAULT_EMAIL_DOMAIN[0]))
-    self.wait_until_dropdown_appears()
 
 
 class CommentItem(object):

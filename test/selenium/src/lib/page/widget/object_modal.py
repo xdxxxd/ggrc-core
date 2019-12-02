@@ -123,6 +123,10 @@ class BaseObjectModal(BaseFormModal):
     self.state_select = self._root.element(id="state").select()
     self._fields = ["title", "description", "status"]
 
+  @property
+  def comment_input(self):
+    return base.CommentInput(self._root)
+
   def delete(self):
     """Clicks Delete button, confirms deletion in new popup
     and waits for changes to happen.
@@ -148,6 +152,10 @@ class BaseObjectModal(BaseFormModal):
     """Click propose button."""
     self._root.link(text="Propose").click()
     self._wait_for_submit_changes()
+
+  def wait_until_present(self):
+    """Waits until present."""
+    return self._root.wait_until(lambda e: e.exists)
 
 
 class DiscardChangesModal(base.Modal):
