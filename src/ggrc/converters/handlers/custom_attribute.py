@@ -48,10 +48,7 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
   def _check_status(self):
     """Check assessment state"""
     valid_state = ['Not Started', 'In Progress', 'Deprecated']
-    for state in valid_state:
-      if state == self.row_converter.obj.status:
-        return True
-    return False
+    return self.row_converter.obj.status in valid_state
 
   def set_obj_attr(self):
     """Set object attribute method should do nothing for custom attributes.
