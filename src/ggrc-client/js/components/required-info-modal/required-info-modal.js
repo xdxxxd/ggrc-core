@@ -13,7 +13,7 @@ import canStache from 'can-stache';
 import canMap from 'can-map';
 import template from './required-info-modal.stache';
 import {uploadFiles} from '../../plugins/utils/gdrive-picker-utils';
-import {notifier} from '../../plugins/utils/notifiers-utils';
+import {connectionLostNotifier} from '../../plugins/utils/notifiers-utils';
 import {isConnectionLost} from '../../plugins/utils/errors-utils';
 import {getPlainText} from '../../plugins/ggrc-utils';
 
@@ -64,7 +64,7 @@ const viewModel = canMap.extend({
       this.attr('filesList').push(...filesList);
     } catch (err) {
       if (isConnectionLost()) {
-        notifier('error', 'Internet connection was lost.');
+        connectionLostNotifier();
       }
     }
   },

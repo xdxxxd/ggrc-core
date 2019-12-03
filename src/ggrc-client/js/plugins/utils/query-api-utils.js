@@ -10,9 +10,7 @@ import loMap from 'lodash/map';
 import {ggrcAjax} from '../../plugins/ajax-extensions';
 import makeArray from 'can-util/js/make-array/make-array';
 import QueryParser from '../../generated/ggrc-filter-query-parser';
-import {
-  notifier,
-} from './notifiers-utils';
+import {connectionLostNotifier} from './notifiers-utils';
 import {
   isConnectionLost,
   handleAjaxError,
@@ -255,7 +253,7 @@ function _resolveBatch(queue) {
     });
   }).catch((jqxhr, textStatus, exception) => {
     if (isConnectionLost()) {
-      notifier('error', 'Internet connection was lost.');
+      connectionLostNotifier();
     } else {
       handleAjaxError(jqxhr, exception);
     }
