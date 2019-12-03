@@ -26,7 +26,7 @@ def build_subject():
   user_datetime = data_handlers.as_user_time(
       datetime.utcnow(),
   )
-  return notif_common.prefix_subject(DIGEST_TITLE_TMPL.format(user_datetime))
+  return DIGEST_TITLE_TMPL.format(user_datetime)
 
 
 def build_address_body(proposals, review_notifications):
