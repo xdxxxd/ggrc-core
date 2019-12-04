@@ -141,5 +141,9 @@ export default canComponent.extend({
     inserted() {
       this.viewModel.attr('$el', this.element);
     },
+    '{viewModel.instance} modelAfterSave'() {
+      // reset 'leftRevisionId' after instance saving to get the latest revision
+      this.viewModel.attr('leftRevisionId', null);
+    },
   },
 });
