@@ -32,7 +32,7 @@ ALLOWED_FILENAME_CHARS = "_ ()-'"
 logger = getLogger(__name__)
 
 
-def hande_http_error(ex):
+def handle_http_error(ex):
   """Helper for http error handling"""
   code = ex.resp.status
   message = json.loads(ex.content).get("error").get("message")
@@ -42,6 +42,8 @@ def hande_http_error(ex):
   if code == 400:
     logger.warning(message)
     message = errors.WRONG_FILE_FORMAT
+  if code == 404:
+    message = errors.GOOGLE_API_V3_404_MESSAGE
 
   raise abort(code, description=message)
 
@@ -67,7 +69,7 @@ def create_gdrive_file(csv_string, filename):
   except HttpAccessTokenRefreshError:
     handle_token_error()
   except HttpError as ex:
-    hande_http_error(ex)
+    handle_http_error(ex)
 
 
 def get_gdrive_file(file_data):
@@ -97,7 +99,7 @@ def get_gdrive_file_data(file_data):
   except HttpAccessTokenRefreshError:
     handle_token_error('Try to reload /import page')
   except HttpError as ex:
-    hande_http_error(ex)
+    handle_http_error(ex)
   except Exception as ex:
     logger.error(ex.message)
     raise InternalServerError(errors.INTERNAL_SERVER_ERROR)
@@ -203,7 +205,7 @@ def process_gdrive_file(file_id, folder_id, is_uploaded=False):
   except HttpAccessTokenRefreshError:
     handle_token_error()
   except HttpError as ex:
-    hande_http_error(ex)
+    handle_http_error(ex)
   except Exception as ex:
     logger.error(ex.message)
     raise InternalServerError(errors.INTERNAL_SERVER_ERROR)
@@ -221,7 +223,7 @@ def get_gdrive_file_link(file_id):
   except HttpAccessTokenRefreshError:
     handle_token_error()
   except HttpError as ex:
-    hande_http_error(ex)
+    handle_http_error(ex)
   except Exception as ex:
     logger.error(ex.message)
     raise InternalServerError(errors.INTERNAL_SERVER_ERROR)
@@ -238,7 +240,7 @@ def add_gdrive_file_folder(file_id, folder_id):
   except HttpAccessTokenRefreshError:
     handle_token_error()
   except HttpError as ex:
-    hande_http_error(ex)
+    handle_http_error(ex)
   except Exception as ex:
     logger.error(ex.message)
     raise InternalServerError(errors.INTERNAL_SERVER_ERROR)

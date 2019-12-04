@@ -25,3 +25,6 @@ GOOGLE_API_MESSAGE_MAP = {
         (u"You do not have access either to the file or to the folder, "
          u"please, request edit access from its owner")
 }
+
+GOOGLE_API_V3_404_MESSAGE = (u"You have no access to the file and/or "
+                             u"the folder or the file does not exist.")
