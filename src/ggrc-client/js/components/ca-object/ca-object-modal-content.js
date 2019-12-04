@@ -29,7 +29,7 @@ export default canComponent.extend({
       },
       evidence: {
         get() {
-          return this.attr('content.fields').indexOf('evidence') > -1 &&
+          return this.attr('content.fields').indexOf('attachment') > -1 &&
             this.attr('state.open');
         },
       },
@@ -93,7 +93,7 @@ export default canComponent.extend({
       });
       this.attr('content.contextScope.errorsMap.comment', false);
       this.attr('content.contextScope.validation.valid',
-        !this.attr('content.contextScope.errorsMap.evidence'));
+        !this.attr('content.contextScope.errorsMap.attachment'));
       this.attr('state.open', false);
       this.attr('state.save', false);
 

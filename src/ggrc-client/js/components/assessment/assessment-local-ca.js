@@ -110,7 +110,7 @@ export default canComponent.extend({
       let value = field.value;
       let isMandatory = field.validation.mandatory;
       let errorsMap = field.errorsMap || {
-        evidence: false,
+        attachment: false,
         comment: false,
         url: false,
       };
@@ -141,7 +141,7 @@ export default canComponent.extend({
             requiresUrl),
         },
         errorsMap: {
-          evidence: hasMissingEvidence,
+          attachment: hasMissingEvidence,
           comment: hasMissingComment,
           url: hasMissingUrl,
         },
