@@ -4,7 +4,7 @@
 }}
 
 <button
-  class="{{link_class}} btn btn-small btn-white"
+  class="btn btn-small btn-white"
   type="button"
   {{#isInactive}}disabled{{/isInactive}}
   {{#if tooltip}}
