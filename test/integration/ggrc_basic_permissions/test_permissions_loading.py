@@ -10,7 +10,12 @@ from ggrc.models import all_models
 from ggrc.cache import utils as cache_utils
 from integration.ggrc import TestCase, generator
 from integration.ggrc.api_helper import Api
-from integration.ggrc.models import factories
+from integration.ggrc.models import factories as ggrc_factories
+from integration.ggrc_basic_permissions.models \
+    import factories as rbac_factories
+
+
+# pylint: disable=invalid-name
 
 
 # stub for module, which cannot be imported in global scope bacause of
@@ -59,7 +64,7 @@ class TestPermissionsLoading(TestMemcacheBase):
 
   def test_permissions_loading(self):
     """Test if permissions created only once for GET requests."""
-    control_id = factories.ControlFactory().id
+    control_id = ggrc_factories.ControlFactory().id
     with mock.patch(
         "ggrc_basic_permissions.store_results_into_memcache",
         side_effect=ggrc_basic_permissions.store_results_into_memcache
@@ -127,6 +132,12 @@ class TestPermissionsLoading(TestMemcacheBase):
 
   def test_add_acl(self):
     """Permissions are recalculated only for assigned people on PUT."""
+    # Memcache should be cleared first since it contains permissions for
+    # both users on startup due to setUp method which creates users with
+    # `UserRole`. Creation of `UserRole` causes cached permissions
+    # recalculation.
+    self.memcache_client.delete("permissions:list")
+
     pa_role = all_models.AccessControlRole.query.filter(
         all_models.AccessControlRole.object_type == "Program",
         all_models.AccessControlRole.name == "Program Managers"
@@ -447,8 +458,8 @@ class TestPermissionsLoading(TestMemcacheBase):
                     "type": "Person",
                 }
             }],
-            "link": factories.random_str(),
-            "title": factories.random_str(),
+            "link": ggrc_factories.random_str(),
+            "title": ggrc_factories.random_str(),
             "context": None,
         }
     })
@@ -573,9 +584,9 @@ class TestPermissionsCacheFlushing(TestMemcacheBase):
 
   def test_permissions_not_flush_on_simple_put(self):
     """Test that permissions in memcache are cleaned after PUT request."""
-    with factories.single_commit():
+    with ggrc_factories.single_commit():
       user = self.create_user_with_role("Creator")
-      objective = factories.ObjectiveFactory()
+      objective = ggrc_factories.ObjectiveFactory()
       objective_id = objective.id
       objective.add_person_with_role_name(user, "Admin")
 
@@ -594,9 +605,9 @@ class TestPermissionsCacheFlushing(TestMemcacheBase):
 
   def test_permissions_flush_on_delete(self):
     """Test that permissions in memcache are cleaned after DELETE request."""
-    with factories.single_commit():
+    with ggrc_factories.single_commit():
       user = self.create_user_with_role("Creator")
-      objective = factories.ObjectiveFactory()
+      objective = ggrc_factories.ObjectiveFactory()
       objective.add_person_with_role_name(user, "Admin")
       objective_id = objective.id
 
@@ -612,3 +623,48 @@ class TestPermissionsCacheFlushing(TestMemcacheBase):
 
     perm_ids = self.memcache_client.get("permissions:list")
     self.assertEqual(perm_ids, set())
+
+  def test_permissions_reload_on_role_post(self):
+    """Test permissions in memcache are recalculated on UserRole POST."""
+    person = ggrc_factories.PersonFactory()
+    person_permissions_key = "permissions:{}".format(person.id)
+    admin_role = all_models.Role.query.filter_by(name="Administrator").one()
+
+    self.memcache_client.delete("permissions:list")
+    response = self.api.post(
+        all_models.UserRole,
+        {
+            "user_role": {
+                "person": {
+                    "type": person.type,
+                    "id": person.id,
+                },
+                "role": {
+                    "type": admin_role.type,
+                    "id": admin_role.id,
+                },
+            },
+        },
+    )
+
+    self.assertStatus(response, 201)
+    cached_keys = self.memcache_client.get("permissions:list")
+    self.assertIn(person_permissions_key, cached_keys)
+
+  def test_permissions_reload_on_role_delete(self):
+    """Test permissions in memcache are recalculated on UserRole DELETE."""
+    admin_role = all_models.Role.query.filter_by(name="Administrator").one()
+    with ggrc_factories.single_commit():
+      person = ggrc_factories.PersonFactory()
+      person_permissions_key = "permissions:{}".format(person.id)
+      person_role = rbac_factories.UserRoleFactory(
+          role=admin_role,
+          person=person,
+      )
+
+    self.memcache_client.delete("permissions:list")
+    response = self.api.delete(person_role)
+
+    self.assertStatus(response, 200)
+    cached_keys = self.memcache_client.get("permissions:list")
+    self.assertIn(person_permissions_key, cached_keys)
