@@ -107,8 +107,8 @@ function getRelevantMappingTypes(instance) {
   const mappingTypes = getMappingList(instance.constructor.model_singular);
   const typesSet = new Set();
   const relatedObjects = [
-    ...instance.attr('related_destinations'),
-    ...instance.attr('related_sources'),
+    ...Array.from(instance.attr('related_destinations')),
+    ...Array.from(instance.attr('related_sources')),
   ];
 
   relatedObjects.forEach(({destination_type: type}) => {

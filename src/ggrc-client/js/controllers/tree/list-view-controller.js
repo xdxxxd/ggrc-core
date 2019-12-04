@@ -192,7 +192,7 @@ export default TreeLoader.extend({
   },
 
   insert_items: function (items) {
-    this.options.list.push(...items);
+    this.options.list.push(...Array.from(items));
     return $.Deferred().resolve();
   },
 

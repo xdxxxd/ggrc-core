@@ -70,9 +70,9 @@ const viewModel = canMap.extend({
     this.waitForResolveOfPendingItems();
   },
   async waitForResolveOfPendingItems() {
-    for (const pending of [...this.getPending()]) {
+    for (const pending of Array.from(this.getPending())) {
       const items = this.attr('items');
-      const index = [...items].findIndex((x) =>
+      const index = Array.from(items).findIndex((x) =>
         x.stub.id === pending.item.id &&
         x.stub.type === pending.item.type
       );

@@ -291,7 +291,7 @@ export default canComponent.extend({
     isReadOnlyAttribute: function (propName) {
       const readOnlyAttributes = this.attr('instance._readonly_fields');
       const isEditDenied = this.attr('isEditDenied');
-      const isReadOnly = [...readOnlyAttributes].includes(propName);
+      const isReadOnly = Array.from(readOnlyAttributes).includes(propName);
       return isReadOnly || isEditDenied;
     },
     getQuery: function (type, sortObj, additionalFilter) {

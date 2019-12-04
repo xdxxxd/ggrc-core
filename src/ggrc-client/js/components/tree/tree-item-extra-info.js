@@ -157,7 +157,7 @@ let viewModel = canMap.extend({
     const extractedPendingContent = this.attr('pendingContent').splice(0);
     const resolvedContent = extractedPendingContent.map((pending) => pending());
 
-    this.addContent(...resolvedContent);
+    this.addContent(...Array.from(resolvedContent));
   },
   addDeferredContent({deferredCallback}) {
     this.attr('pendingContent').push(deferredCallback);
@@ -169,7 +169,7 @@ let viewModel = canMap.extend({
     this.attr('spin', true);
     dfds.push(...dataPromises);
 
-    dfdReady = $.when(...dfds).then(() => {
+    dfdReady = $.when(...Array.from(dfds)).then(() => {
       this.attr('spin', false);
     });
 
