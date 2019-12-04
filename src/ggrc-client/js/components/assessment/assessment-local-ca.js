@@ -15,7 +15,6 @@ import {
 import {VALIDATION_ERROR, RELATED_ITEMS_LOADED} from '../../events/event-types';
 import tracker from '../../tracker';
 import {isAllowedFor} from '../../permission';
-import isFunction from 'can-util/js/is-function/is-function';
 import {getPageInstance} from '../../plugins/utils/current-page-utils';
 import {getPlainText} from '../../plugins/ggrc-utils';
 
@@ -250,19 +249,6 @@ export default canComponent.extend({
       $container.animate({
         scrollTop: $(field).offset().top - $body.offset().top,
       }, 500);
-    },
-  },
-  helpers: {
-    isInvalidField: function (show, valid, highlightInvalidFields, options) {
-      show = isFunction(show) ? show() : show;
-      valid = isFunction(valid) ? valid() : valid;
-      highlightInvalidFields = isFunction(highlightInvalidFields) ?
-        highlightInvalidFields() : highlightInvalidFields;
-
-      if (highlightInvalidFields && show && !valid) {
-        return options.fn(options.context);
-      }
-      return options.inverse(options.context);
     },
   },
 });

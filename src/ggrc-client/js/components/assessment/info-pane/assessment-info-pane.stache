@@ -211,7 +211,8 @@
                             isLocalCa:from="true"
                             fields:from="fields"
                             editMode:from="canEdit"
-                            on:valueChanged="attributeChanged(scope.event)">
+                            on:valueChanged="attributeChanged(scope.event)"
+                            on:addRequiredInfo="showRequiredInfoModal(scope.event)">
                       </custom-attributes>
                     </assessment-local-ca>
                     <!-- Modal Window to fix validation issues of CA fields -->
