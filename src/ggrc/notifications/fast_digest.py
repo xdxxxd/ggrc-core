@@ -6,13 +6,12 @@ from datetime import datetime
 import itertools
 
 from werkzeug import exceptions
-from google.appengine.api import mail
 
 from ggrc import db
 from ggrc import rbac
 from ggrc import settings
-from ggrc.notifications import common
 
+from ggrc.notifications import common as notif_common
 from ggrc.notifications import data_handlers
 from ggrc.notifications import proposal_helpers
 from ggrc.notifications import review_helpers
@@ -27,7 +26,7 @@ def build_subject():
   user_datetime = data_handlers.as_user_time(
       datetime.utcnow(),
   )
-  return common.prefix_subject(DIGEST_TITLE_TMPL.format(user_datetime))
+  return DIGEST_TITLE_TMPL.format(user_datetime)
 
 
 def build_address_body(proposals, review_notifications):
@@ -60,13 +59,12 @@ def send_notification():
   subject = build_subject()
   for addressee, html in build_address_body(proposals,
                                             review_notifications):
-    mail.send_mail(
-        sender=getattr(settings, "APPENGINE_EMAIL"),
-        to=addressee.email,
+    notif_common.send_email(
+        user_email=addressee.email,
         subject=subject,
-        body="",
-        html=html,
+        body=html,
     )
+
   proposal_helpers.mark_proposals_sent(proposals)
   review_helpers.move_notifications_to_history(review_notifications)
   db.session.commit()

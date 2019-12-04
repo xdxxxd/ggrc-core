@@ -47,6 +47,11 @@ class TestJsonComparator(unittest.TestCase):
           True,
       ),
       (
+          [{'id': 123, 'type': 'assessment', 'attr1': 1}],
+          [{'id': 123, 'type': 'assessment', 'attr2': 2, 'attr3': 3}],
+          True,
+      ),
+      (
           [{'id': 123, 'type': 'assessment'}],
           [{'id': 765, 'type': 'assessment'}],
           False,

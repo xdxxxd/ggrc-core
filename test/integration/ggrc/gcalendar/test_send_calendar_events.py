@@ -8,7 +8,7 @@ import mock
 from freezegun import freeze_time
 
 from ggrc.models import all_models
-from ggrc.notifications import common
+from ggrc.gcalendar import common
 from integration.ggrc.gcalendar import BaseCalendarEventTest
 
 

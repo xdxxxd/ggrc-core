@@ -3,36 +3,63 @@
 
 """Lists of ggrc contributions."""
 
-from ggrc.integrations import synchronization_jobs
-from ggrc.models import import_export
-from ggrc.notifications import common
-from ggrc.notifications import fast_digest
+import ggrc
+
+from ggrc.integrations import synchronization_jobs  # noqa  # pylint: disable=unused-import
 from ggrc.notifications import notification_handlers
 from ggrc.notifications import data_handlers
-from ggrc.notifications import import_export as import_export_notifications
 
-NIGHTLY_CRON_JOBS = [
-    common.generate_cycle_tasks_notifs,
-    common.create_daily_digest_bg,
-    common.send_calendar_events,
-    import_export.clear_overtimed_tasks,
+
+CRON_JOB_GETTERS = [
+    ggrc.converters.get_jobs_to_register,
+    ggrc.gcalendar.get_jobs_to_register,
+    ggrc.integrations.get_jobs_to_register,
+    ggrc.notifications.get_jobs_to_register,
 ]
 
-HOURLY_CRON_JOBS = [
-    synchronization_jobs.sync_assessment_attributes,
-    synchronization_jobs.sync_issue_attributes,
-]
 
-HALF_HOUR_CRON_JOBS = [
-    fast_digest.send_notification,
-]
+def _gather_cron_job_handlers(name):
+  """Gather cron job handlers from application modules where defined."""
+  cron_jobs = []
+  for getter in CRON_JOB_GETTERS:
+    cron_jobs.extend(getter(name))
+  return cron_jobs
+
+
+def register_night_cron_jobs():
+  """Register nightly cron job handlers."""
+  return _gather_cron_job_handlers("NIGHTLY_CRON_JOBS")
+
+
+def register_hour_cron_jobs():
+  """Register hourly cron job handlers."""
+  return _gather_cron_job_handlers("HOURLY_CRON_JOBS")
+
+
+def register_half_hour_jobs():
+  """Register half-hourly cron job handlers."""
+  return _gather_cron_job_handlers("HALF_HOUR_CRON_JOBS")
+
+
+def register_import_export_jobs():
+  """Register import-export cron job handlers."""
+  return _gather_cron_job_handlers("IMPORT_EXPORT_JOBS")
+
+
+NIGHTLY_CRON_JOBS = register_night_cron_jobs()
+
+
+HOURLY_CRON_JOBS = register_hour_cron_jobs()
+
+
+HALF_HOUR_CRON_JOBS = register_half_hour_jobs()
+
+
+IMPORT_EXPORT_JOBS = register_import_export_jobs()
+
 
 NOTIFICATION_LISTENERS = [
     notification_handlers.register_handlers
-]
-
-IMPORT_EXPORT_JOBS = [
-    import_export_notifications.check_import_export_jobs,
 ]
 
 
