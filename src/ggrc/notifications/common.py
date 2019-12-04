@@ -7,7 +7,7 @@
  email to recipients
 """
 
-
+import re
 from collections import defaultdict
 from datetime import date
 from datetime import datetime
@@ -530,13 +530,19 @@ def send_email(user_email, subject, body):
     logger.error("APPENGINE_EMAIL setting is invalid.")
     return
 
-  mail.send_mail(
-      sender=sender,
-      to=user_email,
-      subject=prefix_subject(subject),
-      body="",
-      html=body,
-  )
+  try:
+    mail.send_mail(
+        sender=sender,
+        to=user_email,
+        subject=prefix_subject(subject),
+        body="",
+        html=body,
+    )
+  except AssertionError as error:
+    if re.search(r"No api proxy found for service.*$", error.message):
+      logger.error("Could not send message. SMTP server is not configured")
+    else:
+      raise
 
 
 def modify_data(data):
