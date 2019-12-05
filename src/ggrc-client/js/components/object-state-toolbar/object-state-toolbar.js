@@ -53,7 +53,8 @@ export default canComponent.extend({
       return this.attr('instanceState') === 'In Review';
     },
     changeState: function (newState, isUndo) {
-      if (this.attr('instance._hasValidationErrors')) {
+      // skip validation for Undo button
+      if (!isUndo && this.attr('instance._hasValidationErrors')) {
         this.attr('instance').dispatch(SWITCH_TO_ERROR_PANEL);
         this.attr('instance').dispatch(SHOW_INVALID_FIELD);
         return;
