@@ -220,9 +220,6 @@ class TestGetObjectColumnDefinitions(TestCase):
   def setUpClass(cls):
     TestCase.clear_data()
 
-  def setUp(self):
-    pass
-
   def _test_definition_names(self, obj_class, names, has_mappings=True):
     """Test name definitions for one class
 
