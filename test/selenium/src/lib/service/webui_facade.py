@@ -341,11 +341,11 @@ def soft_assert_cannot_view_proposals(info_page, soft_assert):
         format(tab_num))
 
 
-def soft_assert_cannot_view_version_history(obj, soft_assert, selenium):
+def soft_assert_cannot_view_version_history(obj, soft_assert):
   """Performs soft assertion that user cannot view Version History for disabled
   object."""
   info_page = factory.get_cls_webui_service(objects.get_plural(
-      obj.type))(selenium).open_info_page_of_obj(obj)
+      obj.type))().open_info_page_of_obj(obj)
   info_page.click_version_history()
   soft_assert.expect(are_tabs_urls_equal(), "Tabs urls should be equal.")
   soft_assert.expect(
