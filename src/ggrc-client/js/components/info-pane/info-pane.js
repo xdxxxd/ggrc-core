@@ -17,7 +17,8 @@ export default canComponent.extend({
     define: {
       isInfoPaneReadonly: {
         get() {
-          return !isAllowedFor('update', this.attr('instance'));
+          return !isAllowedFor('update', this.attr('instance'))
+            || this.attr('instance.isRevision');
         },
       },
     },
