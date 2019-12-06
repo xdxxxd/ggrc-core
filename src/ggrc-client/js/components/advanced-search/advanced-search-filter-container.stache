@@ -19,7 +19,8 @@
         {{#case "operator"}}
         <div class="filter-container__operator">
           <advanced-search-filter-operator
-            operator:bind="value">
+            operator:bind="value"
+            disabled:from="options.disabled">
           </advanced-search-filter-operator>
         </div>
         {{/case}}
@@ -27,6 +28,8 @@
         <div class="filter-container__attribute">
           <advanced-search-filter-attribute
             attribute:bind="value"
+            disabled:from="options.disabled"
+            showActions:from="{{isAttributeActionsShown(options.disabled)}}"
             on:remove="removeItem(.)"
             availableAttributes:from="availableAttributes"
             extendable:from="true"

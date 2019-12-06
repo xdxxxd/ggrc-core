@@ -7,6 +7,7 @@ import canStache from 'can-stache';
 import canControl from 'can-control';
 import '../../components/assessment-template-clone/assessment-template-clone';
 import '../../components/assessment/assessments-bulk-complete/assessments-bulk-complete';
+import '../../components/assessment/assessments-bulk-verify/assessments-bulk-verify';
 import '../../components/object-bulk-update/object-bulk-update';
 import '../../components/object-mapper/object-mapper';
 import '../../components/object-generator/object-generator';
@@ -20,6 +21,7 @@ import objectMapperTemplate from './object-mapper-modal.stache';
 import objectSearchTemplate from './object-search-modal.stache';
 import objectBulkUpdateTemplate from './object-bulk-update-modal.stache';
 import asmtBulkCompleteTemplate from './assessments-bulk-complete-modal.stache';
+import asmtBulkVerifyTemplate from './assessments-bulk-verify-modal.stache';
 import {notifier} from '../../plugins/utils/notifiers-utils';
 import * as businessModels from '../../models/business-models';
 import {changeUrl} from '../../router';
@@ -230,6 +232,12 @@ const AssessmentsBulkComplete = ObjectMapper.extend({
   },
 }, {});
 
+const AssessmentsBulkVerify = ObjectMapper.extend({
+  defaults: {
+    component: asmtBulkVerifyTemplate,
+  },
+}, {});
+
 export {
   ObjectMapper,
   ObjectGenerator,
@@ -237,4 +245,5 @@ export {
   ObjectBulkUpdate,
   AssessmentTemplateClone,
   AssessmentsBulkComplete,
+  AssessmentsBulkVerify,
 };

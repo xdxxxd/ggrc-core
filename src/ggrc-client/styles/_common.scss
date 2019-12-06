@@ -347,6 +347,12 @@ span.no-data {
   }
 }
 
+p.warning {
+  color: $gray;
+  font-style: italic;
+  margin-top: 5px;
+}
+
 // container-fluid reset
 .container-fluid {
   padding:0;
@@ -801,4 +807,12 @@ p {
 
 .no-outline {
   outline: none;
+}
+
+.top-space {
+  margin-top: 15px;
+}
+
+.bottom-space {
+  margin-bottom: 15px;
 }

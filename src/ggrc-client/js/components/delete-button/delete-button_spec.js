@@ -199,8 +199,7 @@ describe('delete-button component', () => {
           originalObject,
           relatedToOriginal: composedData.relatedToOriginal,
           relatedToSnapshot: composedData.relatedToSnapshot,
-          content_view:
-            `${GGRC.templates_path}/modals/snapshot-related-objects.stache`,
+          content_view: '/modals/snapshot-related-objects.stache',
           button_view: ModalsUtils.BUTTON_VIEW_CLOSE,
         };
         vm.fetchRelatedObjects();

@@ -7,7 +7,7 @@
 {{#instance}}
 <person-modal instance:from="instance" isNewInstance:from="new_object_form">
   <form action="javascript://">
-    {{> /static/templates/base_objects/form-restore.stache}}
+    {{> base_objects/form-restore.stache}}
 
     <div class="row-fluid">
       <div class="span4">

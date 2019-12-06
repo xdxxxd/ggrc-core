@@ -14,26 +14,23 @@ from datetime import datetime
 import ddt
 from freezegun import freeze_time
 from mock import patch
-from sqlalchemy import and_
 
 from ggrc import db
 from ggrc.models import Assessment
 from ggrc.models import CustomAttributeDefinition
 from ggrc.models import CustomAttributeValue
-from ggrc.models import Notification
-from ggrc.models import NotificationType
 from ggrc.models import Revision
 from ggrc.models import all_models
 from ggrc.utils import errors
-from integration.ggrc import TestCase
 from integration.ggrc import api_helper, generator
 from integration.ggrc.models import factories
 
 from integration.ggrc.models.factories import \
     CustomAttributeDefinitionFactory as CAD
+from integration.ggrc.notifications import TestNotifications
 
 
-class TestAssignableNotification(TestCase):
+class TestAssignableNotification(TestNotifications):
   """Base class for testing notification creation for assignable mixin."""
 
   def setUp(self):
@@ -41,51 +38,6 @@ class TestAssignableNotification(TestCase):
     self.client.get("/login")
     self._fix_notification_init()
     factories.AuditFactory(slug="Audit")
-
-  def _fix_notification_init(self):
-    """Fix Notification object init function.
-
-    This is a fix needed for correct created_at field when using freezgun. By
-    default the created_at field is left empty and filed by database, which
-    uses system time and not the fake date set by freezugun plugin. This fix
-    makes sure that object created in freeze_time block has all dates set with
-    the correct date and time.
-    """
-
-    def init_decorator(init):
-      """Wrapper for Notification init function."""
-
-      def new_init(self, *args, **kwargs):
-        init(self, *args, **kwargs)
-        if hasattr(self, "created_at"):
-          self.created_at = datetime.now()
-      return new_init
-
-    Notification.__init__ = init_decorator(Notification.__init__)
-
-  @classmethod
-  def _get_notifications(cls, sent=False, notif_type=None):
-    """Get a notification query.
-
-    Args:
-      sent (boolean): flag to filter out only notifications that have been
-        sent.
-      notif_type (string): name of the notification type.
-
-    Returns:
-      sqlalchemy query for selected notifications.
-    """
-    if sent:
-      notif_filter = Notification.sent_at.isnot(None)
-    else:
-      notif_filter = Notification.sent_at.is_(None)
-
-    if notif_type:
-      notif_filter = and_(notif_filter, NotificationType.name == notif_type)
-
-    return db.session.query(Notification).join(NotificationType).filter(
-        notif_filter
-    )
 
 
 class TestAssignableNotificationUsingImports(TestAssignableNotification):

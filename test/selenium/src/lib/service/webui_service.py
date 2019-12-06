@@ -5,7 +5,7 @@ import re
 
 from dateutil import parser, tz
 
-from lib import factory, url, base
+from lib import factory, url, base, cache, constants
 from lib.constants import objects, messages, element, regex, locator
 from lib.element import tab_containers
 from lib.entities import entity
@@ -13,8 +13,7 @@ from lib.page import dashboard, widget_bar, export_page
 from lib.page.modal import unified_mapper, request_review
 from lib.page.widget import generic_widget, object_modal
 from lib.utils import (
-    selenium_utils, file_utils, conftest_utils, test_utils, ui_utils,
-    string_utils)
+    selenium_utils, file_utils, test_utils, ui_utils, string_utils)
 
 
 class BaseWebUiService(base.WithBrowser):
@@ -114,10 +113,19 @@ class BaseWebUiService(base.WithBrowser):
     return self._create_list_objs(
         entity_factory=self.entities_factory_cls, list_scopes=[scope])[0]
 
+  def get_lhn_accordion(self, object_name):
+    """Select relevant section in LHN and return relevant section accordion."""
+    selenium_utils.open_url(url.Urls().dashboard)
+    lhn_menu = dashboard.Header(self._driver).open_lhn_menu()
+    # if object button not visible, open this section first
+    if object_name in cache.LHN_SECTION_MEMBERS:
+      method_name = factory.get_method_lhn_select(object_name)
+      lhn_menu = getattr(lhn_menu, method_name)()
+    return getattr(lhn_menu, constants.method.SELECT_PREFIX + object_name)()
+
   def create_obj_and_get_obj(self, obj):
     """Creates obj via LHN and returns a created obj."""
-    object_name = objects.get_plural(obj.type)
-    conftest_utils.get_lhn_accordion(self._driver, object_name).create_new()
+    self.get_lhn_accordion(objects.get_plural(obj.type)).create_new()
     self.submit_obj_modal(obj)
     return self.build_obj_from_page()
 
@@ -172,7 +180,7 @@ class BaseWebUiService(base.WithBrowser):
     self._set_list_objs_scopes_repr_on_mapper_tree_view(src_obj)
     list_objs_scopes, mapping_statuses = (
         self._search_objs_via_tree_view(src_obj, dest_objs))
-    self._get_unified_mapper(src_obj).close()
+    self.get_unified_mapper(src_obj).close()
     for index in xrange(len(list_objs_scopes)):
       self.add_review_status_if_not_in_control_scope(list_objs_scopes[index])
     return self._create_list_objs(
@@ -248,7 +256,7 @@ class BaseWebUiService(base.WithBrowser):
     self.open_widget_of_mapped_objs(src_obj).tree_view.open_create()
     object_modal.get_modal_obj(obj.type, self._driver).submit_obj(obj)
 
-  def _get_unified_mapper(self, src_obj):
+  def get_unified_mapper(self, src_obj):
     """Open generic widget of mapped objects, open unified mapper modal from
     Tree View.
     Return MapObjectsModal"""
@@ -277,7 +285,7 @@ class BaseWebUiService(base.WithBrowser):
     And list of MappingStatusAttrs namedtuples for mapping representation.
     """
     dest_objs_titles = [dest_obj.title for dest_obj in dest_objs]
-    mapper = self._get_unified_mapper(src_obj)
+    mapper = self.get_unified_mapper(src_obj)
     return mapper.search_dest_objs(
         dest_objs_type=dest_objs[0].type.title(),
         dest_objs_titles=dest_objs_titles), mapper.get_mapping_statuses()
@@ -303,7 +311,7 @@ class BaseWebUiService(base.WithBrowser):
     scopes representation on Unified Mapper Tree View.
     """
     # pylint: disable=invalid-name
-    mapper = self._get_unified_mapper(src_obj)
+    mapper = self.get_unified_mapper(src_obj)
     mapper.tree_view.open_set_visible_fields().select_and_set_visible_fields()
 
   def get_list_objs_scopes_from_tree_view(self, src_obj):
@@ -738,6 +746,15 @@ class AssessmentsService(BaseWebUiService):
     page.status_filter_dropdown.select_all()
     return page
 
+  def get_objs_from_bulk_update_modal(self, modal_element,
+                                      with_second_tier_info=False):
+    """Returns assessments objects from bulk verify modal.
+    Attrs 'comments', 'evidence_urls' and 'mapped_objects' are collected if
+    with_second_tier_info is set to True."""
+    scopes_list = modal_element.select_assessments_section.get_objs_scopes(
+        with_second_tier_info)
+    return self._create_list_objs(self.entities_factory_cls, scopes_list)
+
 
 class ControlsService(SnapshotsWebUiService):
   """Class for Controls business layer's services objects."""
@@ -782,8 +799,25 @@ class TechnologyEnvironmentService(BaseWebUiService):
 
 class ProgramsService(BaseWebUiService):
   """Class for Programs business layer's services objects."""
-  def __init__(self, driver=None):
-    super(ProgramsService, self).__init__(objects.PROGRAMS, driver)
+
+  def __init__(self, driver, obj_name=objects.PROGRAMS):
+    self._actual_obj_name = obj_name
+    self.obj_name = objects.PROGRAMS
+    super(ProgramsService, self).__init__(
+        obj_name=self.obj_name, driver=driver)
+    self.url_mapped_objs = (
+        "{src_obj_url}" +
+        url.Utils.get_widget_name_of_mapped_objs(self._actual_obj_name))
+
+  def open_widget_of_mapped_objs(self, src_obj):
+    """Navigates to URL of mapped Programs according to URL of
+    source object.
+    Returns: Programs widget class.
+    """
+    generic_widget_url = self.url_mapped_objs.format(src_obj_url=src_obj.url)
+    # todo fix freezing when navigate through tabs by URLs and using driver.get
+    selenium_utils.open_url(generic_widget_url, is_via_js=True)
+    return generic_widget.Programs(self._driver, self._actual_obj_name)
 
   def add_and_map_obj_widget(self, obj):
     """Adds widget of selected type and

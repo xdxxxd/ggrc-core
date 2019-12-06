@@ -36,7 +36,7 @@ from ggrc.utils import referenced_objects
 logger = logging.getLogger(__name__)
 
 
-def _validate_assessment_done_state(old_value, obj):
+def _validate_assessment_state(old_value, obj):
   """Checks if it's allowed to set done state from not done."""
   new_value = obj.status
   if old_value in obj.NOT_DONE_STATES and \
@@ -46,6 +46,11 @@ def _validate_assessment_done_state(old_value, obj):
                                   "preconditions are not satisfied. "
                                   "Check preconditions_failed "
                                   "of items of self.custom_attribute_values")
+  if (obj.status == obj.FINAL_STATE and
+     not obj.verified and
+     not getattr(obj, 'sox_302_enabled', False) and
+     getattr(obj, 'verifiers', [])):
+    obj.status = obj.DONE_STATE
 
 
 def _get_audit_id(asmt_src):
@@ -226,7 +231,7 @@ def init_hook():
     initial_state = kwargs['initial_state']
     old_value = initial_state.status
     try:
-      _validate_assessment_done_state(old_value, obj)
+      _validate_assessment_state(old_value, obj)
     except StatusValidationError as error:
       db.session.rollback()
       raise error

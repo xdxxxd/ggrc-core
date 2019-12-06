@@ -3,6 +3,7 @@
 
 """Custom attribute value model"""
 
+import re
 from sqlalchemy import and_
 from sqlalchemy import or_
 from sqlalchemy import orm
@@ -298,8 +299,11 @@ class CustomAttributeValue(CustomAttributeValueBase):
 
   def _validate_checkbox(self):
     """Set falsy value to zero."""
-    if not self.attribute_value:
+    if not self.attribute_value or re.sub(
+       r'\s+', "", self.attribute_value).lower() in ("no", "false"):
       self.attribute_value = "0"
+    else:
+      self.attribute_value = re.sub(r'\s+', "", self.attribute_value).lower()
 
   def _validate_map_object(self):
     """Validate and correct mapped object values

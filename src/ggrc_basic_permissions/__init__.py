@@ -472,10 +472,12 @@ def _load_permissions_from_database(user):
   return permissions
 
 
-def load_permissions_for(user):
-  """Permissions is dictionary that can be exported to json to share with
-  clients. Structure is:
-  ..
+def load_permissions_for(user, expire_old=False):
+  """Load permissions for provided user.
+
+  Load permissions from memcache (if present) or database. Permissions is
+  dictionary that can be exported to json to share with clients. Structure of
+  the dictionary is the following:
 
     permissions[action][resource_type][contexts]
                                       [conditions][context][context_conditions]
@@ -489,14 +491,26 @@ def load_permissions_for(user):
     keys.
   'condition' is the string name of a conditional operator, such as 'contains'.
   'terms' are the arguments to the 'condition'.
-  """
-  key = 'permissions:{}'.format(user.id)
 
+  Args:
+    user (models.User): Instance of `User` model representing user whose
+      permissions should be loaded.
+    expire_old (bool): Flag indicating whether previously loaded permissions\
+      should be expired if any. Defaults to `False`.
+
+  Returns:
+    Dictionary containing user's permissions.
+  """
+  with benchmark("load_permissions > invalidate memcache for specific user"):
+    if expire_old:
+      cache_utils.clear_users_permission_cache([user.id])
+
+  memcache_key = 'permissions:{}'.format(user.id)
   # try to get cached permissions from memcahe
   with benchmark("load_permissions > query memcache"):
     cache = _get_memcache_client()
     if cache:
-      result = query_memcache(cache, key)
+      result = query_memcache(cache, memcache_key)
       if result:
         return result
 
@@ -510,7 +524,7 @@ def load_permissions_for(user):
     # the permissions information for any subsequent request.
     with benchmark("load_permissions > store results into memcache"):
       if cache:
-        store_results_into_memcache(permissions, cache, key)
+        store_results_into_memcache(permissions, cache, memcache_key)
 
   return permissions
 

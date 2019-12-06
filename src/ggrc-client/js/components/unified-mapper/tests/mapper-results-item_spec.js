@@ -17,6 +17,38 @@ describe('mapper-results-item', function () {
     viewModel = getComponentVM(Component);
   });
 
+  describe('showOpenButton get() method', () => {
+    it('returns true if searchOnly attr is true', () => {
+      viewModel.attr('searchOnly', true);
+      expect(viewModel.attr('showOpenButton')).toBe(true);
+    });
+
+    it('returns true if it is bulk-update view', () => {
+      viewModel.attr('searchOnly', false);
+      spyOn(viewModel, 'isBulkUpdateView').and.returnValue(true);
+      expect(viewModel.attr('showOpenButton')).toBe(true);
+    });
+
+    it('returns false if searchOnly attr is false ' +
+    'and it is not bulk-update view', () => {
+      viewModel.attr('searchOnly', false);
+      spyOn(viewModel, 'isBulkUpdateView').and.returnValue(false);
+      expect(viewModel.attr('showOpenButton')).toBe(false);
+    });
+  });
+
+  describe('viewClass get() method', () => {
+    it('returns "bulk-update-view" if it is bulk-update view', () => {
+      spyOn(viewModel, 'isBulkUpdateView').and.returnValue(true);
+      expect(viewModel.attr('viewClass')).toBe('bulk-update-view');
+    });
+
+    it('returns "" if it is not bulk-update view', () => {
+      spyOn(viewModel, 'isBulkUpdateView').and.returnValue(false);
+      expect(viewModel.attr('viewClass')).toBe('');
+    });
+  });
+
   describe('displayItem() method', function () {
     it('returns content of revesion if itemData.revesion defined',
       function () {
@@ -123,6 +155,22 @@ describe('mapper-results-item', function () {
         type: 'mockType',
       });
       result = viewModel.isSnapshot();
+      expect(result).toEqual(false);
+    });
+  });
+
+  describe('isBulkUpdateView() method', () => {
+    it('returns true if it is bulk-update view', () => {
+      let result;
+      viewModel.attr('itemDetailsViewType', 'bulk-update');
+      result = viewModel.isBulkUpdateView();
+      expect(result).toEqual(true);
+    });
+
+    it('returns false if it is not bulk-update view', () => {
+      let result;
+      viewModel.attr('itemDetailsViewType', 'fake-view');
+      result = viewModel.isBulkUpdateView();
       expect(result).toEqual(false);
     });
   });

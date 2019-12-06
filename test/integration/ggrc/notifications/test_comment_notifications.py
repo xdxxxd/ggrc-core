@@ -5,27 +5,22 @@
 
 """Tests for notifications for models with assignable mixin."""
 
-from datetime import datetime
 import collections
 
 import ddt
 from freezegun import freeze_time
 from mock import patch
-from sqlalchemy import and_
 
-from ggrc import db
 from ggrc.models import Assessment, all_models
-from ggrc.models import Notification
-from ggrc.models import NotificationType
 from ggrc.models import Revision
 from ggrc.notifications import common
-from integration.ggrc import TestCase
 from integration.ggrc import generator
 from integration.ggrc.models import factories
+from integration.ggrc.notifications import TestNotifications
 
 
 @ddt.ddt
-class TestCommentNotification(TestCase):
+class TestCommentNotification(TestNotifications):
   """Test notification on assessment comments."""
 
   def setUp(self):
@@ -34,52 +29,6 @@ class TestCommentNotification(TestCase):
     self.client.get("/login")
     self._fix_notification_init()
     self.generator = generator.ObjectGenerator()
-
-  def _fix_notification_init(self):
-    """Fix Notification object init function.
-
-    This is a fix needed for correct created_at field when using freezgun. By
-    default the created_at field is left empty and filed by database, which
-    uses system time and not the fake date set by freezugun plugin. This fix
-    makes sure that object created in feeze_time block has all dates set with
-    the correct date and time.
-    """
-
-    def init_decorator(init):
-      """Wrapper for Notification init function."""
-
-      # pylint: disable=missing-docstring
-      def new_init(self, *args, **kwargs):
-        init(self, *args, **kwargs)
-        if hasattr(self, "created_at"):
-          self.created_at = datetime.now()
-      return new_init
-
-    Notification.__init__ = init_decorator(Notification.__init__)
-
-  @classmethod
-  def _get_notifications(cls, sent=False, notif_type=None):
-    """Get a notification query.
-
-    Args:
-      sent (boolean): flag to filter out only notifications that have been
-        sent.
-      notif_type (string): name of the notification type.
-
-    Returns:
-      sqlalchemy query for selected notifications.
-    """
-    if sent:
-      notif_filter = Notification.sent_at.isnot(None)
-    else:
-      notif_filter = Notification.sent_at.is_(None)
-
-    if notif_type:
-      notif_filter = and_(notif_filter, NotificationType.name == notif_type)
-
-    return db.session.query(Notification).join(NotificationType).filter(
-        notif_filter
-    )
 
   @patch("ggrc.notifications.common.send_email")
   def test_notification_entries(self, _):

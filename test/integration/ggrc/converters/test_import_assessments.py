@@ -1150,6 +1150,26 @@ class TestAssessmentImport(TestCase):
         all_models.Assessment.query.get(assessment.id).verified_date,
         datetime.datetime(2019, 1, 22))
 
+  def test_asmt_complete_verified(self):
+    """Test assessment moved to Complete and Verified state"""
+    with factories.single_commit():
+      audit = factories.AuditFactory()
+      assessment = factories.AssessmentFactory(audit=audit)
+      slug = assessment.slug
+      user = all_models.Person.query.first()
+      assessment.add_person_with_role_name(user, "Verifiers")
+
+    response = self.import_data(collections.OrderedDict([
+        ("object_type", "Assessment"),
+        ("Code", slug),
+        ("State", "Completed"),
+        ("Verified Date", "01/22/2019"),
+    ]))
+    self._check_csv_response(response, {})
+    assmt = all_models.Assessment.query.one()
+    self.assertTrue(assmt.verified)
+    self.assertEqual(assmt.status, "Completed")
+
   def test_asmt_verified_date_readonly(self):
     """Test that Verified Date is readonly"""
     audit = factories.AuditFactory()
@@ -1199,6 +1219,45 @@ class TestAssessmentImport(TestCase):
     self.assertEqual(
         all_models.Assessment.query.get(assessment.id).status,
         all_models.Assessment.PROGRESS_STATE)
+
+  def test_import_asmnt_state_with_verifiers(self):
+    """Assessment with Verifiers should update Status to In Review if we are
+    importing Completed state"""
+    with factories.single_commit():
+      assessment = factories.AssessmentFactory()
+      person = factories.PersonFactory()
+      factories.AccessControlPersonFactory(
+          ac_list=assessment.acr_name_acl_map["Verifiers"],
+          person=person,
+      )
+    self.import_data(collections.OrderedDict([
+        ("object_type", "Assessment"),
+        ("Code", assessment.slug),
+        ("State", all_models.Assessment.FINAL_STATE),
+    ]))
+    self.assertEqual(
+        all_models.Assessment.query.get(assessment.id).status,
+        all_models.Assessment.DONE_STATE)
+
+  def test_import_asmnt_state_with_verifiers_and_date(self):
+    """Assessment with Verifiers should update Status to Completed if we are
+    importing Completed state with filled Verified Date"""
+    with factories.single_commit():
+      assessment = factories.AssessmentFactory()
+      person = factories.PersonFactory()
+      factories.AccessControlPersonFactory(
+          ac_list=assessment.acr_name_acl_map["Verifiers"],
+          person=person,
+      )
+    self.import_data(collections.OrderedDict([
+        ("object_type", "Assessment"),
+        ("Code", assessment.slug),
+        ("Verified Date", "11/20/2019"),
+        ("State", all_models.Assessment.FINAL_STATE)
+    ]))
+    asmnt = all_models.Assessment.query.get(assessment.id)
+    self.assertEqual(asmnt.status, all_models.Assessment.FINAL_STATE)
+    self.assertEqual(asmnt.verified_date, datetime.datetime(2019, 11, 20))
 
   def test_assmt_with_multiselect_gca(self):
     """Import of assessment with multiselect CAD shouldn't add assmt.CAV"""
@@ -1487,6 +1546,60 @@ class TestAssessmentImport(TestCase):
     response = self.import_data(assessment_data1, assessment_data2)
 
     self._check_csv_response(response, exp_errors)
+
+  @ddt.data(
+      (
+          "Text",
+          "Not Started",
+          []
+      ),
+      (
+          "Map:Person",
+          "Verified",
+          ["Line 3: Field 'test lca' is required. The line will be ignored."]
+      ),
+      (
+          "Date",
+          "In Progress",
+          []
+      ),
+      (
+          "Rich Text",
+          "Completed",
+          ["Line 3: Field 'test lca' is required. The line will be ignored."]
+      ),
+      (
+          "Checkbox",
+          "Deprecated",
+          []
+      ),
+      (
+          "Multiselect",
+          "In Review",
+          ["Line 3: Field 'test lca' is required. The line will be ignored."]
+      ),
+  )
+  @ddt.unpack
+  def test_import_mandatory_lca(self, type_lca, state, expected_response):
+    """Test import assessments with mandatory lca"""
+    with factories.single_commit():
+      asmt = factories.AssessmentFactory()
+      factories.CustomAttributeDefinitionFactory(
+          title='test lca',
+          definition_type='assessment',
+          definition_id=asmt.id,
+          attribute_type=type_lca,
+          mandatory=True
+      )
+
+    response = self.import_data(collections.OrderedDict([
+        ("object_type", "Assessment"),
+        ("Code", asmt.slug),
+        ("test lca", ""),
+        ("State", state)
+    ]))
+
+    self.assertEqual(response[0]["row_errors"], expected_response)
 
 
 @ddt.ddt

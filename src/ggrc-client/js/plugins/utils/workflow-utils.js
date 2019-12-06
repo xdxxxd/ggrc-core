@@ -65,10 +65,8 @@ function generateCycle(workflow) {
     modal_title: 'Confirm',
     modal_confirm: 'Proceed',
     skip_refresh: true,
-    button_view: GGRC.templates_path +
-      '/workflows/confirm-start-buttons.stache',
-    content_view: GGRC.templates_path +
-      '/workflows/confirm-start.stache',
+    button_view: '/workflows/confirm-start-buttons.stache',
+    content_view: '/workflows/confirm-start.stache',
     instance: workflow,
   }, (params, option) => {
     let data = {};
@@ -109,8 +107,8 @@ function getRelevantMappingTypes(instance) {
   const mappingTypes = getMappingList(instance.constructor.model_singular);
   const typesSet = new Set();
   const relatedObjects = [
-    ...instance.attr('related_destinations'),
-    ...instance.attr('related_sources'),
+    ...Array.from(instance.attr('related_destinations')),
+    ...Array.from(instance.attr('related_sources')),
   ];
 
   relatedObjects.forEach(({destination_type: type}) => {

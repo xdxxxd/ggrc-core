@@ -6,6 +6,7 @@
 from lib import base
 from lib.element import page_elements
 from lib.page.widget import related_proposals
+from lib.page.modal import bulk_update
 from lib.utils import selenium_utils
 
 
@@ -33,6 +34,11 @@ class WithPageElements(base.WithBrowser):
   def _simple_field(self, label, root_elem=None):
     """Returns SimpleField page element."""
     return page_elements.SimpleField(
+        root_elem if root_elem else self._browser, label)
+
+  def _editable_simple_field(self, label, root_elem=None):
+    """Returns EditableSimpleField page element."""
+    return page_elements.EditableSimpleField(
         root_elem if root_elem else self._browser, label)
 
   def _info_pane_form_field(self, label):
@@ -175,6 +181,7 @@ class WithProposals(WithDisabledProposals):
   def click_propose_changes(self):
     """Click on Propose Changes button."""
     self.propose_changes_btn.click()
+    selenium_utils.wait_for_js_to_load(self._driver)
 
   def related_proposals(self):
     """Open related proposals tab."""
@@ -196,3 +203,78 @@ class WithDisabledVersionHistory(base.WithBrowser):
   def click_version_history(self):
     """Click 'Version History' link or tab."""
     self._browser.element(text=self.version_history_tab_or_link_name).click()
+
+
+class WithBulkUpdate(base.WithBrowser):
+  """Contains bulk update elements."""
+
+  @property
+  def finish_message(self):
+    """Returns floating message that appears after bulk update process is
+    completed successfully."""
+    return self._browser.element(text="Bulk update is finished successfully.")
+
+  @property
+  def submit_message(self):
+    """Returns floating message that appears after bulk update process is
+    started."""
+    return self._browser.element(
+        text="Your bulk update is submitted. Once it is done you will get a "
+        "notification. You can continue working with the app.")
+
+
+class WithBulkUpdateButtons(WithBulkUpdate):
+  """Contains bulk update elements presented as buttons on page."""
+
+  @property
+  def bulk_complete_button(self):
+    """Represents 'Bulk complete' button."""
+    return self._browser.button(text="Bulk Complete")
+
+  def is_bulk_complete_displayed(self):
+    """Returns whether 'Bulk complete' button is displayed."""
+    return self.bulk_complete_button.exists
+
+  @property
+  def bulk_verify_button(self):
+    """Returns 'Bulk Verify' button element."""
+    return self._browser.button(text="Bulk Verify")
+
+  def is_bulk_verify_displayed(self):
+    """Returns whether 'Bulk Verify' button is displayed."""
+    return self.bulk_verify_button.exists
+
+  def open_bulk_verify_modal(self):
+    """Clicks bulk verify button.
+    Returns: Bulk Verify modal."""
+    self.bulk_verify_button.click()
+    return bulk_update.BulkVerifyModal()
+
+
+class WithBulkUpdateOptions(WithBulkUpdate):
+  """Contains bulk update elements presented as 3bbs menu options."""
+
+  @property
+  def bulk_complete_option(self):
+    """Returns 'Bulk complete' option from 3bbs menu."""
+    return self.three_bbs.option_by_text("Bulk Complete")
+
+  def is_bulk_complete_displayed(self):
+    """Returns whether 'Bulk complete' option is displayed in 3bbs menu."""
+    return self.bulk_complete_option.exists
+
+  @property
+  def bulk_verify_option(self):
+    """Returns 'Bulk Verify' option from 3bbs menu."""
+    return self.three_bbs.option_by_text("Bulk Verify")
+
+  def is_bulk_verify_displayed(self):
+    """Returns whether 'Bulk Verify' option is displayed in 3bbs menu."""
+    selenium_utils.wait_for_js_to_load(self._driver)
+    return self.bulk_verify_option.exists
+
+  def open_bulk_verify_modal(self):
+    """Clicks bulk verify option in 3bbs menu.
+    Returns: Bulk Verify modal."""
+    self.bulk_verify_option.click()
+    return bulk_update.BulkVerifyModal()

@@ -30,7 +30,7 @@
                                   onClose:from="@onClose">
                 </info-pin-buttons>
               {{/if}}
-              {{> /static/templates/base_objects/info-pane-utility.stache}}
+              {{> base_objects/info-pane-utility.stache}}
             </div>
           </div>
         </div>

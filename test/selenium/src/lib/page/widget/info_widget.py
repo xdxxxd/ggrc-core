@@ -6,7 +6,6 @@
 
 import re
 import time
-from selenium.webdriver.common.by import By
 from lib import base
 from lib.app_entity_factory import entity_factory_common
 from lib.constants import (
@@ -368,8 +367,8 @@ class InfoWidget(page_mixins.WithObjectReview, ReadOnlyInfoWidget):
   @property
   def comments_panel(self):
     """Returns comments panel."""
-    return base.CommentsPanel(self._root.wd,
-                              (By.CSS_SELECTOR, "comment-data-provider"))
+    return base.CommentsPanel(
+        self._browser.element(tag_name="comment-data-provider"))
 
 
 class Programs(InfoWidget, page_mixins.WithProposals):
@@ -386,6 +385,10 @@ class Programs(InfoWidget, page_mixins.WithProposals):
     self._extend_list_all_scopes(
         self.manager, self.manager_entered)
     self.reference_urls = self._related_urls(self._reference_url_label)
+
+  def description(self):
+    """Returns the text of description."""
+    return self._editable_simple_field("Description", self._root).text
 
   def els_shown_for_editor(self):
     """Elements shown for user with edit permissions"""
@@ -407,6 +410,7 @@ class Workflow(InfoWidget):
     """Method overriding without action due to Workflows don't have
     'review states'.
     """
+    # pylint: disable=invalid-name
     pass
 
   def obj_scope(self):
@@ -524,6 +528,7 @@ class Audits(page_mixins.WithAssignFolder, InfoWidget):
     """Method overriding without action due to Audits don't have
     'review states'.
     """
+    # pylint: disable=invalid-name
     pass
 
   def els_shown_for_editor(self):
@@ -603,7 +608,8 @@ class Assessments(InfoWidget):
   def comments_panel(self):
     """Returns comments panel."""
     self.tabs.ensure_tab(self._assessment_tab_name)
-    return base.CommentsPanel(self._root.wd, self._locators.COMMENTS_CSS)
+    return base.CommentsPanel(
+        self._browser.element(class_name="assessment-comments"))
 
   @property
   def is_comments_panel_present(self):
@@ -738,6 +744,7 @@ class AssessmentTemplates(InfoWidget):
     """Method overriding without action due to Assessment Templates don't have
     'review states'.
     """
+    # pylint: disable=invalid-name
     pass
 
 
@@ -747,6 +754,10 @@ class Issues(InfoWidget):
 
   def __init__(self, driver):
     super(Issues, self).__init__(driver)
+
+  def description(self):
+    """Returns the text of description."""
+    return self._editable_simple_field("Description", self._root).text
 
 
 class Regulations(InfoWidget):
@@ -991,6 +1002,11 @@ class Risks(page_mixins.WithDisabledProposals,
   def risk_type(self):
     """Returns the text of risk type."""
     return self._simple_field("Risk Type").text
+
+  @property
+  def risk_owners(self):
+    """Returns Risk Owners page element."""
+    return self._related_people_list(roles.RISK_OWNERS, self._root)
 
 
 class Threat(InfoWidget):

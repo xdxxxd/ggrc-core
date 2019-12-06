@@ -955,7 +955,8 @@ class UnifiedMapperTreeView(TreeView):
   HEADER = MODAL + " .list-header"
   ITEMS = MODAL + " mapper-results-item"
   SHOW_FIELDS_BTN_CSS = (By.CSS_SELECTOR, HEADER + " .fa-bars")
-  NO_RESULTS_MSG_CSS = (By.CSS_SELECTOR, ".well-small:not(.hidden)")
+  NO_RESULTS_MSG_CSS = (By.CSS_SELECTOR,
+                        "object-selection .well-small:not(.hidden)")
   MAPPER_TREE_SPINNER_NO_RESULT = (
       By.CSS_SELECTOR, ".no-items-spinner-wrapper spinner-component")
   MAPPER_TREE_SPINNER_ITEMS = (

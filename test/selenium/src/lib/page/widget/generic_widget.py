@@ -11,6 +11,7 @@ from lib.constants import locator, regex, element, counters, messages, objects
 from lib.element import three_bbs
 from lib.page import widget_bar
 from lib.page.modal import unified_mapper
+from lib.page.widget import page_mixins
 from lib.utils import selenium_utils
 
 
@@ -20,13 +21,7 @@ class Widget(base.Widget):
   def __init__(self, driver, obj_name, is_versions_widget=False):
     self.obj_name = obj_name
     self._locators_filter = locator.BaseWidgetGeneric
-    self._locators_widget = factory.get_locator_widget(
-        self.obj_name.upper())
-    if is_versions_widget:
-      locator_parts = self._locators_widget[1].split("\"")
-      locator_parts[1] += "_version"
-      self._locators_widget = (self._locators_widget[0], "\"".join(
-          locator_parts))
+    self.is_versions_widget = is_versions_widget
     self.info_widget_cls = factory.get_cls_widget(
         object_name=obj_name, is_info=True)
     # Filter
@@ -44,6 +39,17 @@ class Widget(base.Widget):
     self.members_listed = None
     self.member_count = None
     self._set_members_listed()
+
+  @property
+  def _locators_widget(self):
+    """Property. Returns locator of widget."""
+    locators_widget = factory.get_locator_widget(self.obj_name.upper())
+    if self.is_versions_widget:
+      locator_parts = locators_widget[1].split("\"")
+      locator_parts[1] += "_version"
+      locators_widget = (locators_widget[0], "\"".join(
+          locator_parts))
+    return locators_widget
 
   def _set_member_count(self):
     """Parses widget name and number of items from widget tab title."""
@@ -255,18 +261,9 @@ class AssessmentTemplates(Widget):
   """Model for Assessment Templates generic widgets."""
 
 
-class Assessments(Widget):
+class Assessments(page_mixins.WithBulkUpdateOptions, Widget):
   """Model for Assessments generic widgets."""
   _locators = locator.Assessments
-
-  @property
-  def bulk_complete_option(self):
-    """Returns 'Bulk complete' option from 3bbs menu."""
-    return self.three_bbs.option_by_text("Bulk Complete")
-
-  def is_bulk_complete_displayed(self):
-    """Returns whether 'Bulk complete' option is displayed in 3bbs menu."""
-    return self.bulk_complete_option.exists
 
   def show_generated_results(self):
     """Wait for Assessments generated successfully message.
@@ -298,6 +295,15 @@ class Issues(Widget):
 
 class Programs(Widget):
   """Model for Programs generic widgets"""
+  def __init__(self, driver=None, obj_name=objects.PROGRAMS):
+    self._actual_name = obj_name
+    self.obj_name = (objects.PROGRAMS if obj_name == objects.PROGRAM_PARENTS
+                     else obj_name)
+    super(Programs, self).__init__(driver, self.obj_name)
+
+  @property
+  def _locators_widget(self):
+    return factory.get_locator_widget(self._actual_name.upper())
 
 
 class TechnologyEnvironments(Widget):

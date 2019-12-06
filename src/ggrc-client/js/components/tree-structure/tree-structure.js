@@ -38,7 +38,7 @@ const viewModel = canMap.extend({
       current_user: GGRC.current_user,
       skip_refresh: false,
       modal_title: this.attr('modalTitle'),
-      content_view: `${GGRC.templates_path}${this.attr('contentViewPath')}`,
+      content_view: `${this.attr('contentViewPath')}`,
       $trigger,
     });
 

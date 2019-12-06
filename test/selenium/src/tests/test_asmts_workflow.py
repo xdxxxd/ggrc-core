@@ -72,7 +72,7 @@ class TestAssessmentsWorkflow(base.Test):
     asmt_comments_panel = asmts_ui_service.add_comments(
         src_obj=audit, obj=expected_asmt,
         comment_objs=expected_asmt_comments)
-    assert asmt_comments_panel.is_input_empty is True
+    assert asmt_comments_panel.comment_input.is_empty is True
     # 'expected_asmt_comments': created_at (None) *factory
     expected_asmt_comments = [expected_comment.update_attrs(
         created_at=self.info_service().get_comment_obj(
@@ -244,14 +244,14 @@ class TestAssessmentsWorkflow(base.Test):
     unchecked_asmt = assessments[0]
     checked_asmt = assessments[1]
 
-    checkbox_value = random.choice([True, False])
-    print "Checkbox value: {}".format(checkbox_value)
+    checkbox_values = ["yes", "no"]
+    random.shuffle(checkbox_values)
     self._set_values_for_assessment(
         unchecked_asmt, gcads_for_asmt,
-        only_checkbox=True, checkbox_value=checkbox_value)
+        only_checkbox=True, checkbox_value=checkbox_values[0])
     cavs = self._set_values_for_assessment(
         checked_asmt, gcads_for_asmt,
-        only_checkbox=False, checkbox_value=not checkbox_value)
+        only_checkbox=False, checkbox_value=checkbox_values[1])
 
     self._check_assessments_filtration(checked_asmt, cavs,
                                        operator, audit, selenium)
@@ -284,12 +284,12 @@ class TestAssessmentsWorkflow(base.Test):
     unchecked_asmt = assessments_from_template[0]
     checked_asmt = assessments_from_template[1]
 
-    checkbox_value = random.choice([True, False])
-    print "Checkbox value: {}".format(checkbox_value)
+    checkbox_values = ["yes", "no"]
+    random.shuffle(checkbox_values)
     set_values_for_assessment(
-        unchecked_asmt, only_checkbox=True, checkbox_value=checkbox_value)
+        unchecked_asmt, only_checkbox=True, checkbox_value=checkbox_values[0])
     set_attr_values = set_values_for_assessment(
-        checked_asmt, only_checkbox=False, checkbox_value=not checkbox_value)
+        checked_asmt, only_checkbox=False, checkbox_value=checkbox_values[1])
 
     self._check_assessments_filtration(checked_asmt,
                                        set_attr_values,

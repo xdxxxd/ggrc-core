@@ -2,6 +2,7 @@
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 # pylint: disable=too-many-lines
 # pylint: disable=too-many-public-methods
+
 """Tests exported csv files"""
 
 import collections
@@ -9,6 +10,7 @@ import ddt
 from flask.json import dumps
 from ggrc import utils
 from ggrc.converters import get_exportables
+from ggrc.integrations import constants
 from ggrc.models import inflector, all_models
 from ggrc.models.reflection import AttributeInfo
 from integration.ggrc import TestCase
@@ -87,6 +89,49 @@ class TestExportEmptyTemplate(TestCase):
         "X-export-view": "blocks",
     }
 
+  @ddt.data(("AccessGroup", 6),
+            ("AccountBalance", 6),
+            ("DataAsset", 6),
+            ("Facility", 6),
+            ("KeyReport", 6),
+            ("Market", 6),
+            ("Metric", 6),
+            ("OrgGroup", 6),
+            ("Process", 6),
+            ("Product", 6),
+            ("ProductGroup", 6),
+            ("Project", 6),
+            ("System", 6),
+            ("TechnologyEnvironment", 6),
+            ("Vendor", 6),
+            ("Threat", 6),
+            ("Objective", 6),
+            ("Issue", 6),
+            ("Contract", 6),
+            ("Policy", 6),
+            ("Regulation", 6),
+            ("Requirement", 6),
+            ("Standard", 6),
+            ("Audit", 4),
+            ("Program", 6),
+            ("Assessment", 8),
+            ("AssessmentTemplate", 3),
+            ("TaskGroup", 3),
+            ("TaskGroupTask", 3),
+            ("Workflow", 3),
+            ("Person", 3))
+  @ddt.unpack
+  def test_non_editable_tips(self, model, counts):
+    """Tests if {} has non-editable fields hint correctly"""
+    data = {
+        "export_to": "csv",
+        "objects": [{"object_name": model, "fields": "all"}]
+    }
+    response = self.client.post("/_service/export_csv",
+                                data=dumps(data), headers=self.headers)
+    self.assertEqual(counts,
+                     response.data.count("Automatically provided values"))
+
   @ddt.data("Assessment", "Issue", "Person", "Audit", "Product")
   def test_custom_attr_cb(self, model):
     """Test if  custom attribute checkbox type has hint for {}."""
@@ -101,7 +146,7 @@ class TestExportEmptyTemplate(TestCase):
     }
     response = self.client.post("/_service/export_csv",
                                 data=dumps(data), headers=self.headers)
-    self.assertIn("Allowed values are:\nTRUE\nFALSE", response.data)
+    self.assertIn("Allowed values are:\nyes\nno", response.data)
 
   def test_custom_attr_people(self):
     """Test if LCA Map:Person type has hint for Assessment ."""
@@ -417,7 +462,21 @@ class TestExportEmptyTemplate(TestCase):
     response = self.client.post("/_service/export_csv",
                                 data=dumps(data), headers=self.headers)
     self.assertIn("This field is not changeable\nafter workflow activation."
-                  "\nAllowed values are:\nTRUE\nFALSE", response.data)
+                  "\nAllowed values are:\nyes\nno", response.data)
+
+  def test_severity_tip(self):
+    """Tests for tip in Severity column for AssessmentTemplate object"""
+    data = {
+        "export_to": "csv",
+        "objects": [
+            {"object_name": "AssessmentTemplate", "fields": "all"},
+        ],
+    }
+    response = self.client.post("/_service/export_csv",
+                                data=dumps(data), headers=self.headers)
+
+    self.assertIn("Allowed values are:\n{}".format(
+        '\n'.join(constants.AVAILABLE_SEVERITIES)), response.data)
 
 
 @ddt.ddt

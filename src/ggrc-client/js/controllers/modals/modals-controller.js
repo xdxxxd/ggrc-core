@@ -3,11 +3,10 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-import {exists, filteredMap} from '../../plugins/ggrc-utils';
+import {exists, filteredMap, getView, getFragment} from '../../plugins/ggrc-utils';
 import loIsFunction from 'lodash/isFunction';
 import loForEach from 'lodash/forEach';
 import loFilter from 'lodash/filter';
-import {ggrcAjax} from '../../plugins/ajax-extensions';
 import canModel from 'can-model';
 import canStache from 'can-stache';
 import canList from 'can-list';
@@ -80,10 +79,10 @@ import {refreshAll} from '../../models/refresh-queue';
 
 export default canControl.extend({
   defaults: {
-    preload_view: GGRC.templates_path + '/dashboard/modal-preload.stache',
-    header_view: GGRC.templates_path + '/modals/modal-header.stache',
+    preload_view: '/dashboard/modal-preload.stache',
+    header_view: '/modals/modal-header.stache',
     custom_attributes_view:
-    GGRC.templates_path + '/custom_attributes/modal-content.stache',
+    '/custom_attributes/modal-content.stache',
     button_view: BUTTON_VIEW_DONE,
     model: null, // model class to use when finding or creating new
     instance: null, // model instance to use instead of finding/creating (e.g. for update)
@@ -104,13 +103,8 @@ export default canControl.extend({
     }
 
     if (!this.element.find('.modal-body').length) {
-      ggrcAjax({
-        url: this.options.preload_view,
-        dataType: 'text',
-      }).then((view) => {
-        let frag = canStache(view)();
-        this.after_preload(frag);
-      });
+      let frag = getFragment(this.options.preload_view);
+      this.after_preload(frag);
       return;
     }
 
@@ -188,12 +182,13 @@ export default canControl.extend({
 
   fetch_templates: function (dfd) {
     return $.when(
-      ggrcAjax({url: this.options.content_view, dataType: 'text'}),
-      ggrcAjax({url: this.options.header_view, dataType: 'text'}),
-      ggrcAjax({url: this.options.button_view, dataType: 'text'}),
-      ggrcAjax({url: this.options.custom_attributes_view, dataType: 'text'}),
       dfd.then(() => this.options),
-    ).then((content, header, footer, customAttributes, context) => {
+    ).then((context) => {
+      const content = getView(this.options.content_view);
+      const header = getView(this.options.header_view);
+      const footer = getView(this.options.button_view);
+      const customAttributes =
+        getView(this.options.custom_attributes_view);
       this.draw(content, header, footer, customAttributes, context);
     });
   },

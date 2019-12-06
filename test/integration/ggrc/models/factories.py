@@ -335,12 +335,22 @@ class EventFactory(ModelFactory):
   revisions = []
 
 
+class AutomappingFactory(ModelFactory):
+  """Automapping factory class"""
+
+  class Meta:
+    model = all_models.Automapping
+
+  parent = None
+
+
 class RelationshipFactory(ModelFactory):
 
   class Meta:
     model = all_models.Relationship
   source = None
   destination = None
+  automapping_id = None
 
   @classmethod
   def randomize(cls, *args):
@@ -722,6 +732,7 @@ def get_model_factory(model_name):
       "Assessment": AssessmentFactory,
       "AssessmentTemplate": AssessmentTemplateFactory,
       "Audit": AuditFactory,
+      "Automapping": AutomappingFactory,
       "CalendarEvent": CalendarEventFactory,
       "Comment": CommentFactory,
       "ExternalComment": ExternalCommentFactory,

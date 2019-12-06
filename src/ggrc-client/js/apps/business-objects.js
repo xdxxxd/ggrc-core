@@ -21,25 +21,25 @@ import * as businessModels from '../models/business-models/index';
 import TreeViewConfig from '../apps/base-widgets';
 
 const summaryWidgetViews = Object.freeze({
-  audits: GGRC.templates_path + '/audits/summary.stache',
+  audits: '/audits/summary.stache',
 });
 
 const infoWidgetViews = Object.freeze({
-  programs: GGRC.templates_path + '/programs/info.stache',
-  audits: GGRC.templates_path + '/audits/info.stache',
-  people: GGRC.templates_path + '/people/info.stache',
-  policies: GGRC.templates_path + '/policies/info.stache',
-  controls: GGRC.templates_path + '/controls/info.stache',
-  systems: GGRC.templates_path + '/systems/info.stache',
-  processes: GGRC.templates_path + '/processes/info.stache',
-  products: GGRC.templates_path + '/products/info.stache',
-  assessments: GGRC.templates_path + '/assessments/info.stache',
+  programs: '/programs/info.stache',
+  audits: '/audits/info.stache',
+  people: '/people/info.stache',
+  policies: '/policies/info.stache',
+  controls: '/controls/info.stache',
+  systems: '/systems/info.stache',
+  processes: '/processes/info.stache',
+  products: '/products/info.stache',
+  assessments: '/assessments/info.stache',
   assessment_templates:
-    GGRC.templates_path + '/assessment_templates/info.stache',
-  issues: GGRC.templates_path + '/issues/info.stache',
-  evidence: GGRC.templates_path + '/evidence/info.stache',
-  documents: GGRC.templates_path + '/documents/info.stache',
-  risks: GGRC.templates_path + '/risks/info.stache',
+    '/assessment_templates/info.stache',
+  issues: '/issues/info.stache',
+  evidence: '/evidence/info.stache',
+  documents: '/documents/info.stache',
+  risks: '/risks/info.stache',
 });
 
 let CoreExtension = {};
@@ -53,7 +53,6 @@ Object.assign(CoreExtension, {
     let objectClass = getPageModel();
     let objectTable = objectClass && objectClass.table_plural;
     let object = getPageInstance();
-    let path = GGRC.templates_path;
     let modelNames;
     let possibleModelType;
     let farModels;
@@ -72,7 +71,7 @@ Object.assign(CoreExtension, {
       widgetList.addWidget(object.constructor.model_singular, 'dashboard', {
         content_controller: DashboardWidget,
         instance: object,
-        widget_view: path + '/base_objects/dashboard-widget.stache',
+        widget_view: '/base_objects/dashboard-widget.stache',
       });
     }
     widgetList.addWidget(object.constructor.model_singular, 'info', {

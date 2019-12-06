@@ -11,6 +11,7 @@
         <item-edit-control document:bind="{.}"
                          propName:from="'notes'"
                          value:bind="notes"
+                         date:bind="updated_at"
                          instance:from="instance"
                          placeholder="Add optional description"
                          isEditIconDenied:from="isEditDenied"
@@ -27,7 +28,7 @@
               {{notes}}
             </div>
           {{/unless}}
-          <span class="date">{{localize_date created_at}}</span>
+          <span class="date">{{localize_date date}}</span>
         </item-edit-control>
       {{else}}
       <div class="action-toolbar">

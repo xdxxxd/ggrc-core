@@ -817,3 +817,18 @@ class RequirementsFactory(EntitiesFactory):
     """Create requirement entity."""
     return self.obj_inst().update_attrs(
         title=self.obj_title)
+
+
+class EvidenceFactory(EntitiesFactory):
+  """Factory class for Evidence entities."""
+
+  def __init__(self):
+    super(EvidenceFactory, self).__init__(objects.EVIDENCE)
+    self._acl_roles = [("admins", roles.ACLRolesIDs.EVIDENCE_ADMINS,
+                        [users.current_user()])]
+
+  def _create_random_obj(self, is_add_rest_attrs):
+    """Create Evidence URL entity with randomly and predictably filled fields,
+    if 'is_add_rest_attrs' then add attributes for REST."""
+    return self.obj_inst().update_attrs(
+        title=self.obj_title, link=self.obj_title, kind="URL")

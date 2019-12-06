@@ -7,7 +7,7 @@
   <spinner-component toggle:from="isLoading" class="spinner-wrapper active"></spinner-component>
   <inline-form-control instance:from="instance" deferredSave:from="deferredSave">
     <div class="tier-content">
-      {{> /static/templates/assessments/header.stache}}
+      {{> assessments/header.stache}}
       <tab-container
         instance:from="instance">
           <tab-panel panels:bind="panels" titleText:from="'Assessment'">
@@ -100,6 +100,7 @@
                               <item-edit-control document:from="{.}"
                                   propName:from="'notes'"
                                   value:from="notes"
+                                  date:from="updated_at"
                                   instance:from="instance"
                                   placeholder="Add optional description"
                                   isEditIconDenied:from="isSemiRestrictedOnStatus"
@@ -116,7 +117,7 @@
                                     {{notes}}
                                   </div>
                                 {{/unless}}
-                                <span class="date">{{localize_date created_at}}</span>
+                                <span class="date">{{localize_date date}}</span>
                               </item-edit-control>
                             </object-list>
                             {{#unless isSemiRestrictedOnStatus}}
@@ -141,6 +142,7 @@
                               <item-edit-control document:from="{.}"
                                     propName:from="'notes'"
                                     value:from="notes"
+                                    date:from="updated_at"
                                     instance:from="instance"
                                     placeholder="Add optional description"
                                     isEditIconDenied:from="isSemiRestrictedOnStatus"
@@ -157,7 +159,7 @@
                                       {{notes}}
                                     </div>
                                   {{/unless}}
-                                  <span class="date">{{localize_date created_at}}</span>
+                                  <span class="date">{{localize_date date}}</span>
                               </item-edit-control>
                             </object-list>
                           {{#unless isSemiRestrictedOnStatus}}
@@ -414,7 +416,7 @@
                     </assessment-inline-item>
                 </div>
                 <div class="ggrc-form-item">
-                    {{> /static/templates/assessments/dates-list.stache}}
+                    {{> assessments/dates-list.stache}}
                 </div>
                 <div class="ggrc-form-item ggrc-form-item--row">
                     <assessment-inline-item
@@ -491,8 +493,12 @@
                           </div>
                           <div class="hidden-fields-area">
                             <div class="info-pane__section-ticket-tracker">
-                              <info-pane-issue-tracker-fields instance:from="instance">
-                              </info-pane-issue-tracker-fields>
+                              <info-pane-issue-tracker-fields
+                                isEditIconDenied:from="isRestricted"
+                                note:from="'Turns on Ticket Tracker integration.'"
+                                linkingNote:from="'Please leave this empty for a new ticket to be generated and linked to this assessment. If you would like to link to an existing ticket please provide the ticket number.'"
+                                instance:from="instance"
+                              />
                             </div>
                           </div>
                       </div>

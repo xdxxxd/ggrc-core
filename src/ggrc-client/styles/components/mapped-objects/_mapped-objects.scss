@@ -151,7 +151,6 @@
 
 .item-edit-control {
   margin-bottom: 16px;
-  width: 60%;
 
   &__content {
     padding: 8px 10px;
@@ -183,6 +182,10 @@
       }
     }
   }
+}
+
+.info .item-edit-control {
+  width: 60%;
 }
 
 .comment-object-item {

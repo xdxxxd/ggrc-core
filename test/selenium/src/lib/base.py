@@ -66,6 +66,23 @@ class Test(InstanceRepresentation):
             expected_objs_wo_excluded_attrs, actual_objs_wo_excluded_attrs))
 
   @staticmethod
+  def general_equal_soft_assert(soft_assert, expected_objs, actual_objs,
+                                *exclude_attrs):
+    """Perform general equal SOFT assert for deepcopy converted to list
+    expected and actual objects according to '*exclude_attrs' tuple of
+    excluding attributes' names (compare objects' collections w/ attributes'
+    values set to None).
+    """
+    expected_objs_wo_excluded_attrs, actual_objs_wo_excluded_attrs = (
+        entity.Representation.extract_objs(
+            help_utils.convert_to_list(expected_objs),
+            help_utils.convert_to_list(actual_objs), *exclude_attrs))
+    soft_assert.expect(
+        expected_objs_wo_excluded_attrs == actual_objs_wo_excluded_attrs,
+        messages.AssertionMessages.format_err_msg_equal(
+            expected_objs_wo_excluded_attrs, actual_objs_wo_excluded_attrs))
+
+  @staticmethod
   def general_contain_assert(expected_obj, actual_objs, *exclude_attrs):
     """Perform general contain assert for deepcopy converted expected object
     and actual objects according to '*exclude_attrs' tuple of excluding
@@ -552,7 +569,7 @@ class TreeView(Component):
   # pylint: disable=too-many-instance-attributes
   _locators = constants.locator.TreeView
 
-  def __init__(self, driver, obj_name=None):
+  def __init__(self, driver=None, obj_name=None):
     super(TreeView, self).__init__(driver)
     self._tree_view_headers = []
     self._tree_view_items = []
@@ -686,6 +703,13 @@ class UnifiedMapperTreeView(TreeView):
     return MapperSetVisibleFieldsModal(self._driver, self.fields_to_set)
 
 
+class BulkUpdateTreeView(UnifiedMapperTreeView):
+  """Tree-View class for Bulk Update modal."""
+
+  def __init__(self, driver=None, obj_name=None):
+    super(BulkUpdateTreeView, self).__init__(driver, obj_name)
+
+
 class AdminTreeView(TreeView):
   """Class for representing Tree View list in Admin dashboard."""
   _locators = constants.locator.AdminTreeView
@@ -790,23 +814,65 @@ class TreeViewItem(Element):
             cell in selenium_utils.get_when_all_visible(
                 self.element, self._locators.CELL)]
 
+  @property
+  def mega_program_icon(self):
+    """Return mega program icon"""
+    return self._browser.element(css=".mega-object-tree-view-icon")
 
-class CommentsPanel(Element):
-  """Representing comments panel witch contains input part and items."""
-  _locators = constants.locator.CommentsPanel
 
-  def __init__(self, driver, locator_or_element):
-    super(CommentsPanel, self).__init__(driver, locator_or_element)
-    self._items = []
-    self._root = self._browser.div(text="Responses/Comments").parent()
+class CommentInput(object):
+  """Represents comment input field. Contains input field and email dropdown.
+  """
+
+  def __init__(self, container):
+    self._root = container.element(tag_name="people-mention").parent()
+    self._input_field = self._root.element(class_name="ql-editor")
 
   @property
   def emails_dropdown(self):
+    """Represents mention email dropdown."""
     return MentionEmailDropdown(self._root)
 
   @property
-  def input_field(self):
-    return self._root.element(class_name="ql-editor")
+  def is_empty(self):
+    """Checks whether field is empty."""
+    return not self._input_field.text
+
+  @property
+  def text(self):
+    """Returns text for input field."""
+    return self._input_field.text
+
+  def clear(self):
+    """Clears textfield."""
+    self._input_field.clear()
+
+  def fill(self, text):
+    """Type text to input field"""
+    self._input_field.send_keys(text)
+
+  def call_email_dropdown(self, first_symbol,
+                          match_str=users.DEFAULT_EMAIL_DOMAIN[0]):
+    """Types mention first_symbol with match_str and waits for dropdown with
+    emails to appear."""
+    self.fill("{}{}".format(first_symbol, match_str))
+    self.emails_dropdown.wait_until_appears()
+
+
+class CommentsPanel(WithBrowser):
+  """Representing comments panel on info page/panel of object which contains
+  input field and items."""
+
+  def __init__(self, container=None):
+    super(CommentsPanel, self).__init__()
+    self._items = []
+    self._root = self._browser.div(text="Responses/Comments").parent()
+    self._container = container or self._root
+
+  @property
+  def comment_input(self):
+    """Returns comment input field."""
+    return CommentInput(self._root)
 
   @property
   def add_btn(self):
@@ -823,47 +889,13 @@ class CommentsPanel(Element):
     {'modified_by': person, 'created_at': datetime, 'description': text,
     'links': list}.
     """
-    self._items = [
-        CommentItem(self._driver, element) for element in
-        self.element.find_elements(*self._locators.ITEMS_CSS)]
-    comments = []
-    for item in self._items:
-      description = item.content.text
-      # reviewers emails in review comment message need to be sorted as they
-      # are displayed in UI in random order
-      if (re.compile(constants.element.Common.REVIEW_COMMENT_REGEXP).
-         match(description)):
-        splited_description = description.split('\n')
-        splited_description[1] = ', '.join(
-            sorted(splited_description[1].split(', ')))
-        description = '\n'.join(splited_description)
-      comments.append({"modified_by": item.author.text,
-                       "created_at": item.datetime,
-                       "description": description,
-                       "links": item.link_values_from_text})
-    return comments
+    return [CommentItem(el).scope for el in self._container.elements(
+        class_name="comment-object-item")]
 
   @property
   def count(self):
     """Return count of text comments on comments panel."""
     return len(self.scopes)
-
-  @property
-  def is_input_empty(self):
-    """Return 'True' if comments input field is empty, else 'False'."""
-    return not self.input_field.text
-
-  def wait_until_dropdown_appears(self):
-    """Waits until dropdown appears."""
-    self.emails_dropdown.wait_until_appears()
-
-  def clear_input_field(self):
-    """Clears textfield."""
-    self.input_field.clear()
-
-  def fill_input_field(self, text):
-    """Type text to textfield"""
-    self.input_field.send_keys(text)
 
   def click_add_button(self):
     """Clicks Add button"""
@@ -871,8 +903,8 @@ class CommentsPanel(Element):
 
   def add_comment(self, text):
     """Clear text from element and enter new text."""
-    self.clear_input_field()
-    self.fill_input_field(text)
+    self.comment_input.clear()
+    self.comment_input.fill(text)
     self.click_add_button()
 
   def add_comments(self, comments):
@@ -891,27 +923,23 @@ class CommentsPanel(Element):
             count_of_comments, len(self.scopes)) + str(err))
     return self
 
-  def call_email_dropdown(self, first_symbol):
-    """Types mention first_symbol with letter which is common for all emails
-    and waits for dropdown with emails to appear."""
-    self.fill_input_field("{}{}".format(
-        first_symbol, users.DEFAULT_EMAIL_DOMAIN[0]))
-    self.wait_until_dropdown_appears()
 
-
-class CommentItem(Element):
+class CommentItem(object):
   """Representing single comment item in comments' panel."""
-  _locators = constants.locator.CommentItem
+
+  def __init__(self, container):
+    self.container = container
 
   @property
   def author(self):
     """Return author element of comment from comments item."""
-    return Element(self.element, self._locators.AUTHOR_CSS)
+    return self.container.element(class_name="person-holder")
 
   @property
   def datetime(self):
     """Return datetime of comment from comments item."""
-    text = self.element.find_element(*self._locators.DATETIME_CSS).text
+    text = self.container.element(
+        class_name="comment-object-item__header-author-info").text
     match = re.search(r"\(.+\) (.+)", text)
     if match:
       return match.group(1)
@@ -920,14 +948,33 @@ class CommentItem(Element):
   @property
   def content(self):
     """Return content element of comment from comments item."""
-    return Label(self.element, self._locators.CONTENT_CSS)
+    return self.container.element(class_name="comment-object-item__text")
+
+  @property
+  def scope(self):
+    """Returns comment in dictionary format:
+    {'modified_by': person, 'created_at': datetime, 'description': text}.
+    """
+    description = self.content.text
+    # reviewers emails in review comment message need to be sorted as they
+    # are displayed in UI in random order
+    if (re.compile(constants.element.Common.REVIEW_COMMENT_REGEXP).
+       match(description)):
+      splited_description = description.split('\n')
+      splited_description[1] = ', '.join(
+          sorted(splited_description[1].split(', ')))
+      description = '\n'.join(splited_description)
+    return {"modified_by": self.author.text,
+            "created_at": self.datetime,
+            "description": description,
+            "links": self.link_values_from_text}
 
   @property
   def link_values_from_text(self):
     """Returns link's href attribute values form the comment content."""
     try:
       return [el.get_attribute("href") for el in
-              self.content.element.find_elements_by_tag_name("a")]
+              self.content.links()]
     except exceptions.NoSuchElementException:
       return []
 

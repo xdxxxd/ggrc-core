@@ -16,21 +16,24 @@ describe('three-dots-menu component', function () {
   describe('manageEmptyList() method', function () {
     let menuNode;
 
-    beforeEach(function () {
-      menuNode = {
-        children: [],
-      };
-    });
-
-    it('sets disabled field to true if the menu node does not have childrens',
+    it('sets disabled field to true if the menu node does not contain <li>',
       function () {
+        menuNode = $(`
+          <ul role="menu">
+            <empty-component></empty-component>
+          </ul>`);
         vm.manageEmptyList(menuNode);
         expect(vm.attr('disabled')).toBe(true);
       });
 
-    it('sets disabled field to false if the menu node has childrens',
+    it('sets disabled field to false if the menu node contains <li>',
       function () {
-        menuNode.children = [1, 2, 3];
+        menuNode = $(`
+          <ul role="menu">
+            <not-empty-component>
+              <li>123</li>
+            </not-empty-component>
+          </ul>`);
         vm.manageEmptyList(menuNode);
         expect(vm.attr('disabled')).toBe(false);
       });

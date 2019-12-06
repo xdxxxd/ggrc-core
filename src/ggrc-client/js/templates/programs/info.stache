@@ -5,114 +5,157 @@
 
 {{#instance}}
   <section class="info {{#if is_info_pin}}sticky-info-panel{{/if}}">
-    <div class="tier-content">
-      <general-page-header instance:from="instance"></general-page-header>
+    <info-pane instance:from="instance">
+      <inline-form-control instance:from="instance">
+        <div class="tier-content">
+          <general-page-header isSaving:from="isSaving" instance:from="instance"/>
 
-      <tab-container instance:from="instance">
-        <tab-panel panels:bind="panels" titleText:from="'Attributes'">
-          <div class="info-pane__body">
-            <div class="info-pane__main-content info-pane__main-content-with-sidebar">
-              {{> /static/templates/base_objects/object-review.stache}}
-              {{> /static/templates/base_objects/description.stache}}
-              {{> /static/templates/base_objects/notes.stache}}
-              <div class="row-fluid wrap-row">
-                <div>
-                  <custom-roles readOnly:from="instance.readOnlyProgramRoles"
-                                includeRoles:from="instance.constructor.programRoles"
-                                instance:from="instance">
-                  </custom-roles>
-                  <custom-roles excludeRoles:from="instance.constructor.programRoles"
-                                instance:from="instance">
-                  </custom-roles>
-                </div>
-              </div>
-              {{> /static/templates/base_objects/reference-urls.stache}}
-              {{> /static/templates/base_objects/folder-attachments.stache}}
+          <tab-container instance:from="instance">
+            <tab-panel panels:bind="panels" titleText:from="'Attributes'">
+              <div class="info-pane__body">
+                <div class="info-pane__main-content info-pane__main-content-with-sidebar">
+                  {{> base_objects/object-review.stache}}
 
-              <div class="custom-attr-wrap info-pane__section">
-                <div class="row-fluid">
-                  <div class="span12">
-                    <div class="info-expand">
-                      <a class="show-hidden-fields info-show-hide active" href="javascript://">
-                        <span class="out">
-                          <i class="fa fa-caret-right"></i>
-                          Show
-                        </span>
-                        <span class="in">
-                          <i class="fa fa-caret-down"></i>
-                          Hide
-                        </span>
-                        Advanced
-                      </a>
-                    </div>
-                  </div>
-                </div><!-- row-fluid end -->
-                <div class="hidden-fields-area">
                   <div class="row-fluid wrap-row">
-                    <div class="span4">
-                      <h6>Code</h6>
-                      <p>
-                        {{slug}}
-                      </p>
-                    </div>
-                    <div class="span4">
-                      <h6>Effective Date</h6>
-                      {{#if start_date}}
-                        <p>
-                          {{localize_date start_date}}
-                        </p>
-                      {{else}}
-                        <span class="empty-message">None</span>
-                      {{/if}}
-                    </div>
-                    <div class="span4">
-                      <h6>Last Deprecated Date</h6>
-                      {{#if end_date}}
-                        <p>
-                          {{localize_date end_date}}
-                        </p>
-                      {{else}}
-                        <span class="empty-message">None</span>
-                      {{/if}}
+                    <div class="span12">
+                      <inline-edit-control
+                        on:vm:inlineSave="saveInlineForm(scope.event)"
+                        isEditIconDenied:from="isInfoPaneReadonly"
+                        type:from="'text'"
+                        propName:from="'description'"
+                        withReadMore:from="true"
+                        value:from="description">
+                          <base-inline-control-title
+                            editMode:from="editMode"
+                            on:vm:setEditModeInline="setEditModeInline(scope.event)"
+                            isEditIconDenied:from="isEditIconDenied"
+                            class="inline__header">
+                              <div class="ggrc-form__title">Description</div>
+                          </base-inline-control-title>
+                      </inline-edit-control>
                     </div>
                   </div>
-                </div>
-              </div><!-- custom-attr-wrap end -->
-              {{> /static/templates/custom_attributes/info.stache}}
-            </div>
-            {{^if isSnapshot}}
-              <div class="info-pane__sidebar">
-                <div class="info-pane__section-title">Responses/Comments</div>
-                <comments-section class="flex-box flex-col"
-                  instance:from="instance"
-                  notification:from="'Notify Contacts'">
-                </comments-section>
-              </div>
-            {{/if}}
-          </div>
-        </tab-panel>
-        {{^if isSnapshot}}
-          <tab-panel panels:bind="panels" titleText:from="'Change Proposals'"
-                     parentInstance:from="instance"
-                     warningText:from="'Some proposals are pending approval'"
-                     extraClasses:from="'proposal proposal__tab-warning'"
-                     tabId:from="'tab-related-proposals'"
-                     canDisplayWarning:from="true"
-                     preRenderContent:from="true">
-            <related-proposals baseInstance:from="instance"
-                               on:updateProposalsWarning="updateWarningState(scope.event)">
-            </related-proposals>
-          </tab-panel>
-          <tab-panel panels:bind="panels" titleText:from="'Version History'">
-            <related-revisions instance:from="instance"></related-revisions>
-          </tab-panel>
-          <tab-panel tabId:from="'change-log'" panels:bind="panels" titleText:from="'Change Log'">
-            <revision-log instance:from="instance" options:from="tabOptions"></revision-log>
-          </tab-panel>
-        {{/if}}
-      </tab-container>
-    </div><!-- tier-content end -->
 
+                  <div class="row-fluid wrap-row">
+                    <div class="span12">
+                      <inline-edit-control
+                        on:vm:inlineSave="saveInlineForm(scope.event)"
+                        isEditIconDenied:from="isInfoPaneReadonly"
+                        type:from="'text'"
+                        propName:from="'notes'"
+                        withReadMore:from="true"
+                        value:from="notes">
+                          <base-inline-control-title
+                            editMode:from="editMode"
+                            on:vm:setEditModeInline="setEditModeInline(scope.event)"
+                            isEditIconDenied:from="isEditIconDenied"
+                            class="inline__header">
+                              <div class="ggrc-form__title">Notes</div>
+                          </base-inline-control-title>
+                      </inline-edit-control>
+                    </div>
+                  </div>
+
+                  <div class="row-fluid wrap-row">
+                    <div>
+                      <custom-roles readOnly:from="instance.readOnlyProgramRoles"
+                                    includeRoles:from="instance.constructor.programRoles"
+                                    instance:from="instance">
+                      </custom-roles>
+                      <custom-roles excludeRoles:from="instance.constructor.programRoles"
+                                    instance:from="instance">
+                      </custom-roles>
+                    </div>
+                  </div>
+                  {{> base_objects/reference-urls.stache}}
+                  {{> base_objects/folder-attachments.stache}}
+
+                  <div class="custom-attr-wrap info-pane__section">
+                    <div class="row-fluid">
+                      <div class="span12">
+                        <div class="info-expand">
+                          <a class="show-hidden-fields info-show-hide active" href="javascript://">
+                            <span class="out">
+                              <i class="fa fa-caret-right"></i>
+                              Show
+                            </span>
+                            <span class="in">
+                              <i class="fa fa-caret-down"></i>
+                              Hide
+                            </span>
+                            Advanced
+                          </a>
+                        </div>
+                      </div>
+                    </div><!-- row-fluid end -->
+                    <div class="hidden-fields-area">
+                      <div class="row-fluid wrap-row">
+                        <div class="span4">
+                          <h6>Code</h6>
+                          <p>
+                            {{slug}}
+                          </p>
+                        </div>
+                        <div class="span4">
+                          <h6>Effective Date</h6>
+                          {{#if start_date}}
+                            <p>
+                              {{localize_date start_date}}
+                            </p>
+                          {{else}}
+                            <span class="empty-message">None</span>
+                          {{/if}}
+                        </div>
+                        <div class="span4">
+                          <h6>Last Deprecated Date</h6>
+                          {{#if end_date}}
+                            <p>
+                              {{localize_date end_date}}
+                            </p>
+                          {{else}}
+                            <span class="empty-message">None</span>
+                          {{/if}}
+                        </div>
+                      </div>
+                    </div>
+                  </div><!-- custom-attr-wrap end -->
+                  {{> custom_attributes/info.stache}}
+                </div>
+                {{^if isSnapshot}}
+                  <div class="info-pane__sidebar">
+                    <div class="info-pane__section-title">Responses/Comments</div>
+                    <comments-section class="flex-box flex-col"
+                      instance:from="instance"
+                      notification:from="'Notify Contacts'">
+                    </comments-section>
+                  </div>
+                {{/if}}
+              </div>
+            </tab-panel>
+            {{^if isSnapshot}}
+              <tab-panel panels:bind="panels" titleText:from="'Change Proposals'"
+                        parentInstance:from="instance"
+                        warningText:from="'Some proposals are pending approval'"
+                        extraClasses:from="'proposal proposal__tab-warning'"
+                        tabId:from="'tab-related-proposals'"
+                        canDisplayWarning:from="true"
+                        preRenderContent:from="true">
+                <related-proposals baseInstance:from="instance"
+                                  on:vm:updateProposalsWarning="updateWarningState(scope.event)">
+                </related-proposals>
+              </tab-panel>
+              <tab-panel panels:bind="panels" titleText:from="'Version History'">
+                <related-revisions instance:from="instance"></related-revisions>
+              </tab-panel>
+              <tab-panel tabId:from="'change-log'" panels:bind="panels" titleText:from="'Change Log'">
+                <revision-log instance:from="instance" options:from="tabOptions"></revision-log>
+              </tab-panel>
+            {{/if}}
+          </tab-container>
+        </div><!-- tier-content end -->
+
+      </inline-form-control>
+    </info-pane>
   </section>
 
   {{#if is_info_widget}}

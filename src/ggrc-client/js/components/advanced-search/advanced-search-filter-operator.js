@@ -14,6 +14,12 @@ import template from './advanced-search-filter-operator.stache';
  * @constructor
  */
 let viewModel = canMap.extend({
+  define: {
+    disabled: {
+      type: 'boolean',
+      value: false,
+    },
+  },
   /**
    * Contains operation name.
    * @type {string}

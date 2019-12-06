@@ -10,6 +10,7 @@ import template from './templates/apply-decline-proposal.stache';
 import {REFRESH_RELATED} from '../../events/event-types';
 import {formatDate} from '../../plugins/utils/date-utils';
 import Proposal from '../../models/service-models/proposal';
+import {notifierXHR} from '../../plugins/utils/notifiers-utils';
 
 export default canComponent.extend({
   tag: 'apply-decline-proposal',
@@ -70,20 +71,19 @@ export default canComponent.extend({
       }
 
       proposalModel.attr('id', this.attr('proposal.id'));
-
-      proposalModel.save().then(
-        () => {
-          this.attr('isLoading', false);
-          this.closeModal();
-
+      return proposalModel.save()
+        .then(() => {
           if (isApply) {
             this.refreshPage();
           }
-        },
-        (error) => {
-          console.warn(error);
-        }
-      );
+        })
+        .catch((obj, error) => {
+          notifierXHR('error', error);
+        })
+        .always(() => {
+          this.attr('isLoading', false);
+          this.closeModal();
+        });
     },
     refreshPage() {
       const instance = this.attr('instance');

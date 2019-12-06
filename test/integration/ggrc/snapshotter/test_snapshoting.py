@@ -5,20 +5,19 @@
 
 """Test for snapshoter"""
 
-import collections
+import ddt
 import mock
-
 import sqlalchemy as sa
 
 from ggrc import db
 import ggrc.models as models
 from ggrc.snapshotter.rules import Types
-
 from integration.ggrc.models import factories
 from integration.ggrc.snapshotter import SnapshotterBaseTestCase
 from integration.ggrc.snapshotter import snapshot_identity
 
 
+@ddt.ddt
 class TestSnapshoting(SnapshotterBaseTestCase):
   """Test cases for Snapshoter module"""
 
@@ -556,26 +555,19 @@ class TestSnapshoting(SnapshotterBaseTestCase):
     """Test global update when object got deleted or unmapped"""
     pass
 
-  def test_snapshoting_of_objects(self):
-    """Test that all object types that should be snapshotted are snapshotted
-
-    It is expected that all objects will be triplets.
-    """
-
-    self._check_csv_response(self._import_file("snapshotter_create.csv"), {})
-
-    # Verify that all objects got imported correctly.
-    for _type in Types.all - Types.external:
-      self.assertEqual(
-          db.session.query(getattr(models.all_models, _type)).count(),
-          3)
-
-    program = db.session.query(models.Program).filter(
-        models.Program.slug == "Prog-13211"
-    ).one()
+  def test_audit_mapping_to_snapshots(self):
+    """Test that all object types snapshots are mapped to an audit"""
+    model_object_ids = {}
+    with factories.single_commit():
+      program = factories.ProgramFactory(title="Test Program")
+      for model_type in Types.all - Types.external:
+        model_factory = factories.get_model_factory(model_type)
+        model_object = model_factory(
+            title="Test Snapshot - {}".format(model_type))
+        factories.RelationshipFactory(source=program, destination=model_object)
+        model_object_ids[model_type] = model_object.id
 
     self.create_audit(program)
-
     audit = db.session.query(models.Audit).filter(
         models.Audit.title.like("%Snapshotable audit%")).first()
 
@@ -584,30 +576,47 @@ class TestSnapshoting(SnapshotterBaseTestCase):
         models.Snapshot.parent_id == audit.id,
     )
 
-    self.assertEqual(snapshots.count(),
-                     (len(Types.all - Types.external)) * 3)
+    self.assertEqual(snapshots.count(), len(Types.all - Types.external))
+    all_snapshots_correct = all(
+        s.child_id == model_object_ids[s.child_type] for s in snapshots)
+    self.assertTrue(all_snapshots_correct)
 
-    type_count = collections.defaultdict(int)
-    for snapshot in snapshots:
-      type_count[snapshot.child_type] += 1
-
-    missing_types = set()
-    for snapshottable_type in Types.all - Types.external:
-      if type_count[snapshottable_type] != 3:
-        missing_types.add(snapshottable_type)
-
-    self.assertEqual(missing_types, set())
-
-  def test_snapshot_update_is_idempotent(self):
-    """Test that nothing has changed if there's nothing to update"""
-    self._check_csv_response(self._import_file("snapshotter_create.csv"), {})
-
-    program = db.session.query(models.Program).filter(
-        models.Program.slug == "Prog-13211"
-    ).one()
+  @ddt.data(
+      *(Types.all - Types.external)
+  )
+  def test_snapshoting_of_objects(self, model_type):
+    """Test that each object type that should be snapshotted is snapshotted."""
+    with factories.single_commit():
+      program = factories.ProgramFactory(title="Test Program")
+      model_factory = factories.get_model_factory(model_type)
+      model_object = model_factory(
+          title="Test Snapshot - {}".format(model_type))
+      factories.RelationshipFactory(source=program, destination=model_object)
 
     self.create_audit(program)
+    audit = db.session.query(models.Audit).filter(
+        models.Audit.title.like("%Snapshotable audit%")).first()
 
+    snapshots = db.session.query(models.Snapshot).filter(
+        models.Snapshot.parent_type == "Audit",
+        models.Snapshot.parent_id == audit.id,
+    )
+
+    self.assertEqual(snapshots.count(), 1)
+
+  @ddt.data(
+      *(Types.all - Types.external)
+  )
+  def test_snapshot_update_is_idempotent(self, model_type):
+    """Test that nothing has changed if there's nothing to update"""
+    with factories.single_commit():
+      program = factories.ProgramFactory(title="Test Program")
+      model_factory = factories.get_model_factory(model_type)
+      model_object = model_factory(
+          title="Test Snapshot - {}".format(model_type))
+      factories.RelationshipFactory(source=program, destination=model_object)
+
+    self.create_audit(program)
     audit = db.session.query(models.Audit).filter(
         models.Audit.title == "Snapshotable audit").one()
 
@@ -615,9 +624,6 @@ class TestSnapshoting(SnapshotterBaseTestCase):
         models.Snapshot.parent_type == "Audit",
         models.Snapshot.parent_id == audit.id,
     )
-
-    self.assertEqual(snapshots.count(),
-                     (len(Types.all) - len(Types.external)) * 3)
 
     audit = self.refresh_object(audit)
     self.api.modify_object(audit, {

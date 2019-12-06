@@ -10,6 +10,7 @@ import inflection
 # objects
 RELATIONSHIPS = "relationships"
 PROGRAMS = "programs"
+PROGRAM_PARENTS = "program_parents"
 WORKFLOWS = "workflows"
 AUDITS = "audits"
 ASSESSMENTS = "assessments"
@@ -99,6 +100,8 @@ def _get_singular(plurals):
       singular = "process"
     elif name == FACILITIES:
       singular = "facility"
+    elif name == EVIDENCE:
+      singular = EVIDENCE
     else:
       singular = name[:-1]
     singulars.append(singular.upper())

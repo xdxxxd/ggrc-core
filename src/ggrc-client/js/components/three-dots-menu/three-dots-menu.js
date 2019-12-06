@@ -12,7 +12,8 @@ const viewModel = canMap.extend({
   disabled: true,
   observer: null,
   manageEmptyList(menuNode) {
-    const isEmpty = menuNode.children.length === 0;
+    // check to avoid rendering empty components
+    const isEmpty = $(menuNode).find('li').length === 0;
     this.attr('disabled', isEmpty);
   },
   mutationCallback(mutationsList) {

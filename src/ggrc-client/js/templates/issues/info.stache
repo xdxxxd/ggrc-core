@@ -4,135 +4,211 @@
 }}
 
 {{#instance}}
-  <section class="info{{#if is_info_pin}} sticky-info-panel{{/if}}">
-    <div class="tier-content">
-      <general-page-header instance:from="instance"></general-page-header>
+  <info-pane instance:from="instance">
+    <section class="info{{#if is_info_pin}} sticky-info-panel{{/if}}">
+      <inline-form-control instance:from="instance">
+        <div class="tier-content">
+            <general-page-header isSaving:from="isSaving" instance:from="instance"/>
+            <tab-container>
+              <tab-panel panels:bind="panels" titleText:from="'Attributes'">
+                <div class="info-pane__body">
+                  <div class="info-pane__main-content {{^if isSnapshot}}info-pane__main-content-with-sidebar{{/if}}">
+                    {{#if instance.issueCreated}}
+                      <div class="info-pane__section">
+                        <div class="issue-tracker-url">
+                            <a href="{{instance.issue_tracker.issue_url}}" target="_blank">
+                              Open Ticket
+                            </a>
+                        </div>
+                      </div>
+                    {{/if}}
 
-      <tab-container>
-        <tab-panel panels:bind="panels" titleText:from="'Attributes'">
-          <div class="info-pane__body">
-            <div class="info-pane__main-content {{^if isSnapshot}}info-pane__main-content-with-sidebar{{/if}}">
-              {{#if instance.issueCreated}}
-                <div class="info-pane__section">
-                  <div class="issue-tracker-url">
-                      <a href="{{instance.issue_tracker.issue_url}}" target="_blank">
-                          Open Ticket
-                      </a>
+                    <div class="row-fluid wrap-row">
+                      <inline-edit-control
+                        on:vm:inlineSave="saveInlineForm(scope.event)"
+                        isEditIconDenied:from="isInfoPaneReadonly"
+                        type:from="'text'"
+                        propName:from="'description'"
+                        withReadMore:from="true"
+                        value:from="description">
+                          <base-inline-control-title
+                            editMode:from="editMode"
+                            isEditIconDenied:from="isEditIconDenied"
+                            on:vm:setEditModeInline="setEditModeInline(scope.event)"
+                            class="inline__header">
+                              <div class="ggrc-form__title">Description</div>
+                          </base-inline-control-title>
+                      </inline-edit-control>
+                    </div>
+
+                    <div class="row-fluid wrap-row">
+                      <inline-edit-control
+                        on:vm:inlineSave="saveInlineForm(scope.event)"
+                        isEditIconDenied:from="isInfoPaneReadonly"
+                        type:from="'text'"
+                        propName:from="'test_plan'"
+                        withReadMore:from="true"
+                        value:from="test_plan">
+                          <base-inline-control-title
+                            editMode:from="editMode"
+                            isEditIconDenied:from="isEditIconDenied"
+                            on:vm:setEditModeInline="setEditModeInline(scope.event)"
+                            class="inline__header">
+                              <div class="ggrc-form__title">Remediation Plan</div>
+                          </base-inline-control-title>
+                      </inline-edit-control>
+                    </div>
+
+                    <div class="row-fluid wrap-row">
+                      <inline-edit-control
+                        on:vm:inlineSave="saveInlineForm(scope.event)"
+                        isEditIconDenied:from="isInfoPaneReadonly"
+                        type:from="'text'"
+                        propName:from="'notes'"
+                        withReadMore:from="true"
+                        value:from="notes">
+                          <base-inline-control-title
+                            editMode:from="editMode"
+                            isEditIconDenied:from="isEditIconDenied"
+                            on:vm:setEditModeInline="setEditModeInline(scope.event)"
+                            class="inline__header">
+                              <div class="ggrc-form__title">Notes</div>
+                          </base-inline-control-title>
+                      </inline-edit-control>
+                    </div>
+
+                    <div class="row-fluid wrap-row">
+                      <div>
+                        <custom-roles
+                          instance:from="instance"
+                          readOnly:from="instance.issueTrackerEnabled"></custom-roles>
+                      </div>
+                    </div>
+
+                    {{> base_objects/reference-urls.stache}}
+                    {{> base_objects/folder-attachments.stache}}
+
+                    <div class="custom-attr-wrap info-pane__section">
+                      <div class="row-fluid">
+                        <div class="span12">
+                          <div class="info-expand">
+                            <a class="show-hidden-fields info-show-hide active" href="javascript://">
+                              <span class="out">
+                                <i class="fa fa-caret-right"></i>
+                                Show
+                              </span>
+                              <span class="in">
+                                <i class="fa fa-caret-down"></i>
+                                Hide
+                              </span>
+                              Advanced
+                            </a>
+                          </div>
+                        </div>
+                      </div><!-- row-fluid end -->
+                      <div class="hidden-fields-area">
+                        <div class="row-fluid wrap-row">
+                          <div class="span4">
+                            <div class="info-pane__section-title readonly-inline-header">
+                              Code
+                            </div>
+                            <p>{{slug}}</p>
+                          </div>
+                          <div class="span4">
+                            <inline-edit-control
+                              on:vm:inlineSave="saveInlineForm(scope.event)"
+                              isEditIconDenied:from="isInfoPaneReadonly"
+                              type:from="'date'"
+                              propName:from="'start_date'"
+                              value:from="start_date">
+                                <base-inline-control-title
+                                  editMode:from="editMode"
+                                  isEditIconDenied:from="isEditIconDenied"
+                                  on:vm:setEditModeInline="setEditModeInline(scope.event)"
+                                  class="inline__header">
+                                    <div class="ggrc-form__title">
+                                      Effective Date
+                                    </div>
+                                </base-inline-control-title>
+                            </inline-edit-control>
+                          </div>
+                          <div class="span4">
+                            <div class="info-pane__section-title readonly-inline-header">
+                              Last Deprecated Date
+                            </div>
+                            {{#if end_date}}
+                              <p>
+                                {{localize_date end_date}}
+                              </p>
+                            {{else}}
+                              <span class="empty-message">None</span>
+                            {{/if}}
+                          </div>
+                        </div><!-- row-fluid end -->
+
+                        {{#if instance.can_use_issue_tracker}}
+                          <div class="ggrc-form ggrc-form-legacy ggrc-form-multiple-columns">
+                              <div class="info-pane__section-ticket-tracker width-100">
+                                <info-pane-issue-tracker-fields
+                                  isEditIconDenied:from="isInfoPaneReadonly"
+                                  instance:from="instance"
+                                  note:from="'Turns on Ticket Tracker integration. Any subsequent updates to admins, primary contacts, secondary contacts and state fields should be made through tracking system and will be synced automatically to GGRC.'"
+                                  linkingNote:from="'If you would like to keep the existing bug linked to this issue do not edit this attribute. If you would like to link to a different ticket, either clear this attribute to generate new or provide an existing ticket number.'"
+                                />
+                              </div>
+                          </div>
+                        {{/if}}
+
+                        <div class="row-fluid wrap-row">
+                          <div class="span4">
+                            <inline-edit-control
+                              on:vm:inlineSave="saveInlineForm(scope.event)"
+                              isEditIconDenied:from="isInfoPaneReadonly"
+                              mandatory:from="true"
+                              type:from="'date'"
+                              propName:from="'due_date'"
+                              value:from="due_date">
+                                <base-inline-control-title
+                                  editMode:from="editMode"
+                                  isEditIconDenied:from="isEditIconDenied"
+                                  on:vm:setEditModeInline="setEditModeInline(scope.event)"
+                                  class="inline__header">
+                                    <div class="ggrc-form__title">
+                                      Due Date
+                                      <i class="fa fa-asterisk"></i>
+                                    </div>
+                                </base-inline-control-title>
+                            </inline-edit-control>
+                          </div>
+                        </div>
+
+                      </div><!-- hidden-fields-area end -->
+                    </div><!-- custom-attr-wrap end -->
+                    {{> custom_attributes/info.stache}}
                   </div>
-                </div>
-              {{/if}}
-
-              {{> /static/templates/base_objects/description.stache}}
-              {{> /static/templates/issues/remediation-plan.stache}}
-              {{> /static/templates/base_objects/notes.stache}}
-
-              <div class="row-fluid wrap-row">
-                <div>
-                  <custom-roles
-                    instance:from="instance"
-                    readOnly:from="instance.issueTrackerEnabled"></custom-roles>
-                </div>
-              </div>
-
-              {{> /static/templates/base_objects/reference-urls.stache}}
-              {{> /static/templates/base_objects/folder-attachments.stache}}
-
-              <div class="custom-attr-wrap info-pane__section">
-                <div class="row-fluid">
-                  <div class="span12">
-                    <div class="info-expand">
-                      <a class="show-hidden-fields info-show-hide active" href="javascript://">
-                        <span class="out">
-                          <i class="fa fa-caret-right"></i>
-                          Show
-                        </span>
-                        <span class="in">
-                          <i class="fa fa-caret-down"></i>
-                          Hide
-                        </span>
-                        Advanced
-                      </a>
-                    </div>
-                  </div>
-                </div><!-- row-fluid end -->
-                <div class="hidden-fields-area">
-                  <div class="row-fluid wrap-row">
-                    <div class="span4">
-                      <h6>Code</h6>
-                      <p>
-                        {{slug}}
-                      </p>
-                    </div>
-                    <div class="span4">
-                      <h6>Effective Date</h6>
-                      {{#if start_date}}
-                        <p>
-                          {{localize_date start_date}}
-                        </p>
-                      {{else}}
-                        <span class="empty-message">None</span>
-                      {{/if}}
-                    </div>
-                    <div class="span4">
-                      <h6>Last Deprecated Date</h6>
-                      {{#if end_date}}
-                        <p>
-                          {{localize_date end_date}}
-                        </p>
-                      {{else}}
-                        <span class="empty-message">None</span>
-                      {{/if}}
-                    </div>
-                  </div><!-- row-fluid end -->
-                  {{#if instance.can_use_issue_tracker}}
-                    <info-issue-tracker-fields
+                  {{^if isSnapshot}}
+                  <div class="info-pane__sidebar">
+                    <div class="info-pane__section-title">Responses/Comments</div>
+                    <comments-section class="flex-box flex-col"
                       instance:from="instance"
-                      showId:from="true"
-                      linkingNote:from="'If you would like to keep the existing bug linked to this issue do not edit this attribute. If you would like to link to a different ticket, either clear this attribute to generate new or provide an existing ticket number.'"
-                      note:from="'Turns on Ticket Tracker integration. Any subsequent updates to admins, primary contacts, secondary contacts and state fields should be made through tracking system and will be synced automatically to GGRC.'"
-                      showTitle:from="true">
-                    </info-issue-tracker-fields>
-                  {{/if}}
-                  <div class="row-fluid wrap-row">
-                    <div class="span4">
-                      <h6>
-                        Due Date
-                        <i class="fa fa-asterisk"></i>
-                      </h6>
-                      {{#if due_date}}
-                        <p>
-                          {{localize_date due_date}}
-                        </p>
-                      {{else}}
-                        <span class="empty-message">None</span>
-                      {{/if}}
-                    </div>
+                      notification:from="'Notify Admins, Primary and Secondary Contacts'">
+                    </comments-section>
                   </div>
-                </div><!-- hidden-fields-area end -->
-              </div><!-- custom-attr-wrap end -->
-              {{> /static/templates/custom_attributes/info.stache}}
-            </div>
-            {{^if isSnapshot}}
-            <div class="info-pane__sidebar">
-              <div class="info-pane__section-title">Responses/Comments</div>
-              <comments-section class="flex-box flex-col"
-                instance:from="instance"
-                notification:from="'Notify Admins, Primary and Secondary Contacts'">
-              </comments-section>
-            </div>
-            {{/if}}
-          </div>
-        </tab-panel>
-        {{^if isSnapshot}}
-          <tab-panel panels:bind="panels" titleText:from="'Change Log'">
-            <revision-log instance:from="instance" options:from="tabOptions"></revision-log>
-          </tab-panel>
-        {{/if}}
-      </tab-container>
-    </div><!-- tier-content end -->
-  </section>
+                  {{/if}}
+                </div>
+              </tab-panel>
+              {{^if isSnapshot}}
+                <tab-panel panels:bind="panels" titleText:from="'Change Log'">
+                  <revision-log instance:from="instance" options:from="tabOptions"></revision-log>
+                </tab-panel>
+              {{/if}}
+            </tab-container>
+        </div><!-- tier-content end -->
+      </inline-form-control>
+    </section>
 
-  {{#if is_info_widget}}
-    <info-pane-footer createdAt:from="instance.created_at" modifiedAt:from="instance.updated_at" modifiedBy:from="instance.modified_by"></info-pane-footer>
-  {{/if}}
+    {{#if is_info_widget}}
+      <info-pane-footer createdAt:from="instance.created_at" modifiedAt:from="instance.updated_at" modifiedBy:from="instance.modified_by"></info-pane-footer>
+    {{/if}}
+  </info-pane>
 {{/instance}}

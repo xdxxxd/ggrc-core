@@ -211,8 +211,7 @@ $.extend(ModalForm.prototype, {
           modal_description: 'Are you sure that you want' +
           ' to discard your changes?',
           modal_confirm: 'Continue Editing',
-          button_view: GGRC.templates_path +
-            '/modals/discard-buttons.stache',
+          button_view: '/modals/discard-buttons.stache',
           skip_refresh: true,
         }, function () {
           trigger.call(instance, 'modal:dismiss');

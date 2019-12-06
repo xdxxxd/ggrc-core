@@ -291,6 +291,7 @@ class Workflow(roleable.Roleable,
     If is_verification_needed doesn't send,
     then is_verification_needed flag is True.
     """
+
     if self.is_verification_needed is None:
       return self.IS_VERIFICATION_NEEDED_DEFAULT if value is None else value
     if value is None:
@@ -358,7 +359,7 @@ class Workflow(roleable.Roleable,
           "mandatory": True,
           "description": "This field is not changeable\nafter "
                          "workflow activation."
-                         "\nAllowed values are:\nTRUE\nFALSE",
+                         "\nAllowed values are:\nyes\nno",
       },
       "notify_custom_message": "Custom email message",
       "notify_on_change": {

@@ -3,7 +3,6 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import canMap from 'can-map';
 import * as AdvancedSearch from '../../plugins/utils/advanced-search-utils';
 import * as StateUtils from '../../plugins/utils/state-utils';
 import QueryParser from '../../generated/ggrc-filter-query-parser';
@@ -279,9 +278,11 @@ describe('AdvancedSearch', () => {
           operator: '~',
           value: ' test',
         },
+        options: null,
       }, {
         type: 'operator',
         value: 'AND',
+        options: null,
       }, {
         type: 'group',
         value: [{
@@ -291,9 +292,11 @@ describe('AdvancedSearch', () => {
             operator: '=',
             value: 'meter',
           },
+          options: null,
         }, {
           type: 'operator',
           value: 'AND',
+          options: null,
         }, {
           type: 'attribute',
           value: {
@@ -301,9 +304,11 @@ describe('AdvancedSearch', () => {
             operator: '~=',
             value: 'value ',
           },
+          options: null,
         }]}, {
         type: 'operator',
         value: 'OR',
+        options: null,
       }];
 
       let result = AdvancedSearch.reversePolishNotation(items);
@@ -418,9 +423,9 @@ describe('AdvancedSearch', () => {
 
   describe('setDefaultStatusConfig() function', () => {
     let statesSpy;
-    const emptyStatusConfig = new canMap(AdvancedSearch.create.state());
+
     const createDummyStatusConfig = () => (
-      AdvancedSearch.setDefaultStatusConfig(emptyStatusConfig, 'someModel')
+      AdvancedSearch.setDefaultStatusConfig('someModel')
     );
 
     beforeEach(() => {
@@ -433,14 +438,14 @@ describe('AdvancedSearch', () => {
         statesSpy.and.returnValue(states);
         const statusConfig = createDummyStatusConfig();
 
-        expect(statusConfig.attr('items').serialize()).toEqual(states);
+        expect(statusConfig.items).toEqual(states);
       }
     );
 
     it('assigns "ANY" to operator if it is not defined', () => {
       const statusConfig = createDummyStatusConfig();
 
-      expect(statusConfig.attr('operator')).toBe('ANY');
+      expect(statusConfig.operator).toBe('ANY');
     });
   });
 

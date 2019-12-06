@@ -49,7 +49,7 @@ class Representation(object):
     """All possible entities' attributes names include REST."""
     return list(set(cls.get_attrs_names() + [
         "access_control_list", "recipients", "default_people",
-        "modal_title", "assignee_type", "user_roles"]))
+        "modal_title", "assignee_type", "user_roles", "link", "kind"]))
 
   @classmethod
   def get_attrs_names(cls, entity=None):
@@ -846,6 +846,8 @@ class AssessmentEntity(Entity):
 
   def __init__(self, **attrs):
     super(AssessmentEntity, self).__init__()
+    self.bulk_update_modal_tree_view_attrs_to_exclude = (
+        'audit', 'assessment_type', 'modified_by', 'created_at', 'updated_at')
     self.delete_attrs("admins")
     self.set_attrs(
         "creators", "assignees", "verifiers", "assessment_type", "verified",
@@ -936,3 +938,7 @@ class RegulationEntity(Entity):
 
 class RequirementEntity(Entity):
   """Requirement entity."""
+
+
+class EvidenceEntity(Representation):
+  """Class that represent model for Evidence entity."""

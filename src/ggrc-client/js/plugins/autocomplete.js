@@ -3,13 +3,11 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-import {filteredMap} from '../plugins/ggrc-utils';
+import {filteredMap, getFragment} from '../plugins/ggrc-utils';
 import loDefer from 'lodash/defer';
 import loDebounce from 'lodash/debounce';
 import loIsNumber from 'lodash/isNumber';
 import loForEach from 'lodash/forEach';
-import {ggrcAjax} from '../plugins/ajax-extensions';
-import canStache from 'can-stache';
 import canMap from 'can-map';
 import {
   buildRelevantIdsQuery,
@@ -262,15 +260,10 @@ $.widget('ggrc.autocomplete', $.ui.autocomplete, {
       /* webpackChunkName: "infiniteScroll" */
       '../controllers/infinite-scroll-controller'
     ).then(() => {
-      ggrcAjax({
-        url: GGRC.templates_path + template,
-        dataType: 'text',
-      }).then((view) => {
-        let frag = canStache(view)(context);
-        $ul.html(frag);
-        new LhnTooltipsControl($ul);
-        new InfiniteScrollControl($ul);
-      });
+      let frag = getFragment(template, context);
+      $ul.html(frag);
+      new LhnTooltipsControl($ul);
+      new InfiniteScrollControl($ul);
     });
   },
 });

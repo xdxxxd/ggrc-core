@@ -26,6 +26,7 @@ export default canComponent.extend({
     ticketId: null,
     isValid: true,
     issueTrackerEnabled: false,
+    isEditIconDenied: false,
     modalState: {
       open: false,
     },

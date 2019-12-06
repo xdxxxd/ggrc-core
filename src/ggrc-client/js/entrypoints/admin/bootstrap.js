@@ -60,8 +60,8 @@ const adminListDescriptors = {
     object_display: 'People',
     header_view:
     // includes only the filter, not the column headers
-      '/static/templates/people/filters.stache',
-    list_view: '/static/templates/people/object-list.stache',
+      '/people/filters.stache',
+    list_view: '/people/object-list.stache',
     fetch_post_process: sortByNameEmail,
   },
   roles: {
@@ -69,23 +69,22 @@ const adminListDescriptors = {
     extra_params: {scope__in: 'System,Admin,Private Program,Workflow'},
     object_category: 'governance',
     object_display: 'Roles',
-    list_view: '/static/templates/roles/object-list.stache',
+    list_view: '/roles/object-list.stache',
     fetch_post_process: sortByNameEmail,
   },
   events: {
     model: Event,
     object_category: 'governance',
     object_display: 'Events',
-    list_view: '/static/templates/events/object-list.stache',
+    list_view: '/events/object-list.stache',
   },
   custom_attributes: {
     parent_instance: CustomAttributable,
     model: CustomAttributable,
     header_view:
-    GGRC.templates_path +
     '/custom_attribute_definitions/tree-header.stache',
     show_view:
-    GGRC.templates_path + '/custom_attribute_definitions/tree.stache',
+    '/custom_attribute_definitions/tree.stache',
     sortable: false,
     list_loader: function () {
       return CustomAttributable.findAll();
@@ -94,7 +93,6 @@ const adminListDescriptors = {
       model: CustomAttributeDefinition,
       mapping: 'custom_attribute_definitions',
       show_view:
-      GGRC.templates_path +
       '/custom_attribute_definitions/subtree.stache',
       add_item_view: null,
     }],
@@ -103,9 +101,9 @@ const adminListDescriptors = {
     parent_instance: Roleable,
     model: Roleable,
     header_view:
-    GGRC.templates_path + '/access_control_roles/tree-header.stache',
+    '/access_control_roles/tree-header.stache',
     show_view:
-    GGRC.templates_path + '/access_control_roles/tree.stache',
+    '/access_control_roles/tree.stache',
     sortable: false,
     list_loader: function () {
       return Roleable.findAll();
@@ -114,7 +112,7 @@ const adminListDescriptors = {
       model: AccessControlRole,
       mapping: 'access_control_roles',
       show_view:
-      GGRC.templates_path + '/access_control_roles/subtree.stache',
+      '/access_control_roles/subtree.stache',
       add_item_view: null,
     }],
   },
@@ -199,8 +197,8 @@ new WidgetList('ggrc_admin', {
 new DashboardControl('#pageContent', {
   widget_descriptors: getWidgetListFor('admin'),
   menu_tree_spec: GGRC.admin_menu_spec,
-  header_view: `${GGRC.templates_path}/base_objects/page-header.stache`,
-  innernav_view: `${GGRC.templates_path}/base_objects/inner-nav.stache`,
+  header_view: '/base_objects/page-header.stache',
+  innernav_view: '/base_objects/inner-nav.stache',
   default_widgets: [
     'people', 'roles', 'events', 'custom_attributes', 'custom_roles',
   ],

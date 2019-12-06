@@ -447,7 +447,7 @@ class AttributeInfo(object):
             attr.multi_choice_options.replace(",", "\n")
         )
       elif attr.attribute_type == attr.ValidTypes.CHECKBOX:
-        description += u"Allowed values are:\nTRUE\nFALSE"
+        description += u"Allowed values are:\nyes\nno"
       elif attr.ValidTypes.MAP in attr.attribute_type:
         description += u"Allowed values are emails"
       if attr.definition_id:

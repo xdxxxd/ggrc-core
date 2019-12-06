@@ -89,8 +89,14 @@ class Commentable(object):
   _api_attrs = reflection.ApiAttributes("recipients", "send_by_default")
 
   _aliases = {
-      "recipients": "Recipients",
-      "send_by_default": "Send by default",
+      "recipients": {
+          "display_name": "Recipients",
+          "description": "Automatically provided values"
+      },
+      "send_by_default": {
+          "display_name": "Send by default",
+          "description": "Automatically provided values",
+      },
       "comments": {
           "display_name": "Comments",
           "description": (

@@ -7,15 +7,16 @@ import random
 import re
 
 from lib import url, users, base, browsers, factory
-from lib.constants import objects, element, object_states
+from lib.constants import objects, element, object_states, roles
 from lib.entities import entities_factory
 from lib.page import dashboard
-from lib.page.modal import unified_mapper
+from lib.page.modal import bulk_update, unified_mapper, request_review
 from lib.page.widget import (generic_widget, object_modal, import_page,
                              related_proposals, version_history, widget_base)
+from lib.rest_facades import roles_rest_facade
 from lib.service import (webui_service, rest_service, rest_facade,
                          admin_webui_service)
-from lib.utils import selenium_utils, ui_utils, string_utils
+from lib.utils import selenium_utils, ui_utils, string_utils, test_utils
 
 
 def create_control_in_program_scope(selenium, program):
@@ -451,3 +452,151 @@ def soft_assert_bulk_complete_for_opened_asmts(soft_assert, asmts, page,
         page.is_bulk_complete_displayed() == is_displayed,
         "'Bulk complete' for assessment with '{}' status should {}be "
         "available.".format(status, "" if is_displayed else "not "))
+
+
+def soft_assert_bulk_verify_for_not_in_review_state(page, asmts, soft_assert):
+  """Soft assert 'Bulk Verify' availability for assessments with different from
+  'In Review' status."""
+  statuses = object_states.ASSESSMENT_STATUSES_NOT_READY_FOR_REVIEW
+  for asmt, status in zip(asmts, statuses):
+    if status == object_states.COMPLETED:
+      # normally assessment cannot be in completed state if it has verifiers
+      # GGRC-7802: validation should be added on backend side
+      rest_facade.update_acl([asmt], [], rewrite_acl=True,
+                             **roles_rest_facade.get_role_name_and_id(
+                                 asmt.type, roles.VERIFIERS))
+    rest_facade.update_object(asmt, status=status)
+    browsers.get_browser().refresh()
+    ui_utils.wait_for_spinner_to_disappear()
+    soft_assert.expect(
+        not page.is_bulk_verify_displayed(),
+        "Bulk Verify should not be available if assessment is in "
+        "'{}' status.".format(status))
+
+
+def soft_assert_bulk_verify_for_in_review_state(page, asmt, soft_assert,
+                                                is_available):
+  """Soft assert 'Bulk Verify' availability for assessments in 'In Review'
+  status."""
+  rest_facade.update_object(asmt, status=object_states.READY_FOR_REVIEW)
+  browsers.get_browser().refresh()
+  ui_utils.wait_for_spinner_to_disappear()
+  soft_assert.expect(
+      page.is_bulk_verify_displayed() == is_available,
+      "Bulk Verify should {} be available if assessment is in '{}' status."
+      .format("" if is_available else "not", object_states.READY_FOR_REVIEW))
+
+
+def bulk_verify_all(widget, wait_for_completion=True):
+  """Bulk verify all available assessments in specified widget."""
+  bulk_verify_modal = bulk_update.BulkVerifyModal()
+  if not bulk_verify_modal.is_displayed:
+    widget.open_bulk_verify_modal()
+  bulk_verify_modal.select_assessments_section.click_select_all()
+  bulk_verify_modal.click_verify()
+  if wait_for_completion:
+    widget.submit_message.wait_until(lambda e: e.exists)
+    widget.finish_message.wait_until(lambda e: e.exists)
+
+
+def soft_assert_verified_state_after_bulk_verify(page, src_obj, soft_assert):
+  """Soft assert that assessments statuses actually have been updated after
+  bulk verify has been completed."""
+  bulk_verify_all(page)
+  # reload page to see actual assessments state
+  browsers.get_browser().refresh()
+  asmts_from_ui = (webui_service.AssessmentsService()
+                   .get_list_objs_from_tree_view(src_obj))
+  soft_assert.expect(
+      all([asmt.status == object_states.COMPLETED and asmt.verified is True
+           for asmt in asmts_from_ui]),
+      "All assessments should be verified and have 'Completed' state.")
+
+
+def soft_assert_bulk_verify_filter_ui_elements(modal, soft_assert):
+  """Checks that filter section of bulk verify modal has 'Reset to Default'
+  button, exactly 2 states options: 'Select all', 'In Review', and default
+  filter for current user as a verifier."""
+  filter_section_element = modal.filter_section.expand()
+  soft_assert.expect(
+      filter_section_element.reset_to_default_button.exists,
+      "'Reset to Default' button should be displayed in filter section.")
+  soft_assert.expect(
+      filter_section_element.get_state_filter_options() == [
+          'Select All', 'In Review'],
+      "Filter should contain exactly 2 options: 'Select All', 'In Review'.")
+  expected_filters = [{"attr_name": "Verifiers", "compare_op": "Contains",
+                       "value": users.current_user().email}]
+  soft_assert.expect(
+      filter_section_element.get_filters_dicts() == expected_filters,
+      "Modal should contain default filter for current user as a verifier.")
+
+
+def soft_assert_bulk_verify_filter_functionality(page, modal, exp_asmt,
+                                                 soft_assert):
+  """Checks that filter functionality on bulk verify modal works correctly
+  comparing assessment from modal with the expected one.
+  Depending on opened page this method either soft asserts that 'Filter by
+  Mapping' section contains title of opened audit or set mapping filter with
+  provided audit and apply it."""
+  filter_section_element = modal.filter_section.expand()
+  if not isinstance(page, dashboard.MyAssessments):
+    soft_assert.expect(
+        filter_section_element.get_mapped_to_audit_filter() == exp_asmt.audit,
+        "'Filter by Mapping' section should contain title of opened audit.")
+  else:
+    filter_section_element.add_mapping_filter(
+        objects.get_singular(objects.AUDITS, title=True),
+        element.Common.TITLE, exp_asmt.audit)
+  filter_section_element.apply()
+  base.Test.general_equal_soft_assert(
+      soft_assert, [exp_asmt],
+      webui_service.AssessmentsService().get_objs_from_bulk_update_modal(
+          modal, with_second_tier_info=True),
+      *exp_asmt.bulk_update_modal_tree_view_attrs_to_exclude)
+
+
+def soft_assert_role_cannot_be_edited(soft_assert, obj, role):
+  """Performs soft assert that click on role's pencil icon doesn't open
+  an input field."""
+  info_widget = factory.get_cls_webui_service(
+      objects.get_plural(obj.type))().open_info_page_of_obj(obj)
+  role_field_element = getattr(info_widget, role)
+  role_field_element.inline_edit.open()
+  # wait until new tab contains info page url
+  _, new_tab = browsers.get_browser().windows()
+  test_utils.wait_for(lambda: new_tab.url.endswith(url.Widget.INFO))
+  soft_assert.expect(not role_field_element.add_person_text_field.exists,
+                     "There should be no input field.")
+
+
+def check_mega_program_icon_in_unified_mapper(selenium, child_program,
+                                              parent_program):
+  """Performs assert that a mega program has a blue flag icon in unified mapper:
+  open a parent program tab -> click the Map btn -> assert blue flag is visible
+  """
+  program_mapper = (webui_service.ProgramsService(
+                    obj_name=objects.PROGRAM_PARENTS, driver=selenium)
+                    .get_unified_mapper(child_program))
+  parent_program_row = [program for program
+                        in program_mapper.tree_view.tree_view_items()
+                        if parent_program.title in program.text][0]
+  assert parent_program_row.mega_program_icon.exists
+
+
+def open_propose_changes_modal(obj, selenium):
+  """Opens propose changes modal of obj."""
+  (_get_ui_service(selenium, obj).open_info_page_of_obj(obj).
+   click_propose_changes())
+  modal = object_modal.BaseObjectModal(selenium)
+  modal.wait_until_present()
+  return modal
+
+
+def open_request_review_modal(obj, selenium):
+  """Opens request review modal of obj."""
+  (_get_ui_service(selenium, obj).open_info_page_of_obj(obj).
+   open_submit_for_review_popup())
+  modal = request_review.RequestReviewModal(selenium)
+  modal.wait_until_present()
+  return modal

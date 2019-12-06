@@ -63,9 +63,9 @@ export default canComponent.extend({
     setDefaultStatusItem: function () {
       if (this.attr('hasStatusFilter')) {
         const defaultStatusItem = AdvancedSearch.setDefaultStatusConfig(
-          this.attr('statusItem.value'), this.attr('modelName')
+          this.attr('modelName')
         );
-        this.attr('statusItem.value', defaultStatusItem);
+        this.attr('statusItem.value').attr(defaultStatusItem);
       } else {
         this.attr('statusItem', AdvancedSearch.create.state());
       }

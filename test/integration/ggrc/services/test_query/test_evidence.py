@@ -76,3 +76,31 @@ class TestEvidenceQueries(TestCase):
     self.assertEqual(1, resp.json[0]["Evidence"]["count"])
     self.assertEqual(evidence_gdrive_id,
                      resp.json[0]["Evidence"]["values"][0]["id"])
+
+  def test_filter_evidence_notes(self):
+    """Test filter evidences by evidence notes"""
+    evidence_gdrive = factories.EvidenceFactory(
+        title='Simple title',
+        kind=all_models.Evidence.URL,
+        link='sample.site',
+        notes='sample notes'
+    )
+    evidence_id = evidence_gdrive.id
+
+    query_request_data = [{
+        u'filters': {
+            u'expression': {
+                u'left': u'Notes',
+                u'op': {u'name': u'='},
+                u'right': 'sample notes'
+            }
+        },
+        u'object_name': u'Evidence',
+        u'type': u'values'
+    }]
+    resp = self.api.send_request(self.api.client.post,
+                                 data=query_request_data,
+                                 api_link="/query")
+    self.assertEqual(1, resp.json[0]["Evidence"]["count"])
+    self.assertEqual(evidence_id,
+                     resp.json[0]["Evidence"]["values"][0]["id"])

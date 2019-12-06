@@ -19,18 +19,19 @@ export default canComponent.extend({
     isInitialized: false,
     isLoading: false,
     expanded: false,
-    initMappedComments() {
-      this.attr('isLoading', true);
-      loadComments(this.attr('instance'), 'Comment', 0, 5)
-        .then(({Comment: {values: comments, total}}) => {
-          this.attr('mappedComments', comments);
-          this.attr('showMore', total > comments.length);
+    async initMappedComments() {
+      try {
+        this.attr('isLoading', true);
+        const response =
+          await loadComments(this.attr('instance'), 'Comment', 0, 5);
+        let {values: comments, total} = response.Comment;
 
-          this.attr('isInitialized', true);
-        })
-        .finally(() => {
-          this.attr('isLoading', false);
-        });
+        this.attr('mappedComments', comments);
+        this.attr('showMore', total > comments.length);
+        this.attr('isInitialized', true);
+      } finally {
+        this.attr('isLoading', false);
+      }
     },
   }),
   events: {

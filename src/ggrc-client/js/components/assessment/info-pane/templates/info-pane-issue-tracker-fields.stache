@@ -6,16 +6,18 @@
 <div class="ggrc-form-item">
   <div class="ggrc-form-item__multiple-row">
     <issue-tracker-switcher
+      isEditIconDenied:from="isEditIconDenied"
       setIssueTitle:from="true"
       on:issueTrackerSwitcherChanged="saveInlineForm(scope.event)"
       instance:from="instance">
       <ticket-id-checker
+        isEditIconDenied:from="isEditIconDenied"
         instance:from="instance"
         issueTrackerEnabled:from="instance.issue_tracker.enabled"
         on:valueChange="inlineDropdownValueChange(scope.event)">
         <inline-edit-control
           on:inlineSave="checkTicketId(scope.event)"
-          isEditIconDenied:from="isRestricted"
+          isEditIconDenied:from="isEditIconDenied"
           dropdownOptions:from="instance.constructor.issue_tracker_enable_options"
           instance:from="instance"
           value:from="issueTrackerEnabled"
@@ -28,14 +30,12 @@
                 <div class="ticket-info-header">
                   <span class="ggrc-form__title">
                     Ticket Tracker
-                    {{#if instance.issue_tracker.enabled}}
-                      {{^if instance.audit.issue_tracker.people_sync_enabled}}
+                    {{#if peopleSyncDisabled}}
                         <span class="people-sync-state"
                           rel="tooltip"
                           data-placement="top"
                           data-original-title="You can enable People Sync in Audit Issue Tracker"
                         >People sync: Disabled</span>
-                      {{/if}}
                     {{/if}}
                   </span>
                   {{#if instance.issueCreated}}
@@ -45,7 +45,7 @@
                   {{/if}}
                     <div class="ggrc-form-item__small-text">
                       <small>
-                        <em>Turns on Ticket Tracker integration.</em>
+                        <em>{{note}}</em>
                       </small>
                     </div>
                 </div>
@@ -78,11 +78,7 @@
           </div>
           <div class="ggrc-form-item__small-text">
             <small>
-              {{#if isTicketIdMandatory}}
-                <em>You are not allowed to generate new ticket for Issues at statuses &quot;In Review&quot;, &quot;Completed (no verification)&quot;, &quot;Completed and Verified&quot; and &quot;Deprecated&quot;, only manual linking is allowed to perform. If you would like to keep the existing ticket linked to this issue do not edit this attribute. If you would like to link to a different ticket provide an existing ticket number.</em>
-              {{else}}
-                <em>Please leave this empty for a new ticket to be generated and linked to this assessment. If you would like to link to an existing ticket please provide the ticket number.</em>
-              {{/if}}
+              <em>{{linkingText}}</em>
             </small>
           </div>
         </div>

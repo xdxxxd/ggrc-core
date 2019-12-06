@@ -18,6 +18,7 @@ export default canComponent.extend({
     instance: {},
     editMode: false,
     value: '',
+    date: '',
     document: {},
     placeholder: '',
     propName: '',
@@ -70,6 +71,7 @@ export default canComponent.extend({
         object[this.attr('propName')] = value;
         await model.update(object.id, object);
         this.attr('value', value);
+        this.attr('date', object.updated_at);
       } catch (err) {
         notifier('error', 'Unable to update.');
       }

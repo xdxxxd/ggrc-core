@@ -227,7 +227,7 @@
         </a>
       </div>
       <div class="hidden-fields-area">
-        {{> /static/templates/assessments/modal-content-additional-fields.stache}}
+        {{> assessments/modal-content-additional-fields.stache}}
       </div>
     </div>
 

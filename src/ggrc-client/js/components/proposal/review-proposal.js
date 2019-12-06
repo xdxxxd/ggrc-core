@@ -23,7 +23,7 @@ export default canComponent.extend({
     define: {
       buttonView: {
         get() {
-          return `${GGRC.templates_path}/modals/review-proposal.stache`;
+          return '/modals/review-proposal.stache';
         },
       },
       canReview: {
@@ -140,6 +140,10 @@ export default canComponent.extend({
   events: {
     inserted() {
       this.viewModel.attr('$el', this.element);
+    },
+    '{viewModel.instance} modelAfterSave'() {
+      // reset 'leftRevisionId' after instance saving to get the latest revision
+      this.viewModel.attr('leftRevisionId', null);
     },
   },
 });

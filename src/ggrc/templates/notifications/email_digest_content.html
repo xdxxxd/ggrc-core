@@ -242,7 +242,7 @@ Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
                 {% if digest.get('assessment_updated') %}
                   <div style="padding-bottom: 15px;">
                   {% for assessment_id, assessment_data in digest['assessment_updated'].iteritems() %}
-                    <p {{ style.assessment_notification_title() }}>Assessment "{{ assessment_data['title'] }}" has been updated</p>
+                    <h2 {{ style.sub_title() }}>Assessment "{{ assessment_data['title'] }}" has been updated</h2>
                     <table {{ style.table_full() }}>
                       <thead>
                         <tr>

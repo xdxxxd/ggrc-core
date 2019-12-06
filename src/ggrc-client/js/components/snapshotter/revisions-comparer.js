@@ -8,7 +8,7 @@ import loReverse from 'lodash/reverse';
 import loDebounce from 'lodash/debounce';
 import loEach from 'lodash/each';
 import loIsEqual from 'lodash/isEqual';
-import {ggrcAjax} from '../../plugins/ajax-extensions';
+import {getView} from '../../plugins/ggrc-utils';
 import makeArray from 'can-util/js/make-array/make-array';
 import canBatch from 'can-event/batch/batch';
 import canStache from 'can-stache';
@@ -58,8 +58,7 @@ export default canComponent.extend({
       confirm({
         modal_title: this.attr('modalTitle'),
         modal_description: 'Loading...',
-        header_view: GGRC.templates_path +
-                      '/modals/modal-compare-header.stache',
+        header_view: '/modals/modal-compare-header.stache',
         modal_confirm: this.attr('modalConfirm'),
         skip_refresh: true,
         extraCssClass: 'compare-modal',
@@ -87,18 +86,15 @@ export default canComponent.extend({
                 confirmSelf.attr('rightRevisionData', rightRevisionData);
               }
 
-              ggrcAjax({
-                url: view, dataType: 'text',
-              }).then((view) => {
-                let render = canStache(view);
-                let fragLeft = render(revisions[0]);
-                let fragRight = render(revisions[1]);
+              const template = getView(view);
+              let render = canStache(template);
+              let fragLeft = render(revisions[0]);
+              let fragRight = render(revisions[1]);
 
-                fragLeft.appendChild(fragRight);
-                target.find('.modal-body').html(fragLeft);
+              fragLeft.appendChild(fragRight);
+              target.find('.modal-body').html(fragLeft);
 
-                that.highlightDifference(target, revisions);
-              });
+              that.highlightDifference(target, revisions);
             });
         },
       }, this.updateRevision.bind(this));
@@ -310,7 +306,8 @@ export default canComponent.extend({
       function highlightValue($value) {
         if ($value.html() && !$value.find('.empty-message').length) {
           const title = isProposableExternalAttr ? '.action-toolbar' : 'h6';
-          $value.find(`h3, ${title} + *`).addClass(HIGHLIGHT_CLASS);
+          $value.find(`h3, ${title} + *, readonly-inline-content`)
+            .addClass(HIGHLIGHT_CLASS);
         }
       }
     },

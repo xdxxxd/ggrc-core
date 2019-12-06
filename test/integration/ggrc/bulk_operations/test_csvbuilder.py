@@ -6,6 +6,7 @@
 import copy
 import ddt
 
+import freezegun
 from integration.ggrc import TestCase
 from integration.ggrc.models import factories
 
@@ -179,48 +180,6 @@ class TestCsvBuilder(TestCase):
     """
     for key in data:
       setattr(assessment, key, data[key])
-
-  @ddt.data(
-      [{}, [], []],
-
-      [{1: {"cavs": {"title1": "value1", "title2": "value2"}},
-        2: {"cavs": {"title3": "value3", "title4": "value4"}}},
-       ["title1", "title2", "title3", "title4"],
-       [1, 2]],
-
-      [{1: {"cavs": {"title1": "v1", "title2": "v2"}},
-        2: {"cavs": {"title3": "v3", "title4": "v4"}},
-        3: {"cavs": {"title3": "v3", "title1": "v4"}},
-        4: {"cavs": {"title2": "v3", "title1": "v4"}}},
-       ["title1", "title2", "title3", "title4"],
-       [1, 2, 3, 4]],
-
-      [{1: {"cavs": {}},
-        2: {"cavs": {"title3": "value3", "title4": "value4"}},
-        3: {"cavs": {}},
-        4: {"cavs": {}}},
-       ["title3", "title4"],
-       [1, 2, 3, 4]],
-
-      [{1: {"cavs": {"title1": "value1", "title2": "value3"}},
-        2: {"cavs": {"title1": "value1", "title2": "value4"}}},
-       ["title1", "title2"],
-       [1, 2]],
-
-      [{1: {"cavs": {"title1": "value1"}},
-        2: {"cavs": {"title1": "value1", "title2": "value2"}}},
-       ["title1", "title2"],
-       [1, 2]],
-  )
-  @ddt.unpack
-  def test_collect_keys(self, cavs, expected_keys, expected_ids):
-    """Test _collect_keys method"""
-    builder = csvbuilder.CsvBuilder({})
-    self._set_assessments_values(builder, cavs)
-    # pylint:disable=protected-access
-    builder._collect_keys()
-    self.assertEqual(builder.cav_keys, expected_keys)
-    self.assertEqual(builder.assessment_ids, expected_ids)
 
   def test_needs_verification_assessment(self):
     """Test assessment needs verification"""
@@ -469,3 +428,18 @@ class TestCsvBuilder(TestCase):
     }
     self.assert_assessments(builder, expected_data)
     self.assertEqual(builder.assessment_ids, [asmt.id])
+
+  @freezegun.freeze_time("2019-10-21 10:28:34")
+  def test_bulk_verify_csv(self):
+    """Test building csv for bulk verify"""
+    builder = csvbuilder.CsvBuilder({})
+    builder.assessments[1].slug = "slug-1"
+    builder.assessments[2].slug = "slug-2"
+    builded_list = builder.assessments_verify_to_csv()
+    expected_list = [
+        [u"Object type"],
+        [u"Assessment", u"Code", u"State", u"Verified Date"],
+        [u"", u"slug-1", u"Completed", u"10/21/2019"],
+        [u"", u"slug-2", u"Completed", u"10/21/2019"],
+    ]
+    self.assertEqual(expected_list, builded_list)

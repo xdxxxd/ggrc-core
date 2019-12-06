@@ -263,8 +263,7 @@ export default canComponent.extend({
           &quot;Stop Import&quot;. </br>
           <b>Warning:</b> only partial data will be saved, if import
           is stopped when in progress.`,
-        button_view:
-          `${GGRC.templates_path}/modals/proceed-stop-import-buttons.stache`,
+        button_view: '/modals/proceed-stop-import-buttons.stache',
       },
       () => {
         let state = this.attr('state');

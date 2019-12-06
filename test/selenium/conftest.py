@@ -24,9 +24,9 @@ from lib.custom_pytest_scheduling import CustomPytestScheduling
 from lib.entities import entities_factory
 from lib.page import dashboard
 from lib.page.widget import controls_tab
-from lib.rest_services import workflow_rest_service
 from lib.rest_facades import (
     control_rest_facade, person_rest_facade, workflow_rest_facade)
+from lib.rest_services import workflow_rest_service
 from lib.service import rest_facade, rest_service
 from lib.service.rest import session_pool
 from lib.utils import conftest_utils, help_utils, selenium_utils, app_utils, \
@@ -578,6 +578,12 @@ def login_as_creator(creator):
 
 
 @pytest.fixture()
+def login_as_second_creator(second_creator):
+  """Login by user with role 'Creator'."""
+  users.set_current_user(second_creator)
+
+
+@pytest.fixture()
 def program():
   """Create a program."""
   return rest_facade.create_program()
@@ -602,15 +608,22 @@ def risk():
 
 
 @pytest.fixture()
-def programs_with_audit_and_techenv(programs, technology_environment):
-  """Creates 2 programs and 1 technology environment objects, then maps second
-  program to first as a child, then creates an Audit in scope of program 2
-  and finally maps Technology Environment object to Audit."""
-  first_program, second_program = programs
-  rest_facade.map_objs(first_program, second_program)
-  audit = rest_facade.create_audit(second_program)
+def mapped_programs(programs):
+  """Creates 2 programs and maps the second program to the first
+  one as a child"""
+  rest_facade.map_objs(*programs)
+  return programs
+
+
+@pytest.fixture()
+def programs_with_audit_and_techenv(mapped_programs, technology_environment):
+  """Creates 2 programs (the second program is a child of the first one)
+  and 1 technology environment objects, then creates an Audit
+  in scope of program 2 and finally maps Technology Environment object
+  to Audit."""
+  audit = rest_facade.create_audit(mapped_programs[1])
   rest_facade.map_objs(audit, technology_environment)
-  return {'programs': programs,
+  return {'programs': mapped_programs,
           'audit': audit,
           'techenv': technology_environment}
 
@@ -684,6 +697,13 @@ def objectives_mapped_to_program(program):
 def audit(program):
   """Create an audit within program"""
   return rest_facade.create_audit(program)
+
+
+@pytest.fixture()
+def audit_w_auditor(program, second_creator):
+  """Create an audit within program and set a user with global creator role as
+  an auditor."""
+  return rest_facade.create_audit(program, auditors=second_creator)
 
 
 @pytest.fixture()

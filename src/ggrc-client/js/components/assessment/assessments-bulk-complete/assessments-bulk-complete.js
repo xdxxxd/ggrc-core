@@ -12,20 +12,14 @@ import '../../required-info-modal/required-info-modal';
 import canComponent from 'can-component';
 import canStache from 'can-stache';
 import canBatch from 'can-event/batch/batch';
-import canMap from 'can-map';
 import template from './assessments-bulk-complete.stache';
-import ObjectOperationsBaseVM from '../../view-models/object-operations-base-vm';
 import {STATES_KEYS} from '../../../plugins/utils/state-utils';
 import loFindIndex from 'lodash/findIndex';
 import {request} from '../../../plugins/utils/request-utils';
 import {backendGdriveClient} from '../../../plugins/ggrc-gapi-client';
 import {ggrcPost} from '../../../plugins/ajax-extensions';
-import {trackStatus} from '../../../plugins/utils/background-task-utils';
 import {confirm} from '../../../plugins/utils/modals';
-import {
-  getFetchErrorInfo,
-  isConnectionLost,
-} from '../../../plugins/utils/errors-utils';
+import {getFetchErrorInfo} from '../../../plugins/utils/errors-utils';
 import {notifier} from '../../../plugins/utils/notifiers-utils';
 import {
   getCustomAttributeType,
@@ -35,11 +29,7 @@ import {
 import loSome from 'lodash/some';
 import loFind from 'lodash/find';
 import {getPlainText} from '../../../plugins/ggrc-utils';
-import {
-  create,
-  setDefaultStatusConfig,
-} from '../../../plugins/utils/advanced-search-utils';
-import {getAvailableAttributes} from '../../../plugins/utils/tree-view-utils';
+import AssessmentsBulkUpdatable from '../view-models/assessments-bulk-updatable-vm';
 
 /**
  * Map of types from FE to BE format
@@ -54,7 +44,7 @@ const attributesType = {
   dropdown: 'Dropdown',
 };
 
-const viewModel = ObjectOperationsBaseVM.extend({
+const viewModel = AssessmentsBulkUpdatable.extend({
   define: {
     isSelectButtonDisabled: {
       get() {
@@ -84,17 +74,8 @@ const viewModel = ObjectOperationsBaseVM.extend({
       },
     },
   },
-  element: null,
-  showSearch: false,
   showFields: false,
-  isMyAssessmentsView: false,
-  mappedToItems: [],
-  filterItems: [],
-  defaultFilterItems: [],
-  mappingItems: [],
-  filterAttributes: [],
   statesCollectionKey: STATES_KEYS.BULK_COMPLETE,
-  type: 'Assessment',
   isAttributesGenerating: false,
   attributeFields: [],
   isAttributesGenerated: false,
@@ -109,7 +90,6 @@ const viewModel = ObjectOperationsBaseVM.extend({
       files: [],
     },
   },
-  timeoutId: null,
   isCompleting: false,
   /**
    * Contains selected objects (which have id and type properties)
@@ -151,8 +131,7 @@ const viewModel = ObjectOperationsBaseVM.extend({
         modal_title: 'Warning',
         modal_description: 'Custom attributes list will be updated ' +
           'accordingly. All already added answers will be lost.',
-        button_view:
-          `${GGRC.templates_path}/modals/confirm-cancel-buttons.stache`,
+        button_view: '/modals/confirm-cancel-buttons.stache',
         modal_confirm: 'Proceed',
       }, () => this.generateAttributes());
     } else {
@@ -242,9 +221,6 @@ const viewModel = ObjectOperationsBaseVM.extend({
     return request('/api/bulk_operations/cavs/search', {
       ids: this.getSelectedAssessmentsIds(),
     });
-  },
-  getSelectedAssessmentsIds() {
-    return this.attr('selected').serialize().map((selected) => selected.id);
   },
   updateAttributeField({field, value}) {
     field.attr('value', value);
@@ -382,31 +358,6 @@ const viewModel = ObjectOperationsBaseVM.extend({
     requiredInfoModal.attr('state.open', true);
     canBatch.stop();
   },
-  initDefaultFilter() {
-    const stateConfig = setDefaultStatusConfig(
-      new canMap,
-      this.attr('type'),
-      this.attr('statesCollectionKey')
-    );
-    const items = [
-      create.state(stateConfig),
-      create.operator('AND'),
-      create.attribute({
-        field: 'Assignees',
-        operator: '~',
-        value: GGRC.current_user.email,
-      }),
-    ];
-
-    this.attr('filterItems', items);
-    this.attr('defaultFilterItems', items);
-  },
-  initFilterAttributes() {
-    const attributes = getAvailableAttributes(this.attr('type'))
-      .filter(({attr_name: attrName}) => attrName !== 'status');
-
-    this.attr('filterAttributes', attributes);
-  },
   getValForCompleteRequest(type, value) {
     switch (type) {
       case 'checkbox':
@@ -467,17 +418,6 @@ const viewModel = ObjectOperationsBaseVM.extend({
       assessments_ids: this.getSelectedAssessmentsIds(),
     };
   },
-  trackBackgroundTask(taskId) {
-    notifier('progress', 'Your bulk update is submitted. ' +
-        'Once it is done you will get a notification. ' +
-        'You can continue working with the app.');
-    const url = `/api/background_tasks/${taskId}`;
-    const timeoutId = trackStatus(
-      url,
-      () => this.onSuccessHandler(),
-      () => this.onFailureHandler());
-    this.attr('timeoutId', timeoutId);
-  },
   completeAssessments() {
     this.attr('isCompleting', true);
     backendGdriveClient.withAuth(
@@ -490,13 +430,10 @@ const viewModel = ObjectOperationsBaseVM.extend({
         this.trackBackgroundTask(id);
       })
       .fail((error) => {
-        if (isConnectionLost()) {
-          notifier('error', 'Internet connection was lost.');
-        } else if (error && error.responseJSON && error.responseJSON.message) {
+        if (error && error.responseJSON && error.responseJSON.message) {
           notifier('error', error.responseJSON.message);
         } else {
-          notifier('error', 'Bulk update is failed. ' +
-          'Please refresh the page and start bulk update again.');
+          this.handleBulkUpdateErrors();
         }
       })
       .always(() => {
@@ -514,27 +451,23 @@ const viewModel = ObjectOperationsBaseVM.extend({
         modal_title: 'Warning',
         modal_description: 'You\'ve added new answers for custom attributes ' +
          'that will replace existing answers.',
-        button_view:
-          `${GGRC.templates_path}/modals/confirm-cancel-buttons.stache`,
+        button_view: '/modals/confirm-cancel-buttons.stache',
         modal_confirm: 'Proceed',
       }, () => this.completeAssessments());
     } else {
       this.completeAssessments();
     }
   },
-  onSuccessHandler() {
-    const reloadLink = window.location.href;
-    notifier('success', 'Bulk update is finished successfully. {reload_link}',
-      {reloadLink});
-  },
-  onFailureHandler() {
-    notifier('error', 'Bulk update is failed.');
-  },
-  closeModal() {
-    this.attr('element').find('.modal-dismiss').trigger('click');
-  },
   init() {
-    this.initDefaultFilter();
+    const attributeFilter = {
+      attribute: {
+        field: 'Assignees',
+        operator: '~',
+        value: GGRC.current_user.email,
+      },
+    };
+
+    this.initDefaultFilter(attributeFilter);
     this.initFilterAttributes();
   },
 });

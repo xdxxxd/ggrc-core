@@ -5,12 +5,13 @@
 
 import loIsEmpty from 'lodash/isEmpty';
 import loSome from 'lodash/some';
-import {ggrcAjax} from '../plugins/ajax-extensions';
+import {getFragment} from '../plugins/ggrc-utils';
 import canStache from 'can-stache';
 import canControl from 'can-control';
 import '../components/info-pin-buttons/info-pin-buttons';
 import '../components/questions-link/questions-link';
 import '../components/info-pane/info-pane-footer';
+import '../components/info-pane/info-pane';
 import '../components/assessment/info-pane/assessment-info-pane';
 import '../components/folder-attachments-list/folder-attachments-list';
 import '../components/issue-tracker/info-issue-tracker-fields';
@@ -43,7 +44,7 @@ export const pinContentMinimizedClass = 'pin-content--minimized';
 
 export default canControl.extend({
   defaults: {
-    view: GGRC.templates_path + '/base_objects/info.stache',
+    view: '/base_objects/info.stache',
   },
 }, {
   init: function (el, options) {
@@ -90,13 +91,8 @@ export default canControl.extend({
           },
         };
 
-        ggrcAjax({
-          url: view,
-          dataType: 'text',
-        }).then((view) => {
-          let frag = canStache(view)(context);
-          this.element.html(frag);
-        });
+        let frag = getFragment(view, context);
+        this.element.html(frag);
       });
   },
   prepareView: function (opts, el, maximizedState) {
@@ -168,7 +164,7 @@ export default canControl.extend({
       modal_description: renderer(instance).textContent,
       modal_confirm: modalDetails.button,
       modal_title: modalDetails.title,
-      button_view: GGRC.templates_path + '/quick_form/confirm-buttons.stache',
+      button_view: '/quick_form/confirm-buttons.stache',
     }, confirmDfd.resolve);
     return confirmDfd;
   },

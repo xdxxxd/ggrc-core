@@ -47,8 +47,8 @@ new PageObjectControl('#pageContent', {
   widget_descriptors: widgetList,
   default_widgets: defaults || [],
   instance: getPageInstance(),
-  header_view: GGRC.templates_path + '/base_objects/page-header.stache',
-  innernav_view: GGRC.templates_path + '/base_objects/inner-nav.stache',
+  header_view: '/base_objects/page-header.stache',
+  innernav_view: '/base_objects/inner-nav.stache',
   page_title: function (controller) {
     return controller.options.instance.title;
   },

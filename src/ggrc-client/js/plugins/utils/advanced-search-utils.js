@@ -16,12 +16,14 @@ export const create = {
   /**
    * Creates Filter Attribute.
    * @param {object} value - Filter Attribute data.
+   * @param {object} options - List of options for attribute.
    * @return {object} - Attribute model.
    */
-  attribute: (value) => {
+  attribute: (value, options = null) => {
     return {
       type: 'attribute',
       value: value || { },
+      options,
     };
   },
   /**
@@ -38,12 +40,14 @@ export const create = {
   /**
    * Creates Operator.
    * @param {string} value - Operator name.
+   * @param {object} options - List of options for operator.
    * @return {object} - Operator model.
    */
-  operator: (value) => {
+  operator: (value, options = null) => {
     return {
       type: 'operator',
       value: value || '',
+      options,
     };
   },
   /**
@@ -220,25 +224,23 @@ export const buildFilter = (data, request) => {
 
 /**
  * Fills statusItem with default values for passed modelName.
- * @param {canMap} state - Current state.
  * @param {String} modelName - Name of the model to find states of.
  * @param {Symbol=} statesCollectionKey - describes key of collection with
  * states for certain model.
  * @return {canMap} - updated state.
  */
 export const setDefaultStatusConfig = (
-  state,
   modelName,
   statesCollectionKey = null
 ) => {
   const items = StateUtils.getStatesForModel(modelName, statesCollectionKey);
 
-  state.attr('items', items);
-  state.attr('operator', 'ANY');
-  state.attr('modelName', modelName);
-  state.attr('statesCollectionKey', statesCollectionKey);
-
-  return state;
+  return {
+    items,
+    modelName,
+    statesCollectionKey,
+    operator: 'ANY',
+  };
 };
 
 /**
