@@ -52,8 +52,7 @@ class IssueTrackerWithValidStates(IssueTrackerColumnHandler):
   available_items = {
       "issue_type":
           params_container.IssueTrackerParamsContainer.AVAILABLE_TYPES,
-      "issue_priority":
-          params_container.IssueTrackerParamsContainer.AVAILABLE_PRIORITIES,
+      "issue_priority": constants.AVAILABLE_PRIORITIES,
       "issue_severity":
           params_container.IssueTrackerParamsContainer.AVAILABLE_SEVERITIES,
   }

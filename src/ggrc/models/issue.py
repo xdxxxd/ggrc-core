@@ -23,6 +23,7 @@ from ggrc.models.object_person import Personable
 from ggrc.models.relationship import Relatable
 from ggrc.models import reflection
 from ggrc.fulltext.mixin import Indexed
+from ggrc.integrations import constants
 
 
 class Issue(Roleable,
@@ -88,6 +89,12 @@ class Issue(Roleable,
       },
       "audit": None,
       "documents_file": None,
+      "issue_priority": {
+          "display_name": "Priority",
+          "description": "Allowed values are:\n{}".format(
+              '\n'.join(constants.AVAILABLE_PRIORITIES)),
+          "mandatory": False
+      },
   }
 
   _fulltext_attrs = [

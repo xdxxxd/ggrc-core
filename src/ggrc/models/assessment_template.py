@@ -189,7 +189,7 @@ class AssessmentTemplate(assessment.AuditRelationship,
                                      "Requirements",
                                      "Risks",
                                      "Standards",
-                                     "Threats",
+                                     "Threats"
                                      )
   TICKET_TRACKER_STATES = ("On", "Off")
 
@@ -237,8 +237,14 @@ class AssessmentTemplate(assessment.AuditRelationship,
       "archived": {
           "display_name": "Archived",
           "mandatory": False,
-          "ignore_on_update": True,
           "view_only": True,
+          "ignore_on_update": True,
+      },
+      "issue_priority": {
+          "display_name": "Priority",
+          "mandatory": False,
+          "description": "Allowed values are:\n{}".format(
+              '\n'.join(constants.AVAILABLE_PRIORITIES))
       },
       "issue_severity": {
           "display_name": "Severity",
