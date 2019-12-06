@@ -51,6 +51,7 @@ class TestImportExportBase(TestCase):
         created_by=user,
         created_at=datetime.now(),
         content=data,
+        title="test"
     )
 
     return self.client.put(
@@ -285,6 +286,7 @@ class TestImportExports(TestImportExportBase):
         created_by=user,
         created_at=datetime.now(),
         content=data,
+        title="title"
     )
 
     response = self.client.put(
