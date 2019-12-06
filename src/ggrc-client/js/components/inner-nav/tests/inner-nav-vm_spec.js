@@ -479,6 +479,44 @@ describe('inner-nav view model', () => {
       expect(viewModel.attr('hiddenWidgets').length).toBe(1);
       expect(viewModel.attr('hiddenWidgets')[0]).toBe(widget);
     });
+
+    describe('should add widget to list according to alph order', () => {
+      it('if need add to the beginning of the array', () => {
+        let widget = new canMap({id: '1', title: 'A'});
+        const hiddenWidgets = [new canMap({id: '2', title: 'B'})];
+        viewModel.attr('hiddenWidgets', hiddenWidgets);
+
+        viewModel.addToHiddenWidgets(widget);
+
+        expect(viewModel.attr('hiddenWidgets').length).toBe(2);
+        expect(viewModel.attr('hiddenWidgets')[0]).toBe(widget);
+      });
+
+      it('if need add to the middle of the array', () => {
+        let widget = new canMap({id: '2', title: 'B'});
+        const hiddenWidgets = [
+          new canMap({id: '1', title: 'A'}),
+          new canMap({id: '3', title: 'C'}),
+        ];
+        viewModel.attr('hiddenWidgets', hiddenWidgets);
+
+        viewModel.addToHiddenWidgets(widget);
+
+        expect(viewModel.attr('hiddenWidgets').length).toBe(3);
+        expect(viewModel.attr('hiddenWidgets')[1]).toBe(widget);
+      });
+
+      it('if need add to the endning of the array', () => {
+        let widget = new canMap({id: '2', title: 'B'});
+        const hiddenWidgets = [new canMap({id: '1', title: 'A'})];
+        viewModel.attr('hiddenWidgets', hiddenWidgets);
+
+        viewModel.addToHiddenWidgets(widget);
+
+        expect(viewModel.attr('hiddenWidgets').length).toBe(2);
+        expect(viewModel.attr('hiddenWidgets')[1]).toBe(widget);
+      });
+    });
   });
 
   describe('removeFromHiddenWidgets(widget) method', () => {
