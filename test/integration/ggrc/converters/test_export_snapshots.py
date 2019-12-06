@@ -4,6 +4,7 @@
 """Tests for snapshot export."""
 import collections
 import json
+import ddt
 from appengine import base
 from ggrc import models, db
 from ggrc.models import all_models
@@ -14,6 +15,7 @@ from integration.ggrc_basic_permissions.models \
     import factories as rbac_factories
 
 
+@ddt.ddt
 @base.with_memcache
 class TestExportSnapshots(TestCase):
   """Tests basic snapshot export."""
@@ -409,3 +411,25 @@ class TestExportSnapshots(TestCase):
     }
     self.assertEqual(result[audit_slug], u"no")
     self.assertEqual(result[audit_archived_slug], u"yes")
+
+  @ddt.data("Assessment", "Audit")
+  def test_export_resource_slug_null(self, model_name):
+    """Test no error export {} with empty revision slug"""
+    with factories.single_commit():
+      audit = factories.AuditFactory()
+      assessment = factories.AssessmentFactory(audit=audit)
+      control = factories.ControlFactory()
+      factories.RelationshipFactory(source=audit, destination=assessment)
+      snapshot = self._create_snapshots(audit, [control])[0]
+      snapshot.revision.resource_slug = None
+      db.session.add(snapshot.revision)
+      factories.RelationshipFactory(source=snapshot, destination=assessment)
+    data = [{
+        "object_name": model_name,
+        "fields": "all",
+        "filters": {
+            "expression": {},
+        },
+    }]
+    response = self.export_parsed_csv(data)[model_name][0]
+    self.assertEqual(response["map:control versions"], "")
