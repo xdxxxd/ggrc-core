@@ -82,7 +82,7 @@ class TestFileActions(unittest.TestCase):
     })
 
     with self.assertRaises(HTTPException):
-      file_actions.hande_http_error(ex)
+      file_actions.handle_http_error(ex)
 
   @ddt.idata(errors.GOOGLE_API_MESSAGE_MAP.iteritems())
   @ddt.unpack
@@ -94,7 +94,21 @@ class TestFileActions(unittest.TestCase):
         "error": {"message": message}
     })
     with self.assertRaises(HTTPException) as raised_ex:
-      file_actions.hande_http_error(ex)
+      file_actions.handle_http_error(ex)
 
     exception = raised_ex.exception
     self.assertEqual(exception.description, map_message)
+
+  def test_handle_http_error_404(self):
+    """Test for handle http error when 404 code"""
+    error_message = errors.GOOGLE_API_V3_404_MESSAGE
+    ex = mock.Mock()
+    ex.resp.status = 404
+    ex.content = json.dumps({
+        "error": {"message": error_message}
+    })
+    with self.assertRaises(HTTPException) as raised_ex:
+      file_actions.handle_http_error(ex)
+
+    exception = raised_ex.exception
+    self.assertEqual(exception.description, error_message)
