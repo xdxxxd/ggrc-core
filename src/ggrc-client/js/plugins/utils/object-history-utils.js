@@ -75,7 +75,7 @@ const buildModifiedACL = (instance, modifiedRoles) => {
       const roleAcl =
         buildRoleACL(roleId, aclRoles[roleId], modifiedRoles[roleId]);
 
-      modifiedAcl.push(...roleAcl);
+      modifiedAcl.push(...Array.from(roleAcl));
     }
   });
 
