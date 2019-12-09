@@ -1,6 +1,8 @@
-[//]: <> (updated 12/02/2019)
+[//]: <> (updated 12/16/2019)
 
 Our product team is working hard to engineer compliance @ scale and make your day to day user journeys easier. We have been adding key capabilities to the product as listed here below.
+
+## Bulk verify assessments (v2.23.0, 12/16/2019)
 
 ## A New Assessment type for the SOX 302 Certification is now available in GGRC (v2.22.0, 12/2/2019)
 
@@ -119,6 +121,10 @@ Our product team is working hard to engineer compliance @ scale and make your da
 ## Linking assessments with other issue tracking systems (v0.10.36, 12/12/2017)
 
 ## Performance improvements
+
+### Bulk verify assessments (v2.23.0, 12/16/2019)
+
+Now, to save your time, you can bulk verify assessments.
 
 ### A New Assessment type for the SOX 302 Certification is now available in GGRC (v2.22.0, 12/2/2019)
 
