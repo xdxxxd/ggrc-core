@@ -437,6 +437,21 @@ class TestImportExports(TestImportExportBase):
           headers=self.headers)
       self.assert400(response)
 
+  @ddt.data(r"абвгд.csv",
+            r"úúúúv.csv",
+            r'汉字.csv',
+            r"абвгдúú汉字123@$%^.csv")
+  def test_imports_with_utf_chars(self, filename):
+    """Test import with non-ascii chars in file name"""
+    with mock.patch("ggrc.gdrive.file_actions.get_gdrive_file_data",
+                    new=lambda x: (x, None, filename)):
+      user = all_models.Person.query.first()
+      response = self.client.post(
+          "/api/people/{}/imports".format(user.id),
+          data=json.dumps([]),
+          headers=self.headers)
+      self.assert200(response)
+
   @ddt.data(("In Progress", "test export", "export",
              "Export", "/api/people/{}/exports/{}/stop"),
             ("Analysis", "test import", "import",
