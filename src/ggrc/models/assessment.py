@@ -202,6 +202,7 @@ class Assessment(Assignable,
   _done_state_restrictions = _in_progress_restrictions + (
       "custom_attributes_values",
       "map: Evidence",
+      "import: status",
   )
 
   _restriction_condition = {

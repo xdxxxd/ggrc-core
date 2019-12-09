@@ -64,16 +64,16 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
     if isinstance(self.row_converter.obj, WithCustomRestrictions) and \
        cav.attribute_value != self.value:
 
-        if "custom_attributes_values" in \
-           self.row_converter.obj.readonly_fields:
-          self.add_warning(errors.READONLY_ACCESS_WARNING,
-                           columns=self.display_name)
+      if "custom_attributes_values" in \
+         self.row_converter.obj.readonly_fields:
+        self.add_warning(errors.READONLY_ACCESS_WARNING,
+                         columns=self.display_name)
 
-        if not cav.custom_attribute.definition_id \
-           and "global_custom_attributes_values" in \
-               self.row_converter.obj.readonly_fields:
-          self.add_warning(errors.READONLY_ACCESS_WARNING,
-                           columns=self.display_name)
+      if not cav.custom_attribute.definition_id \
+         and "global_custom_attributes_values" in \
+             self.row_converter.obj.readonly_fields:
+        self.add_warning(errors.READONLY_ACCESS_WARNING,
+                         columns=self.display_name)
 
     cav.attribute_value = self.value
     if isinstance(cav.attribute_value, models.mixins.base.Identifiable):

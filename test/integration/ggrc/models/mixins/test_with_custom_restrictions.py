@@ -475,3 +475,29 @@ class TestWithCustomRestrictions(TestCase, WithQueryApi):
         (local_cad_name, "Some value 2"),
     ]), person=all_models.Person.query.get(person_id))
     self._check_csv_response(response, exp_errors)
+
+  def test_import_sox302_assmt_status(self):
+    """Test user sox302 update read only Status via import"""
+    exp_errors = {
+        'Assessment': {
+            'row_warnings': {"Line 3: The system is in a read-only mode and "
+                             "is dedicated for SOX needs. The following "
+                             "columns will be ignored: 'status'."},
+        }
+    }
+    with factories.single_commit():
+      user = self.generate_person()
+      assessment = factories.AssessmentFactory(sox_302_enabled=True,
+                                               status="Completed")
+      person_id = user.id
+      assmnt_slug = assessment.slug
+      self.assign_person(assessment, "Assignees", person_id)
+
+    self.set_current_person(user)
+    response = self.import_data(collections.OrderedDict([
+        ("object_type", "Assessment"),
+        ("Code*", assmnt_slug),
+        ("State", "In Progress"),
+    ]), person=all_models.Person.query.get(person_id))
+
+    self._check_csv_response(response, exp_errors)
