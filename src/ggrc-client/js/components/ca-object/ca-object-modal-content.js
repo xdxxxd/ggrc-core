@@ -48,6 +48,7 @@ export default canComponent.extend({
       },
     },
     isUpdatingEvidences: false,
+    isRemovingEvidences: false,
     content: {
       contextScope: {},
       fields: [],

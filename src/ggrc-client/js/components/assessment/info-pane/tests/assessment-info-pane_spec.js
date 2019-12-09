@@ -1104,12 +1104,16 @@ describe('assessment-info-pane component', () => {
       spyOn(vm, 'refreshCounts');
     });
 
-    it('sets "isUpdating{<passed capitalized type>}" property to true ' +
+    it('sets "isUpdating{<passed capitalized type>}" and ' +
+    '"isUpdating{<passed capitalized type>}" properties to true ' +
     'before deferredSave\'s resolve', function () {
-      const expectedProp = `isUpdating${loCapitalize(type)}`;
-      vm.attr(expectedProp, false);
+      const expectedUpdatingProp = `isUpdating${loCapitalize(type)}`;
+      const expectedRemovingProp = `isRemoving${loCapitalize(type)}`;
+      vm.attr(expectedUpdatingProp, false);
+      vm.attr(expectedRemovingProp, false);
       vm.removeRelatedItem(item, type);
-      expect(vm.attr(expectedProp)).toBe(true);
+      expect(vm.attr(expectedUpdatingProp)).toBe(true);
+      expect(vm.attr(expectedRemovingProp)).toBe(true);
     });
 
     it('removes passed item from {<passed type>} list', function () {
@@ -1139,17 +1143,20 @@ describe('assessment-info-pane component', () => {
         dfd.resolve(assessment);
       });
 
-      it('sets "isUpdating{<passed capitalized type>}" property to false',
-        function (done) {
-          const expectedProp = `isUpdating${loCapitalize(type)}`;
+      it('sets "isUpdating{<passed capitalized type>}" ' +
+        'and "isRemoving{<passed capitalized type>}" properties to false',
+      function (done) {
+        const expectedUpdatingProp = `isUpdating${loCapitalize(type)}`;
+        const expectedRemovingProp = `isRemoving${loCapitalize(type)}`;
 
-          vm.removeRelatedItem(item, type);
+        vm.removeRelatedItem(item, type);
 
-          dfd.always(() => {
-            expect(vm.attr(expectedProp)).toBe(false);
-            done();
-          });
+        dfd.always(() => {
+          expect(vm.attr(expectedUpdatingProp)).toBe(false);
+          expect(vm.attr(expectedRemovingProp)).toBe(false);
+          done();
         });
+      });
 
       it('removes actions for assessment from response', function (done) {
         vm.removeRelatedItem(item, type);
