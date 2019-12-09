@@ -11,7 +11,7 @@ from ggrc import models
 from ggrc import utils
 from ggrc.converters import errors
 from ggrc.converters.handlers import handlers
-from ggrc.models.mixins.with_custom_restrictions import WithCustomRestrictions
+from ggrc.models.mixins import with_custom_restrictions
 from ggrc.utils import url_parser
 
 _types = models.CustomAttributeDefinition.ValidTypes
@@ -61,17 +61,21 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
 
     cav = self._get_or_create_ca()
 
-    if isinstance(self.row_converter.obj, WithCustomRestrictions) and \
+    if isinstance(self.row_converter.obj,
+                  with_custom_restrictions.WithCustomRestrictions) and \
        cav.attribute_value != self.value:
 
-      if "custom_attributes_values" in \
-         self.row_converter.obj.readonly_fields:
-        self.add_warning(errors.READONLY_ACCESS_WARNING,
-                         columns=self.display_name)
+      is_local_readonly = (
+          cav.custom_attribute.definition_id and
+          "custom_attributes_values" in self.row_converter.obj.readonly_fields
+      )
+      is_global_readonly = (
+          not cav.custom_attribute.definition_id and
+          "global_custom_attributes_values" in
+          self.row_converter.obj.readonly_fields
+      )
 
-      if not cav.custom_attribute.definition_id \
-         and "global_custom_attributes_values" in \
-             self.row_converter.obj.readonly_fields:
+      if is_local_readonly or is_global_readonly:
         self.add_warning(errors.READONLY_ACCESS_WARNING,
                          columns=self.display_name)
 

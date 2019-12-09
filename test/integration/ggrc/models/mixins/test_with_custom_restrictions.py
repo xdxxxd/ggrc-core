@@ -48,7 +48,7 @@ class TestWithCustomRestrictions(TestCase, WithQueryApi):
 
   @staticmethod
   def generate_person():
-    """Generate person and assign global Creator role"""
+    """Generate person and assign global Reader role"""
     person = factories.PersonFactory()
     reader_role = all_models.Role.query.filter(
         all_models.Role.name == "Reader").first()

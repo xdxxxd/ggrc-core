@@ -162,6 +162,15 @@ class AccessControlList(base.ContextRBAC, mixins.Base, db.Model):
     existing_people = {acp.person for acp in self.access_control_people}
     self._remove_people(obsolete_people & existing_people)
 
+  @property
+  def current_people(self):
+    """Get the list of current acl people
+
+    Returns:
+      set of persons from access_control_people
+      """
+    return {acp.person for acp in self.access_control_people}
+
   def update_people(self, new_people):
     """Update the list of current acl people to match new_people.
 
@@ -172,7 +181,7 @@ class AccessControlList(base.ContextRBAC, mixins.Base, db.Model):
     Returns:
       True - if values was updated, and False - if we didn't update any people
     """
-    existing_people = {acp.person for acp in self.access_control_people}
+    existing_people = self.current_people
     self._remove_people(existing_people - new_people)
     self._add_people(new_people - existing_people)
     return existing_people != new_people
