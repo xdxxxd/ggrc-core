@@ -27,15 +27,20 @@ models_names = [model.__name__ for model in all_models.all_models]
 models_names.append('Clause')
 
 
-def get_invalid_acrs():
+def get_invalid_acrs(connection, model_names):
   """
   Collect invalid records for access control roles
-  Returns: filtered BaseQueryObject
+  Args:
+    connection: current connection to DB
+    model_names: list of correct models names
+
+  Returns: list of invalid records
   """
-  invalid_acr = all_models.AccessControlRole.query.filter(
-      all_models.AccessControlRole.object_type.notin_(models_names)
-  )
-  return invalid_acr
+  query = """
+          SELECT * FROM access_control_roles
+          WHERE object_type NOT IN :model_names
+  """
+  return connection.execute(sa.text(query), model_names=model_names).fetchall()
 
 
 def delete_invalid_acr(connection, model_names):
@@ -61,9 +66,9 @@ def upgrade():
   """Upgrade database schema and/or data, creating a new revision."""
 
   conn = op.get_bind()
-  invalid_acr = get_invalid_acrs()
+  invalid_acr = get_invalid_acrs(conn, models_names)
 
-  if invalid_acr.count() > 0:
+  if invalid_acr:
     invalid_acr_ids = [x.id for x in invalid_acr]
     add_to_objects_without_revisions_bulk(conn,
                                           invalid_acr_ids,
