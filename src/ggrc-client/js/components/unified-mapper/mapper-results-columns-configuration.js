@@ -68,8 +68,5 @@ export default canComponent.extend({
 
       this.attr('selectedColumns', columns.selected);
     },
-    stopPropagation(context, el, ev) {
-      ev.stopPropagation();
-    },
   }),
 });
