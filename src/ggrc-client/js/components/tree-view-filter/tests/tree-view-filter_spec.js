@@ -10,6 +10,7 @@ import Component, {loadSavedSearch, filterParentItems} from '../tree-view-filter
 import * as AdvancedSearch from '../../../plugins/utils/advanced-search-utils';
 import * as CurrentPageUtils from '../../../plugins/utils/current-page-utils';
 import * as StateUtils from '../../../plugins/utils/state-utils';
+import * as ErrorsUtils from '../../../plugins/utils/errors-utils';
 import QueryParser from '../../../generated/ggrc-filter-query-parser';
 import SavedSearch from '../../../models/service-models/saved-search';
 import * as QueryApiUtils from '../../../plugins/utils/query-api-utils';
@@ -202,7 +203,7 @@ describe('tree-view-filter component', () => {
       expect(viewModel.onFilter).toHaveBeenCalled();
     });
 
-    it('should call "applySavedSearch" method, ' +
+    it('should not call "applySavedSearch" method, ' +
     'when "isSavedSearchShown" is true', () => {
       // isMyWork page. "isSavedSearchShown" getter returns false
       spyOn(CurrentPageUtils, 'isMyWork').and.returnValue(true);
@@ -366,7 +367,7 @@ describe('tree-view-filter component', () => {
         method(null);
         expect(viewModel.attr('appliedSavedSearch').serialize()).toEqual({
           search_type: 'AdvancedSearch',
-          object_type: viewModel.attr('modelName'),
+          object_type: 'Control',
           is_visible: false,
           filters: [],
         });
@@ -380,7 +381,7 @@ describe('tree-view-filter component', () => {
         method({});
         expect(viewModel.attr('appliedSavedSearch').serialize()).toEqual({
           search_type: 'AdvancedSearch',
-          object_type: viewModel.attr('modelName'),
+          object_type: 'Control',
           is_visible: false,
           filters: [],
         });
@@ -393,7 +394,6 @@ describe('tree-view-filter component', () => {
 
       method(new canMap({id: 5}));
       expect(AdvancedSearch.buildSearchPermalink).toHaveBeenCalled();
-      expect(viewModel.attr('savedSearchPermalink')).toEqual('link');
     });
 
     it('should set appliedSavedSearch when selectedSavedSearch is not empty ' +
@@ -411,56 +411,105 @@ describe('tree-view-filter component', () => {
     beforeEach(() => {
       viewModel.attr('widgetId', 1);
       viewModel.attr('savedSearchPermalink', '');
-      spyOn(viewModel, 'savePermalinkToClipboard').and.callFake((permalink) => {
-        viewModel.attr('savedSearchPermalink', permalink);
-      });
-      spyOn(AdvancedSearch, 'buildSearchPermalink')
-        .and.callFake(function (id, widgetId) {
-          return id;
-        });
+      spyOn(viewModel, 'savePermalinkToClipboard');
+      spyOn(viewModel, 'saveHiddenSavedSearch');
     });
 
     it('calls only savePermalinkToClipboard when permalink is defined ',
-      (done) => {
+      () => {
         viewModel.attr('savedSearchPermalink', 1);
-        viewModel.applySavedSearchPermalink().then(() => {
-          expect(viewModel.savePermalinkToClipboard).toHaveBeenCalled();
-          done();
-        });
+        viewModel.applySavedSearchPermalink();
+        expect(viewModel.savePermalinkToClipboard).toHaveBeenCalled();
       }
     );
 
     it('calls savePermalinkToClipboard when appliedSavedSearch is defined',
-      (done) => {
+      () => {
         const appliedSavedSearch = {id: 2};
         viewModel.attr('appliedSavedSearch', appliedSavedSearch);
-        viewModel.applySavedSearchPermalink().then(() => {
-          expect(viewModel.savePermalinkToClipboard).toHaveBeenCalled();
-          expect(viewModel.attr('savedSearchPermalink'))
-            .toEqual(appliedSavedSearch.id);
-          done();
-        });
+        viewModel.applySavedSearchPermalink();
+        expect(viewModel.savePermalinkToClipboard).toHaveBeenCalled();
       }
     );
 
-    it('saves hiddenSavedSearch when appliedSavedSearch does NOT have id and ' +
-    'is_visible is false', (done) => {
-      const dfd = $.Deferred();
-      const savedSearch = {id: 1};
-
+    it('calls saveHiddenSavedSearch when appliedSavedSearch '+
+    'does NOT have id and is_visible is false', () => {
       const appliedSavedSearch = {
         is_visible: false,
-        save: () => dfd,
       };
 
       viewModel.attr('appliedSavedSearch', appliedSavedSearch);
-      viewModel.applySavedSearchPermalink().then(() => {
-        expect(viewModel.savePermalinkToClipboard).toHaveBeenCalled();
-        expect(viewModel.attr('savedSearchPermalink')).toEqual(savedSearch.id);
-        expect(viewModel.attr('appliedSavedSearch')).toBeNull();
-        done();
+      viewModel.applySavedSearchPermalink();
+      expect(viewModel.saveHiddenSavedSearch).toHaveBeenCalled();
+    });
+  });
+
+  describe('saveHiddenSavedSearch() method', () => {
+    it('calls savePermalinkToClipboard on success save',
+      (done) => {
+        const widgetId = 1;
+        const savedSearch = {id: 2};
+        const appliedSavedSearch = {
+          is_visible: false,
+          save: () => $.Deferred().resolve(savedSearch),
+        };
+        spyOn(AdvancedSearch, 'buildSearchPermalink')
+          .withArgs(savedSearch.id, widgetId)
+          .and.returnValue('built link');
+        spyOn(viewModel, 'savePermalinkToClipboard');
+
+        viewModel.saveHiddenSavedSearch(appliedSavedSearch, widgetId)
+          .then(() => {
+            expect(viewModel.savePermalinkToClipboard)
+              .toHaveBeenCalledWith('built link');
+            expect(viewModel.attr('appliedSavedSearch')).toBeNull();
+            done();
+          });
+      }
+    );
+
+    describe('on save error', () => {
+      let appliedSavedSearch;
+      const error = 'error';
+      const widgetId = 1;
+
+      beforeEach(() => {
+        appliedSavedSearch = {
+          is_visible: false,
+          save: () => $.Deferred().reject(error),
+        };
+        spyOn(ErrorsUtils, 'handleAjaxError');
+        spyOn(viewModel, 'triggerSearchPermalink');
       });
-      dfd.resolve(savedSearch);
+
+      it('calls handleAjaxError',
+        (done) => {
+          viewModel.saveHiddenSavedSearch(appliedSavedSearch, widgetId)
+            .then(() => {
+              expect(ErrorsUtils.handleAjaxError).toHaveBeenCalledWith(error);
+              done();
+            });
+        }
+      );
+      it('calls triggerSearchPermalink',
+        (done) => {
+          viewModel.saveHiddenSavedSearch(appliedSavedSearch, widgetId)
+            .then(() => {
+              expect(viewModel.triggerSearchPermalink)
+                .toHaveBeenCalledWith(false);
+              done();
+            });
+        }
+      );
+      it('sets appliedSavedSearch to null',
+        (done) => {
+          viewModel.saveHiddenSavedSearch(appliedSavedSearch, widgetId)
+            .then(() => {
+              expect(viewModel.attr('appliedSavedSearch')).toBeNull();
+              done();
+            });
+        }
+      );
     });
   });
 

@@ -45,9 +45,8 @@
         <li>
           <a type="button"
             class="saved-search-permalink"
-            on:el:click="applySavedSearchPermalink">
-              <i class="fa fa-fw fa-link"></i>
-              Get permalink
+            on:el:click="applySavedSearchPermalink()">
+              <i class="fa fa-fw fa-link"></i>Get permalink
           </a>
         </li>
       {{/if}}

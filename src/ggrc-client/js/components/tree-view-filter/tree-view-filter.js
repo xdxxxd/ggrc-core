@@ -74,8 +74,7 @@ export default canComponent.extend({
           }
 
           return this.attr('advancedSearch.selectedSavedSearch.id') ||
-            (this.attr('appliedSavedSearch.is_visible') &&
-            this.attr('appliedSavedSearch.id'));
+            this.attr('appliedSavedSearch.id');
         },
       },
       filtersReady: {
@@ -242,7 +241,7 @@ export default canComponent.extend({
       if (this.attr('savedSearchPermalink')) {
         // permalink is already exist.
         this.savePermalinkToClipboard(this.attr('savedSearchPermalink'));
-        return $.Deferred().resolve();
+        return;
       }
 
       const appliedSavedSearch = this.attr('appliedSavedSearch');
@@ -253,23 +252,26 @@ export default canComponent.extend({
         const permalink = AdvancedSearch
           .buildSearchPermalink(appliedSavedSearch.id, widgetId);
         this.savePermalinkToClipboard(permalink);
-        return $.Deferred().resolve();
+        return;
       }
 
       if (appliedSavedSearch && !appliedSavedSearch.is_visible) {
         // need to save search before build permalink
         // applied saved is hidden (is_visible == false)
-        return appliedSavedSearch.save().then((savedSearch) => {
-          const permalink = AdvancedSearch
-            .buildSearchPermalink(savedSearch.id, widgetId);
-          this.savePermalinkToClipboard(permalink);
-        }, (err) => {
-          handleAjaxError(err);
-          this.triggerSearchPermalink(false);
-        }).always(() => {
-          this.attr('appliedSavedSearch', null);
-        });
+        return this.saveHiddenSavedSearch(appliedSavedSearch, widgetId);
       }
+    },
+    saveHiddenSavedSearch(appliedSavedSearch, widgetId) {
+      return appliedSavedSearch.save().then((savedSearch) => {
+        const permalink = AdvancedSearch
+          .buildSearchPermalink(savedSearch.id, widgetId);
+        this.savePermalinkToClipboard(permalink);
+      }, (err) => {
+        handleAjaxError(err);
+        this.triggerSearchPermalink(false);
+      }).always(() => {
+        this.attr('appliedSavedSearch', null);
+      });
     },
     savePermalinkToClipboard(savedSearchPermalink) {
       navigator.clipboard.writeText(savedSearchPermalink).then(() => {
