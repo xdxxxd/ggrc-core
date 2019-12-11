@@ -1547,60 +1547,6 @@ class TestAssessmentImport(TestCase):
 
     self._check_csv_response(response, exp_errors)
 
-  @ddt.data(
-      (
-          "Text",
-          "Not Started",
-          []
-      ),
-      (
-          "Map:Person",
-          "Verified",
-          ["Line 3: Field 'test lca' is required. The line will be ignored."]
-      ),
-      (
-          "Date",
-          "In Progress",
-          []
-      ),
-      (
-          "Rich Text",
-          "Completed",
-          ["Line 3: Field 'test lca' is required. The line will be ignored."]
-      ),
-      (
-          "Checkbox",
-          "Deprecated",
-          []
-      ),
-      (
-          "Multiselect",
-          "In Review",
-          ["Line 3: Field 'test lca' is required. The line will be ignored."]
-      ),
-  )
-  @ddt.unpack
-  def test_import_mandatory_lca(self, type_lca, state, expected_response):
-    """Test import assessments with mandatory lca"""
-    with factories.single_commit():
-      asmt = factories.AssessmentFactory()
-      factories.CustomAttributeDefinitionFactory(
-          title='test lca',
-          definition_type='assessment',
-          definition_id=asmt.id,
-          attribute_type=type_lca,
-          mandatory=True
-      )
-
-    response = self.import_data(collections.OrderedDict([
-        ("object_type", "Assessment"),
-        ("Code", asmt.slug),
-        ("test lca", ""),
-        ("State", state)
-    ]))
-
-    self.assertEqual(response[0]["row_errors"], expected_response)
-
 
 @ddt.ddt
 class TestAssessmentExport(TestCase):
