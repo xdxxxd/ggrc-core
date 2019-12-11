@@ -118,6 +118,12 @@ class WithCustomRestrictions(object):
                   in self._readonly_fields()
                   if ro_field.startswith("map: ")])
 
+  @simple_property
+  def import_restrictions(self):
+    """List of readonly fields that is actual for import"""
+    return tuple([ro_field.replace("import: ", "") for ro_field
+                  in self._readonly_fields()])
+
   def is_mapping_restricted(self, obj):
     """Check if restricted mapping for {obj}"""
     if "map: {}".format(obj.__class__.__name__) in self.mapping_restrictions():

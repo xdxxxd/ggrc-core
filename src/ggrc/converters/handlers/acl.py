@@ -5,6 +5,7 @@
 from ggrc.converters import errors
 from ggrc.converters.handlers import handlers
 from ggrc.login import get_current_user
+from ggrc.models.mixins import with_custom_restrictions
 from ggrc.models.mixins.autostatuschangeable import AutoStatusChangeable
 from ggrc.models.mixins.statusable import Statusable
 
@@ -24,7 +25,18 @@ class AccessControlRoleColumnHandler(handlers.UsersColumnHandler):
     if not value_is_correct:
       return
     new_value = set() if self.set_empty else set(self.value)
+    existing_value = self.acl.current_people
+
+    if isinstance(self.row_converter.obj,
+                  with_custom_restrictions.WithCustomRestrictions):
+      if new_value != existing_value and "access_control_list" in \
+         self.row_converter.obj.readonly_fields:
+        self.add_warning(errors.READONLY_ACCESS_WARNING,
+                         columns=self.display_name)
+        return
+
     is_updated = self.acl.update_people(new_value)
+
     if isinstance(self.row_converter.obj, AutoStatusChangeable):
       is_status_changing = self.row_converter.obj.status in \
           Statusable.DONE_STATES
