@@ -48,7 +48,9 @@ export default canComponent.extend({
       let type = selected.type && selected.type.trim();
       let values = splitTrim(selected.values, {
         unique: true,
-      }).join(',');
+      })
+        .filter((val) => val)
+        .join(',');
       this.attr('selected.invalidValues', false);
       this.attr('selected.invalidTitleError', '');
 
