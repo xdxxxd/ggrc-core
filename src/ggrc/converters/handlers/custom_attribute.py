@@ -46,11 +46,6 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
       _types.MAP: lambda self: self.get_person_value(),
   }
 
-  def _check_status(self):
-    """Check assessment state"""
-    valid_state = ['Not Started', 'In Progress', 'Deprecated']
-    return self.row_converter.obj.status in valid_state
-
   def set_obj_attr(self):
     """Set object attribute method should do nothing for custom attributes.
 
@@ -174,7 +169,7 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
       )
     except (TypeError, ValueError):
       self.add_warning(errors.WRONG_VALUE, column_name=self.display_name)
-    if self.mandatory and value is None and not self._check_status():
+    if self.mandatory and value is None:
       self.add_error(errors.MISSING_VALUE_ERROR, column_name=self.display_name)
     return value
 
@@ -187,7 +182,7 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
     if self.raw_value.lower() not in ("yes", "true", "no", "false"):
       self.add_warning(errors.WRONG_VALUE, column_name=self.display_name)
       value = None
-    if self.mandatory and value is None and not self._check_status():
+    if self.mandatory and value is None:
       self.add_error(errors.MISSING_VALUE_ERROR, column_name=self.display_name)
     return value
 
@@ -218,7 +213,7 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
 
     if not is_valid_values:
       self.add_warning(errors.WRONG_VALUE, column_name=self.display_name)
-    if self.mandatory and not valid_values and not self._check_status():
+    if self.mandatory and not valid_values:
       self.add_error(
           errors.MISSING_VALUE_ERROR,
           column_name=self.display_name
@@ -234,7 +229,7 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
     value = choice_map.get(self.raw_value.lower())
     if value is None and self.raw_value != "":
       self.add_warning(errors.WRONG_VALUE, column_name=self.display_name)
-    if self.mandatory and value is None and not self._check_status():
+    if self.mandatory and value is None:
       self.add_error(errors.MISSING_VALUE_ERROR, column_name=self.display_name)
     return value
 
@@ -243,7 +238,7 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
     if not self.mandatory and self.raw_value == "":
       return None  # ignore empty fields
     value = self.clean_whitespaces(self.raw_value)
-    if self.mandatory and not value and not self._check_status():
+    if self.mandatory and not value:
       self.add_error(errors.MISSING_VALUE_ERROR, column_name=self.display_name)
     return value
 
@@ -252,7 +247,7 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
     if not self.mandatory and self.raw_value == "":
       return None  # ignore empty fields
     value = url_parser.parse(self.raw_value)
-    if self.mandatory and not value and not self._check_status():
+    if self.mandatory and not value:
       self.add_error(errors.MISSING_VALUE_ERROR, column_name=self.display_name)
     return value
 
@@ -268,7 +263,7 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
       self.add_error(errors.MISSING_VALUE_ERROR, column_name=self.display_name)
       return None
     value = models.Person.query.filter_by(email=self.raw_value).first()
-    if self.mandatory and not value and not self._check_status():
+    if self.mandatory and not value:
       self.add_error(errors.WRONG_VALUE, column_name=self.display_name)
     return value
 
