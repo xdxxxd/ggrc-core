@@ -43,8 +43,12 @@
                     instance:from="instance">
                 </attach-button>
                 {{#if isUpdatingEvidences}}
-                  <p class="warning">Wait until the file is attached</p>
-                {{/if}}
+                  {{#if isRemovingEvidences}}
+                    <p class="warning">Wait until the file is removed</p>
+                  {{else}}  
+                    <p class="warning">Wait until the file is attached</p>
+                  {{/if}} 
+                {{/if}}              
             </div>
         {{/if}}
         {{#if url}}
