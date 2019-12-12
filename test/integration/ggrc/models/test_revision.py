@@ -589,3 +589,29 @@ class TestRevisions(query_helper.WithQueryApi, TestCase):
     self.assertEqual(len(revisions), 2)
     self.assertFalse(revisions[0].is_empty)
     self.assertTrue(revisions[1].is_empty)
+
+  def test_changes_revision(self):
+    """Test revision is marked empty or not depending on changes"""
+    with factories.single_commit():
+      audit = factories.AuditFactory()
+
+    response = self.api_helper.put(audit, {
+        'end_date': '2019-09-26',
+        'report_start_date': datetime(2019, 10, 17, 9, 44, 5),
+        'status': 'In Progress'
+    })
+    self.assert200(response)
+
+    response = self.api_helper.put(audit, {
+        'end_date': datetime(2019, 9, 26),
+        'report_start_date': '2019-10-17',
+    })
+    self.assert200(response)
+
+    self.refresh_object(audit)
+    revisions = _get_revisions(audit)
+
+    self.assertEqual(len(revisions), 3)
+    self.assertFalse(revisions[0].is_empty)
+    self.assertFalse(revisions[1].is_empty)
+    self.assertTrue(revisions[2].is_empty)
