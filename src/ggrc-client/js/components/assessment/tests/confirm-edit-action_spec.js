@@ -61,29 +61,15 @@ describe('confirm-edit-action component', function () {
       });
   });
 
-  describe('showConfirm() method', function () {
-    let dfd;
-
-    beforeEach(function () {
-      dfd = new $.Deferred();
-
-      spyOn(ModalsUtils, 'confirm');
-      spyOn($, 'Deferred').and.returnValue(dfd);
+  describe('showConfirm() method', () => {
+    beforeEach(() => {
       spyOn(viewModel, 'dispatch');
       spyOn(viewModel, 'openEditMode');
-    });
-
-    it('returns promise', function (done) {
-      dfd.resolve();
-      spyOn(dfd, 'then').and.callFake(function () {
-        done();
-      });
-
-      viewModel.showConfirm();
-    });
-
-    it('initializes confirmation modal with correct options', function () {
       viewModel.attr('instance.status', 'In Review');
+    });
+
+    it('initializes confirmation modal with correct options', () => {
+      spyOn(ModalsUtils, 'confirm');
 
       viewModel.showConfirm();
 
@@ -93,67 +79,55 @@ describe('confirm-edit-action component', function () {
           'In Review' +
           '" to "In Progress" - are you sure about that?',
         button_view: '/modals/prompt-buttons.stache',
-      }, jasmine.any(Function), jasmine.any(Function));
+      }, jasmine.any(Function));
+      expect(viewModel.dispatch).not.toHaveBeenCalled();
+      expect(viewModel.openEditMode).not.toHaveBeenCalled();
     });
 
-    it('dispatches setInProgress if modal has been confirmed', function () {
-      dfd.resolve();
-      viewModel.attr('instance.status', 'In Review');
-
-      spyOn(dfd, 'then').and.callFake(function (func) {
-        func();
-      });
+    it('dispatches setInProgress if modal has been confirmed', () => {
+      spyOn(ModalsUtils, 'confirm').and.callFake((obj, func) => func());
 
       viewModel.showConfirm();
 
       expect(viewModel.dispatch).toHaveBeenCalledWith('setInProgress');
     });
 
-    it('opens edit mode if modal has been confirmed', function () {
-      dfd.resolve();
-      viewModel.attr('instance.status', 'In Review');
-
-      spyOn(dfd, 'then').and.callFake(function (func) {
-        func();
-      });
+    it('opens edit mode if modal has been confirmed', () => {
+      spyOn(ModalsUtils, 'confirm').and.callFake((obj, func) => func());
 
       viewModel.showConfirm();
 
       expect(viewModel.openEditMode).toHaveBeenCalled();
     });
-
-    it('rejects Deferred if modal has been canceled', function () {
-      let result;
-      dfd.reject();
-
-      result = viewModel.showConfirm();
-
-      expect(result.state()).toBe('rejected');
-    });
   });
 
-  describe('confirmEdit() method', function () {
-    beforeEach(function () {
-      spyOn(viewModel, 'showConfirm').and.returnValue('mock');
+  describe('confirmEdit() method', () => {
+    beforeEach(() => {
+      spyOn(viewModel, 'showConfirm');
       spyOn(viewModel, 'dispatch');
     });
 
-    it('returns result of showConfirm() if instance is not in editable state',
-      function () {
+    it('calls showConfirm() method if instance is not in editable state',
+      () => {
         spyOn(viewModel, 'isInEditableState').and.returnValue(false);
 
-        expect(viewModel.confirmEdit()).toBe('mock');
+        viewModel.confirmEdit();
+
+        expect(viewModel.showConfirm).toHaveBeenCalled();
+        expect(viewModel.dispatch).not.toHaveBeenCalled();
       });
 
     it('dispatches setEditMode event if instance is in editable state',
-      function () {
+      () => {
         spyOn(viewModel, 'isInEditableState').and.returnValue(true);
+
         viewModel.confirmEdit();
 
         expect(viewModel.dispatch).toHaveBeenCalledWith({
           type: 'setEditMode',
           isLastOpenInline: true,
         });
+        expect(viewModel.showConfirm).not.toHaveBeenCalled();
       });
   });
 });

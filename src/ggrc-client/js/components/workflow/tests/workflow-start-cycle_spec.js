@@ -21,7 +21,6 @@ describe('workflow-start-cycle component', () => {
   describe('click event handler', () => {
     let handler;
     let workflow;
-    let generateDfd;
 
     beforeEach(() => {
       handler = events.click;
@@ -29,18 +28,16 @@ describe('workflow-start-cycle component', () => {
         type: 'Type',
         id: 'ID',
       });
-      generateDfd = $.Deferred();
 
       spyOn(CurrentPageUtils, 'getPageInstance').and.returnValue(workflow);
       spyOn(WidgetsUtils, 'initCounts');
-      spyOn(helpers, 'generateCycle').and.returnValue(generateDfd);
       spyOn(RefreshQueue, 'refreshAll');
     });
 
     it('should update TaskGroups when cycle was generated', async () => {
+      spyOn(helpers, 'generateCycle').and.returnValue(Promise.resolve());
       const activeCycleCount = workflowCountsMap.activeCycles;
       workflowCountsMap.activeCycles = 1234;
-      generateDfd.resolve();
 
       await handler();
 
@@ -50,8 +47,8 @@ describe('workflow-start-cycle component', () => {
     });
 
     it('should update TaskGroups when cycle was generated', async () => {
+      spyOn(helpers, 'generateCycle').and.returnValue(Promise.resolve());
       WidgetsUtils.initCounts.and.returnValue(Promise.resolve());
-      generateDfd.resolve();
 
       await handler();
 
@@ -62,7 +59,7 @@ describe('workflow-start-cycle component', () => {
 
     it('shouldn\'t update TaskGroups when cycle wasn\'t generated',
       async () => {
-        generateDfd.reject();
+        spyOn(helpers, 'generateCycle').and.returnValue(Promise.reject());
 
         try {
           await handler();
