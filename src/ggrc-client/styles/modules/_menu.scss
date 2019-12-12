@@ -105,6 +105,9 @@
         }
       }
     }
+    &__external-link {
+      font-size: 12px;
+    }
     .menu-item {
       text-transform: capitalize;
       &:not(:first-child) {
