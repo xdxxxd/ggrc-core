@@ -29,10 +29,8 @@ import {
   isConnectionLost,
   handleAjaxError,
 } from '../../plugins/utils/errors-utils';
-import {
-  confirm,
-  BUTTON_VIEW_CLOSE,
-} from '../../plugins/utils/modals';
+import {confirm} from '../../plugins/utils/modals';
+import {BUTTON_VIEW_CLOSE} from '../../plugins/utils/template-utils';
 import {backendGdriveClient} from '../../plugins/ggrc-gapi-client';
 import './current-exports/current-exports';
 import {connectionLostNotifier} from './connection-lost-notifier';

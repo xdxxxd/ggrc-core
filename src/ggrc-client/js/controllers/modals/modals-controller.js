@@ -54,8 +54,8 @@ import '../../components/assessment-templates/assessment-template-save-button/as
 import {
   bindXHRToButton,
   bindXHRToDisableElement,
-  BUTTON_VIEW_DONE,
 } from '../../plugins/utils/modals';
+import {BUTTON_VIEW_DONE} from '../../plugins/utils/template-utils';
 import {
   checkPreconditions,
   becameDeprecated,

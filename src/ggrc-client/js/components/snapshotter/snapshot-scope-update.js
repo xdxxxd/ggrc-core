@@ -5,10 +5,8 @@
 
 import canMap from 'can-map';
 import canComponent from 'can-component';
-import {
-  confirm,
-  BUTTON_VIEW_CONFIRM_CANCEL,
-} from '../../plugins/utils/modals';
+import {confirm} from '../../plugins/utils/modals';
+import {BUTTON_VIEW_CONFIRM_CANCEL} from '../../plugins/utils/template-utils';
 import {
   refreshCounts,
 } from '../../plugins/utils/widgets-utils';

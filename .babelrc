@@ -5,7 +5,8 @@
         "@babel/plugin-transform-runtime",
         "@babel/plugin-syntax-dynamic-import",
         "@babel/plugin-proposal-object-rest-spread",
-        "@babel/plugin-transform-strict-mode"
+        "@babel/plugin-transform-strict-mode",
+        "@babel/plugin-proposal-optional-catch-binding"
       ],
       "presets": [
         [
@@ -13,7 +14,7 @@
           {
             "targets": {
               "browsers": [
-                "last 2 versions"
+                "last 2 Chrome versions"
               ]
             },
             "modules": false
@@ -29,7 +30,8 @@
         "@babel/plugin-transform-runtime",
         "@babel/plugin-syntax-dynamic-import",
         "@babel/plugin-proposal-object-rest-spread",
-        "@babel/plugin-transform-strict-mode"
+        "@babel/plugin-transform-strict-mode",
+        "@babel/plugin-proposal-optional-catch-binding"
       ],
       "presets": [
         [
@@ -38,7 +40,7 @@
             "debug": true,
             "targets": {
               "browsers": [
-                "last 2 versions"
+                "last 2 Chrome versions"
               ]
             },
             "modules": "commonjs"

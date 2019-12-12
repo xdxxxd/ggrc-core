@@ -85,7 +85,7 @@ describe('create-document-button component', () => {
         let existingDocument = {
           gdrive_id: 1,
           exists: true,
-          object: existingDocument,
+          object: {},
         };
         let notExistingDocument = {
           gdrive_id: 2,
