@@ -66,15 +66,14 @@ class TestExport(query_helper.WithQueryApi, TestCase):
       self.assert_slugs(alias, date_string, slugs, operator)
 
   def test_export_with_missing_lca(self):
-    """Check export assessment with LCA
-    In case of export assessments via /export endpoint user can specify
-    list of attributes (local or global), export should work even
-    if particular assessment specified attribute is missing.
+    """Check export works if assessment lacks some exported LCAs.
+
+    When exporting objects, user can specify list of attributes (local or
+    global) that should be present in exported CSV. Export should work even
+    if exported assessment lacks some of specified attributes.
     """
     with factories.single_commit():
-      assessment1 = factories.AssessmentFactory(
-          title="test assessment",
-      )
+      assessment1 = factories.AssessmentFactory()
       assessment1_slug = assessment1.slug
       factories.CustomAttributeDefinitionFactory(
           title="Test LCAD1",
@@ -103,17 +102,79 @@ class TestExport(query_helper.WithQueryApi, TestCase):
             assessment1_slug,
         ],
         fields=[
-            'title',
+            'slug',
             '__object_custom__:test lcad1',
             '__object_custom__:test lcad2',
             '__custom__:test gca',
         ]
     )
 
-    response = self.export_csv([export_query])
-    self.assertIn("test assessment", response.data)
-    self.assertIn("Test LCAD1", response.data)
-    self.assertIn("Test GCA", response.data)
+    response = self.export_parsed_csv([export_query])
+
+    assessment1_data = response["Assessment"][0]
+    self.assertEqual(assessment1_data["Code*"], assessment1_slug)
+    self.assertNotIn("Test LCAD2", assessment1_data)
+    self.assertEqual(assessment1_data["Test LCAD1"], "")
+    self.assertEqual(assessment1_data["Test GCA"], "")
+
+  def test_export_with_missing_lca_correct_values(self):  # noqa pylint: disable=invalid-name
+    """Check correct values in export if assessment lacks some exported LCAs.
+
+    When exporting objects, user can specify list of attributes (local or
+    global) that should be present in exported CSV. Export result should have
+    CSV columns filled with appropriate values even if exported assessment
+    lacks some of specified attributes.
+    """
+    with factories.single_commit():
+      assessment1 = factories.AssessmentFactory()
+      factories.CustomAttributeDefinitionFactory(
+          title="Test LCAD1",
+          definition_type="assessment",
+          definition_id=assessment1.id,
+          attribute_type="Text",
+      )
+
+      assessment2 = factories.AssessmentFactory()
+      assessment2_slug = assessment2.slug
+      assesmsent2_lca = factories.CustomAttributeDefinitionFactory(
+          title="Test LCAD2",
+          definition_type="assessment",
+          definition_id=assessment2.id,
+          attribute_type="Text",
+      )
+      factories.CustomAttributeValueFactory(
+          custom_attribute=assesmsent2_lca,
+          attributable=assessment2,
+          attribute_value="Test LCAD2 value",
+      )
+      factories.CustomAttributeDefinitionFactory(
+          title="Test GCA",
+          definition_type="assessment",
+          attribute_type="Text",
+      )
+
+    export_query = self._make_query_dict(
+        "Assessment",
+        expression=[
+            "code",
+            "=",
+            assessment2_slug,
+        ],
+        fields=[
+            'slug',
+            '__object_custom__:test lcad1',
+            '__object_custom__:test lcad2',
+            '__custom__:test gca',
+        ]
+    )
+
+    response = self.export_parsed_csv([export_query])
+
+    assessment2_data = response["Assessment"][0]
+    self.assertEqual(assessment2_data["Code*"], assessment2_slug)
+    self.assertNotIn("Test LCAD1", assessment2_data)
+    self.assertEqual(assessment2_data["Test LCAD2"], "Test LCAD2 value")
+    self.assertEqual(assessment2_data["Test GCA"], "")
 
   def test_search_by_comment(self):
     self.assert_slugs("comment",

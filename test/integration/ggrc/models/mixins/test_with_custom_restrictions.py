@@ -48,7 +48,7 @@ class TestWithCustomRestrictions(TestCase, WithQueryApi):
 
   @staticmethod
   def generate_person():
-    """Generate person and assign global Creator role"""
+    """Generate person and assign global Reader role"""
     person = factories.PersonFactory()
     reader_role = all_models.Role.query.filter(
         all_models.Role.name == "Reader").first()
@@ -135,6 +135,7 @@ class TestWithCustomRestrictions(TestCase, WithQueryApi):
            'operationally',
            'reminderType',
            'issue_tracker',
+           'global_custom_attributes_values',
            'map: Snapshot',
            'map: Issue'],
       ),
@@ -358,4 +359,145 @@ class TestWithCustomRestrictions(TestCase, WithQueryApi):
             'row_warnings': {error_msg.format(slug=cntrl_slug.lower())},
         }
     }
+    self._check_csv_response(response, exp_errors)
+
+  @ddt.data("Creators", "Verifiers")
+  def test_import_sox302_assmt_ro_roles(self, role_name):
+    """Test user sox302 update read only access control roles via import"""
+    exp_errors = {
+        'Assessment': {
+            'row_warnings': {"Line 3: The system is in a read-only mode and "
+                             "is dedicated for SOX needs. The following "
+                             "columns will be ignored: {}.".format(role_name)
+                             },
+        }
+    }
+    with factories.single_commit():
+      user = self.generate_person()
+      assessment = factories.AssessmentFactory(sox_302_enabled=True)
+      person_id = user.id
+      person_email = user.email
+      assmnt_slug = assessment.slug
+      self.assign_person(assessment, "Assignees", person_id)
+
+    self.set_current_person(user)
+    response = self.import_data(collections.OrderedDict([
+        ("object_type", "Assessment"),
+        ("Code*", assmnt_slug),
+        (role_name, person_email),
+    ]), person=all_models.Person.query.get(person_id))
+
+    self._check_csv_response(response, exp_errors)
+
+  def test_asmnt_cads_update_in_progress(self):
+    """Test update of assessment in progress state with local and global
+    cads."""
+    global_cad_name = "Global CAD fox sox"
+    local_cad_name = "Local CAD for sox"
+    exp_errors = {
+        'Assessment': {
+            'row_warnings': {"Line 3: The system is in a read-only mode and "
+                             "is dedicated for SOX needs. The following "
+                             "columns will be ignored: {}.".format(
+                                 global_cad_name),
+                             },
+        }
+    }
+    with factories.single_commit():
+      user = self.generate_person()
+      person_id = user.id
+      asmnt = factories.AssessmentFactory(sox_302_enabled=True,
+                                          status="In Progress")
+      self.assign_person(asmnt, "Assignees", user.id)
+      assmnt_slug = asmnt.slug
+      factories.CustomAttributeDefinitionFactory(
+          title=local_cad_name,
+          definition_type="assessment",
+          definition_id=asmnt.id,
+          attribute_type="Text",
+      )
+      factories.CustomAttributeDefinitionFactory(
+          title=global_cad_name,
+          definition_type="assessment",
+          attribute_type="Text",
+      )
+
+    self.set_current_person(user)
+    response = self.import_data(collections.OrderedDict([
+        ("object_type", "Assessment"),
+        ("Code*", assmnt_slug),
+        (global_cad_name, "Some value 1"),
+        (local_cad_name, "Some value 2"),
+    ]), person=all_models.Person.query.get(person_id))
+    self._check_csv_response(response, exp_errors)
+
+  def test_asmnt_cads_update_completed(self):
+    """Test update of completed assessment with local and global cads."""
+    global_cad_name = "Global CAD fox sox"
+    local_cad_name = "Local CAD for sox"
+    exp_errors = {
+        'Assessment': {
+            'row_warnings': {"Line 3: The system is in a read-only mode and "
+                             "is dedicated for SOX needs. The following "
+                             "columns will be ignored: {}.".format(
+                                 global_cad_name),
+                             "Line 3: The system is in a read-only mode and "
+                             "is dedicated for SOX needs. The following "
+                             "columns will be ignored: {}.".format(
+                                 local_cad_name),
+                             },
+        }
+    }
+    with factories.single_commit():
+      user = self.generate_person()
+      person_id = user.id
+      asmnt = factories.AssessmentFactory(sox_302_enabled=True,
+                                          status="Completed")
+      self.assign_person(asmnt, "Assignees", user.id)
+      assmnt_slug = asmnt.slug
+      factories.CustomAttributeDefinitionFactory(
+          title=local_cad_name,
+          definition_type="assessment",
+          definition_id=asmnt.id,
+          attribute_type="Text",
+      )
+      factories.CustomAttributeDefinitionFactory(
+          title=global_cad_name,
+          definition_type="assessment",
+          attribute_type="Text",
+      )
+
+    self.set_current_person(user)
+    response = self.import_data(collections.OrderedDict([
+        ("object_type", "Assessment"),
+        ("Code*", assmnt_slug),
+        (global_cad_name, "Some value 1"),
+        (local_cad_name, "Some value 2"),
+    ]), person=all_models.Person.query.get(person_id))
+    self._check_csv_response(response, exp_errors)
+
+  def test_import_sox302_assmt_status(self):
+    """Test user sox302 update read only Status via import"""
+    exp_errors = {
+        'Assessment': {
+            'row_warnings': {"Line 3: The system is in a read-only mode and "
+                             "is dedicated for SOX needs. The following "
+                             "columns will be ignored: 'status'."},
+        }
+    }
+    with factories.single_commit():
+      user = self.generate_person()
+      assessment = factories.AssessmentFactory(sox_302_enabled=True,
+                                               status="Completed")
+      person_id = user.id
+      assmnt_slug = assessment.slug
+      self.assign_person(assessment, "Assignees", person_id)
+
+    self.set_current_person(user)
+    response = self.import_data(collections.OrderedDict([
+        ("object_type", "Assessment"),
+        ("Code*", assmnt_slug),
+        ("State", "In Progress"),
+    ]), person=all_models.Person.query.get(person_id))
+
     self._check_csv_response(response, exp_errors)

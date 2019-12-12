@@ -11,6 +11,7 @@ from ggrc import models
 from ggrc import utils
 from ggrc.converters import errors
 from ggrc.converters.handlers import handlers
+from ggrc.models.mixins import with_custom_restrictions
 from ggrc.utils import url_parser
 
 _types = models.CustomAttributeDefinition.ValidTypes
@@ -45,11 +46,6 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
       _types.MAP: lambda self: self.get_person_value(),
   }
 
-  def _check_status(self):
-    """Check assessment state"""
-    valid_state = ['Not Started', 'In Progress', 'Deprecated']
-    return self.row_converter.obj.status in valid_state
-
   def set_obj_attr(self):
     """Set object attribute method should do nothing for custom attributes.
 
@@ -59,6 +55,25 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
       return
 
     cav = self._get_or_create_ca()
+
+    if isinstance(self.row_converter.obj,
+                  with_custom_restrictions.WithCustomRestrictions) and \
+       cav.attribute_value != self.value:
+
+      is_local_readonly = (
+          cav.custom_attribute.definition_id and
+          "custom_attributes_values" in self.row_converter.obj.readonly_fields
+      )
+      is_global_readonly = (
+          not cav.custom_attribute.definition_id and
+          "global_custom_attributes_values" in
+          self.row_converter.obj.readonly_fields
+      )
+
+      if is_local_readonly or is_global_readonly:
+        self.add_warning(errors.READONLY_ACCESS_WARNING,
+                         columns=self.display_name)
+
     cav.attribute_value = self.value
     if isinstance(cav.attribute_value, models.mixins.base.Identifiable):
       obj = cav.attribute_value
@@ -154,7 +169,7 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
       )
     except (TypeError, ValueError):
       self.add_warning(errors.WRONG_VALUE, column_name=self.display_name)
-    if self.mandatory and value is None and not self._check_status():
+    if self.mandatory and value is None:
       self.add_error(errors.MISSING_VALUE_ERROR, column_name=self.display_name)
     return value
 
@@ -167,7 +182,7 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
     if self.raw_value.lower() not in ("yes", "true", "no", "false"):
       self.add_warning(errors.WRONG_VALUE, column_name=self.display_name)
       value = None
-    if self.mandatory and value is None and not self._check_status():
+    if self.mandatory and value is None:
       self.add_error(errors.MISSING_VALUE_ERROR, column_name=self.display_name)
     return value
 
@@ -198,7 +213,7 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
 
     if not is_valid_values:
       self.add_warning(errors.WRONG_VALUE, column_name=self.display_name)
-    if self.mandatory and not valid_values and not self._check_status():
+    if self.mandatory and not valid_values:
       self.add_error(
           errors.MISSING_VALUE_ERROR,
           column_name=self.display_name
@@ -214,7 +229,7 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
     value = choice_map.get(self.raw_value.lower())
     if value is None and self.raw_value != "":
       self.add_warning(errors.WRONG_VALUE, column_name=self.display_name)
-    if self.mandatory and value is None and not self._check_status():
+    if self.mandatory and value is None:
       self.add_error(errors.MISSING_VALUE_ERROR, column_name=self.display_name)
     return value
 
@@ -223,7 +238,7 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
     if not self.mandatory and self.raw_value == "":
       return None  # ignore empty fields
     value = self.clean_whitespaces(self.raw_value)
-    if self.mandatory and not value and not self._check_status():
+    if self.mandatory and not value:
       self.add_error(errors.MISSING_VALUE_ERROR, column_name=self.display_name)
     return value
 
@@ -232,7 +247,7 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
     if not self.mandatory and self.raw_value == "":
       return None  # ignore empty fields
     value = url_parser.parse(self.raw_value)
-    if self.mandatory and not value and not self._check_status():
+    if self.mandatory and not value:
       self.add_error(errors.MISSING_VALUE_ERROR, column_name=self.display_name)
     return value
 
@@ -248,7 +263,7 @@ class CustomAttributeColumnHandler(handlers.TextColumnHandler):
       self.add_error(errors.MISSING_VALUE_ERROR, column_name=self.display_name)
       return None
     value = models.Person.query.filter_by(email=self.raw_value).first()
-    if self.mandatory and not value and not self._check_status():
+    if self.mandatory and not value:
       self.add_error(errors.WRONG_VALUE, column_name=self.display_name)
     return value
 

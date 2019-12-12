@@ -434,7 +434,7 @@ class ImportRowConverter(RowConverter):
       if self.obj.is_sox_restricted:
         ignored_names = list()
         for attr_name, handler in self.attrs.items():
-          if attr_name in self.obj.readonly_fields and \
+          if attr_name in self.obj.import_restrictions and \
               handler.value and \
               not json_comparator.fields_equal(
                   getattr(self.obj, attr_name, None),
