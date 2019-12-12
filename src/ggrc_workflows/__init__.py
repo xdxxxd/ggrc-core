@@ -11,12 +11,13 @@ import logging
 from datetime import datetime, date
 from flask import Blueprint
 from sqlalchemy import inspect, orm
+from werkzeug.exceptions import Forbidden
 
 from ggrc import db
 from ggrc.login import get_current_user, get_user_date
 from ggrc.models import all_models
 from ggrc.models.relationship import Relationship
-from ggrc.rbac.permissions import is_allowed_update
+from ggrc.rbac.permissions import is_allowed_read_for, is_allowed_update
 from ggrc.access_control import role
 from ggrc.services import signals
 from ggrc.utils import benchmark
@@ -773,9 +774,11 @@ def handle_workflow_post(sender, obj=None, src=None, service=None):
 
   if src.get('clone'):
     source_workflow_id = src.get('clone')
-    source_workflow = models.Workflow.query.filter_by(
-        id=source_workflow_id
-    ).first()
+    source_workflow = models.Workflow.query.get(source_workflow_id)
+    # prevent from cloning without proper permissions
+    if not is_allowed_read_for(source_workflow):
+      raise Forbidden(description="You don't have permissions for reading an "
+                                  "object")
     source_workflow.copy(obj, clone_people=src.get('clone_people', False))
 
     copied_workflows = models.Workflow.query.filter_by(
