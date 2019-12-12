@@ -1068,10 +1068,7 @@ class Resource(ModelView):
   def _get_model_instance(self, src=None):  # pylint: disable=unused-argument
     """Get a model instance.
 
-    This function creates a new model instance and returns it. The function is
-    needed for correct handling of Relationship objects. Relationship post
-    request should not fail if a relationship already exists, since some
-    relationships can be created with auto mappings.
+    This function creates a new model instance and returns it.
 
     Args:
       src: dict containing new object source.
@@ -1132,7 +1129,7 @@ class Resource(ModelView):
     """Do NOTHING by default"""
     pass
 
-  def collection_post_loop(self, body, res, no_result):
+  def collection_post_loop(self, body, res, no_result):  # noqa: C901
     """Handle all posted objects.
 
     Args:
@@ -1140,6 +1137,8 @@ class Resource(ModelView):
       res: List that will get responses appended to it.
       no_result: Flag for suppressing results.
     """
+    # pylint: disable=too-many-statements
+
     with benchmark("Check create options"):
       self._check_post_create_options(body)
     with benchmark("Generate objects"):
@@ -1191,7 +1190,8 @@ class Resource(ModelView):
     with benchmark("Get modified objects"):
       modified_objects = get_modified_objects(db.session)
     with benchmark("Log event for all objects"):
-      event = log_event(db.session, obj, flush=False)
+      if needs_update:
+        event = log_event(db.session, obj, flush=False)
     with benchmark("Update memcache before commit for collection POST"):
       cache_utils.update_memcache_before_commit(
           self.request, modified_objects, CACHE_EXPIRY_COLLECTION)
@@ -1207,19 +1207,22 @@ class Resource(ModelView):
       cache_utils.update_memcache_after_commit(self.request)
 
     with benchmark("Send model POSTed - after commit event"):
-      for obj, src in itertools.izip(objects, sources):
-        signals.Restful.model_posted_after_commit.send(
-            obj.__class__, obj=obj, src=src, service=self, event=event)
-        # Note: In model_posted_after_commit necessary mapping and
-        # relationships are set, so need to commit the changes
+      if needs_update:
+        for obj, src in itertools.izip(objects, sources):
+          signals.Restful.model_posted_after_commit.send(
+              obj.__class__, obj=obj, src=src, service=self, event=event)
+          # Note: In model_posted_after_commit necessary mapping and
+          # relationships are set, so need to commit the changes
       db.session.commit()
     with benchmark("Send event job"):
-      # global_ac_roles may save a set of ACR objects in the session. If
-      # session state is changed, all ACRs will be rerequested one by one.
-      # To avoid such behavior link to ACRs objects should be removed manually.
-      if hasattr(flask.g, "global_ac_roles"):
-        del flask.g.global_ac_roles
-      send_event_job(event)
+      if needs_update:
+        # global_ac_roles may save a set of ACR objects in the session. If
+        # session state is changed, all ACRs will be rerequested one by one.
+        # To avoid such behavior link to ACRs objects should be removed
+        # manually.
+        if hasattr(flask.g, "global_ac_roles"):
+          del flask.g.global_ac_roles
+        send_event_job(event)
 
   @staticmethod
   def _make_error_from_exception(exc):
