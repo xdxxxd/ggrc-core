@@ -13,6 +13,7 @@ from ggrc.app import app
 from ggrc.models.saved_search import SavedSearch
 from ggrc.models.person import Person
 
+from integration.ggrc.models import factories
 from integration.ggrc.views.saved_searches.base import SavedSearchBaseTest
 from integration.ggrc.views.saved_searches.initializers import (
     setup_user_role,
@@ -154,3 +155,21 @@ class TestSavedSearchGet(SavedSearchBaseTest):
     self.assertEqual(assmt["name"], saved_search["name"])
     self.assertEqual(assmt["id"], saved_search["id"])
     self.assertEqual(assmt["object_type"], saved_search["object_type"])
+
+  def test_get_saved_searches_only_visible(self):
+    """Test that GET saved searches by type returns only visible ones."""
+    with factories.single_commit():
+      invisible_ss = factories.SavedSearchFactory(
+          object_type="Assessment",
+          user=self._person_0,
+          is_visible=False,
+      )
+
+    invisible_ss_id = invisible_ss.id
+    data_assessment = self._get_saved_search(object_type="Assessment")
+
+    self.assertEqual(data_assessment["total"], 3)
+    self.assertNotIn(
+        invisible_ss_id,
+        [item["id"] for item in data_assessment["values"]],
+    )

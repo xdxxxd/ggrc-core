@@ -41,12 +41,13 @@
           </change-request-link>
         </li>
       {{/if}}
-      {{#if savedSearchPermalink}}
+      {{#if searchPermalinkEnabled}}
         <li>
-          <clipboard-link class="saved-search-permalink" text:from="savedSearchPermalink">
-            <i class="fa fa-fw fa-link"></i>
-            Get permalink
-          </clipboard-link>
+          <a type="button"
+            class="saved-search-permalink"
+            on:el:click="applySavedSearchPermalink()">
+              <i class="fa fa-fw fa-link"></i>Get permalink
+          </a>
         </li>
       {{/if}}
       {{#if showCreateTaskGroup}}

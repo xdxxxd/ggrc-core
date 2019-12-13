@@ -149,14 +149,24 @@ export default canComponent.extend({
     options: null,
     model: null,
     showedItems: [],
-    savedSearchPermalink: '',
+    searchPermalinkEnabled: false,
     pubSub,
+    applySavedSearchPermalink() {
+      pubSub.dispatch({
+        type: 'applySavedSearchPermalink',
+        widgetId: this.attr('options.widgetId'),
+      });
+    },
   }),
   events: {
-    '{pubSub} savedSearchPermalinkSet'(scope, event) {
-      const widgetId = event.widgetId;
+    '{pubSub} triggerSearchPermalink'(scope, ev) {
+      const widgetId = ev.widgetId;
+
       if (widgetId === this.viewModel.attr('options.widgetId')) {
-        this.viewModel.attr('savedSearchPermalink', event.permalink);
+        this.viewModel.attr(
+          'searchPermalinkEnabled',
+          ev.searchPermalinkEnabled
+        );
       }
     },
   },

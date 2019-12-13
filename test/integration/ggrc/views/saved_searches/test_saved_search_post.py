@@ -151,6 +151,19 @@ class TestSavedSearchPost(SavedSearchBaseTest):
     self.assertEqual(data["message"], "Saved search name can't be blank")
     self.assertEqual(data["code"], 400)
 
+  def test_saved_search_creation_empty_name_pass_if_invisible(self):
+    """Test invisible saved search creation with empty name pass."""
+    saved_search = self._post_saved_search({
+        "name": "",
+        "object_type": "Assessment",
+        "search_type": "AdvancedSearch",
+        "is_visible": False,
+
+    })
+
+    self.assertTrue(saved_search["name"])
+    self.assertFalse(saved_search["is_visible"])
+
   def test_3_saved_search_creation_failure_due_invalid_object_type(self):
     """Test saved search creation failure with invalid object_type."""
     data = self._post_saved_search({

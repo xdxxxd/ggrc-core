@@ -7,6 +7,8 @@ import * as AdvancedSearch from '../../plugins/utils/advanced-search-utils';
 import * as StateUtils from '../../plugins/utils/state-utils';
 import QueryParser from '../../generated/ggrc-filter-query-parser';
 import loEndsWith from 'lodash/endsWith';
+import {getComponentVM} from '../../../js_specs/spec-helpers';
+import Component from '../../components/tree/tree-widget-container';
 
 describe('AdvancedSearch', () => {
   describe('buildFilter() method', () => {
@@ -457,6 +459,89 @@ describe('AdvancedSearch', () => {
 
       const permaLink = AdvancedSearch.buildSearchPermalink(searchId, widgetId);
       expect(loEndsWith(permaLink, expectedHash)).toBeTruthy();
+    });
+  });
+
+  describe('getFilters() method', () => {
+    let vm;
+
+    beforeEach(() => {
+      vm = getComponentVM(Component);
+    });
+
+    it('should NOT change "parentItems" when "parentInstance" is null', () => {
+      vm.attr('parentItems', [{type: 'parent items'}]);
+
+      const result = AdvancedSearch.getFilters(vm);
+      expect(result.parentItems).toEqual([{type: 'parent items'}]);
+    });
+
+    it('should add item to "parentItems" from "parentInstance"', () => {
+      vm.attr('parentItems', [{type: 'parent items'}]);
+      vm.attr('parentInstance', {type: 'parentInstance'});
+
+      const result = AdvancedSearch.getFilters(vm);
+      expect(result.parentItems).toEqual([
+        {type: 'parent items'},
+        {type: 'parentInstance'},
+      ]);
+    });
+
+    it('should set "parentItems" from "parentInstance"', () => {
+      vm.attr('parentItems', []);
+      vm.attr('parentInstance', {type: 'parentInstance'});
+
+      const result = AdvancedSearch.getFilters(vm);
+      expect(result.parentItems).toEqual([
+        {type: 'parentInstance'},
+      ]);
+    });
+
+    it('should return object with proper fields', () => {
+      const statusItem = {
+        type: 'state',
+        value: {
+          items: ['Draft', 'Active'],
+          modelName: 'Control',
+          operator: 'ANY',
+        },
+      };
+      const mappingItems = [{
+        type: 'mappingCriteria',
+        value: {
+          filter: {
+            type: 'attribute',
+            value: {
+              field: 'Title',
+              operator: '~',
+              value: 'my-access-group',
+            },
+          },
+        },
+        objectName: 'AccessGroup',
+      }];
+      const filterItems = [{
+        type: 'attribute',
+        value: {
+          field: 'Title',
+          operator: '~',
+          value: 'my-control',
+        },
+      }];
+      vm.attr('parentInstance', {type: 'parentInstance'});
+      vm.attr('mappingItems', mappingItems);
+      vm.attr('statusItem', statusItem);
+      vm.attr('filterItems', filterItems);
+
+      const result = AdvancedSearch.getFilters(vm);
+      expect(result).toEqual({
+        filterItems,
+        mappingItems,
+        statusItem,
+        parentItems: [{
+          type: 'parentInstance',
+        }],
+      });
     });
   });
 });
