@@ -22,7 +22,7 @@ class TestCycleTaskAssigneesPropagation(base.TestACLPropagation):
               "update": False,
               "delete": False,
               "read_revisions": False,
-              "clone": (False, "unimplemented"),
+              "clone": False,
           },
           "TaskGroup": {
               "create": False,

@@ -334,7 +334,7 @@ def _get_acl_filter(acl_model_alias):
     list of filter statements.
   """
   stubs = getattr(flask.g, "referenced_object_stubs", None)
-  if stubs is None:
+  if not stubs:
     logger.warning("Using full permissions query")
     return "AND {}.object_type != 'Relationship'".format(acl_model_alias)
 
