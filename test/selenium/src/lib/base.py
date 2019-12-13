@@ -1007,7 +1007,13 @@ class MentionEmailDropdown(object):
 
   def wait_until_appears(self):
     """Waits until dropdown appears."""
-    self.dropdown_presence_marker.wait_until(lambda marker: marker.exist)
+    return self.dropdown_presence_marker.wait_until(
+        lambda marker: marker.exist)
+
+  def wait_until_disappears(self):
+    """Waits until dropdown disappears."""
+    return self.dropdown_presence_marker.wait_until(
+        lambda marker: not marker.exist)
 
   def select_first_email(self):
     """Selects first email from opened dropdown."""

@@ -21,8 +21,8 @@ LOGGER = logging.getLogger(__name__)
 
 def _webdriver_wait(driver):
   """Common WebDriverWait logic with poll frequency."""
-  return WebDriverWait(driver, constants.ux.MAX_USER_WAIT_SECONDS,
-                       poll_frequency=constants.ux.POLL_FREQUENCY)
+  return WebDriverWait(driver, constants.timeouts.MAX_USER_WAIT_SECONDS,
+                       poll_frequency=constants.timeouts.POLL_FREQUENCY)
 
 
 def hover_over_element(driver, element):
@@ -90,7 +90,7 @@ def wait_until_stops_moving(element):
   while prev_location != element.location:
     prev_location = element.location
     time.sleep(0.1)
-    if time.time() - timer_begin > constants.ux.ELEMENT_MOVING_TIMEOUT:
+    if time.time() - timer_begin > constants.timeouts.ELEMENT_MOVING_TIMEOUT:
       raise exception.ElementMovingTimeout
 
 
@@ -184,7 +184,7 @@ def wait_until_alert_is_present(driver):
  Args: driver (base.CustomDriver)
  Return: selenium.webdriver.common.alert.Alert
  """
-  return (WebDriverWait(driver, constants.ux.MAX_ALERT_WAIT).
+  return (WebDriverWait(driver, constants.timeouts.MAX_ALERT_WAIT).
           until(EC.alert_is_present()))
 
 
@@ -205,7 +205,7 @@ def click_on_staleable_element(driver, el_locator):
   """Click element that can be modified between time we find it and when
  we click on it."""
   time_start = time.time()
-  while time.time() - time_start < constants.ux.MAX_USER_WAIT_SECONDS:
+  while time.time() - time_start < constants.timeouts.MAX_USER_WAIT_SECONDS:
     try:
       driver.find_element(*el_locator).click()
       break

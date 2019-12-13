@@ -12,8 +12,8 @@ from lib import constants
 
 def wait_file_downloaded(
     path_to_csv,
-    timeout=constants.ux.MAX_USER_WAIT_SECONDS,
-    poll_frequency=constants.ux.POLL_FREQUENCY
+    timeout=constants.timeouts.MAX_USER_WAIT_SECONDS,
+    poll_frequency=constants.timeouts.POLL_FREQUENCY
 ):
   """Wait until file is exist or IOError is raised."""
   end_time = time.time() + timeout

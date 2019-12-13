@@ -11,7 +11,7 @@ from lib.constants import (
   locator,
   method,
   regex,
-  ux,
+  timeouts,
   test_runner,
   settings,
   messages,
