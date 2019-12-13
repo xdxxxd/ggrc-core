@@ -1026,7 +1026,7 @@ class TestIssueTrackerIntegration(SnapshotterBaseTestCase):
   @mock.patch('ggrc.integrations.issues.Client.update_issue')
   @mock.patch.object(settings, "ISSUE_TRACKER_ENABLED", True)
   def test_update_issuetracker_due_date(self, mocked_update_issue):
-    """Test title sync in case it has been updated."""
+    """Test due_date sync in case it has been updated."""
     with mock.patch.object(
         assessment_integration.AssessmentTrackerHandler,
         '_is_tracker_enabled',
@@ -1435,6 +1435,48 @@ class TestIssueTrackerIntegration(SnapshotterBaseTestCase):
                   response.json.get(
                       "assessment", {}).get("issue_tracker",
                                             {}).get("_warnings", []))
+
+  @mock.patch('ggrc.integrations.issues.Client.update_issue')
+  @mock.patch.object(settings, "ISSUE_TRACKER_ENABLED", True)
+  def test_reset_issuetracker_due_date(self, mocked_update_issue):
+    """Test issue due_date is properly reset to None."""
+    initial_date = '2018-09-12'
+    new_due_date = None
+    with mock.patch.object(
+        assessment_integration.AssessmentTrackerHandler,
+        '_is_tracker_enabled',
+        return_value=True
+    ):
+      iti = factories.IssueTrackerIssueFactory(
+          enabled=True,
+          component_id="123123",
+          issue_type="PROCESS",
+          issue_priority="P2",
+          issue_severity="S2",
+          due_date=initial_date
+      )
+      iti_id = iti.issue_id
+      asmt = iti.issue_tracked_obj
+      custom_fields = [{
+          'name': 'Due Date',
+          'value': new_due_date,
+          'type': 'DATE',
+          'display_string': 'Due Date',
+      }]
+      self.api.put(asmt, {
+          'start_date': new_due_date,
+          'title': 'title'
+      })
+      kwargs = {'status': 'ASSIGNED',
+                'component_id': 123123,
+                'severity': "S2",
+                'title': iti.title,
+                'hotlist_ids': [],
+                'priority': "P2",
+                'custom_fields': custom_fields}
+      mocked_update_issue(iti_id, kwargs)
+      issue = db.session.query(models.IssuetrackerIssue).get(iti.id)
+      self.assertIsNone(issue.due_date)
 
 
 @mock.patch('ggrc.models.hooks.issue_tracker.'
