@@ -10,7 +10,7 @@
       <div class="new-relevant-block">
         <export-panel type:from="type"
                       item:from="{.}"
-                      panel_index:from="@index"
+                      panel_index:from="scope.index"
                       removable:from="isRemovable">
        </export-panel>
      </div>

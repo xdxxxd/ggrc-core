@@ -21,7 +21,7 @@
         <a
           class="task-group-objects__unmap {{#if disabled}}disabled{{/if}}"
           href="javascript://"
-          data-item-index="{{@index}}">
+          data-item-index="{{scope.index}}">
           <i class="fa fa-trash"></i>
         </a>
          <spinner-component class="control-offset" toggle:from="unmapping" />
