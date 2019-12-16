@@ -238,7 +238,7 @@ class TestSnapshotBlockConverter(unittest.TestCase):
       ({"custom_attribute_id": 1, "attribute_value": True}, "yes"),
       ({"custom_attribute_id": 1, "attribute_value": "1"}, "yes"),
       ({"custom_attribute_id": 1, "attribute_value": "0"}, "no"),
-      ({"custom_attribute_id": 6, "attribute_value": True}, True),
+      ({"custom_attribute_id": 6, "attribute_value": True}, "yes"),
       ({"custom_attribute_id": 6, "attribute_value": "yes"}, "yes"),
       ({"custom_attribute_id": 6, "attribute_value": "no"}, "no"),
       ({"custom_attribute_id": 3, "attribute_value": "Person",
