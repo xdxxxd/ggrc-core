@@ -7,12 +7,12 @@ import loIsEmpty from 'lodash/isEmpty';
 import loForEach from 'lodash/forEach';
 import loFind from 'lodash/find';
 import Spinner from 'spin.js';
+import {warning} from '../plugins/utils/modals';
 import {
-  warning,
   BUTTON_VIEW_SAVE_CANCEL_DELETE,
   BUTTON_CREATE_PROPOSAL,
   ASSESSMENT_TEMPLATE_FOOTER,
-} from '../plugins/utils/modals';
+} from '../plugins/utils/template-utils';
 import {
   hasWarningType,
   shouldApplyPreconditions,
