@@ -39,6 +39,7 @@ class TestAdvancedQueryAPI(WithQueryApi, TestCase):
   """Basic tests for /query api."""
 
   def setUp(self):
+    """Set up for advance query api."""
     super(TestAdvancedQueryAPI, self).setUp()
     self.client.get("/login")
     self.generator = generator.ObjectGenerator()
