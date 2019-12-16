@@ -1079,6 +1079,7 @@ class TestQueryAssessmentCA(TestCase, WithQueryApi):
   """Test filtering assessments by CAs"""
 
   def setUp(self):
+    """Set up for query assessment CA."""
     super(TestQueryAssessmentCA, self).setUp()
     self._generate_special_assessments()
     self.client.get("/login")
