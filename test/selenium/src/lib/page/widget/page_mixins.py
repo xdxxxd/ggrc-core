@@ -27,10 +27,6 @@ class WithPageElements(base.WithBrowser):
     """Return AssessmentEvidenceUrls page element"""
     return page_elements.AssessmentEvidenceUrls(self._browser)
 
-  def _comment_area(self):
-    """Return CommentArea page element"""
-    return page_elements.CommentArea(self._browser)
-
   def _simple_field(self, label, root_elem=None):
     """Returns SimpleField page element."""
     return page_elements.SimpleField(

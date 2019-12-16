@@ -600,3 +600,17 @@ def open_request_review_modal(obj, selenium):
   modal = request_review.RequestReviewModal(selenium)
   modal.wait_until_present()
   return modal
+
+
+def soft_assert_cannot_add_comment(soft_assert, obj):
+  """Performs soft assert that comment input field is not displayed when
+  'Add Comment' button is clicked."""
+  info_page = factory.get_cls_webui_service(
+      objects.get_plural(obj.type))().open_info_page_of_obj(obj)
+  info_page.comments_panel.click_add_button()
+  # wait until new tab contains info page url
+  _, new_tab = browsers.get_browser().windows()
+  test_utils.wait_for(lambda: new_tab.url.endswith(url.Widget.INFO))
+  soft_assert.expect(
+      not info_page.comments_panel.comment_input.exists,
+      "There should be no input field in comments panel.")

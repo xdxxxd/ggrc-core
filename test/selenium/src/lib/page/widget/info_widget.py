@@ -46,7 +46,6 @@ class ReadOnlyInfoWidget(page_mixins.WithPageElements, base.Widget,
     if self.__class__ in [Controls, Risks]:
       if self.is_info_page:
         self.tabs.ensure_tab(self._attributes_tab_name)
-    self.comment_area = self._comment_area()
 
   @property
   def _root(self):
@@ -296,9 +295,15 @@ class ReadOnlyInfoWidget(page_mixins.WithPageElements, base.Widget,
     return log_items
 
   @property
+  def comments_panel(self):
+    """Returns comments panel."""
+    return base.ReadOnlyCommentsPanel(
+        self._browser.element(tag_name="comment-data-provider"))
+
+  @property
   def is_comments_panel_present(self):
     """Returns whether comments panel exists on the page."""
-    return self._comment_area().exists
+    return self.comments_panel.is_present
 
 
 class InfoWidget(page_mixins.WithObjectReview, ReadOnlyInfoWidget):
@@ -394,7 +399,7 @@ class Programs(InfoWidget, page_mixins.WithProposals):
     """Elements shown for user with edit permissions"""
     return [self.request_review_btn,
             self.three_bbs.edit_option,
-            self.comment_area.add_section,
+            self.comments_panel.add_btn,
             self.reference_urls.add_button] + list(self.inline_edit_controls)
 
 
@@ -615,7 +620,7 @@ class Assessments(InfoWidget):
   def is_comments_panel_present(self):
     """Returns whether comments panel exists on the page."""
     self.tabs.ensure_tab(self._assessment_tab_name)
-    return self._comment_area().exists
+    return self.comments_panel.is_present
 
   @property
   def primary_contacts(self):
@@ -858,7 +863,7 @@ class Objectives(page_mixins.WithAssignFolder, InfoWidget):
     """Elements shown for user with edit permissions"""
     return [self.request_review_btn,
             self.three_bbs.edit_option,
-            self.comment_area.add_section,
+            self.comments_panel.add_btn,
             self.reference_urls.add_button,
             self.assign_folder_button] + list(self.inline_edit_controls)
 
