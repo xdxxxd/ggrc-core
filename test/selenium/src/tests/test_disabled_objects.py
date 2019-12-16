@@ -149,10 +149,12 @@ class TestDisabledObjects(base.Test):
                        "There should be no 'Request Review button.")
     soft_assert.assert_expectations()
 
-  def test_cannot_add_comment(self, control, soft_assert, selenium):
+  @pytest.mark.parametrize("obj", objects.SINGULAR_DISABLED_OBJS,
+                           indirect=True)
+  def test_cannot_add_comment(self, obj, soft_assert, selenium):
     """Check that user can't add a comment: input field is not displayed and
     "Add Comment" button opens a new browser tab."""
-    webui_facade.soft_assert_cannot_add_comment(soft_assert, control)
+    webui_facade.soft_assert_cannot_add_comment(soft_assert, obj)
     soft_assert.expect(
         webui_facade.are_tabs_urls_equal(), "Tabs urls should be equal.")
     soft_assert.assert_expectations()
