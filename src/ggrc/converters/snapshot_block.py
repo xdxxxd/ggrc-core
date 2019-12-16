@@ -311,7 +311,7 @@ class SnapshotBlockConverter(object):
       return self.BOOLEAN_ALIASES.get(cav_value, u"")
     if cad["attribute_type"] == "Date" and cav_value:
       return utils.iso_to_us_date(cav_value)
-    return cav_value
+    return self.get_value_string(cav_value)
 
   @property
   def _header_list(self):
