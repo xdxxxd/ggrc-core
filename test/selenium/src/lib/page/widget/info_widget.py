@@ -975,6 +975,7 @@ class Markets(InfoWidget):
 
 
 class Risks(page_mixins.WithDisabledProposals,
+            page_mixins.WithDisabledObjectReview,
             page_mixins.WithDisabledVersionHistory, ReadOnlyInfoWidget):
   """Model for Risk object Info pages and Info panels."""
   _locators = locator.WidgetInfoRisk
