@@ -13,10 +13,22 @@ from ggrc.migrations.utils.acr_propagation import update_acr_propagation_tree
 
 # revision identifiers, used by Alembic.
 revision = '3141784ef298'
-down_revision = 'ac75e70c9081'
+down_revision = '1290304b791b'
 
-PROGRAM_EDITOR_PERMISSIONS = {
-    "AccessGroup RU": {
+
+def generate_propagation_tree(propagation_tree):
+  """Function generate new propagation tree without delete permissions."""
+  new_propagation_tree = {}
+  for i in propagation_tree:
+    name_obj, permissions = i.split(' ')
+    new_perm = permissions.replace('D', '')
+    obj_with_perm = "{} {}".format(name_obj, new_perm)
+    new_propagation_tree[obj_with_perm] = propagation_tree[i]
+  return new_propagation_tree
+
+
+CURRENT_PROGRAM_EDITOR_PERMISSIONS = {
+    "AccessGroup RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -26,7 +38,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
             }
         }
     },
-    "AccountBalance RU": {
+    "AccountBalance RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -36,7 +48,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
             }
         }
     },
-    "Audit RU": {
+    "Audit RUD": {
         "Relationship R": {
             "Assessment RU": {
                 "Relationship R": {
@@ -68,7 +80,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
         }
     },
     "Comment R": {},
-    "Contract RU": {
+    "Contract RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -79,7 +91,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
             "Review RU": {}
         }
     },
-    "Control RU": {
+    "Control RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -91,7 +103,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
             "Review RU": {}
         }
     },
-    "DataAsset RU": {
+    "DataAsset RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -106,7 +118,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
             "Comment R": {}
         }
     },
-    "Facility RU": {
+    "Facility RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -116,7 +128,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
             }
         }
     },
-    "Issue RU": {
+    "Issue RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -126,7 +138,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
             }
         }
     },
-    "KeyReport RU": {
+    "KeyReport RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -136,7 +148,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
             }
         }
     },
-    "Market RU": {
+    "Market RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -146,7 +158,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
             }
         }
     },
-    "Metric RU": {
+    "Metric RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -156,7 +168,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
             }
         }
     },
-    "Objective RU": {
+    "Objective RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -167,7 +179,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
             "Review RU": {}
         }
     },
-    "OrgGroup RU": {
+    "OrgGroup RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -177,7 +189,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
             }
         }
     },
-    "Policy RU": {
+    "Policy RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -188,7 +200,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
             "Review RU": {}
         }
     },
-    "Process RU": {
+    "Process RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -198,7 +210,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
             }
         }
     },
-    "Product RU": {
+    "Product RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -208,7 +220,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
             }
         }
     },
-    "ProductGroup RU": {
+    "ProductGroup RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -218,7 +230,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
             }
         }
     },
-    "Project RU": {
+    "Project RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -229,7 +241,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
         }
     },
     "Proposal R": {},
-    "Regulation RU": {
+    "Regulation RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -240,7 +252,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
             "Review RU": {}
         }
     },
-    "Requirement RU": {
+    "Requirement RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -252,7 +264,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
         }
     },
     "Review RU": {},
-    "Risk RU": {
+    "Risk RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -264,7 +276,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
             "Review RU": {}
         }
     },
-    "Standard RU": {
+    "Standard RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -275,7 +287,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
             "Review RU": {}
         }
     },
-    "System RU": {
+    "System RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -285,7 +297,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
             }
         }
     },
-    "TechnologyEnvironment RU": {
+    "TechnologyEnvironment RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -295,7 +307,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
             }
         }
     },
-    "Threat RU": {
+    "Threat RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -306,7 +318,7 @@ PROGRAM_EDITOR_PERMISSIONS = {
             "Review RU": {}
         }
     },
-    "Vendor RU": {
+    "Vendor RUD": {
         "Relationship R": {
             "Comment R": {},
             "Document RU": {
@@ -318,23 +330,31 @@ PROGRAM_EDITOR_PERMISSIONS = {
     }
 }
 
+NEW_PROGRAM_EDITOR_PERMISSIONS = generate_propagation_tree(
+    CURRENT_PROGRAM_EDITOR_PERMISSIONS
+)
 
-RELATIONSHIP = {"Relationship R": PROGRAM_EDITOR_PERMISSIONS}
+CURRENT_RELATIONSHIP = {"Relationship R": CURRENT_PROGRAM_EDITOR_PERMISSIONS}
+NEW_RELATIONSHIP = {"Relationship R": NEW_PROGRAM_EDITOR_PERMISSIONS}
 
-PROGRAM_EDITORS = {"Program Editors": RELATIONSHIP}
+CURRENT_PROGRAM_EDITORS = {"Program Editors": CURRENT_RELATIONSHIP}
+NEW_PROGRAM_EDITORS = {"Program Editors": NEW_RELATIONSHIP}
 
-CONTROL_PROPAGATION = {
-    "Program": PROGRAM_EDITORS
+NEW_PROGRAM_EDITOR_PROPAGATION = {
+    "Program": NEW_PROGRAM_EDITORS
 }
 
-OLD_CONTROL_PROPAGATION = {
-    "Program": PROGRAM_EDITORS
+CURRENT_PROGRAM_EDITOR_PROPAGATION = {
+    "Program": CURRENT_PROGRAM_EDITORS
 }
 
 
 def upgrade():
   """Upgrade database schema and/or data, creating a new revision."""
-  update_acr_propagation_tree(OLD_CONTROL_PROPAGATION, CONTROL_PROPAGATION)
+  update_acr_propagation_tree(
+      CURRENT_PROGRAM_EDITOR_PROPAGATION,
+      NEW_PROGRAM_EDITOR_PROPAGATION
+  )
 
 
 def downgrade():
