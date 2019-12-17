@@ -21,20 +21,15 @@ describe('create-document-button component', () => {
 
   describe('viewModel', () => {
     describe('mapDocuments() method', () => {
-      let checkDocumentsExistDfd;
-
-      beforeEach(() => {
-        checkDocumentsExistDfd = $.Deferred();
-        spyOn(viewModel, 'checkDocumentsExist').and
-          .returnValue(checkDocumentsExistDfd);
-      });
-
       it('should check wheteher documents already exist', () => {
         let file = {};
+
+        spyOn(viewModel, 'checkDocumentsExist').and
+          .returnValue(Promise.resolve());
         spyOn(viewModel, 'createDocuments')
-          .and.returnValue($.Deferred().resolve([]));
+          .and.returnValue(Promise.resolve([]));
         spyOn(viewModel, 'useExistingDocuments')
-          .and.returnValue($.Deferred().resolve([]));
+          .and.returnValue(Promise.resolve([]));
 
         viewModel.mapDocuments(file);
 
@@ -43,17 +38,18 @@ describe('create-document-button component', () => {
 
       it('should create a new documents if they are not exist', (done) => {
         let file = {id: 1};
+
+        spyOn(viewModel, 'checkDocumentsExist').and
+          .returnValue(Promise.resolve([{
+            exists: false,
+            gdrive_id: 1,
+          }]));
         spyOn(viewModel, 'createDocuments')
-          .and.returnValue($.Deferred().resolve([]));
+          .and.returnValue(Promise.resolve([]));
         spyOn(viewModel, 'useExistingDocuments')
-          .and.returnValue($.Deferred().resolve([]));
+          .and.returnValue(Promise.resolve([]));
 
-        viewModel.mapDocuments([file]);
-
-        checkDocumentsExistDfd.resolve([{
-          exists: false,
-          gdrive_id: 1,
-        }]).then(() => {
+        viewModel.mapDocuments([file]).then(() => {
           expect(viewModel.createDocuments).toHaveBeenCalledWith([file]);
           done();
         });
@@ -66,14 +62,15 @@ describe('create-document-button component', () => {
             exists: true,
             object: {},
           }];
+
+          spyOn(viewModel, 'checkDocumentsExist')
+            .and.returnValue(Promise.resolve(response));
           spyOn(viewModel, 'createDocuments')
-            .and.returnValue($.Deferred().resolve([]));
+            .and.returnValue(Promise.resolve([]));
           spyOn(viewModel, 'useExistingDocuments')
-            .and.returnValue($.Deferred().resolve([]));
+            .and.returnValue(Promise.resolve([]));
 
-          viewModel.mapDocuments([file]);
-
-          checkDocumentsExistDfd.resolve(response).then(() => {
+          viewModel.mapDocuments([file]).then(() => {
             expect(viewModel.useExistingDocuments)
               .toHaveBeenCalledWith(response);
             done();
@@ -88,24 +85,24 @@ describe('create-document-button component', () => {
         let existingDocument = {
           gdrive_id: 1,
           exists: true,
-          object: existingDocument,
+          object: {},
         };
         let notExistingDocument = {
           gdrive_id: 2,
           exists: false,
         };
 
+        spyOn(viewModel, 'checkDocumentsExist')
+          .and.returnValue(Promise.resolve([
+            existingDocument,
+            notExistingDocument,
+          ]));
         spyOn(viewModel, 'createDocuments')
-          .and.returnValue($.Deferred().resolve([]));
+          .and.returnValue(Promise.resolve([]));
         spyOn(viewModel, 'useExistingDocuments')
-          .and.returnValue($.Deferred().resolve([]));
+          .and.returnValue(Promise.resolve([]));
 
-        viewModel.mapDocuments(files);
-
-        checkDocumentsExistDfd.resolve([
-          existingDocument,
-          notExistingDocument,
-        ]).then(() => {
+        viewModel.mapDocuments(files).then(() => {
           expect(viewModel.useExistingDocuments)
             .toHaveBeenCalledWith([existingDocument]);
           expect(viewModel.createDocuments)
@@ -118,21 +115,37 @@ describe('create-document-button component', () => {
         let document1 = {};
         let document2 = {};
         spyOn(viewModel, 'refreshPermissionsAndMap');
+        spyOn(viewModel, 'checkDocumentsExist')
+          .and.returnValue(Promise.resolve([]));
         spyOn(viewModel, 'createDocuments')
-          .and.returnValue($.Deferred().resolve([document1]));
+          .and.returnValue([Promise.resolve(document1)]);
         spyOn(viewModel, 'useExistingDocuments')
-          .and.returnValue($.Deferred().resolve([document2]));
+          .and.returnValue([Promise.resolve(document2)]);
 
-        let mapDocumentsChain = viewModel.mapDocuments([]);
+        viewModel.mapDocuments([]).then(() => {
+          expect(viewModel.refreshPermissionsAndMap)
+            .toHaveBeenCalledWith([document1, document2]);
+          done();
+        });
+      });
 
-        checkDocumentsExistDfd.resolve([]).then(() => {
-          mapDocumentsChain.then(() => {
-            expect(viewModel.refreshPermissionsAndMap)
-              .toHaveBeenCalledWith([document1, document2]);
+      it('should dispatch documentCreateFailed event if save failed',
+        (done) => {
+          let parentInstance = viewModel.attr('parentInstance');
+          spyOn(parentInstance, 'dispatch');
+          spyOn(viewModel, 'checkDocumentsExist')
+            .and.returnValue(Promise.resolve([]));
+          spyOn(viewModel, 'createDocuments')
+            .and.returnValue([Promise.reject()]);
+          spyOn(viewModel, 'useExistingDocuments')
+            .and.returnValue(Promise.resolve([]));
+
+          viewModel.mapDocuments([]).then(() => {
+            expect(parentInstance.dispatch)
+              .toHaveBeenCalledWith(DOCUMENT_CREATE_FAILED);
             done();
           });
         });
-      });
     });
 
     describe('createDocuments() method', () => {
@@ -148,47 +161,22 @@ describe('create-document-button component', () => {
             .toHaveBeenCalledWith(BEFORE_DOCUMENT_CREATE);
         });
 
-      it('should return new document after saving', (done) => {
-        let saveDfd = $.Deferred();
+      it('should return array of new documents after saving', () => {
         let newDocument = {};
-        spyOn(Document.prototype, 'save').and.returnValue(saveDfd);
+        spyOn(Document.prototype, 'save').and.returnValue(newDocument);
 
-        viewModel.createDocuments([{}]);
+        const promisesArray = viewModel.createDocuments([{}, {}]);
 
-        saveDfd.resolve(newDocument)
-          .then((document) => {
-            expect(document).toBe(newDocument);
-            done();
-          });
-      });
-
-      it('should dispatch documentCreateFailed event if document is not saved',
-        (done) => {
-          let parentInstance = viewModel.attr('parentInstance');
-          spyOn(parentInstance, 'dispatch');
-
-          spyOn(Document.prototype, 'save')
-            .and.returnValue($.Deferred().reject());
-
-          let result = viewModel.createDocuments([{}]);
-
-          result.fail(() => {
-            expect(parentInstance.dispatch.calls.mostRecent().args)
-              .toEqual([DOCUMENT_CREATE_FAILED]);
-            done();
-          });
+        promisesArray.forEach((doc) => {
+          expect(doc).toBe(newDocument);
         });
+      });
     });
 
     describe('useExistingDocuments() method', () => {
-      let showConfirmDfd;
-
-      beforeEach(() => {
-        showConfirmDfd = $.Deferred();
-        spyOn(viewModel, 'showConfirm').and.returnValue(showConfirmDfd);
-      });
-
       it('should show confirm modal', () => {
+        spyOn(viewModel, 'showConfirm');
+
         viewModel.useExistingDocuments([{}]);
 
         expect(viewModel.showConfirm).toHaveBeenCalled();
@@ -197,29 +185,37 @@ describe('create-document-button component', () => {
       it('should add current user to document admins', (done) => {
         let document = {};
         spyOn(viewModel, 'makeAdmin');
+        spyOn(viewModel, 'showConfirm').and.returnValue(Promise.resolve());
 
-        viewModel.useExistingDocuments([document]);
+        viewModel.useExistingDocuments([document]).then(() => {
+          expect(viewModel.makeAdmin).toHaveBeenCalledWith([document]);
+          done();
+        });
+      });
 
-        showConfirmDfd.resolve()
-          .then(() => {
-            expect(viewModel.makeAdmin).toHaveBeenCalledWith([document]);
-            done();
-          });
+      it('should return empty array if confirm modal was closed', (done) => {
+        let document = {};
+        spyOn(viewModel, 'makeAdmin');
+        spyOn(viewModel, 'showConfirm').and.returnValue(Promise.reject());
+
+        viewModel.useExistingDocuments([document]).then((array) => {
+          expect(array.length).toBe(0);
+          expect(viewModel.makeAdmin).not.toHaveBeenCalled();
+          done();
+        });
       });
     });
   });
 
   describe('openPicker() method', () => {
-    let uploadFilesDfd;
-
     beforeEach(() => {
-      uploadFilesDfd = $.Deferred();
-      spyOn(pickerUtils, 'uploadFiles').and.returnValue(uploadFilesDfd);
       spyOn(viewModel, 'mapDocuments');
       spyOn(viewModel, 'dispatch');
     });
 
     it('should call uploadFiles method', () => {
+      spyOn(pickerUtils, 'uploadFiles').and.returnValue(Promise.resolve());
+
       viewModel.openPicker();
 
       expect(pickerUtils.uploadFiles).toHaveBeenCalled();
@@ -229,25 +225,22 @@ describe('create-document-button component', () => {
       let file = {};
       let files = [file];
 
-      viewModel.openPicker();
+      spyOn(pickerUtils, 'uploadFiles').and.returnValue(Promise.resolve(files));
 
-      uploadFilesDfd.resolve(files)
-        .then(() => {
-          expect(viewModel.mapDocuments).toHaveBeenCalledWith([file]);
-          done();
-        });
+      viewModel.openPicker().then(() => {
+        expect(viewModel.mapDocuments).toHaveBeenCalledWith([file]);
+        done();
+      });
     });
 
     it('should trigger "cancel" event if file is not picked', (done) => {
-      let openPickerChain = viewModel.openPicker();
+      spyOn(pickerUtils, 'uploadFiles').and.returnValue(Promise.reject());
 
-      uploadFilesDfd.reject()
-        .fail(() => {
-          openPickerChain.then(() => {
-            expect(viewModel.dispatch).toHaveBeenCalledWith('cancel');
-            done();
-          });
-        });
+      viewModel.openPicker().then(() => {
+        expect(viewModel.mapDocuments).not.toHaveBeenCalled();
+        expect(viewModel.dispatch).toHaveBeenCalledWith('cancel');
+        done();
+      });
     });
   });
 });

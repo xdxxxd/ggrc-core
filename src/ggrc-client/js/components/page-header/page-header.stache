@@ -129,6 +129,13 @@
         </li>
       {{/current_user_is_admin}}
       <li>
+        <a id="page-help" href="{{maintenanceSchedulesUrl}}" target="_blank">
+          <i class="fa fa-info-circle"></i>
+          Check maintenance schedules
+          <i class="fa fa-external-link dropdown-menu__external-link"></i>
+        </a>
+      </li>
+      <li>
         <a id="page-help" href="{{helpUrl}}" target="_blank">
           <i class="fa fa-question-circle"></i>
           Help

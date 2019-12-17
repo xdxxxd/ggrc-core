@@ -130,6 +130,11 @@ permissions = {
             "terms": {},
         },
         {
+            "type": "CycleTaskGroupObjectTask",
+            "condition": "is_workflow_admin",
+            "terms": {},
+        },
+        {
             "type": "TaskGroupObject",
             "condition": "is_workflow_admin",
             "terms": {},

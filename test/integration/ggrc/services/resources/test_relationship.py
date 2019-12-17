@@ -5,6 +5,7 @@
 
 import json
 
+from ggrc.models import all_models
 from integration.ggrc import api_helper
 from integration.ggrc.models import factories
 from integration.ggrc.services import TestCase
@@ -54,3 +55,55 @@ class TestRelationshipResource(TestCase):
         headers=self.headers
     )
     self.assert200(response)
+
+  def test_one_revision_created(self):
+    """Test no create revision and events from duplicated relationship"""
+    with factories.single_commit():
+      source = factories.ProgramFactory()
+      destination = factories.ObjectiveFactory()
+
+    data = [{
+        "relationship": {
+            "context": None,
+            "destination": {
+                "id": source.id,
+                "type": "Program",
+                "href": "/api/programs/{}".format(source.id)
+            },
+            "source": {
+                "id": destination.id,
+                "type": "Objective",
+                "href": "/api/objectives/{}".format(destination.id)
+            }
+        }
+    }]
+    response = self.api.client.post(
+        "/api/relationships",
+        data=json.dumps(data),
+        headers=self.headers
+    )
+    self.assert200(response)
+    rel_id = all_models.Relationship.query.one().id
+    revs_count = all_models.Revision.query.filter_by(
+        source_type="Objective", destination_type="Program"
+    ).count()
+    events_count = all_models.Event.query.filter_by(
+        resource_id=rel_id, resource_type="Relationship",
+    ).count()
+    self.assertEqual(revs_count, 1)
+    self.assertEqual(events_count, 1)
+
+    response = self.api.client.post(
+        "/api/relationships",
+        data=json.dumps(data),
+        headers=self.headers
+    )
+    self.assert200(response)
+    new_revs_count = all_models.Revision.query.filter_by(
+        source_type="Objective", destination_type="Program"
+    ).count()
+    events_count = all_models.Event.query.filter_by(
+        resource_id=rel_id, resource_type="Relationship",
+    ).count()
+    self.assertEqual(new_revs_count, 1)
+    self.assertEqual(events_count, 1)

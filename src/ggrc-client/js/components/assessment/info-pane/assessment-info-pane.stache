@@ -224,6 +224,7 @@
                                                  state:from="state"
                                                  evidences:from="files"
                                                  isUpdatingEvidences:from="isUpdatingFiles"
+                                                 isRemovingEvidences:from="isRemovingFiles"
                         ></ca-object-modal-content>
                     </simple-modal>
                     <!-- End of Modal Window -->

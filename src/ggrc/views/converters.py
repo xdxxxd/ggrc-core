@@ -317,7 +317,8 @@ def run_import_phases(task):
   user = login.get_current_user()
   try:
     ie_job = import_export.get(ie_id)
-
+    if ie_job.title is not None:
+      ie_job.title = ie_job.title.encode("utf-8")
     csv_data = import_helper.read_csv_file(
         StringIO(ie_job.content.encode("utf-8"))
     )

@@ -26,6 +26,10 @@ class RelationshipResource(ggrc.services.common.Resource):
 
   # pylint: disable=abstract-method
 
+  def __init__(self, *args, **kwargs):
+    super(RelationshipResource, self).__init__(*args, **kwargs)
+    self._no_revision = False
+
   @staticmethod
   def _validate_readonly_relationship(obj_with_readonly_access, obj2):
     # type: (WithReadOnlyAccess, Any) -> None

@@ -858,14 +858,18 @@ class CommentInput(object):
     self.fill("{}{}".format(first_symbol, match_str))
     self.emails_dropdown.wait_until_appears()
 
+  @property
+  def exists(self):
+    """Returns whether comment input field exists."""
+    return self._input_field.exists
 
-class CommentsPanel(WithBrowser):
-  """Representing comments panel on info page/panel of object which contains
-  input field and items."""
+
+class ReadOnlyCommentsPanel(WithBrowser):
+  """Represents comments panel for disabled objects info page that doesn't
+  allow new comments adding."""
 
   def __init__(self, container=None):
-    super(CommentsPanel, self).__init__()
-    self._items = []
+    super(ReadOnlyCommentsPanel, self).__init__()
     self._root = self._browser.div(text="Responses/Comments").parent()
     self._container = container or self._root
 
@@ -876,11 +880,13 @@ class CommentsPanel(WithBrowser):
 
   @property
   def add_btn(self):
-    return self._root.button(text="Add")
+    """Returns Add Comment button."""
+    return self._root.element(tag_name="comments-section").element(
+        tag_name="questionnaire-link").link(class_name="questionnaire-link")
 
-  @property
-  def send_cb(self):
-    return self._root.element(class_name="comment-add-form__toolbar-item")
+  def click_add_button(self):
+    """Clicks Add button"""
+    self.add_btn.click()
 
   @property
   def scopes(self):
@@ -897,9 +903,19 @@ class CommentsPanel(WithBrowser):
     """Return count of text comments on comments panel."""
     return len(self.scopes)
 
-  def click_add_button(self):
-    """Clicks Add button"""
-    self.add_btn.click()
+  @property
+  def is_present(self):
+    """Returns whether comments panel is presented on info page."""
+    return self._root.exists
+
+
+class CommentsPanel(ReadOnlyCommentsPanel):
+  """Represents comments panel which contains input part and items."""
+
+  @property
+  def add_btn(self):
+    """Returns Add button."""
+    return self._root.button(text="Add")
 
   def add_comment(self, text):
     """Clear text from element and enter new text."""
@@ -1007,7 +1023,13 @@ class MentionEmailDropdown(object):
 
   def wait_until_appears(self):
     """Waits until dropdown appears."""
-    self.dropdown_presence_marker.wait_until(lambda marker: marker.exist)
+    return self.dropdown_presence_marker.wait_until(
+        lambda marker: marker.exist)
+
+  def wait_until_disappears(self):
+    """Waits until dropdown disappears."""
+    return self.dropdown_presence_marker.wait_until(
+        lambda marker: not marker.exist)
 
   def select_first_email(self):
     """Selects first email from opened dropdown."""

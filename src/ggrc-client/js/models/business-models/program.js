@@ -91,9 +91,8 @@ export default Cacheable.extend({
     }
     const programManagerRole = getRole('Program', 'Program Managers').id;
 
-    return this.access_control_list.filter((acl) => {
-      return acl.person_id === GGRC.current_user.id &&
-              acl.ac_role_id === programManagerRole;
-    }).length === 0;
+    return !this.access_control_list.serialize().some((acl) =>
+      acl.person.id === GGRC.current_user.id &&
+      acl.ac_role_id === programManagerRole);
   },
 });

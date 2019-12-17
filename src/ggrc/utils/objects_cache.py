@@ -11,6 +11,7 @@ from ggrc import db
 from ggrc.models import all_models
 from ggrc.utils import benchmark
 from ggrc.utils import helpers
+from ggrc.utils import errors
 
 
 logger = logging.getLogger(__name__)
@@ -39,6 +40,13 @@ def audit_snapshot_slugs_cache(obj_ids):
         all_models.Snapshot.parent_id.in_(obj_ids),
     )
     for slug, parent_id, child_type in query:
+      if not slug:
+        logger.warning(
+            errors.SNAPSHOT_INVALID_OBJECT_SLUG,
+            child_type,
+            parent_id,
+        )
+        continue
       snapshots[parent_id][child_type].add(slug)
     return snapshots
 
@@ -99,8 +107,7 @@ def related_snapshot_slugs_cache(obj_class, obj_ids):
     for object_id, snapshot_obj_type, snapshot_obj_slug in mapped_revs:
       if not snapshot_obj_slug:
         logger.warning(
-            "Snapshot for object %s with ID=%s contains invalid object slug. "
-            "The value will be ignored.",
+            errors.SNAPSHOT_INVALID_OBJECT_SLUG,
             snapshot_obj_type,
             object_id,
         )

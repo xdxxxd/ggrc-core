@@ -10,6 +10,7 @@ import {getComponentVM} from '../../../js_specs/spec-helpers';
 import {Snapshot} from '../../models/service-models';
 import * as ErrorsUtils from '../../plugins/utils/errors-utils';
 import * as ModalsUtils from '../../plugins/utils/modals';
+import * as TemplatesUtils from '../../plugins/utils/template-utils';
 import * as AjaxUtils from '../../plugins/ajax-extensions';
 
 describe('delete-button component', () => {
@@ -200,7 +201,7 @@ describe('delete-button component', () => {
           relatedToOriginal: composedData.relatedToOriginal,
           relatedToSnapshot: composedData.relatedToSnapshot,
           content_view: '/modals/snapshot-related-objects.stache',
-          button_view: ModalsUtils.BUTTON_VIEW_CLOSE,
+          button_view: TemplatesUtils.BUTTON_VIEW_CLOSE,
         };
         vm.fetchRelatedObjects();
 

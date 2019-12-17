@@ -5,7 +5,7 @@
 
 import canMap from 'can-map';
 import canComponent from 'can-component';
-import {BUTTON_VIEW_SAVE_CANCEL_DELETE} from '../../plugins/utils/modals';
+import {BUTTON_VIEW_SAVE_CANCEL_DELETE} from '../../plugins/utils/template-utils';
 
 const viewModel = canMap.extend({
   element: null,

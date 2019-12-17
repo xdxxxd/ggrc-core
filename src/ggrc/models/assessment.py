@@ -41,6 +41,7 @@ from ggrc.models.object_person import Personable
 from ggrc.models import reflection
 from ggrc.models.relationship import Relatable
 from ggrc.fulltext.mixin import Indexed
+from ggrc.integrations import constants
 
 
 class Assessment(Assignable,
@@ -224,7 +225,7 @@ class Assessment(Assignable,
         orm.Load(cls).joinedload("audit").undefer_group("Audit_complete"),
         orm.Load(cls).joinedload("audit").joinedload(
             audit.Audit.issuetracker_issue
-        ),
+        )
     )
 
   @classmethod
@@ -275,6 +276,7 @@ class Assessment(Assignable,
                              "Standards",
                              "Threats",
                              )
+
   _aliases = {
       "owners": None,
       "assessment_template": {
@@ -319,7 +321,13 @@ class Assessment(Assignable,
       "issue_tracker": {
           "display_name": "Ticket Tracker",
           "mandatory": False,
-          "view_only": True,
+          "view_only": True
+      },
+      "issue_priority": {
+          "display_name": "Priority",
+          "mandatory": False,
+          "description": "Allowed values are:\n{}".format(
+              '\n'.join(constants.AVAILABLE_PRIORITIES))
       },
   }
 

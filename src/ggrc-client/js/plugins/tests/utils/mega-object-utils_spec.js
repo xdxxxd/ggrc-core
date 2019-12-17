@@ -56,7 +56,7 @@ describe('getMegaObjectConfig method', () => {
       name: 'Program',
       originalModelName: 'Program',
       widgetId: 'Program_parent',
-      widgetName: 'Parent Programs',
+      widgetName: 'Programs (Parent)',
       relation: 'parent',
       isMegaObject: true,
     });

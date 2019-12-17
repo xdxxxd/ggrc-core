@@ -5,6 +5,7 @@
 
 import canMap from 'can-map';
 import * as ModalsUtils from '../../../plugins/utils/modals';
+import * as TemplatesUtils from '../../../plugins/utils/template-utils';
 import * as WidgetsUtils from '../../../plugins/utils/widgets-utils';
 import * as NotifiersUtils from '../../../plugins/utils/notifiers-utils';
 import {getComponentVM} from '../../../../js_specs/spec-helpers';
@@ -43,7 +44,7 @@ describe('snapshot-scope-update component', () => {
         expect(ModalsUtils.confirm.calls.argsFor(0)).toEqual([
           jasmine.objectContaining({
             instance: viewModel.instance,
-            button_view: ModalsUtils.BUTTON_VIEW_CONFIRM_CANCEL,
+            button_view: TemplatesUtils.BUTTON_VIEW_CONFIRM_CANCEL,
             skip_refresh: true,
           }),
           jasmine.any(Function),

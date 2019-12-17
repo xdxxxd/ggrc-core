@@ -22,7 +22,7 @@ class TestTaskAssigneesPropagation(base.TestACLPropagation):
               "update": False,
               "delete": False,
               "read_revisions": False,
-              "clone": (False, "unimplemented"),
+              "clone": False,
           },
           "TaskGroup": {
               "create": False,
@@ -57,7 +57,7 @@ class TestTaskAssigneesPropagation(base.TestACLPropagation):
               "delete": False,
           },
           "CycleTask": {
-              "create": (False, "unimplemented"),
+              "create": False,
               "read": (False, "unimplemented"),
               "update": (False, "unimplemented"),
               "delete": False,
@@ -115,7 +115,7 @@ class TestTaskAssigneesPropagation(base.TestACLPropagation):
               "delete": False,
           },
           "CycleTask": {
-              "create": (False, "unimplemented"),
+              "create": False,
               "read": True,
               "update": (False, "unimplemented"),
               "delete": False,

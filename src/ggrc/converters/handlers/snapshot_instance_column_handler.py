@@ -149,7 +149,7 @@ class SnapshotInstanceColumnHandler(MappingColumnHandler):
     self.dry_run = True
 
   def get_value(self):
-    "return column value"
+    """return column value"""
     if self.unmap or not self.mapping_object:
       return ""
 

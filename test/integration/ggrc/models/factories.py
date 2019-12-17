@@ -21,6 +21,7 @@ from contextlib import contextmanager
 import factory
 
 from ggrc import db
+from ggrc.models import saved_search
 from ggrc.models import all_models
 
 from ggrc.access_control import roleable
@@ -721,6 +722,19 @@ class MaintenanceFactory(ModelFactory):
   id = 1  # pylint: disable=invalid-name
 
 
+class SavedSearchFactory(ModelFactory):
+
+  class Meta:
+    model = saved_search.SavedSearch
+
+  name = factory.LazyAttribute(lambda _: random_str(prefix="SavedSearch "))
+  object_type = "Assessment"
+  user = factory.LazyAttribute(lambda _: PersonFactory())
+  filters = ""
+  search_type = saved_search.SavedSearch.ADVANCED_SEARCH
+  is_visible = True
+
+
 def get_model_factory(model_name):
   """Get object factory for provided model name"""
   from integration.ggrc_workflows.models import factories as wf_factories
@@ -770,6 +784,7 @@ def get_model_factory(model_name):
       "Risk": RiskFactory,
       "Review": ReviewFactory,
       "Revision": RevisionFactory,
+      "SavedSearch": SavedSearchFactory,
       "Standard": StandardFactory,
       "System": SystemFactory,
       "TaskGroup": wf_factories.TaskGroupFactory,

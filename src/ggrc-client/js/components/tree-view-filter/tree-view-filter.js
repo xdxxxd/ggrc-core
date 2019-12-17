@@ -31,6 +31,7 @@ import '../dropdown/multiselect-dropdown';
 import '../saved-search/saved-search-list/saved-search-list';
 import '../saved-search/create-saved-search/create-saved-search';
 import '../simple-modal/simple-modal';
+import {handleAjaxError} from '../../plugins/utils/errors-utils';
 
 const EXPECTED_FILTERS_COUNT = 2;
 
@@ -59,7 +60,7 @@ export default canComponent.extend({
 
           if (isAllObjects() &&
             this.model.model_plural === 'CycleTaskGroupObjectTasks') {
-            // do NOT show Advanced saved search list on AllOjbects page (Tasks tab)
+            // do NOT show Advanced saved search list on AllObjects page (Tasks tab)
             return false;
           }
 
@@ -74,16 +75,6 @@ export default canComponent.extend({
 
           return this.attr('advancedSearch.selectedSavedSearch.id') ||
             this.attr('appliedSavedSearch.id');
-        },
-      },
-      savedSearchPermalink: {
-        set(value) {
-          pubSub.dispatch({
-            type: 'savedSearchPermalinkSet',
-            permalink: value,
-            widgetId: this.attr('widgetId'),
-          });
-          return value;
         },
       },
       filtersReady: {
@@ -104,6 +95,7 @@ export default canComponent.extend({
     currentFilter: {},
     shouldWaitForFilters: true,
     parentInstance: null,
+    savedSearchPermalink: '',
     advancedSearch: {
       open: false,
       filter: null,
@@ -115,6 +107,13 @@ export default canComponent.extend({
       parentItems: canList(),
       appliedParentItems: canList(),
       parentInstance: null,
+    },
+    triggerSearchPermalink(isDisplay) {
+      pubSub.dispatch({
+        type: 'triggerSearchPermalink',
+        widgetId: this.attr('widgetId'),
+        searchPermalinkEnabled: isDisplay,
+      });
     },
     searchQueryChanged({name, query}) {
       const filter = makeArray(this.attr('filters'))
@@ -178,23 +177,11 @@ export default canComponent.extend({
       advancedSearch.attr('open', true);
       this.attr('filterIsDirty', false);
     },
-    clearAppliedSavedSearch() {
+    resetAppliedSavedSearch() {
       this.attr('advancedSearch.selectedSavedSearch', null);
       this.attr('savedSearchPermalink', null);
-      this.attr('appliedSavedSearch', null);
-    },
-    applySavedSearch(selectedSavedSearch) {
-      if (!selectedSavedSearch || this.attr('filterIsDirty')) {
-        this.clearAppliedSavedSearch();
-        return;
-      }
 
-      const widgetId = this.attr('widgetId');
-      const permalink = AdvancedSearch
-        .buildSearchPermalink(selectedSavedSearch.id, widgetId);
-
-      this.attr('savedSearchPermalink', permalink);
-      this.attr('appliedSavedSearch', selectedSavedSearch.serialize());
+      this.triggerSearchPermalink(false);
     },
     applyAdvancedFilters() {
       const filters = this.attr('advancedSearch.filterItems').serialize();
@@ -217,10 +204,80 @@ export default canComponent.extend({
       this.attr('advancedSearch.filter', advancedFilters);
       this.attr('advancedSearch.open', false);
 
-      this.applySavedSearch(
-        this.attr('advancedSearch.selectedSavedSearch')
-      );
+      if (this.attr('isSavedSearchShown')) {
+        // reset permalink
+        this.attr('savedSearchPermalink', null);
+        this.applySavedSearch(this.attr('advancedSearch.selectedSavedSearch'));
+      }
+
       this.onFilter();
+    },
+    applySavedSearch(selectedSavedSearch) {
+      // apply hidden saved search (is_visible == false)
+      if (!selectedSavedSearch || this.attr('filterIsDirty')) {
+        // need to reset applied visible saved search (is_visible == true)
+        this.resetAppliedSavedSearch();
+
+        const filters = AdvancedSearch.getFilters(this, 'advancedSearch');
+        const savedSearch = new SavedSearch({
+          search_type: 'AdvancedSearch',
+          object_type: this.attr('modelName'),
+          is_visible: false,
+          filters,
+        });
+        this.attr('appliedSavedSearch', savedSearch);
+      } else {
+        const widgetId = this.attr('widgetId');
+        const permalink = AdvancedSearch
+          .buildSearchPermalink(selectedSavedSearch.id, widgetId);
+
+        this.attr('savedSearchPermalink', permalink);
+        this.attr('appliedSavedSearch', selectedSavedSearch.serialize());
+      }
+
+      this.triggerSearchPermalink(true);
+    },
+    applySavedSearchPermalink() {
+      if (this.attr('savedSearchPermalink')) {
+        // permalink is already exist.
+        this.savePermalinkToClipboard(this.attr('savedSearchPermalink'));
+        return;
+      }
+
+      const appliedSavedSearch = this.attr('appliedSavedSearch');
+      const widgetId = this.attr('widgetId');
+
+      if (appliedSavedSearch.id) {
+        // build permalink by current saved search id
+        const permalink = AdvancedSearch
+          .buildSearchPermalink(appliedSavedSearch.id, widgetId);
+        this.savePermalinkToClipboard(permalink);
+        return;
+      }
+
+      if (appliedSavedSearch && !appliedSavedSearch.is_visible) {
+        // need to save search before build permalink
+        // applied saved is hidden (is_visible == false)
+        return this.saveHiddenSavedSearch(appliedSavedSearch, widgetId);
+      }
+    },
+    saveHiddenSavedSearch(appliedSavedSearch, widgetId) {
+      return appliedSavedSearch.save().then((savedSearch) => {
+        const permalink = AdvancedSearch
+          .buildSearchPermalink(savedSearch.id, widgetId);
+        this.savePermalinkToClipboard(permalink);
+      }, (err) => {
+        handleAjaxError(err);
+        this.triggerSearchPermalink(false);
+      }).always(() => {
+        this.attr('appliedSavedSearch', null);
+      });
+    },
+    savePermalinkToClipboard(savedSearchPermalink) {
+      navigator.clipboard.writeText(savedSearchPermalink).then(() => {
+        notifier('info', 'Link has been copied to your clipboard.');
+      });
+      this.attr('savedSearchPermalink', savedSearchPermalink);
     },
     removeAdvancedFilters() {
       this.attr('advancedSearch.appliedFilterItems', canList());
@@ -228,7 +285,7 @@ export default canComponent.extend({
       this.attr('advancedSearch.request', canList());
       this.attr('advancedSearch.filter', null);
       this.attr('advancedSearch.open', false);
-      this.clearAppliedSavedSearch();
+      this.resetAppliedSavedSearch();
       this.onFilter();
     },
     resetAdvancedFilters() {
@@ -293,6 +350,11 @@ export default canComponent.extend({
     },
     '{viewModel.advancedSearch} change'() {
       this.viewModel.updateCurrentFilter();
+    },
+    '{pubSub} applySavedSearchPermalink'(pubSub, ev) {
+      if (ev.widgetId === this.viewModel.attr('widgetId')) {
+        this.viewModel.applySavedSearchPermalink();
+      }
     },
     '{pubSub} savedSearchSelected'(pubSub, ev) {
       const currentModelName = this.viewModel.attr('modelName');

@@ -211,26 +211,6 @@ class AssessmentEvidenceUrls(object):
         class_name="item-edit-control__content__link")]
 
 
-class CommentArea(object):
-  """Represents comment area (form and mapped comments) on info widget"""
-
-  def __init__(self, container):
-    self._container = container
-    self.comments_section = container.element(text="Responses/Comments")
-    self.add_section = self.comments_section.parent().button(text="Add")
-
-  @property
-  def exists(self):
-    """Returns whether comment area exists."""
-    return self.comments_section.exists
-
-  @property
-  def control_add_section(self):
-    """Returns controls Add Comment button."""
-    return self._container.element(tag_name="comments-section").element(
-        tag_name="questionnaire-link").link(class_name="questionnaire-link")
-
-
 class CustomAttributeManager(object):
   """Manager for custom attributes.
   It finds them based on object type, whether it is

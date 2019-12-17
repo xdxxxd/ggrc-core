@@ -53,7 +53,7 @@ function getMegaObjectConfig(modelName) {
     name: originalModelName,
     originalModelName,
     widgetId: modelName,
-    widgetName: `${loCapitalize(relation)} ${modelTitle}`,
+    widgetName: `${modelTitle} (${loCapitalize(relation)})`,
     relation: relation,
     isMegaObject: true,
   };

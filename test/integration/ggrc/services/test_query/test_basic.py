@@ -39,6 +39,7 @@ class TestAdvancedQueryAPI(WithQueryApi, TestCase):
   """Basic tests for /query api."""
 
   def setUp(self):
+    """Set up for advance query api."""
     super(TestAdvancedQueryAPI, self).setUp()
     self.client.get("/login")
     self.generator = generator.ObjectGenerator()
@@ -1078,6 +1079,7 @@ class TestQueryAssessmentCA(TestCase, WithQueryApi):
   """Test filtering assessments by CAs"""
 
   def setUp(self):
+    """Set up for query assessment CA."""
     super(TestQueryAssessmentCA, self).setUp()
     self._generate_special_assessments()
     self.client.get("/login")
@@ -1190,6 +1192,7 @@ class TestQueryAssessmentCA(TestCase, WithQueryApi):
 class TestSortingQuery(TestCase, WithQueryApi):
   """Test sorting is correct requested with query API"""
   def setUp(self):
+    """Set up sorting query."""
     super(TestSortingQuery, self).setUp()
     self.client.get("/login")
 

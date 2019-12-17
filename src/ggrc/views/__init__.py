@@ -533,6 +533,8 @@ def get_public_config():
 
   public_config = {
       "external_help_url": getattr(settings, "EXTERNAL_HELP_URL", ""),
+      "external_maintenance_schedules_url":
+          getattr(settings, "EXTERNAL_MAINTENANCE_SCHEDULES_URL", ""),
       "external_import_help_url":
           getattr(settings, "EXTERNAL_IMPORT_HELP_URL", ""),
       "snapshotable_objects": list(rules.Types.all),

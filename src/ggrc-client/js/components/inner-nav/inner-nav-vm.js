@@ -51,7 +51,6 @@ export default canMap.extend({
 
     // add default sorting for hidden widgets by title
     let hiddenWidgets = new canList();
-    hiddenWidgets.attr('comparator', 'title');
     this.attr('hiddenWidgets', hiddenWidgets);
 
     // set up routing
@@ -135,11 +134,20 @@ export default canMap.extend({
      * @param {canMap} widget widget
      */
   addToHiddenWidgets(widget) {
-    let hiddenWidgets = this.attr('hiddenWidgets');
-    let hiddenWidget =
-        loFind(hiddenWidgets, (hidden) => hidden.id === widget.id);
+    const hiddenWidgets = this.attr('hiddenWidgets');
+    const hiddenWidget =
+      loFind(hiddenWidgets, (hidden) => hidden.id === widget.id);
 
-    if (!hiddenWidget) {
+    if (hiddenWidget) {
+      return;
+    }
+
+    const indexOfNewHiddenWidget =
+      loFindIndex(hiddenWidgets, (hidden) => hidden.title > widget.title);
+
+    if (indexOfNewHiddenWidget !== -1) {
+      hiddenWidgets.splice(indexOfNewHiddenWidget, 0, widget);
+    } else {
       hiddenWidgets.push(widget);
     }
   },

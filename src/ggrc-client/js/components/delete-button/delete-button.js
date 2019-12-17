@@ -9,9 +9,9 @@ import canMap from 'can-map';
 import canComponent from 'can-component';
 import {
   confirm,
-  BUTTON_VIEW_CLOSE,
   bindXHRToButton,
 } from '../../plugins/utils/modals';
+import {BUTTON_VIEW_CLOSE} from '../../plugins/utils/template-utils';
 import {handleAjaxError} from '../../plugins/utils/errors-utils';
 import {Snapshot} from '../../models/service-models';
 import {isSnapshotType} from '../../plugins/utils/snapshot-utils';

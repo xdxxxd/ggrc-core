@@ -15,12 +15,16 @@ export default canComponent.extend({
   content: '<content></content>',
   events: {
     click: async function () {
-      const workflow = getPageInstance();
-      await generateCycle(workflow);
-      await initCounts(
-        [workflowCountsMap.activeCycles],
-        workflow.type, workflow.id);
-      return refreshAll(workflow, ['task_groups', 'task_group_tasks']);
+      try {
+        const workflow = getPageInstance();
+        await generateCycle(workflow);
+        await initCounts(
+          [workflowCountsMap.activeCycles],
+          workflow.type, workflow.id);
+        return refreshAll(workflow, ['task_groups', 'task_group_tasks']);
+      } catch {
+        return;
+      }
     },
   },
   leakScope: true,

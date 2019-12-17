@@ -465,6 +465,7 @@ export default canComponent.extend({
       let items = self.attr(type);
       let index = items.indexOf(item);
       this.attr('isUpdating' + loCapitalize(type), true);
+      this.attr('isRemoving' + loCapitalize(type), true);
       items.splice(index, 1);
 
       this.attr('deferredSave').push(function () {
@@ -477,6 +478,7 @@ export default canComponent.extend({
         .always(function (assessment) {
           assessment.removeAttr('actions');
           self.attr('isUpdating' + loCapitalize(type), false);
+          self.attr('isRemoving' + loCapitalize(type), false);
 
           self.refreshCounts(['Evidence']);
         });

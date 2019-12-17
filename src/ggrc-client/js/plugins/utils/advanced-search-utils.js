@@ -243,6 +243,70 @@ export const setDefaultStatusConfig = (
   };
 };
 
+const getSerializedAttribute = (model, parentAttrName, attrName) => {
+  const attribute = parentAttrName ? `${parentAttrName}.${attrName}` : attrName;
+  return model.attr(attribute)
+    && model.attr(attribute).serialize();
+};
+
+export const getFilters = (model, parentAttrName) => {
+  const filterItems =
+  getSerializedAttribute(model, parentAttrName, 'filterItems');
+  const mappingItems =
+  getSerializedAttribute(model, parentAttrName, 'mappingItems');
+  const statusItem =
+  getSerializedAttribute(model, parentAttrName, 'statusItem');
+  const parentInstance =
+   getSerializedAttribute(model, parentAttrName, 'parentInstance');
+  let parentItems =
+  getSerializedAttribute(model, parentAttrName, 'parentItems');
+
+  /*
+  "parentInstance" - current parent instance (when sitting on some object page).
+    For example: "Audit" instance is always parent instance for Assessments, when
+    sitting on Audit page, Assessments tab.
+  "parentItems" - parent instances from previous contexts.
+    For example:
+      1. Open any Regulation page (for example: "Regulation #1").
+      2. Open "Programs" tab.
+      3. Open advanced saved search.
+      4. Filter contains text: "MAPPED TO REGULATION: Regulation #1".
+        It happens because "Regulation #1" is parent instance for programs.
+      5. Save current search (for example: "Saved search #1").
+      6. Open any Objective page (for example: "Objective #1").
+      7. Open "Programs" tab.
+      8. Open advanced saved search.
+      9. Filter contains text: "MAPPED TO OBJECTIVE: Objective #1".
+        It happens because "Objective #1" is parent instance for programs right
+        now.
+      10. Select previously saved search from point 5 ("Saved search #1").
+      11. Filter contains text:
+        - "MAPPED TO OBJECTIVE: Objective #1"
+        - "MAPPED TO REGULATION: Regulation #1".
+
+    In this case "Objective #1" is current Parent Instance and "Regulation #1" is
+    previous Parent Instance that was saved in step 5 and now is item in Parent
+    Items.
+
+    "parentItems" array can contain 0 - n items.
+    Depends on previously saved search
+  */
+  if (parentInstance) {
+    if (parentItems) {
+      parentItems.push(parentInstance);
+    } else {
+      parentItems = [parentInstance];
+    }
+  }
+
+  return {
+    filterItems,
+    mappingItems,
+    statusItem,
+    parentItems,
+  };
+};
+
 /**
  * Build permalink for saved search
  * @param {Number} searchId - saved search ID

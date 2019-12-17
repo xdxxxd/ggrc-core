@@ -6,6 +6,7 @@
 """Test Assessment Template import."""
 
 import collections
+import ddt
 
 from ggrc import models
 from ggrc.converters import errors
@@ -14,6 +15,7 @@ from integration.ggrc import TestCase
 from integration.ggrc.models import factories
 
 
+@ddt.ddt
 class TestAssessmentTemplatesImport(TestCase):
   """Assessment Template import tests."""
 
@@ -209,4 +211,32 @@ class TestAssessmentTemplatesImport(TestCase):
             },
         }
     }
+    self._check_csv_response(response, expected_messages)
+
+  @ddt.data(
+      *models.AssessmentTemplate.DEFAULT_ASSESSMENT_TYPE_OPTIONS
+  )
+  def test_default_type_hint_import(self, default_type):
+    """Test import with default assessment type from hint."""
+    audit_slug = factories.AuditFactory().slug
+    asmt_tmpl_data = [
+        collections.OrderedDict([
+            ("object_type", "Assessment Template"),
+            ("Code*", ""),
+            ("Audit*", audit_slug),
+            ("Default Assignees*", "Auditors"),
+            ("Default Assessment Type", default_type),
+            ("Title", "New Template"),
+        ])
+    ]
+
+    expected_messages = {
+        "Assessment Template": {
+            "rows": 1,
+            "created": 1,
+            "updated": 0,
+        },
+    }
+
+    response = self.import_data(*asmt_tmpl_data)
     self._check_csv_response(response, expected_messages)

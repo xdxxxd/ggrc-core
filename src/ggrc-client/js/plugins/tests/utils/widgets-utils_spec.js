@@ -153,14 +153,14 @@ describe('GGRC Utils Widgets', function () {
       });
   });
 
-  describe('initCounts() method', function () {
+  describe('initCounts() method', () => {
     let method;
     let queryDfd;
     let getCounts;
     let snapshotCountsDfd;
     let id = 1;
 
-    beforeEach(function () {
+    beforeEach(() => {
       queryDfd = $.Deferred();
       snapshotCountsDfd = $.Deferred();
       method = WidgetsUtils.initCounts;
@@ -173,11 +173,9 @@ describe('GGRC Utils Widgets', function () {
           operation: 'owned',
         });
       spyOn(SnapshotUtils, 'isSnapshotRelated')
-        .and.callFake(function (type, widgetType) {
-          return widgetType === 'Control';
-        });
+        .and.callFake((type, widgetType) => widgetType === 'Control');
       spyOn(QueryAPI, 'buildParam')
-        .and.callFake(function (objName) {
+        .and.callFake((objName) => {
           return {
             objectName: objName,
           };
@@ -186,22 +184,19 @@ describe('GGRC Utils Widgets', function () {
       spyOn(QueryParser, 'parse')
         .and.returnValue({});
 
-      spyOn(QueryAPI, 'batchRequests');
-
-      spyOn($.when, 'apply')
-        .and.returnValue(queryDfd);
+      spyOn(QueryAPI, 'batchRequests').and.returnValue(queryDfd);
 
       spyOn(SnapshotUtils, 'getSnapshotsCounts')
         .and.returnValue(snapshotCountsDfd);
     });
 
-    it('should not make request when no widget was provided', function () {
+    it('should not make request when no widget was provided', () => {
       method([], 'Control', 1);
 
       expect(QueryAPI.batchRequests).not.toHaveBeenCalled();
     });
 
-    it('should init counts for snapshotable objects', async function (done) {
+    it('should init counts for snapshotable objects', async () => {
       let result;
 
       queryDfd.resolve();
@@ -213,11 +208,10 @@ describe('GGRC Utils Widgets', function () {
 
       result = getCounts();
       expect(result.Control).toEqual(11);
-      done();
     });
 
     it('should init counts for non-snapshotable objects',
-      async function (done) {
+      async () => {
         let result;
 
         queryDfd.resolve({
@@ -239,11 +233,9 @@ describe('GGRC Utils Widgets', function () {
         result = getCounts();
 
         expect(result.Assessment).toEqual(10);
-
-        done();
       });
 
-    it('should init counts for virtual objects', async function (done) {
+    it('should init counts for virtual objects', async () => {
       let result;
 
       queryDfd.resolve({
@@ -267,8 +259,6 @@ describe('GGRC Utils Widgets', function () {
       result = getCounts();
 
       expect(result.ActiveCycle).toEqual(10);
-
-      done();
     });
   });
 
@@ -494,7 +484,7 @@ describe('GGRC Utils Widgets', function () {
       expect(result).toEqual({
         name: 'Program',
         widgetId: 'Program_parent',
-        widgetName: 'Parent Programs',
+        widgetName: 'Programs (Parent)',
         countsName: 'Program_parent',
         isObjectVersion: undefined,
         relation: 'parent',

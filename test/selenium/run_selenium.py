@@ -64,7 +64,7 @@ def add_user(url_origin):
   session = requests.Session()
   test_utils.wait_for(
       lambda: session.get(environment.app_url).status_code == OK_CODE,
-      constants.ux.TWO_MIN_USER_WAIT * 4)
+      constants.timeouts.TWO_MIN_USER_WAIT * 4)
   test_utils.wait_for(
       lambda: session.get(url_module.Urls().gae_login(
           users.FAKE_SUPER_USER)).status_code == OK_CODE)

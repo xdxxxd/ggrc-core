@@ -696,6 +696,47 @@ class TestWorkflowsApiPost(TestCase):
     self.assertEquals(count, exp_count)
 
   @ddt.data(
+      'Creator',
+      'Reader',
+  )
+  def test_create_cycle_task(self, member_role):
+    """Check creation cycle task group by workflow member"""
+    member = self.create_user_with_role(member_role)
+    with factories.single_commit():
+      workflow = wf_factories.WorkflowFactory()
+      workflow.add_person_with_role_name(member, 'Workflow Member')
+      cycle = wf_factories.CycleFactory(workflow=workflow)
+      cycle_id = cycle.id
+      ctg_id = wf_factories.CycleTaskGroupFactory(
+          cycle=cycle,
+          title='TestCTG',
+      ).id
+    self.generator.activate_workflow(workflow)
+    self.api.set_user(member)
+
+    response = self.api.post(all_models.CycleTaskGroupObjectTask, {
+        "cycle_task_group_object_task": {
+            "title": "New Cycle Task",
+            "start_date": datetime.datetime.now().strftime("%Y-%m-%d"),
+            "end_date": datetime.datetime.now().strftime("%Y-%m-%d"),
+            "context": None,
+            "task_type": "text",
+            "cycle_task_group": {
+                "id": ctg_id,
+                "type": "Task Group",
+            },
+            "cycle": {
+                "id": cycle_id,
+                "type": "Cycle",
+            },
+        }
+    })
+
+    self.assert403(response)
+    count = len(all_models.CycleTaskGroupObjectTask.query.all())
+    self.assertEquals(count, 0)
+
+  @ddt.data(
       'Reader',
       'Editor',
       'Administrator',
@@ -738,6 +779,48 @@ class TestWorkflowsApiPost(TestCase):
     self.assert201(response)
     count = len(all_models.CycleTaskGroup.query.all())
     self.assertEquals(count, exp_count)
+
+  def test_workflow_cloning(self):
+    """Test cloning a workflow by users w/ and w/o read permissions
+
+    This test checks that a user can create a workflow and after
+    successfully clone it. But a cloning must be failed if some other user
+    without a read permission try to do it.
+    """
+    user_role = "Creator"
+    with factories.single_commit():
+      person1 = self.create_user_with_role(user_role)
+      person2 = self.create_user_with_role(user_role)
+      workflow = wf_factories.WorkflowFactory()
+      workflow.add_person_with_role_name(person1, 'Admin')
+
+    person2_id = person2.id  # noqa #pylint: disable=unused-variable
+    workflow_id = workflow.id
+    self.generator.activate_workflow(workflow)
+
+    data = [{
+        "workflow": {
+            "task_group_title": "Task Group 1",
+            "is_verification_needed": False,
+            "title": "",
+            "clone": workflow_id,
+            "context": None,
+            "clone_people": False,
+            "clone_tasks": False,
+            "clone_objects": True,
+            "access_control_list": [],
+        }
+    }]
+
+    # perform a request using a user w/ a read permission
+    self.api.set_user(person1)
+    response = self.api.post(all_models.Workflow, data)
+    self.assert200(response)
+
+    # perform a request using a user w/o a read permission
+    self.api.set_user(person2)
+    response = self.api.post(all_models.Workflow, data)
+    self.assert403(response)
 
   @ddt.data(
       ('Editor', 200, 0),
