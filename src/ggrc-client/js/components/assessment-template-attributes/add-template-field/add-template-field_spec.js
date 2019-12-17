@@ -60,6 +60,16 @@ describe('add-template-field component', () => {
       viewModel.addField();
       expect(viewModel.fields.length).toBe(1);
     });
+    it('excludes empty values for multi_choice_options', () => {
+      let selectedObj = new canMap({
+        title: 'External Reviewer',
+        type: 'Dropdown',
+        values: '1, ,2',
+      });
+      viewModel.attr('selected', selectedObj);
+      viewModel.addField();
+      expect(viewModel.fields[0].multi_choice_options).toEqual('1,2');
+    });
   });
 
   describe('isEmptyTitle() method', () => {
