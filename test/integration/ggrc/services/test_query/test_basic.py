@@ -1192,6 +1192,7 @@ class TestQueryAssessmentCA(TestCase, WithQueryApi):
 class TestSortingQuery(TestCase, WithQueryApi):
   """Test sorting is correct requested with query API"""
   def setUp(self):
+    """Set up sorting query."""
     super(TestSortingQuery, self).setUp()
     self.client.get("/login")
 
