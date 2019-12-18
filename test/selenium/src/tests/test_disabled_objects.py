@@ -34,11 +34,13 @@ class TestDisabledObjects(base.Test):
                       "can_delete": three_bbs.delete_option.exists}
     assert actual_options == expected_options
 
-  def test_user_cannot_edit_control_from_tree_view(self, control,
-                                                   dashboard_controls_tab):
-    """Confirm that user cannot edit Control from tree view."""
-    assert not dashboard_controls_tab.get_control(control).is_editable, (
-        "Edit option should not be available for Control in tree view")
+  @pytest.mark.parametrize("obj", objects.SINGULAR_DISABLED_OBJS,
+                           indirect=True)
+  def test_cannot_edit_disabled_object_from_tree_view(self, obj, selenium,):
+    """Confirm that user cannot edit disabled object from tree view."""
+    assert not factory.get_cls_webui_service(objects.get_plural(
+        obj.type))().is_obj_editable_via_tree_view(obj), (
+        "Edit option should not be available for disabled object in tree view")
 
   @pytest.mark.parametrize("obj", objects.SINGULAR_DISABLED_OBJS,
                            indirect=True)

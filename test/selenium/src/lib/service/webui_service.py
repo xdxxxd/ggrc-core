@@ -382,15 +382,18 @@ class BaseWebUiService(base.WithBrowser):
     return self.get_list_objs_from_tree_view(src_obj)
 
   def is_obj_mappable_via_tree_view(self, src_obj, obj):
-    """Open dropdown of Tree View Item  by title, an check is object
-    mappable.
-    """
-    objs_widget = self.open_widget_of_mapped_objs(src_obj)
-    dropdown_on_tree_view_item = (objs_widget.tree_view.
-                                  open_tree_actions_dropdown_by_title
-                                  (title=obj.title))
-    element_to_verify = element.DropdownMenuItemTypes.MAP
-    return dropdown_on_tree_view_item.is_item_exist(element_to_verify)
+    """Open dropdown of Tree View Item by title on source object's widget,
+    and check is object mappable."""
+    return (self.open_widget_of_mapped_objs(src_obj).tree_view.
+            open_tree_actions_dropdown_by_title(title=obj.title).
+            is_item_exist(element.DropdownMenuItemTypes.MAP))
+
+  def is_obj_editable_via_tree_view(self, obj):
+    """Open dropdown of Tree View Item by title on dashboard tab of object,
+    and check is object editable."""
+    return (self.open_obj_dashboard_tab().tree_view.
+            open_tree_actions_dropdown_by_title(title=obj.title).
+            is_item_exist(element.DropdownMenuItemTypes.EDIT))
 
   def map_objs_via_tree_view_item(self, src_obj, dest_objs):
     """Open generic widget of mapped objects, open unified mapper modal from

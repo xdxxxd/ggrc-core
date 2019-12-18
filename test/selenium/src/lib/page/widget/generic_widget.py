@@ -219,7 +219,7 @@ class TreeView(base.TreeView):
     """
     search_field = self._browser.element(class_name="tree-filter__input")
     search_field.send_keys(obj_str)
-    search_button = self._browser.element(text="Search")
+    search_button = self._browser.button(text="Search")
     search_button.click()
     self.wait_loading_after_actions()
     if len(self.tree_view_items(is_updated=True)) > 1:
