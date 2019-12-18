@@ -40,16 +40,20 @@ class TestDisabledObjects(base.Test):
     assert not dashboard_controls_tab.get_control(control).is_editable, (
         "Edit option should not be available for Control in tree view")
 
-  def test_user_cannot_edit_or_del_control_from_gl_search(self, control,
-                                                          header_dashboard):
-    """Confirm that user cannot edit or delete Control from global search."""
-    three_bbs = (header_dashboard.open_global_search().search_obj(control).
-                 get_three_bbs(control.type))
-    actual_options = {"can_edit": three_bbs.edit_option.exists,
-                      "can_delete": three_bbs.delete_option.exists}
-    expected_options = {"can_edit": False,
-                        "can_delete": False}
-    assert expected_options == actual_options
+  @pytest.mark.parametrize("obj", objects.SINGULAR_DISABLED_OBJS,
+                           indirect=True)
+  def test_cannot_edit_or_del_disabled_obj_from_gl_search(
+      self, obj, header_dashboard, soft_assert
+  ):
+    """Confirm that user cannot edit or delete disabled object from
+    global search."""
+    three_bbs = (header_dashboard.open_global_search().search_obj(obj).
+                 get_three_bbs(obj.type))
+    soft_assert.expect(not three_bbs.edit_option.exists,
+                       "'Edit' option should not be available.")
+    soft_assert.expect(not three_bbs.delete_option.exists,
+                       "'Delete' option should not be available.")
+    soft_assert.assert_expectations()
 
   def test_cannot_make_and_view_proposals_for_control(self, control,
                                                       soft_assert, selenium):
