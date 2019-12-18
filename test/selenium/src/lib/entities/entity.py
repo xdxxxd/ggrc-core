@@ -109,7 +109,7 @@ class Representation(object):
         "CONTROL_OPERATORS": "control_operators",
         "CONTROL_OWNERS": "control_owners",
         "URL": "url",
-        "ID": "id", "RISK_TYPE": "risk_type",
+        "ID": "id", "Risk Type": "risk_type",
         "REVIEW": "review"
     }
     csv_remap_items = {

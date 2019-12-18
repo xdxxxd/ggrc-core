@@ -68,13 +68,15 @@ class TestDisabledObjects(base.Test):
     webui_facade.soft_assert_cannot_view_version_history(obj, soft_assert)
     soft_assert.assert_expectations()
 
-  def test_object_export(self, control, create_tmp_dir, selenium):
+  @pytest.mark.parametrize('obj', objects.SINGULAR_DISABLED_OBJS,
+                           indirect=True)
+  def test_object_export(self, obj, create_tmp_dir, selenium):
     """Confirm that object can be exported and exported data is correct."""
     actual_objects = webui_facade.export_objects(
         path_to_export_dir=create_tmp_dir,
-        obj_type=control.type)
+        obj_type=obj.type)
     self.general_contain_assert(
-        control.repr_ui(), actual_objects,
+        obj.repr_ui(), actual_objects,
         *entity.Representation.tree_view_attrs_to_exclude)
 
   @pytest.mark.parametrize(
