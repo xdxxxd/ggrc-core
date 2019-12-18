@@ -138,11 +138,13 @@ class TestDisabledObjects(base.Test):
     old_tab, new_tab = browsers.get_browser().windows()
     assert old_tab.url == new_tab.url
 
-  def test_deprecated_obj_review_buttons(self, control, soft_assert, selenium):
+  @pytest.mark.parametrize("obj", objects.SINGULAR_DISABLED_OBJS,
+                           indirect=True)
+  def test_disabled_obj_review_buttons(self, obj, soft_assert, selenium):
     """Check that buttons 'Mark Reviewed' and 'Request Review' are not
-    displayed at Control Info page."""
+    displayed at disabled object Info page."""
     info_page = factory.get_cls_webui_service(objects.get_plural(
-        control.type))().open_info_page_of_obj(control)
+        obj.type))().open_info_page_of_obj(obj)
     soft_assert.expect(not info_page.mark_reviewed_btn.exists,
                        "There should be no 'Mark Reviewed' button.")
     soft_assert.expect(not info_page.request_review_btn.exists,
