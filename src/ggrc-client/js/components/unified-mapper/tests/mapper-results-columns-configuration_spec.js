@@ -135,21 +135,4 @@ describe('mapper-results-columns-configuration component', function () {
       expect(viewModel.selectedColumns).toEqual('selectedColumns');
     });
   });
-
-  describe('stopPropagation() method', function () {
-    let event;
-
-    beforeEach(function () {
-      event = {
-        stopPropagation: function () {},
-      };
-      spyOn(event, 'stopPropagation');
-    });
-
-    it('calls stopPropagation of event',
-      function () {
-        viewModel.stopPropagation({}, {}, event);
-        expect(event.stopPropagation).toHaveBeenCalled();
-      });
-  });
 });
