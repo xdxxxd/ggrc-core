@@ -60,11 +60,12 @@ class TestDisabledObjects(base.Test):
     webui_facade.soft_assert_cannot_view_proposals(info_page, soft_assert)
     soft_assert.assert_expectations()
 
-  def test_cannot_restore_disabled_object_version(self, control, soft_assert,
+  @pytest.mark.parametrize('obj', objects.SINGULAR_DISABLED_OBJS,
+                           indirect=True)
+  def test_cannot_restore_disabled_object_version(self, obj, soft_assert,
                                                   selenium):
     """Confirm that user cannot restore disabled object's version."""
-    webui_facade.soft_assert_cannot_view_version_history(
-        control, soft_assert, selenium)
+    webui_facade.soft_assert_cannot_view_version_history(obj, soft_assert)
     soft_assert.assert_expectations()
 
   def test_object_export(self, control, create_tmp_dir, selenium):
