@@ -126,7 +126,7 @@ class TestCreatorProgram(TestCase):
                 "mapped_object": {
                     "get": 200,
                     "put": 200,
-                    "delete": 200
+                    "delete": 403
                 },
                 "unrelated": {
                     "get": 403,
@@ -173,8 +173,7 @@ class TestCreatorProgram(TestCase):
     response = self.api.get(obj.__class__, obj.id)
     if response.status_code == 200:
       return self.api.put(obj, response.json).status_code
-    else:
-      return response.status_code
+    return response.status_code
 
   def map(self, dest):
     """ Map src to dest """
