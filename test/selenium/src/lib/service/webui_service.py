@@ -626,13 +626,6 @@ class AssessmentsService(BaseWebUiService):
                     objs_under_asmt_titles=objs_under_asmt_titles))
     objs_widget.show_generated_results()
 
-  def get_log_pane_validation_result(self, obj):
-    """Open assessment Info Page. Open Log Pane on Assessment Info Page.
-    And return result of validation of all items.
-    """
-    asmt_page = self.open_info_page_of_obj(obj)
-    return asmt_page.changelog_validation_result()
-
   def get_asmt_related_asmts_titles(self, asmt):
     """Open assessment Info Page. Open Related Assessments Tab on Assessment
     Info Page. And return list of related Assessments Titles.

@@ -81,7 +81,7 @@ class Representation(object):
     # common for UI and CSV
     result_remap_items = {
         els.TITLE: "title", els.ADMIN: "admins",
-        els.CODE: "slug", els.REVIEW_STATE: "os_state",
+        els.CODE: "slug", els.REVIEW_STATE: "review_status",
         els.OBJECT_REVIEW: "os_state",
         els.STATE: "status"
     }
@@ -91,11 +91,14 @@ class Representation(object):
         els.LAST_UPDATED: "updated_at",
         els.AUDIT_CAPTAINS: "audit_captains",
         els.AUDITORS: "auditors",
+        els.CREATED_AT: "created_at",
         "MAPPED_OBJECTS": "mapped_objects", els.ASSIGNEES: "assignees",
         els.CREATORS: "creators", "VERIFIERS": "verifiers",
         "COMMENTS": "comments", "CREATED_AT": "created_at",
         els.MODIFIED_BY: "modified_by", "LAST_UPDATED_BY": "modified_by",
         "UPDATED_AT": "updated_at", "ASSESSMENT_TYPE": "assessment_type",
+        els.ASMT_TYPE: "assessment_type",
+        els.RECIPIENTS: "recipients",
         "IS_VERIFIED": "verified",
         "CUSTOM_ATTRIBUTES": "custom_attributes",
         "DESCRIPTION": "description",
@@ -889,6 +892,14 @@ class ReviewEntity(Entity):
         "last_reviewed_by": "Last reviewed by\n{}\non {}".format(
             self.last_reviewed_by, self.last_reviewed_at) if
         self.last_reviewed_by and self.last_reviewed_at else None}
+
+
+class ChangeLogItemEntity(Representation):
+  """Change log item entity from UI."""
+
+  def __init__(self, **attrs):
+    super(ChangeLogItemEntity, self).__init__()
+    self.set_attrs("author", "changes", **attrs)
 
 
 class ProposalEntity(Representation):

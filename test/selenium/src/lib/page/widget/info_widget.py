@@ -11,7 +11,7 @@ from lib.app_entity_factory import entity_factory_common
 from lib.constants import (
     locator, objects, element, roles, regex, messages)
 from lib.element import (
-    info_widget_three_bbs, page_elements, tables, tab_element, tab_containers)
+    info_widget_three_bbs, page_elements, tables, tab_element)
 from lib.page.modal import (
     apply_decline_proposal, set_value_for_asmt_ca, snapshoted_controls_info)
 from lib.page.widget import info_panel, object_modal, object_page, page_mixins
@@ -272,27 +272,6 @@ class ReadOnlyInfoWidget(page_mixins.WithPageElements, base.Widget,
     """Extend 'list all scopes' by headers' text and values' text."""
     self.list_all_headers_txt.extend(help_utils.convert_to_list(headers))
     self.list_all_values_txt.extend(help_utils.convert_to_list(values))
-
-  def changelog_validation_result(self):
-    """Returns changelog validation result."""
-    self.tabs.ensure_tab(self._changelog_tab_name)
-    return tab_containers.changelog_tab_validate(
-        self._browser.driver, self._active_tab_root.wd)
-
-  def get_changelog_entries(self):
-    """Returns list of entries from changelog."""
-    self.tabs.ensure_tab(self._changelog_tab_name)
-    ui_utils.wait_for_spinner_to_disappear()
-    log_items = []
-    entry_list = self._browser.elements(class_name="w-status")
-    for entry in entry_list:
-      entry_data = {"author": entry.element(tag_name="person-data").text}
-      for row in entry.elements(class_name="clearfix"):
-        data = row.text.split("\n")
-        entry_data.update({data[0]: {"original_value": data[1],
-                                     "new_value": data[2]}})
-      log_items.append(entry_data)
-    return log_items
 
   @property
   def comments_panel(self):

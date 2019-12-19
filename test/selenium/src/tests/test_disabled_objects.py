@@ -9,7 +9,8 @@ import pytest
 from lib import base, browsers, factory, url
 from lib.constants import element, objects
 from lib.entities import entity
-from lib.service import rest_facade, webui_service, webui_facade
+from lib.service import (rest_facade, webui_service, webui_facade,
+                         change_log_ui_facade)
 
 
 @pytest.fixture()
@@ -84,6 +85,14 @@ class TestDisabledObjects(base.Test):
     self.general_contain_assert(
         obj.repr_ui(), actual_objects,
         *entity.Representation.tree_view_attrs_to_exclude)
+
+  def test_disabled_obj_change_log_tab(self, control, soft_assert, selenium):
+    """Check disabled object's Log tab is valid."""
+    change_log_ui_facade.soft_assert_obj_creation_entry_is_valid(
+        control, soft_assert)
+    change_log_ui_facade.soft_assert_disabled_obj_log_tab_elements_are_valid(
+        control, soft_assert)
+    soft_assert.assert_expectations()
 
   @pytest.mark.parametrize(
       "obj, role", [("control", "control_owners"), ("risk", "risk_owners")],
