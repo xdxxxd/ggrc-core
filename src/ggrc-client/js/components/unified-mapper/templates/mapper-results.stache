@@ -48,7 +48,7 @@
     <div class="list-body {{#isLoading}}loading{{/isLoading}}">
       <object-list items:from="items" isLoading:from="isLoading" listType:from="'GRID'">
         <mapper-results-item class="{{#relatedAssessments.show}}has-related-assessments{{/relatedAssessments.show}}"
-                             itemData:from="data"
+                             itemData:from="this.data"
                              searchOnly:from="searchOnly"
                              selectedColumns:from="columns.selected"
                              serviceColumns:from="columns.service"
