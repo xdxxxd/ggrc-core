@@ -48,6 +48,7 @@ export default canComponent.extend({
     rightRevisionDescription: '',
     compareIt: function () {
       const instance = this.attr('instance');
+
       const view = getInstanceView(instance);
       const that = this;
       const currentRevisionID = this.attr('leftRevisionId');
@@ -219,9 +220,12 @@ export default canComponent.extend({
      * @param {canList} revisions - revisions for comparing
      */
     highlightDifference: loDebounce(function ($target, revisions) {
+      const instance = this.attr('instance');
       this.highlightAttributes($target);
       this.highlightCustomRoles($target);
-      this.highlightAttachments($target, revisions);
+      if (instance.type !== 'Program') {
+        this.highlightAttachments($target, revisions);
+      }
       this.highlightCustomAttributes($target, revisions);
     }, 250),
 
