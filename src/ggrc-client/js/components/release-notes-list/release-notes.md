@@ -1,6 +1,8 @@
-[//]: <> (updated 12/16/2019)
+[//]: <> (updated 01/10/2020)
 
 Our product team is working hard to engineer compliance @ scale and make your day to day user journeys easier. We have been adding key capabilities to the product as listed here below.
+
+## An access to the maintenance schedules from the UI (v2.24.0, 01/10/2020)
 
 ## Bulk verify assessments (v2.23.0, 12/16/2019)
 
@@ -121,6 +123,10 @@ Our product team is working hard to engineer compliance @ scale and make your da
 ## Linking assessments with other issue tracking systems (v0.10.36, 12/12/2017)
 
 ## Performance improvements
+
+### An access to the maintenance schedules from the UI (v2.24.0, 01/10/2020)
+
+From now, you can access the maintenance schedules right from the UI.
 
 ### Bulk verify assessments (v2.23.0, 12/16/2019)
 
