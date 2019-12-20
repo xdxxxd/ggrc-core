@@ -26,7 +26,7 @@ export default canComponent.extend({
           let instance = this.attr('instance');
           if (isAllowedFor('update', instance) &&
             !instance.attr('archived')) {
-            this.checkFolder().always(function () {
+            this.checkFolder().finally(() => {
               setValue(true);
             });
           } else {
@@ -60,31 +60,30 @@ export default canComponent.extend({
         itemType: 'files',
       });
     },
-    checkFolder: function () {
-      let self = this;
-
-      return this.findFolder().then(function (folder) {
+    async checkFolder() {
+      try {
+        const folder = await this.findFolder();
         /*
           during processing of the request to GDrive instance can be updated
           and folder can become null. In this case isFolderAttached value
           should not be updated after request finishing.
         */
-        if (folder && self.attr('instance.folder')) {
-          self.attr('isFolderAttached', true);
+        if (folder && this.attr('instance.folder')) {
+          this.attr('isFolderAttached', true);
         } else {
-          self.attr('isFolderAttached', false);
+          this.attr('isFolderAttached', false);
         }
-        self.attr('canAttach', true);
-      }, function (err) {
-        self.attr('error', err);
-        self.attr('canAttach', false);
-      });
+        this.attr('canAttach', true);
+      } catch (err) {
+        this.attr('error', err);
+        this.attr('canAttach', false);
+      }
     },
     findFolder: function () {
       let folderId = this.attr('instance.folder');
 
       if (!folderId) {
-        return $.Deferred().resolve();
+        return Promise.resolve();
       }
 
       return findGDriveItemById(folderId);
