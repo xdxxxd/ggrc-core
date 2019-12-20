@@ -38,9 +38,9 @@ export default class PersistentNotifier {
     }
 
     if (this.dfds.length === 0) {
+      this.whenQueueEmpties();
       this.onEmptyCallbacksList.forEach((fn) => fn());
       this.onEmptyCallbacksList = [];
-      this.whenQueueEmpties();
     }
   }
 
