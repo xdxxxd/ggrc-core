@@ -638,3 +638,11 @@ def soft_assert_cannot_add_comment(soft_assert, obj):
   soft_assert.expect(
       not info_page.comments_panel.comment_input.exists,
       "There should be no input field in comments panel.")
+
+
+def open_dashboard(selenium):
+  """Opens My Work Dashboard URL and
+  Returns:
+    Dashboard page objects model."""
+  selenium_utils.open_url(url.dashboard())
+  return dashboard.Dashboard(selenium)
