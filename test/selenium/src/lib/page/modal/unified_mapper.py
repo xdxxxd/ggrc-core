@@ -194,6 +194,17 @@ class MapObjectsModal(CommonUnifiedMapperModal):
   """Modal for map objects."""
 
 
+class MapProgramsToProgramModal(MapObjectsModal):
+  """Modal for map child or parent programs to program."""
+
+  def _confirm_map_selected(self):
+    """Selects Map Selected button.
+
+    This method is overrided because method from base class does not work in
+    situation when confirmation popup appears."""
+    self._root.button(text='Map Selected').click()
+
+
 class SearchObjectsModal(CommonUnifiedMapperModal):
   """Modal for search objects."""
 

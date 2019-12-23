@@ -59,6 +59,10 @@ class Programs(CommonDropdownTreeViewItem):
   """Class for Dropdown of Programs TreeViewItem"""
 
 
+class ProgramChilds(CommonDropdownTreeViewItem):
+  """Class for Dropdown of ProgramChilds TreeViewItem"""
+
+
 class DataAssets(SnapshotsDropdownTreeViewItem):
   """Class for Dropdown of DataAssets TreeViewItem"""
 
@@ -89,3 +93,7 @@ class OrgGroups(SnapshotsDropdownTreeViewItem):
 
 class Risks(SnapshotsDropdownTreeViewItem):
   """Class for Dropdown of Risks TreeViewItem"""
+
+
+class Regulations(SnapshotsDropdownTreeViewItem):
+  """Class for Dropdown of Regulations TreeViewItem"""

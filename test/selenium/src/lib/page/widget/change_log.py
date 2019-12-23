@@ -1,10 +1,13 @@
-# coding=utf-8
 # Copyright (C) 2019 Google Inc.
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 """Classes to represent Change Log elements of object's page/panel."""
 # pylint: disable=too-few-public-methods
+import re
+
 from lib import base
+from lib.constants import regex
 from lib.entities import entity
+from lib.utils import string_utils
 
 
 class ChangeLog(base.WithBrowser):
@@ -59,7 +62,7 @@ class ChangeLogEntry(object):
       list of dicts."""
     def parse_value(value):
       """Return None if value is 'Em dash' else returns value."""
-      return value if not value == u'—' else None
+      return value if not value == string_utils.Symbols.EM_DASH else None
 
     def parse_attr_name(value):
       """Returns attribute name transformed from UI representation into
@@ -82,6 +85,14 @@ class ChangeLogEntry(object):
   @property
   def change_log_item(self):
     """Returns Change log item as ChangeLogItemEntity instance."""
+    additional_info = None
+    change_info = self._root.element(class_name='entry-author').text.split(
+        "made changes " + string_utils.Symbols.EM_DASH)
+    author, another_info = change_info[0].strip(), change_info[1].strip()
+    if not self._root.element(tag_name='person-data').exists:
+      additional_info = re.search(regex.ADDITIONAL_INFO_IN_CHANGE_LOG,
+                                  another_info).group(1)
     return entity.ChangeLogItemEntity(
-        author=self._root.element(tag_name="person-data").text,
-        changes=self._get_changes())
+        author=author,
+        changes=self._get_changes(),
+        additional_info=additional_info)

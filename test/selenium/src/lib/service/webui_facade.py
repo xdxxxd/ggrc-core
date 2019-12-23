@@ -7,7 +7,8 @@ import random
 import re
 
 from lib import url, users, base, browsers, factory
-from lib.constants import objects, element, object_states, roles
+from lib.constants import (objects, element, str_formats, messages,
+                           object_states, roles)
 from lib.entities import entities_factory
 from lib.page import dashboard
 from lib.page.modal import bulk_update, unified_mapper, request_review
@@ -15,7 +16,7 @@ from lib.page.widget import (generic_widget, object_modal, import_page,
                              related_proposals, version_history, widget_base)
 from lib.rest_facades import roles_rest_facade
 from lib.service import (webui_service, rest_service, rest_facade,
-                         admin_webui_service)
+                         admin_webui_service, change_log_ui_service)
 from lib.utils import selenium_utils, ui_utils, string_utils, test_utils
 
 
@@ -259,7 +260,7 @@ def map_object_via_unified_mapper(
       dest_obj_modal = map_modal.click_create_and_map_obj()
       dest_obj_modal.submit_obj(obj_to_map)
     if proceed_in_new_tab:
-      object_modal.WarningModal().proceed_in_new_tab()
+      object_modal.CommonConfirmModal().confirm()
   return map_modal
 
 
@@ -404,27 +405,6 @@ def soft_assert_gca_fields_disabled_for_editing(soft_assert, ca_type):
                        "'Possible values' field should be disabled.")
 
 
-def soft_assert_techenv_mapped_to_programs(
-    programs_with_audit_and_techenv, selenium, soft_assert
-):
-  """Performs soft assertion that technology environment mapped to audit which
-   created in scope of child program is mapped to both child and parent
-    programs."""
-  technology_environment_service = (webui_service.
-                                    TechnologyEnvironmentService(selenium))
-  technology_environment = (programs_with_audit_and_techenv['techenv'].
-                            tree_item_representation())
-  for program in programs_with_audit_and_techenv['programs']:
-    technology_environment_service.open_info_page_of_obj(program)
-    mapped_technology_environments = (technology_environment_service.
-                                      get_list_objs_from_tree_view(
-                                          src_obj=program))
-    soft_assert.expect(
-        [technology_environment] == mapped_technology_environments,
-        '{} should be mapped to {}'.format(technology_environment.title,
-                                           program.title))
-
-
 def soft_assert_bulk_complete_for_completed_asmts(soft_assert, asmts, page):
   """Performs soft assert that 'Bulk complete' option/button is not
   displayed for several assessments when all of them are in one of the
@@ -452,6 +432,50 @@ def soft_assert_bulk_complete_for_opened_asmts(soft_assert, asmts, page,
         page.is_bulk_complete_displayed() == is_displayed,
         "'Bulk complete' for assessment with '{}' status should {}be "
         "available.".format(status, "" if is_displayed else "not "))
+
+
+def soft_assert_objects_are_mapped(
+    selenium, soft_assert, src_obj, objs, *args, **kwargs
+):
+  """Performs soft assertion that object is mapped to another one.
+
+  Args and kwargs are optional arguments for initialization of webui_service
+  object.
+  """
+  ui_service_cls = factory.get_cls_webui_service(
+      objects.get_plural(objs[0].type))
+  mapped_objs = (ui_service_cls(driver=selenium, *args, **kwargs).
+                 get_list_objs_from_tree_view(src_obj=src_obj))
+  soft_assert.expect(
+      [obj.tree_item_representation() for obj in objs] == mapped_objs,
+      messages.AssertionMessages.OBJS_SHOULD_BE_MAPPED_TO_OBJ.format(
+          mapped_objs_names=[obj.title for obj in objs],
+          src_obj_name=src_obj.title))
+
+
+def soft_assert_tab_with_number_exists(info_page, soft_assert, tab_name, num):
+  """Soft assert that there is tab with number on page."""
+  soft_assert.expect(
+      str_formats.TAB_WITH_NUM.format(tab_name=tab_name, num=num)
+      in info_page.top_tabs.tab_names,
+      messages.AssertionMessages.TAB_WITH_NUM_SHOULD_EXIST.format(
+          tab_name=tab_name, num=num))
+
+
+def soft_assert_automapping_in_change_log(
+    src_obj, mapped_obj, automapped_obj, user, soft_assert
+):
+  """Soft assert automapping of automapped_obj (which is mapped to mapped_obj)
+  to src_obj which is performed after mapping mapped_obj to src_obj by user."""
+  expected_entry = (entities_factory.ChangeLogItemsFactory().
+                    generate_log_entity_for_automapping(
+                        src_obj, mapped_obj, automapped_obj, user))
+  actual_changelog = (change_log_ui_service.ChangeLogService().
+                      get_obj_changelog(src_obj))
+  soft_assert.expect(
+      expected_entry in actual_changelog,
+      messages.AssertionMessages.AUTOMAPPING_IN_CHANGE_LOG.format(
+          obj_name=automapped_obj.type))
 
 
 def soft_assert_bulk_verify_for_not_in_review_state(page, asmts, soft_assert):
