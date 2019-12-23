@@ -74,7 +74,6 @@ function makeInfoWidget(instance, widgetView) {
   widgetView [optional] - a template for rendering the info.
 */
 function makeSummaryWidget(instance, widgetView) {
-  let defaultView = '/base_objects/summary.stache';
   return createWidgetDescriptor(
     instance.constructor.model_singular + ':summary', {
       widget_id: 'summary',
@@ -86,7 +85,7 @@ function makeSummaryWidget(instance, widgetView) {
       content_controller_options: {
         instance: instance,
         model: instance.constructor,
-        widget_view: widgetView || defaultView,
+        widget_view: widgetView,
       },
       order: 3,
       uncountable: true,
@@ -94,7 +93,6 @@ function makeSummaryWidget(instance, widgetView) {
 }
 
 function makeDashboardWidget(instance, widgetView) {
-  let defaultView = '/base_objects/dashboard.stache';
   return createWidgetDescriptor(
     instance.constructor.model_singular + ':dashboard', {
       widget_id: 'dashboard',
@@ -109,7 +107,7 @@ function makeDashboardWidget(instance, widgetView) {
       content_controller_options: {
         instance: instance,
         model: instance.constructor,
-        widget_view: widgetView || defaultView,
+        widget_view: widgetView,
       },
       order: 6,
       uncountable: true,

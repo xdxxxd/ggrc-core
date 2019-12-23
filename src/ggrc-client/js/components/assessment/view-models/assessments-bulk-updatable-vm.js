@@ -4,7 +4,10 @@
 */
 
 import ObjectOperationsBaseVM from '../../view-models/object-operations-base-vm';
-import {notifier} from '../../../plugins/utils/notifiers-utils';
+import {
+  notifier,
+  connectionLostNotifier,
+} from '../../../plugins/utils/notifiers-utils';
 import {trackStatus} from '../../../plugins/utils/background-task-utils';
 import {
   create,
@@ -61,7 +64,7 @@ export default ObjectOperationsBaseVM.extend({
   },
   handleBulkUpdateErrors() {
     if (isConnectionLost()) {
-      notifier('error', 'Internet connection was lost.');
+      connectionLostNotifier();
     } else {
       notifier('error', 'Bulk update is failed. ' +
       'Please refresh the page and start bulk update again.');

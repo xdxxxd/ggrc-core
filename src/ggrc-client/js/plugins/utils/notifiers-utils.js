@@ -15,6 +15,7 @@ const messages = {
   ' Please refresh the page and try saving again',
   '412': 'One of the form fields isn\'t right. ' +
   'Check the form for any highlighted fields.',
+  connectionLost: 'Internet connection was lost.',
 };
 
 /**
@@ -53,6 +54,10 @@ function notifierXHR(type, xhr) {
   notifier(type, message);
 }
 
+function connectionLostNotifier() {
+  notifier('error', messages.connectionLost);
+}
+
 window.addEventListener('error', (event) => {
   notifier('error', event.message);
 });
@@ -61,4 +66,5 @@ export {
   messages,
   notifier,
   notifierXHR,
+  connectionLostNotifier,
 };

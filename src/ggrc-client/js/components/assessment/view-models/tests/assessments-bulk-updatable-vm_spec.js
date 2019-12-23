@@ -180,14 +180,12 @@ describe('assessments-bulk-updatable-vm component', () => {
   });
 
   describe('handleBulkUpdateErrors() method', () => {
-    it('calls notifier() with specified params if connection is lost', () => {
+    it('calls connectionLostNotifier() if connection is lost', () => {
       spyOn(ErrorUtils, 'isConnectionLost').and.returnValue(true);
-      spyOn(NotifierUtils, 'notifier');
+      spyOn(NotifierUtils, 'connectionLostNotifier');
       viewModel.handleBulkUpdateErrors();
 
-      expect(NotifierUtils.notifier).toHaveBeenCalledWith(
-        'error',
-        'Internet connection was lost.');
+      expect(NotifierUtils.connectionLostNotifier).toHaveBeenCalled();
     });
 
     it('calls notifier() with specified params if connection is not lost',

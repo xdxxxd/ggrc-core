@@ -92,7 +92,7 @@ function getRequestErrorDetails({
 
   if (isConnectionLost()) {
     name = 'Connection Lost Error';
-    details = 'Internet connection was lost.';
+    details = messages.connectionLost;
   }
 
   return {
