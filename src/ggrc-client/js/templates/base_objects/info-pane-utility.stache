@@ -1,5 +1,5 @@
 {{!
-    Copyright (C) 2019 Google Inc.
+    Copyright (C) 2020 Google Inc.
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 }}
 
@@ -25,7 +25,7 @@
             {{instance.constructor.title_singular}} Review Details
         </questionnaire-link>
     {{/if}}
-    <show-related-assessments-button instance:from="instance" 
+    <show-related-assessments-button instance:from="instance"
                                      extraBtnCss:from="'btn-small'">
     </show-related-assessments-button>
 
